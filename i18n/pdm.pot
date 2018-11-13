@@ -1,0 +1,2235 @@
+# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* pdm
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 6.1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-02-13 15:51+0000\n"
+"PO-Revision-Date: 2016-02-13 15:51+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: pdm
+#: view:board.board:0
+msgid "Document board"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+#: view:plm.backupdoc:0
+#: view:plm.checkout:0
+#: view:plm.document:0
+#: view:plm.document.relation:0
+#: view:plm.config.settings:0
+#: view:plm.description:0
+#: view:product.product:0
+msgid "Yesterday"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,name:0
+msgid "Attachment Name"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+#: view:plm.backupdoc:0
+#: view:plm.checkout:0
+#: view:plm.document:0
+#: view:plm.document.relation:0
+#: view:plm.config.settings:0
+#: view:plm.description:0
+#: view:product.product:0
+msgid "Today"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+#: field:mrp.bom,engineering_revision:0
+#: field:plm.adding.bom,revision:0
+#: field:plm.backupdoc,revisionid:0
+#: field:plm.compare.bom,revision1:0
+#: field:plm.compare.bom,revision2:0
+#: field:plm.document.relation,child_revision:0
+#: field:plm.document.relation,parent_revision:0
+#: field:plm.missing.bom,revision:0
+#: field:product.template,engineering_revision:0
+msgid "Revision"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document.relation:0
+msgid "Parent"
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+#: view:plm.checkout:0
+#: view:plm.document:0
+#: view:plm.document.relation:0
+msgid "Last Week"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/component.py:396
+#, python-format
+msgid "Part cannot be released."
+msgstr ""
+
+#. module: pdm
+#: view:plm.description:0
+#: view:product.product:0
+msgid "Normalization Area"
+msgstr ""
+
+#. module: pdm
+#: field:plm.compare.bom,anotinb:0
+msgid "BoM Adding"
+msgstr ""
+
+#. module: pdm
+#: field:plm.backupdoc,printout:0
+#: field:plm.document,printout:0
+msgid "Printout Content"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Latest"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Source Relation Document"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Correct Document"
+msgstr ""
+
+#. module: pdm
+#: report:plm.bom.structure.all:0
+#: report:plm.bom.structure.all.sum:0
+#: report:plm.bom.structure.leaves:0
+#: report:plm.bom.structure.one:0
+#: report:plm.bom.structure.one.sum:0
+msgid "UoM"
+msgstr ""
+
+#. module: pdm
+#: field:plm.adding.bom,bom_idrow:0
+#: field:plm.missing.bom,bom_idrow:0
+msgid "BoM Line"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.action_plm_backupdoc
+msgid "Backup Data Set"
+msgstr ""
+
+#. module: pdm
+#: sql_constraint:plm.component.document.rel:0
+msgid "Component and Document relation has to be unique !"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Search Bill Of Material"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,usedforspare:0
+msgid "Used for Spare"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Reference"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.menu_document_relations
+#: view:plm.document.relation:0
+msgid "Search on Document Relations"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,partner_id:0
+#: field:report.plm_files.partner,partner:0
+msgid "Partner"
+msgstr ""
+
+#. module: pdm
+#: help:product.product,std_umc1:0
+msgid "Allow to specifiy a unit measure for the first feature."
+msgstr ""
+
+#. module: pdm
+#: help:product.product,std_description:0
+msgid "Select standard description for current product."
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+msgid "Are you sure you want to restore this document?"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:878
+#, python-format
+msgid "Unable to Check-In the required document.\n"
+" You aren't authorized in this context."
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_product_product_pdf
+msgid "Print Attached PDF Drawings"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_all_product_product_pdf
+msgid "Print Bom All Levels PDF Drawings"
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+#: view:plm.checkout:0
+msgid "Checked-Out in last month"
+msgstr ""
+
+#. module: pdm
+#: view:plm.compare.bom:0
+msgid "This wizard will allow to compare two Bill of Materials."
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.action_plm_config_settings
+#: model:ir.model,name:pdm.model_plm_config_settings
+#: model:ir.ui.menu,name:pdm.menu_plm_config_settings
+#: model:ir.ui.menu,name:pdm.menu_plm_settings
+#: view:plm.config.settings:0
+msgid "PLM Settings"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,store_fname:0
+msgid "Stored Filename"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+#: selection:plm.document,state:0
+#: view:product.product:0
+#: field:report.plm_component,count_component_released:0
+msgid "Released"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_plm_bom_structure_all
+msgid "BOM All Levels"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/component.py:396
+#, python-format
+msgid "WorkFlow Error"
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,bom_tmpl:0
+msgid "Choose a BoM"
+msgstr ""
+
+#. module: pdm
+#: view:board.board:0
+msgid "New Documents"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.menu_finishing
+#: view:plm.finishing:0
+msgid "Finishings"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Created"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Part Number Area"
+msgstr ""
+
+#. module: pdm
+#: view:plm.compare.bom:0
+msgid "Differences Between BoMs"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_product_product_spare_parts_pdf
+msgid "Print Spare Parts Manual"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:999
+#, python-format
+msgid "Unable to remove the document (-) from backup set.\n"
+" It isn't a backup file, it's original current one."
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+#: field:plm.document,user_id:0
+#: field:report.plm_document.user,user_id:0
+#: field:report.plm_document.wall,user_id:0
+msgid "Owner"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:281
+#, python-format
+msgid "Permission denied or directory %s cannot be created."
+msgstr ""
+
+#. module: pdm
+#: field:plm.document.relation,link_kind:0
+msgid "Kind of Link"
+msgstr ""
+
+#. module: pdm
+#: selection:plm.document,type:0
+msgid "Binary"
+msgstr ""
+
+#. module: pdm
+#: help:plm.document,type:0
+msgid "Binary File or external URL"
+msgstr ""
+
+#. module: pdm
+#: selection:plm.compare.bom,type_id1:0
+#: selection:plm.compare.bom,type_id2:0
+msgid "Sets / Phantom"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+#: view:plm.config.settings:0
+#: view:plm.description:0
+#: view:plm.document:0
+#: view:plm.document.relation:0
+#: view:product.product:0
+msgid "Created today"
+msgstr ""
+
+#. module: pdm
+#: view:plm.temporary:0
+msgid "Are you sure you want to create a new Spare BoM?"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.act_restore_document
+msgid "Restore Document"
+msgstr ""
+
+#. module: pdm
+#: field:mrp.bom,state:0
+#: field:plm.backupdoc,state:0
+#: field:plm.document,state:0
+#: field:plm.document.relation,child_state:0
+#: field:plm.document.relation,parent_state:0
+msgid "Status"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_material
+msgid "Materials"
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "August"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Engineering Infos"
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "June"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+#: view:plm.config.settings:0
+#: view:plm.description:0
+#: view:plm.document:0
+#: view:plm.document.relation:0
+#: view:product.product:0
+msgid "Created yesterday"
+msgstr ""
+
+#. module: pdm
+#: constraint:mrp.bom:0
+msgid "Error ! You cannot create recursive BoM."
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "October"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Sale Description"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Related to"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+#: view:plm.backupdoc:0
+#: view:plm.checkout:0
+#: view:plm.document:0
+msgid "Latest 7 Days"
+msgstr ""
+
+#. module: pdm
+#: field:plm.adding.bom,itemqty:0
+#: field:plm.missing.bom,itemqty:0
+msgid "Quantity"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Edit Bill of Material"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_entities.py:228
+#: field:mrp.bom,itemnum:0
+#: field:plm.adding.bom,itemnum:0
+#: field:plm.missing.bom,itemnum:0
+#, python-format
+msgid "Cad Item Position"
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,fmtend:0
+msgid "Format Feature Composed"
+msgstr ""
+
+#. module: pdm
+#: field:report.plm_document.user,day:0
+msgid "Day"
+msgstr ""
+
+#. module: pdm
+#: view:board.board:0
+#: model:ir.actions.act_window,name:pdm.action_view_file_month
+#: view:report.plm_document.file:0
+msgid "Files by Month"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Parts"
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+#: view:plm.compare.bom:0
+#: view:plm.temporary:0
+msgid "Cancel"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_missing_bom
+msgid "BoM Missing Objects"
+msgstr ""
+
+#. module: pdm
+#: help:plm.description,bom_tmpl:0
+msgid "Select a  BoM as template to drive building Spare BoM."
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Creation Month"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_adding_bom
+msgid "BoM Adding Objects"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.menu_base_component
+msgid "Search on Engineering Parts"
+msgstr ""
+
+#. module: pdm
+#: help:plm.config.settings,active_editor:0
+msgid "Used Editor Name"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:163
+#, python-format
+msgid "Error in _data_set"
+msgstr ""
+
+#. module: pdm
+#: view:report.plm_document.user:0
+msgid "This Months Files"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.menu_relation_normal
+msgid "Search on Normal Bill of Materials"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Component Product"
+msgstr ""
+
+#. module: pdm
+#: report:plm.bom.structure.all:0
+#: report:plm.bom.structure.all.sum:0
+#: report:plm.bom.structure.leaves:0
+#: report:plm.bom.structure.one:0
+#: report:plm.bom.structure.one.sum:0
+msgid "Level"
+msgstr ""
+
+#. module: pdm
+#: sql_constraint:plm.finishing:0
+#: sql_constraint:plm.material:0
+msgid "Raw Material has to be unique !"
+msgstr ""
+
+#. module: pdm
+#: view:plm.description:0
+msgid "Technical Features"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:410
+#, python-format
+msgid "Update Document Error"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:562
+#, python-format
+msgid "The active state does not allow you to make save action"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.menu_description
+#: view:plm.description:0
+#: view:product.product:0
+msgid "Descriptions"
+msgstr ""
+
+#. module: pdm
+#: field:plm.config.settings,active_editor:0
+msgid "Client Editor Name"
+msgstr ""
+
+#. module: pdm
+#: field:plm.backupdoc,userid:0
+#: field:plm.checkout,userid:0
+msgid "Related User"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,url:0
+msgid "Url"
+msgstr ""
+
+#. module: pdm
+#: field:plm.config.settings,plm_service_id:0
+msgid "Register PLM module, insert your Service ID."
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+msgid "Backup Document Set"
+msgstr ""
+
+#. module: pdm
+#: sql_constraint:product.template:0
+msgid "Part Number has to be unique!"
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,fmt3:0
+msgid "Format Feature 3"
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,fmt2:0
+msgid "Format Feature 2"
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,fmt1:0
+msgid "Format Feature 1"
+msgstr ""
+
+#. module: pdm
+#: help:plm.config.settings,plm_service_id:0
+msgid "Insert the Service ID and register your PLM module. Ask it to TechSpell."
+msgstr ""
+
+#. module: pdm
+#: help:plm.config.settings,active_node:0
+msgid "Editor Machine Name"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_checkout
+msgid "plm.checkout"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document.relation,child_id:0
+msgid "Related child document"
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,unitab:0
+msgid "Normative Rule"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.action_plm_component_base
+#: view:product.product:0
+msgid "Engineering Parts"
+msgstr ""
+
+#. module: pdm
+#: view:board.board:0
+#: model:ir.actions.act_window,name:pdm.action_view_component_status
+#: view:report.plm_component:0
+msgid "Component Status"
+msgstr ""
+
+#. module: pdm
+#: constraint:product.product:0
+msgid "Error: Invalid ean code"
+msgstr ""
+
+#. module: pdm
+#: field:plm.component.document.rel,document_id:0
+msgid "Document Linked"
+msgstr ""
+
+#. module: pdm
+#: field:report.plm_document.user,datas_fname:0
+msgid "File"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.menu_relation_spare
+msgid "Search on Spare Bill of Materials"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.plm_component_menu_view
+msgid "Components View"
+msgstr ""
+
+#. module: pdm
+#: selection:plm.compare.bom,type_id1:0
+#: selection:plm.compare.bom,type_id2:0
+msgid "Spare BoM"
+msgstr ""
+
+#. module: pdm
+#: help:product.product,std_umc3:0
+msgid "Allow to specifiy a unit measure for the third feature."
+msgstr ""
+
+#. module: pdm
+#: field:plm.component.document.rel,component_id:0
+msgid "Component Linked"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+#: view:plm.config.settings:0
+#: view:plm.description:0
+#: view:plm.document:0
+#: view:product.product:0
+msgid "Created latest 7 Days"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_component_document_rel
+msgid "Component Document Relations"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Engineering Product"
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "March"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Release Component"
+msgstr ""
+
+#. module: pdm
+#: field:mrp.bom,father_complete_ids:0
+msgid "BoM Hierarchy"
+msgstr ""
+
+#. module: pdm
+#: help:plm.document,printout:0
+msgid "Print PDF content."
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+#: view:plm.checkout:0
+msgid "Filter on my documents"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+#: field:plm.document,index_content:0
+msgid "Indexed Content"
+msgstr ""
+
+#. module: pdm
+#: model:res.groups,name:pdm.group_plm_admin
+msgid "PLM / Administrators"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/extconnections/dataconnector.py:409
+#: code:addons/pdm/models/extconnections/dataconnector.py:415
+#: code:addons/pdm/models/extconnections/dataconnector.py:419
+#: code:addons/pdm/models/extconnections/dataconnector.py:441
+#: code:addons/pdm/models/extconnections/dataconnector.py:445
+#, python-format
+msgid "Export Data Error"
+msgstr ""
+
+#. module: pdm
+#: selection:plm.document,type:0
+msgid "URL"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Search on Bill Of Material"
+msgstr ""
+
+#. module: pdm
+#: view:plm.description:0
+msgid "Technical feature label and formatting"
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+msgid "Backup Document"
+msgstr ""
+
+#. module: pdm
+#: field:mrp.bom,source_id:0
+msgid "name"
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+msgid "Create Date"
+msgstr ""
+
+#. module: pdm
+#: field:plm.config.settings,active_os_ver:0
+msgid "OS version"
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+#: view:plm.checkout:0
+msgid "Checked-Out yesterday"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.menu_document_files
+msgid "Search on Documents"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_one_product_product_pdf
+msgid "Print Bom One Level PDF Drawings"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_plm_bom_structure_one
+msgid "BOM One Level"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:462
+#, python-format
+msgid "The document %s - %s has not checked-in"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document.relation:0
+msgid "Child Preview"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.act_plm_compare_bom
+#: view:plm.compare.bom:0
+msgid "Compare BoMs"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:121
+#, python-format
+msgid "Stored Document Error"
+msgstr ""
+
+#. module: pdm
+#: field:plm.finishing,name:0
+msgid "Specification"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,file_size:0
+#: field:report.plm_document.file,file_size:0
+#: field:report.plm_document.user,file_size:0
+#: field:report.plm_files.partner,file_size:0
+msgid "File Size"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,file_type:0
+msgid "Content Type"
+msgstr ""
+
+#. module: pdm
+#: field:plm.compare.bom,bnotina:0
+msgid "BoM Missing"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_entities.py:509
+#, python-format
+msgid "saveChild :  unable to create a relation for part (%s) with source (%d) : %s."
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+#: field:plm.document,type:0
+msgid "Type"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_plm_document_pdf
+msgid "Print Pdf"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_entities.py:219
+#: field:mrp.bom,create_date:0
+#, python-format
+msgid "Creation Date"
+msgstr ""
+
+#. module: pdm
+#: view:plm.material:0
+msgid "Material"
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,description:0
+#: view:product.product:0
+#: field:product.product,std_description:0
+msgid "Standard Description"
+msgstr ""
+
+#. module: pdm
+#: report:plm.bom.structure.all:0
+#: report:plm.bom.structure.all.sum:0
+#: report:plm.bom.structure.leaves:0
+#: report:plm.bom.structure.one:0
+#: report:plm.bom.structure.one.sum:0
+msgid "Product Name"
+msgstr ""
+
+#. module: pdm
+#: help:plm.description,unitab:0
+msgid "Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:281
+#, python-format
+msgid "Document Error"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_document
+msgid "plm.document"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.open_board_plm_manager
+msgid "PLM Dashboard"
+msgstr ""
+
+#. module: pdm
+#: field:report.plm_component,count_component_modified:0
+msgid "Under Modify"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_finishing
+#: field:product.product,tmp_surface:0
+#: field:product.template,engineering_surface:0
+msgid "Surface Finishing"
+msgstr ""
+
+#. module: pdm
+#: field:product.product,linkeddocuments:0
+msgid "Linked Docs"
+msgstr ""
+
+#. module: pdm
+#: field:product.product,tmp_material:0
+#: field:product.template,engineering_material:0
+msgid "Raw Material"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:889
+#, python-format
+msgid "Unable to Check-In the document (-).\n"
+" You can't change writable flag."
+msgstr ""
+
+#. module: pdm
+#: view:report.plm_document.user:0
+msgid "All users files"
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "September"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_report_plm_component
+msgid "Report Component"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,writable:0
+#: field:product.template,engineering_writable:0
+msgid "Writable"
+msgstr ""
+
+#. module: pdm
+#: field:product.product,std_value1:0
+msgid "Value 1"
+msgstr ""
+
+#. module: pdm
+#: field:product.product,std_value2:0
+msgid "Value 2"
+msgstr ""
+
+#. module: pdm
+#: field:product.product,std_value3:0
+msgid "Value 3"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.plm_menu_backup
+msgid "Backup Documents View"
+msgstr ""
+
+#. module: pdm
+#: field:plm.backupdoc,createdate:0
+#: field:plm.checkout,createdate:0
+#: field:plm.document,create_date:0
+#: field:plm.document.relation,create_date:0
+#: field:product.product,create_date:0
+#: field:report.plm_document.user,create_date:0
+msgid "Date Created"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.plm_action_document_relations
+#: view:plm.document.relation:0
+msgid "Document Relations"
+msgstr ""
+
+#. module: pdm
+#: field:plm.config.settings,activated_id:0
+msgid "Activated PLM client"
+msgstr ""
+
+#. module: pdm
+#: field:mrp.bom,weight_net:0
+msgid "Weight Net"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Date"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_entities.py:221
+#: field:plm.compare.bom,type_id1:0
+#: field:plm.compare.bom,type_id2:0
+#, python-format
+msgid "BoM Type"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+#: field:plm.document,db_datas:0
+msgid "Data"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:562
+#, python-format
+msgid "Edit Entity Error"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Purchase Description"
+msgstr ""
+
+#. module: pdm
+#: field:plm.material,name:0
+msgid "Designation"
+msgstr ""
+
+#. module: pdm
+#: report:plm.bom.structure.all:0
+#: report:plm.bom.structure.all.sum:0
+#: report:plm.bom.structure.leaves:0
+#: report:plm.bom.structure.one:0
+#: report:plm.bom.structure.one.sum:0
+msgid "Rev."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/component.py:463
+#, python-format
+msgid "It has tried to create with values : (%r)."
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Technical Infos"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.plm_menu_dictionaries
+msgid "Dictionaries"
+msgstr ""
+
+#. module: pdm
+#: report:plm.bom.structure.all:0
+#: report:plm.bom.structure.all.sum:0
+#: report:plm.bom.structure.leaves:0
+#: report:plm.bom.structure.one:0
+#: report:plm.bom.structure.one.sum:0
+msgid "Pos."
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,create_uid:0
+msgid "Creator"
+msgstr ""
+
+#. module: pdm
+#: report:plm.bom.structure.all:0
+#: report:plm.bom.structure.all.sum:0
+#: report:plm.bom.structure.leaves:0
+#: report:plm.bom.structure.one:0
+#: report:plm.bom.structure.one.sum:0
+msgid "Qty"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Correct Component"
+msgstr ""
+
+#. module: pdm
+#: sql_constraint:plm.document.relation:0
+msgid "The Document Relation must be unique !"
+msgstr ""
+
+#. module: pdm
+#: help:product.template,engineering_material:0
+msgid "Raw material for current product, only description for titleblock."
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,description_en:0
+msgid "Description English"
+msgstr ""
+
+#. module: pdm
+#: field:plm.config.settings,node_id:0
+msgid "Registered PLM client"
+msgstr ""
+
+#. module: pdm
+#: view:plm.description:0
+msgid "Note to help selection"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:869
+#, python-format
+msgid "Check-Out Error"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_product_product_spare_parts_pdf_one
+msgid "Print Spare Parts Manual One Level"
+msgstr ""
+
+#. module: pdm
+#: report:plm.bom.structure.all:0
+#: report:plm.bom.structure.all.sum:0
+#: report:plm.bom.structure.leaves:0
+#: report:plm.bom.structure.one:0
+#: report:plm.bom.structure.one.sum:0
+msgid "BoM Name"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_entities.py:229
+#: field:mrp.bom,itemlbl:0
+#, python-format
+msgid "Cad Item Position Label"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_plm_bom_structure_all_sum
+msgid "BOM All Levels Summarized"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/extconnections/dataconnector.py:409
+#, python-format
+msgid "Requested writing path (%s) doesn't exist."
+msgstr ""
+
+#. module: pdm
+#: help:plm.description,sequence:0
+msgid "Assign the sequence order when displaying a list of product categories."
+msgstr ""
+
+#. module: pdm
+#: field:plm.adding.bom,reason:0
+#: field:plm.missing.bom,reason:0
+msgid "Difference"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:1020
+#, python-format
+msgid "Unable to restore the document (-) from backup set.\n"
+" Check if it's checked-in, before to proceed."
+msgstr ""
+
+#. module: pdm
+#: field:plm.temporary,name:0
+msgid "Temp"
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "November"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:982
+#: code:addons/pdm/models/document.py:1010
+#, python-format
+msgid "Unable to remove the required document.\n"
+" You aren't authorized in this context."
+msgstr ""
+
+#. module: pdm
+#: view:plm.temporary:0
+msgid "Are you sure you want to create a new Normal Bom?"
+msgstr ""
+
+#. module: pdm
+#: view:report.plm_document.user:0
+msgid "All Months Files"
+msgstr ""
+
+#. module: pdm
+#: help:plm.description,umc1:0
+#: help:plm.description,umc2:0
+#: help:plm.description,umc3:0
+msgid "Allow to specify a unit measure or a label for the feature."
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+#: view:plm.checkout:0
+#: view:plm.document:0
+msgid "Last Month"
+msgstr ""
+
+#. module: pdm
+#: help:plm.finishing,sequence:0
+#: help:plm.material,sequence:0
+msgid "Gives the sequence order when displaying a list of product categories."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/comparebom.py:148
+#, python-format
+msgid "Differences on BoMs"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/extconnections/dataconnector.py:415
+#: code:addons/pdm/models/extconnections/dataconnector.py:441
+#: code:addons/pdm/models/extconnections/dataconnector.py:445
+#, python-format
+msgid "No Bom extraction files was generated, about entity (%s)."
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "TitleBlock Informations"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+#: view:plm.backupdoc:0
+#: view:plm.document:0
+#: view:plm.document.relation:0
+msgid "Group By..."
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.action_product_bom_structure_where
+msgid "Product BoM Where Used Structure"
+msgstr ""
+
+#. module: pdm
+#: field:plm.config.settings,active_os_rel:0
+msgid "OS release"
+msgstr ""
+
+#. module: pdm
+#: field:plm.backupdoc,documentid:0
+#: field:plm.checkout,documentid:0
+msgid "Related Document"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Document"
+msgstr ""
+
+#. module: pdm
+#: field:mrp.bom,uom_id:0
+#: view:product.product:0
+msgid "Unit of Measure"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.action_plm_checkout
+msgid "Check-Out"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,res_id:0
+msgid "Attached ID"
+msgstr ""
+
+#. module: pdm
+#: view:report.plm_document.user:0
+msgid "This Year"
+msgstr ""
+
+#. module: pdm
+#: view:plm.description:0
+msgid "Normative"
+msgstr ""
+
+#. module: pdm
+#: field:report.plm_document.user,type:0
+msgid "Directory Type"
+msgstr ""
+
+#. module: pdm
+#: view:plm.checkout:0
+msgid "Checked-Out Document"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Notes"
+msgstr ""
+
+#. module: pdm
+#: field:plm.backupdoc,preview:0
+#: field:plm.document,preview:0
+msgid "Preview Content"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_mrp_bom
+msgid "Bill of Material"
+msgstr ""
+
+#. module: pdm
+#: field:plm.compare.bom,name:0
+#: field:product.template,engineering_code:0
+msgid "Part Number"
+msgstr ""
+
+#. module: pdm
+#: help:plm.description,fmtend:0
+msgid "Allow to represent a normalized composition of technical features : %s%s allows to build chained values."
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Revisions"
+msgstr ""
+
+#. module: pdm
+#: field:plm.checkout,hostpws:0
+msgid "PWS Directory"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,res_model:0
+msgid "Attached Model"
+msgstr ""
+
+#. module: pdm
+#: view:plm.description:0
+msgid "Normalized characteristics formatting"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Confirm Component"
+msgstr ""
+
+#. module: pdm
+#: view:plm.compare.bom:0
+msgid "Visualize BoM"
+msgstr ""
+
+#. module: pdm
+#: selection:plm.document,state:0
+msgid "UnderModify"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_document_relation
+msgid "plm.document.relation"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,res_name:0
+msgid "Resource Name"
+msgstr ""
+
+#. module: pdm
+#: field:plm.compare.bom,bom_id2:0
+msgid "BoM 2"
+msgstr ""
+
+#. module: pdm
+#: field:plm.adding.bom,part_id:0
+#: field:plm.compare.bom,part_id1:0
+#: field:plm.compare.bom,part_id2:0
+#: field:plm.missing.bom,part_id:0
+msgid "Part"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Component Name"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "Linked Documents"
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "July"
+msgstr ""
+
+#. module: pdm
+#: field:plm.config.settings,expire_date:0
+#: help:plm.config.settings,expire_date:0
+msgid "Expiration Date"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document.relation:0
+msgid "Kind"
+msgstr ""
+
+#. module: pdm
+#: view:plm.config.settings:0
+msgid "Settings"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_temporary
+msgid "Temporary Class"
+msgstr ""
+
+#. module: pdm
+#: field:report.plm_document.wall,last:0
+msgid "Last Posted Time"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,parent_id:0
+#: field:report.plm_document.user,directory:0
+msgid "Directory"
+msgstr ""
+
+#. module: pdm
+#: help:product.template,engineering_treatment:0
+msgid "Thermal treatment for current product"
+msgstr ""
+
+#. module: pdm
+#: help:plm.config.settings,active_os_ver:0
+msgid "Editor OS Version"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document.relation,configuration:0
+msgid "Configuration Name"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+#: field:report.plm_document.file,month:0
+#: field:report.plm_document.user,month:0
+#: field:report.plm_document.wall,month:0
+#: field:report.plm_document.wall,name:0
+#: field:report.plm_files.partner,month:0
+msgid "Month"
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+msgid "Restore Entry"
+msgstr ""
+
+#. module: pdm
+#: help:product.template,engineering_code:0
+msgid "This is engineering reference to manage a different P/N from item Name."
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,datas:0
+msgid "File Content"
+msgstr ""
+
+#. module: pdm
+#: view:plm.temporary:0
+msgid "Creation of Normal Bom"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document.relation:0
+msgid "Show Document Relation"
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+#: view:plm.checkout:0
+msgid "Checked-Out in last week"
+msgstr ""
+
+#. module: pdm
+#: constraint:product.template:0
+msgid "Error: The default UOM and the purchase UOM must be in the same category."
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Attachment"
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+#: view:plm.document:0
+#: field:plm.document.relation,child_preview:0
+#: field:plm.document.relation,parent_preview:0
+msgid "Preview"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,write_uid:0
+msgid "Last Modification User"
+msgstr ""
+
+#. module: pdm
+#: view:product.product:0
+msgid "LifeCycle Area"
+msgstr ""
+
+#. module: pdm
+#: help:plm.document,state:0
+msgid "The status of the product."
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Properties"
+msgstr ""
+
+#. module: pdm
+#: model:res.groups,name:pdm.group_plm_viewuser
+msgid "PLM / Visualization Users"
+msgstr ""
+
+#. module: pdm
+#: sql_constraint:mrp.bom:0
+msgid "All product quantities must be greater than 0.\n"
+"You should install the mrp_subproduct module if you want to manage extra products on BoMs !"
+msgstr ""
+
+#. module: pdm
+#: report:plm.bom.structure.all:0
+#: report:plm.bom.structure.all.sum:0
+#: report:plm.bom.structure.leaves:0
+#: report:plm.bom.structure.one:0
+#: report:plm.bom.structure.one.sum:0
+msgid "BOM Structure Report"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.action_view_all_document_tree1
+msgid "All Users files"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:869
+#, python-format
+msgid "Unable to check-out the required document (-)."
+msgstr ""
+
+#. module: pdm
+#: help:mrp.bom,source_id:0
+msgid "This is the document object that declares this BoM."
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.act_manage_spareBom
+#: view:plm.temporary:0
+msgid "Create Spare BoM"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:121
+#, python-format
+msgid "Document %s - %s cannot be accessed"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Attachments"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.plm_menu
+msgid "PLM"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_plm_bom_structure_leaves
+msgid "BOM Only Leaves Summarized"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_report_plm_files_partner
+msgid "Files details by Partners"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Default UOM"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_product_product
+#: view:mrp.bom:0
+#: view:plm.config.settings:0
+#: view:product.product:0
+msgid "Product"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,revisionid:0
+msgid "Revision Index"
+msgstr ""
+
+#. module: pdm
+#: field:plm.checkout,hostname:0
+msgid "Hostname"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.action_product_bom_structure
+msgid "Product BoM Structure"
+msgstr ""
+
+#. module: pdm
+#: help:plm.config.settings,active_os:0
+msgid "Editor OS Name"
+msgstr ""
+
+#. module: pdm
+#: view:plm.temporary:0
+msgid "Creation of Spare BoM"
+msgstr ""
+
+#. module: pdm
+#: help:product.template,engineering_surface:0
+msgid "Surface finishing for current product, only description for titleblock."
+msgstr ""
+
+#. module: pdm
+#: help:plm.config.settings,activated_id:0
+msgid "Listed activated Client."
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_backupdoc
+msgid "plm.backupdoc"
+msgstr ""
+
+#. module: pdm
+#: view:report.plm_document.user:0
+msgid "This Month"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Filter on documents changed by me"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+#: field:plm.document,linkedcomponents:0
+msgid "Linked Parts"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Created last month"
+msgstr ""
+
+#. module: pdm
+#: help:product.product,std_value1:0
+msgid "Assign value to the first characteristic."
+msgstr ""
+
+#. module: pdm
+#: field:report.plm_document.file,nbr:0
+#: field:report.plm_document.user,nbr:0
+#: field:report.plm_files.partner,nbr:0
+msgid "# of Files"
+msgstr ""
+
+#. module: pdm
+#: field:plm.config.settings,active_os:0
+msgid "OS name"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,datas_fname:0
+msgid "Filename"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.menu_checkout
+msgid "Search on Checked-Out Documents"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:982
+#: code:addons/pdm/models/document.py:1010
+#, python-format
+msgid "Backup Error"
+msgstr ""
+
+#. module: pdm
+#: view:plm.config.settings:0
+#: view:plm.description:0
+#: view:product.product:0
+msgid "Latest 7 Days"
+msgstr ""
+
+#. module: pdm
+#: view:report.plm_document.user:0
+msgid "Files"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,company_id:0
+msgid "Company"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+#: view:plm.document.relation:0
+msgid "Created last week"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Attached To"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document.relation,parent_id:0
+msgid "Related parent document"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_report_plm_document_user
+msgid "Files details by Users"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_compare_bom
+msgid "BoM Comparison"
+msgstr ""
+
+#. module: pdm
+#: view:plm.description:0
+msgid "Template BOM"
+msgstr ""
+
+#. module: pdm
+#: field:report.plm_document.user,change_date:0
+msgid "Modified Date"
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+#: view:plm.checkout:0
+msgid "Checked-Out today"
+msgstr ""
+
+#. module: pdm
+#: selection:plm.compare.bom,type_id1:0
+#: selection:plm.compare.bom,type_id2:0
+msgid "Normal BoM"
+msgstr ""
+
+#. module: pdm
+#: help:product.product,tmp_material:0
+msgid "Select raw material for current product"
+msgstr ""
+
+#. module: pdm
+#: field:product.template,engineering_treatment:0
+msgid "Treatment"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+#: selection:plm.document,state:0
+#: view:product.product:0
+#: field:report.plm_component,count_component_confirmed:0
+msgid "Confirmed"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.plm_action_document_form
+#: view:plm.document:0
+msgid "Documents"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/extconnections/dataconnector.py:419
+#, python-format
+msgid "Writing operations on file (%s) have failed."
+msgstr ""
+
+#. module: pdm
+#: help:plm.description,fmt1:0
+#: help:plm.description,fmt2:0
+#: help:plm.description,fmt3:0
+msgid "Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+msgid "Restore Selected Document"
+msgstr ""
+
+#. module: pdm
+#: help:product.product,std_value2:0
+#: help:product.product,std_value3:0
+msgid "Assign value to the second characteristic."
+msgstr ""
+
+#. module: pdm
+#: sql_constraint:plm.document:0
+msgid "File name has to be unique!"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/component.py:95
+#, python-format
+msgid "Update Part Warning"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:410
+#, python-format
+msgid "Document %s - %s cannot be updated"
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,umc1:0
+#: field:product.product,std_umc1:0
+msgid "UM / Feature 1"
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,umc3:0
+#: field:product.product,std_umc3:0
+msgid "UM / Feature 3"
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,umc2:0
+#: field:product.product,std_umc2:0
+msgid "UM / Feature 2"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Starting Date"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Modified"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.menu_material
+#: view:plm.material:0
+msgid "Materials"
+msgstr ""
+
+#. module: pdm
+#: field:plm.config.settings,active_os_arch:0
+msgid "OS architecture"
+msgstr ""
+
+#. module: pdm
+#: model:res.groups,name:pdm.group_plm_integrationuser
+msgid "PLM / Integration Users"
+msgstr ""
+
+#. module: pdm
+#: help:product.product,tmp_surface:0
+msgid "Select surface finishing for current product"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Confirm Document"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document,write_date:0
+#: field:product.product,write_date:0
+msgid "Date Modified"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_report_plm_document_file
+msgid "Files details by Directory"
+msgstr ""
+
+#. module: pdm
+#: report:plm.bom.structure.all:0
+#: report:plm.bom.structure.all.sum:0
+#: report:plm.bom.structure.leaves:0
+#: report:plm.bom.structure.one:0
+#: report:plm.bom.structure.one.sum:0
+msgid "Weight"
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "April"
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "December"
+msgstr ""
+
+#. module: pdm
+#: help:product.template,engineering_revision:0
+msgid "The revision of the product."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:878
+#: code:addons/pdm/models/document.py:889
+#: code:addons/pdm/models/document.py:999
+#: code:addons/pdm/models/document.py:1020
+#, python-format
+msgid "Check-In Error"
+msgstr ""
+
+#. module: pdm
+#: field:plm.adding.bom,bom_id:0
+#: field:plm.missing.bom,bom_id:0
+msgid "BoM"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_plm_description
+msgid "Descriptions"
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_plm_bom_structure_one_sum
+msgid "BOM One Level Summarized"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.menu_backupdoc
+msgid "Search on Backup Data Set"
+msgstr ""
+
+#. module: pdm
+#: selection:plm.document,state:0
+#: view:product.product:0
+#: field:report.plm_component,count_component_obsoleted:0
+msgid "Obsoleted"
+msgstr ""
+
+#. module: pdm
+#: selection:plm.compare.bom,type_id1:0
+#: selection:plm.compare.bom,type_id2:0
+msgid "Engineering BoM"
+msgstr ""
+
+#. module: pdm
+#: selection:plm.document,state:0
+#: field:report.plm_component,count_component_draft:0
+msgid "Draft"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.plm_document_form
+msgid "Documents View"
+msgstr ""
+
+#. module: pdm
+#: help:plm.config.settings,active_os_arch:0
+msgid "Editor OS Architecture"
+msgstr ""
+
+#. module: pdm
+#: help:plm.config.settings,active_os_rel:0
+msgid "Editor OS Release"
+msgstr ""
+
+#. module: pdm
+#: field:plm.backupdoc,existingfile:0
+msgid "Physical Document Location"
+msgstr ""
+
+#. module: pdm
+#: field:report.plm_document.user,user:0
+#: field:report.plm_document.wall,user:0
+msgid "User"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document.relation:0
+msgid "Child"
+msgstr ""
+
+#. module: pdm
+#: help:plm.document,usedforspare:0
+msgid "Drawings marked here will be used printing Spare Part Manual report."
+msgstr ""
+
+#. module: pdm
+#: constraint:mrp.bom:0
+msgid "BoM line product should not be same as BoM product."
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.report.xml,name:pdm.report_plm_checkout_pdf
+msgid "Print Drawings Pdf"
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "January"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document.relation:0
+msgid "Parent Preview"
+msgstr ""
+
+#. module: pdm
+#: view:plm.finishing:0
+msgid "Finishing"
+msgstr ""
+
+#. module: pdm
+#: view:plm.missing.bom:0
+msgid "BoM Relations in Bom 2"
+msgstr ""
+
+#. module: pdm
+#: view:plm.backupdoc:0
+#: view:plm.checkout:0
+msgid "Documents in Check-Out"
+msgstr ""
+
+#. module: pdm
+#: view:plm.adding.bom:0
+msgid "BoM Relations in Bom 1"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_entities.py:617
+#: code:addons/pdm/models/sparebom.py:42
+#: model:ir.actions.act_window,name:pdm.act_product_product_2_mrp_bom
+#: view:mrp.bom:0
+#, python-format
+msgid "Bill of Materials"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/component.py:95
+#, python-format
+msgid "Part %s already exists.\n"
+"Close with OK to reuse, with Cancel to discharge."
+msgstr ""
+
+#. module: pdm
+#: help:plm.document,preview:0
+msgid "Static preview."
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "General Information"
+msgstr ""
+
+#. module: pdm
+#: field:plm.compare.bom,bom_id1:0
+msgid "BoM 1"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.plm_menu_relation
+msgid "Component Relations View"
+msgstr ""
+
+#. module: pdm
+#: view:mrp.bom:0
+msgid "Routing"
+msgstr ""
+
+#. module: pdm
+#: view:plm.compare.bom:0
+msgid "Compare selected BoMs"
+msgstr ""
+
+#. module: pdm
+#: help:plm.config.settings,node_id:0
+msgid "Listed Registered Client."
+msgstr ""
+
+#. module: pdm
+#: model:ir.actions.act_window,name:pdm.act_create_normalBom
+#: view:plm.temporary:0
+msgid "Create Normal Bom"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Filter on documents created by me"
+msgstr ""
+
+#. module: pdm
+#: field:mrp.bom,description:0
+#: field:plm.adding.bom,description:0
+#: report:plm.bom.structure.all:0
+#: report:plm.bom.structure.all.sum:0
+#: report:plm.bom.structure.leaves:0
+#: report:plm.bom.structure.one:0
+#: report:plm.bom.structure.one.sum:0
+#: field:plm.compare.bom,description1:0
+#: field:plm.compare.bom,description2:0
+#: view:plm.description:0
+#: field:plm.document,description:0
+#: field:plm.finishing,description:0
+#: field:plm.material,description:0
+#: field:plm.missing.bom,description:0
+#: view:product.product:0
+msgid "Description"
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "May"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_report_plm_document_wall
+msgid "Users that did not inserted documents since one month"
+msgstr ""
+
+#. module: pdm
+#: help:product.product,std_umc2:0
+msgid "Allow to specifiy a unit measure for the second feature."
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,name:0
+msgid "Note to Description"
+msgstr ""
+
+#. module: pdm
+#: field:plm.document.relation,userid:0
+msgid "CheckOut User"
+msgstr ""
+
+#. module: pdm
+#: selection:report.plm_document.user,month:0
+#: selection:report.plm_files.partner,month:0
+msgid "February"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document:0
+msgid "Release Document"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.plm_menu_checkout
+msgid "Checked-Out Documents View"
+msgstr ""
+
+#. module: pdm
+#: sql_constraint:plm.checkout:0
+msgid "The documentid must be unique !"
+msgstr ""
+
+#. module: pdm
+#: field:plm.config.settings,active_node:0
+msgid "OS machine name"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_product_template
+msgid "Product Template"
+msgstr ""
+
+#. module: pdm
+#: view:plm.document.relation:0
+msgid "Document Relation Kind"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/component.py:208
+#, python-format
+msgid "Update Part Error"
+msgstr ""
+
+#. module: pdm
+#: field:plm.description,sequence:0
+#: field:plm.finishing,sequence:0
+#: field:plm.material,sequence:0
+msgid "Sequence"
+msgstr ""
+
+#. module: pdm
+#: model:ir.ui.menu,name:pdm.menu_relation_ebom
+msgid "Search on Engineering Bill of Materials"
+msgstr ""
+
+#. module: pdm
+#: field:report.plm_document.user,name:0
+#: field:report.plm_files.partner,name:0
+msgid "Year"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/component.py:208
+#, python-format
+msgid "Part %r cannot be updated"
+msgstr ""
+

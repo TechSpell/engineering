@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+    <menuitem name="Part Relations" id="plm_menu_relation" parent="plm_menu" sequence="12"
+                 groups="group_plm_admin,group_plm_integrationuser,group_plm_viewuser"/>
+ 
+        <record id="plm_bom_form_view" model="ir.ui.view">
+            <field name="name">plm.relation.form</field>
+            <field name="model">mrp.bom</field>
+            <field name="type">form</field>
+        	<field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <form string="Edit Bill of Material">
+                    <field name="product_id" on_change="onchange_plmproduct_id(product_id, parent.product_id, context)" context="{'parent': parent}" select="1"/>
+                    <field name="itemnum"/>
+                    <newline/>
+                    <field name="product_uom"/>
+                    <field name="product_qty"/>
+                    <field name="name" select="1"/>
+                    <field name="weight"/>
+                    <field name="code" select="1"/>
+                    <newline/>
+                    <field name="product_uos" groups="product.group_uos"/>
+                    <field name="product_uos_qty" groups="product.group_uos"/>
+                    <field name="routing_id" select="2" groups="base.group_extended"/>
+                    <field name="type" />
+                    <notebook colspan="4">
+                        <page string="General Information">
+                            <field colspan="4" name="bom_lines" nolabel="1" widget="one2many_list"/>
+                        </page>
+                        <page string="Revisions" groups="base.group_extended">
+                            <field colspan="4" name="revision_ids" nolabel="1" widget="one2many_list"/>
+                        </page>
+                        <page string="Properties">
+                            <field name="position" select="2"/>
+                            <field name="active" select="2"/>
+                            <field name="sequence"/>
+                            <field name="bom_id"/>
+                            <field name="date_start" select="2"/>
+                            <field name="date_stop" select="2"/>
+                            <field name="product_rounding"/>
+                            <field name="product_efficiency"/>
+                            <field colspan="4" name="property_ids" nolabel="2" groups="base.group_extended"/>
+                        </page>
+                    </notebook>
+                </form>
+            </field>
+        </record>
+
+        <record id="plm_bom_tree_view" model="ir.ui.view">
+            <field name="name">plm.relation.tree</field>
+            <field name="model">mrp.bom</field>
+            <field name="type">tree</field>
+            <field name="field_parent">child_complete_ids</field>
+        	<field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <tree string="Bill of Materials" colors="blue:method">
+                    <field name="itemnum"/>
+                    <field name="name" select="True"/>
+                    <field name="description" select="True"/>
+                    <field name="code"  select="True"/>
+                    <field name="product_id"  select="True"/>
+                    <field name="engineering_revision"/>
+                    <field name="state"/>
+                    <field name="source_id" select="True" string="Source Relation Document"/>
+        			<field name="type"/>
+       				<field name="product_qty"/>
+                    <field name="product_uom"/>
+                    <field name="weight_net"/>
+                    <field name="method"/>
+                    <field name="routing_id" groups="base.group_extended"/>
+                    <field name="create_date" select="True"/>
+                    <field name="date_start"/>
+                    <field name="date_stop"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="plm_bom_search" model="ir.ui.view">
+            <field name="name">plm.relation.search</field>
+            <field name="model">mrp.bom</field>
+            <field name="type">search</field>
+        	<field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+				<search string="Search on Bill Of Material">
+                   	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
+                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                          	help="Created latest 7 Days"/>
+                 	<filter icon="terp-go-month" string="Yesterday" separator="1"
+                         	domain="[('create_date','&lt;=', (datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                    		help="Created yesterday"/>
+                	<filter icon="terp-go-month" string="Today" separator="1"
+                         	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+                         	help="Created today"/>
+                   	<separator orientation="vertical"/>
+                    <field name="name"/>
+                    <field name="description"/>
+                    <field name="product_id"/>
+                    <field name="code" string="Reference"/>
+                    <field name="source_id"  string="Source Relation Document"/>
+                    <newline/>
+                    <group expand="0" string="Group By..." colspan="4" col="8" groups="base.group_extended">
+                        <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string="Default UOM" icon="terp-mrp" domain="[]" context="{'group_by' : 'product_uom'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="Routing" icon="terp-stock_align_left_24" domain="[]" context="{'group_by':'routing_id'}"/>
+                        <filter string="Type" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'type'}"/>
+                        <separator orientation="vertical"/>
+                        <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_start'}" help="Starting Date"/>
+                   </group>
+                </search>            </field>
+        </record>
+
+       <record id="mrp_bom_tree_view" model="ir.ui.view">
+            <field name="name">mrp.bom.tree</field>
+            <field name="model">mrp.bom</field>
+            <field name="inherit_id" ref="mrp.mrp_bom_tree_view"/>
+            <field name="type">tree</field>
+        	<field name="priority" eval="15"/>
+            <field name="arch" type="xml">
+        		<field name="name" position="before">
+                    <field name="itemnum"/>
+        		</field>
+        		<field name="code" position="before">
+                    <field name="description"/>
+        		</field>
+        		<field name="product_qty" position="before">
+                    <field name="source_id" string="Source Relation Document"/>
+        		</field>
+        		<field name="type" position="before">
+                    <field name="weight_net"/>
+        		</field>
+           </field>
+        </record>
+
+	<!-- Opening views from menu -->
+
+    <record model="ir.actions.act_window" id="plm_action_normal_form">
+        <field name="name">Normal Bill of Materials</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.bom</field>
+        <field name="view_type">form</field>
+        <field name="domain">[('type','=','normal'),('bom_id','=',False)]</field>
+        <field name="filter" eval="True"/>
+    </record>
+
+    <menuitem
+        name="Search on Normal Bill of Materials"
+        action="plm_action_normal_form"
+        id="menu_relation_normal"
+        parent="plm_menu_relation"/>
+
+ 
+    <record model="ir.actions.act_window" id="plm_action_ebom_form">
+        <field name="name">Engineering Bill of Materials</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.bom</field>
+        <field name="view_type">form</field>
+        <field name="domain">[('type','=','ebom'),('bom_id','=',False)]</field>
+        <field name="filter" eval="True"/>
+    </record>
+
+    <menuitem
+        name="Search on Engineering Bill of Materials"
+        action="plm_action_ebom_form"
+        id="menu_relation_ebom"
+        parent="plm_menu_relation"/>
+
+
+    <record model="ir.actions.act_window" id="plm_action_spare_form">
+        <field name="name">Spare Bill of Materials</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">mrp.bom</field>
+        <field name="view_type">form</field>
+        <field name="domain">[('type','=','spbom'),('bom_id','=',False)]</field>
+        <field name="filter" eval="True"/>
+    </record>
+
+    <menuitem
+        name="Search on Spare Bill of Materials"
+        action="plm_action_spare_form"
+        id="menu_relation_spare"
+        parent="plm_menu_relation"/>
+
+
+	<!-- Overrides standard buttons -->
+
+        <record id="view_mrp_bom_filter" model="ir.ui.view">
+            <field name="name">mrp.bom.select</field>
+            <field name="model">mrp.bom</field>
+           <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Search Bill of Material">
+                    <group col='4' colspan='4'>
+                         <field name="name"/>
+                         <field name="code" string="Reference"/>
+                         <field name="product_id"/>
+                         <field name="company_id" groups="base.group_multi_company"/>
+                    </group>
+                    <newline/>
+                    <group expand="0" string="Group By..." colspan="4" col="8" groups="base.group_extended">
+                        <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter string='Default UOM' icon="terp-mrp" domain="[]" context="{'group_by' : 'product_uom'}" />
+                        <separator orientation="vertical"/>
+                        <filter string="Routing" icon="terp-stock_align_left_24" domain="[]" context="{'group_by':'routing_id'}"/>
+                        <filter string='Type' icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'type'}" />
+                        <separator orientation="vertical"/>
+                        <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date_start'}" help="Starting Date"/>
+                   </group>
+                </search>
+            </field>
+        </record>
+
+       <record id="mrp_bom_component_tree_view" model="ir.ui.view">
+            <field name="name">mrp.bom.component.tree</field>
+            <field name="model">mrp.bom</field>
+            <field name="type">tree</field>
+            <field name="field_parent">child_complete_ids</field>
+            <field name="arch" type="xml">
+                <tree string="Bill of Materials" colors="blue:method">
+                    <field name="sequence" invisible="1"/>
+                    <field name="name" string="Component Name"/>
+                    <field name="engineering_revision" string="Revision"/>
+                    <field name="state" string="Status"/>
+                    <field name="code"/>
+                    <field name="product_id" string="Component Product"/>
+                    <field name="bom_id"/>
+                    <field name="product_qty"/>
+                    <field name="product_uom"/>
+                    <field name="type"/>
+                    <field name="method" groups="base.group_extended"/>
+                    <field name="routing_id" groups="base.group_extended"/>
+                    <field name="date_start" groups="base.group_extended"/>
+                    <field name="date_stop" groups="base.group_extended"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="mrp_bom_tree_view_where" model="ir.ui.view">
+            <field name="name">mrp.bom.tree.where</field>
+            <field name="model">mrp.bom</field>
+            <field name="type">tree</field>
+            <field name="field_parent">father_complete_ids</field>
+            <field name="arch" type="xml">
+                <tree string="Bill of Materials" colors="blue:method">
+                    <field name="sequence" invisible="1"/>
+                    <field name="itemnum"/>
+                    <field name="name" string="Component Name"/>
+                    <field name="engineering_revision" string="Revision"/>
+                    <field name="state" string="Status"/>
+                    <field name="bom_id" />
+                    <field name="description"/>
+                    <field name="code" invisible="1"/>
+                    <field name="source_id" string="Source Relation Document"/>
+                    <field name="product_qty"/>
+                    <field name="product_uom"/>
+                    <field name="weight_net"/>
+                    <field name="create_date" select="True"/>
+                    <field name="type"/>
+                    <field name="method" groups="mrp.group_mrp_routings"/>
+                    <field name="routing_id" groups="mrp.group_mrp_routings"/>
+                    <field name="date_start" />
+                    <field name="date_stop" />
+                </tree>
+            </field>
+        </record>
+
+        <act_window
+            id="action_product_bom_structure_where"
+            name="Product BoM Where Used Structure"
+            domain="[('product_id', '=', active_id),('bom_id','!=',False)]"
+            context="{'default_product_id': active_id}"
+            view_type="tree"
+            view_mode="tree"
+            view_id="mrp_bom_tree_view_where"
+            res_model="mrp.bom"
+            src_model="product.product"/>
+
+        <act_window
+            id="action_product_bom_structure"
+            name="Product BoM Structure"
+            domain="[('product_id', '=', active_id),('bom_id','=',False)]"
+            context="{'default_product_id': active_id}"
+            view_type="tree"
+            view_mode="tree"
+            view_id="mrp_bom_tree_view"
+            res_model="mrp.bom"
+            src_model="product.product"/>
+
+        <act_window
+            domain="[('bom_id','=',False),('product_id', '=', active_id)]"
+            context="{'search_default_product_id': [active_id],'default_product_id':active_id}"
+            id="act_product_product_2_mrp_bom"
+            name="Bill of Materials"
+            res_model="mrp.bom"
+            src_model="product.product"/>
+
+</data>
+</openerp>
+

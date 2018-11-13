@@ -1,0 +1,94 @@
+<openerp>
+    <data>
+		<menuitem id="menu_plm_config_settings" name="Settings" parent="plm_menu" sequence="90"/>
+        
+	    <record model="ir.ui.view" id="plm_config_settings_tree">
+	        <field name="name">plm.config.settings</field>
+	        <field name="model">plm.config.settings</field>
+	        <field name="type">tree</field>
+	        <field name="priority" eval="10"/>
+	        <field name="arch" type="xml">
+	            <tree string="Settings">
+	                <field name="plm_service_id" select="True"/>
+					<field name="activated_id" invisible="True" />  
+					<field name="active_editor" /> 
+					<field name="active_node" />   
+					<field name="expire_date" />   
+					<field name="domain_id" />   
+					<field name="active_os" invisible="True" />     
+					<field name="active_os_rel" invisible="True" /> 
+					<field name="active_os_ver" invisible="True" /> 
+					<field name="active_os_arch" />
+					<field name="node_id" invisible="True" />
+					<field name="active_kind" />
+				</tree>
+	        </field>
+	    </record>
+
+	    <record model="ir.ui.view" id="plm_config_settings_search">
+	        <field name="name">plm.config.settings</field>
+	        <field name="model">plm.config.settings</field>
+	        <field name="type">search</field>
+	        <field name="priority" eval="10"/>
+	        <field name="arch" type="xml">
+				<search string="Product">
+	               	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
+	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+	                      	help="Created latest 7 Days"/>
+	             	<filter icon="terp-go-month" string="Yesterday" separator="1"
+	                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+	                		help="Created yesterday"/>
+	            	<filter icon="terp-go-month" string="Today" separator="1"
+	                     	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
+	                     	help="Created today"/>
+	               	<separator orientation="vertical"/>
+	            	<field name="plm_service_id"/>
+	            	<field name="active_node"/>
+	            </search>
+	    	</field>
+	    </record>
+
+    <record model="ir.ui.view" id="plm_config_settings_form">
+        <field name="name">plm.config.settings</field>
+        <field name="model">plm.config.settings</field>
+        <field name="type">form</field>
+        <field name="priority" eval="10"/>
+        <field name="arch" type="xml">
+	    	<form string="PLM Settings">
+                <field name="plm_service_id"/>
+ 				<field name="activated_id" attrs="{'invisible':True}" />  
+				<field name="active_editor" attrs="{'invisible':[('activated_id','=',False)]}"/> 
+				<field name="active_node" attrs="{'invisible':[('activated_id','=',False)]}" />   
+				<field name="domain_id" attrs="{'invisible':[('activated_id','=',False)]}" />
+				<field name="expire_date" attrs="{'invisible':[('activated_id','=',False)]}" />   
+				<field name="active_os" attrs="{'invisible':[('activated_id','=',False)]}" />     
+				<field name="active_os_rel" attrs="{'invisible':[('activated_id','=',False)]}" /> 
+				<field name="active_os_ver" attrs="{'invisible':[('activated_id','=',False)]}" /> 
+				<field name="active_os_arch" attrs="{'invisible':[('activated_id','=',False)]}" />
+				<field name="node_id" attrs="{'invisible':[('activated_id','=',False)]}" />
+				<field name="active_kind" attrs="{'invisible':[('activated_id','=',False)]}" />
+				<field name="opt_editbom" attrs="{'invisible':[('activated_id','!=',False)]}" />
+				<field name="opt_editreleasedbom" attrs="{'invisible':[('activated_id','!=',False)]}" />
+				<field name="opt_duplicatedrowsinbom" attrs="{'invisible':[('activated_id','!=',False)]}" />
+				<field name="opt_autonumbersinbom" attrs="{'invisible':[('activated_id','!=',False)]}" />
+				<field name="opt_autostepinbom" attrs="{'invisible':[('activated_id','!=',False)]}" />
+				<field name="opt_autotypeinbom" attrs="{'invisible':[('activated_id','!=',False)]}" />
+	    	</form>
+    	</field>
+    </record>  
+
+    <record model="ir.actions.act_window" id="action_plm_config_settings">
+        <field name="name">Options</field>
+        <field name="res_model">plm.config.settings</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="plm_config_settings_tree"/>
+     </record>
+
+    <menuitem name="Installed Options" 
+              action="action_plm_config_settings"
+              id="menu_plm_settings"
+              parent="menu_plm_config_settings"/>
+
+    </data>
+</openerp>
