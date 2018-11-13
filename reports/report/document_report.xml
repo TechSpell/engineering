@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <report id="report_pdm_document_pdf"
+                string="Print Pdf"
+                model="plm.document"
+                name="pdm.document_pdf"
+                report_type="qweb-html"
+                file=""
+                />
+    </data>
+</openerp>
