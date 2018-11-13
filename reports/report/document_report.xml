@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <report id="report_plm_document_pdf"
+                string="Print Pdf"
+                model="plm.document"
+                name="plm.document.pdf"
+                report_type="sxw"
+                file=""
+                header="False"
+                />
+    </data>
+</openerp>
