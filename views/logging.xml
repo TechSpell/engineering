@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+ 
+    <record model="ir.ui.view" id="plm_logging_search">
+        <field name="name">plm.logging.search</field>
+        <field name="model">plm.logging</field>
+        <field name="type">search</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <search string="Log Registrations">
+				<filter name="lastmonth" string="Last Month" separator="1"
+				        domain="[('op_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+				        help="Created last month"/>
+               	<filter name="latestweek" string="Last Week" separator="1"
+                        domain="[('op_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                     	help="Created last week"/>
+               	<filter name="latest7days" string="Latest 7 Days" separator="1"
+                       	domain="[('op_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                      	help="Created latest 7 Days"/>
+             	<filter name="yesterday" string="Yesterday" separator="1"
+                     	domain="[('op_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                		help="Created yesterday"/>
+            	<filter name="today" string="Today" separator="1"
+                     	domain="[('op_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('op_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
+                     	help="Created today"/>
+                <newline/>
+               	<separator orientation="vertical"/>
+            	<field name="name"/>
+            	<field name="file"/>
+            	<field name="userid"/>
+               	<separator orientation="vertical"/>
+                 <group expand="0" string="Group Operations By...">
+                    <filter name="byname" string="Name"   domain="[]" context="{'group_by':'name'}"/>
+                    <filter name="bydate" string="Date"   domain="[]" context="{'group_by':'op_date'}"/>
+                    <filter name="bytype" string="Type"   domain="[]" context="{'group_by':'op_type'}"/>
+                    <filter name="byuser" string="User"   domain="[]" context="{'group_by':'userid'}"/>
+                    <filter name="byents" string="Entity" domain="[]" context="{'group_by':'type'}"/>
+                </group>
+            </search>
+     	</field>
+    </record>
+
+    <record model="ir.ui.view" id="plm_logging_tree">
+        <field name="name">plm.logging.tree</field>
+        <field name="model">plm.logging</field>
+        <field name="type">tree</field>
+        <field name="priority" eval="1"/>
+        <field name="arch" type="xml">
+            <tree string="Activities" create="false">
+                <field name="name" select="1"/>
+                <field name="revision" select="1"/>
+                <field name="file" select="1"/>
+                <field name="type" invisible="1"/>
+                <field name="op_type" select="1"/>
+                <field name="op_note" select="1"/>
+                <field name="op_date" select="1"/>
+                <field name="userid" select="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_plm_logging">
+        <field name="name">Activities</field>
+        <field name="res_model">plm.logging</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+        <field eval="False" name="filter"/>
+        <field name="view_id" ref="plm_logging_tree"/>
+        <field name="search_view_id" ref="plm_logging_search"/>
+    </record>
+
+</data>
+</openerp>
+
