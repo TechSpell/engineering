@@ -1,49 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-    <menuitem id="plm_menu_dictionaries" name="Configuration" parent="plm_menu" sequence="50"
-    		groups="group_plm_admin"/>
 
     <record model="ir.ui.view" id="view_plm_description">
         <field name="name">plm.description.view</field>
         <field name="model">plm.description</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <form string="Description">
+             <form string="Description"  version="7.0">
                 <group colspan="4" col="4">
-                	<field name="name" select="1" colspan="1"/>
-                    <field name="description_en" select="1" />
-                    <newline/>
                     <separator colspan="4" string="Note to help selection"/>
-                    <field name="description" select="1" />
+                	<field name="name" select="1" colspan="1"/>
                     <field name="sequence"/>
- 	               	<group colspan="4" col="4" string="Technical Features" name="TFeatures">
-                    	<newline/>
-                    	<separator colspan="4" string="Technical feature label and formatting"/>
-                    	<field name="umc1"/>
-                    	<field name="fmt1"/>
-                    	<newline/>
-                    	<separator colspan="4" />
-                    	<field name="umc2"/>
-                    	<field name="fmt2"/>
-                    	<newline/>
-                    	<separator colspan="4" />
-                    	<field name="umc3"/>
-                    	<field name="fmt3"/>
-                    	<newline/>
-                	</group>
-               		<group colspan="4" col="4" string="Normalization Area" name="NMArea">
-                    	<separator colspan="4" string="Normalized characteristics formatting"/>
-                    	<field name="fmtend"/>
-                    	<newline/>
-                    	<separator colspan="4" string="Normative"/>
-                    	<field name="unitab"/>
-                    	<newline/>
-                	</group>
- 	            	<group colspan="4" col="4" string="Template BOM">
-	        			<field name="bom_tmpl"/>
-	   				</group>
-                </group>
+                    <newline/>
+                    <field name="description" select="1" />
+                    <field name="description_en" select="1" />
+                    <separator/>
+  	               	<group colspan="4" col="4" string="Technical Features">
+	 	                <sheet>
+	 	                	<group colspan="4" col="4">
+		                    	<separator colspan="4" string="Technical feature label and formatting"/>
+		                    	<field name="umc1"/>
+		                    	<field name="fmt1"/>
+		                    	<newline/>
+		                    	<separator colspan="4" />
+		                    	<field name="umc2"/>
+		                    	<field name="fmt2"/>
+		                    	<newline/>
+		                    	<separator colspan="4" />
+		                    	<field name="umc3"/>
+		                    	<field name="fmt3"/>
+		                    	<newline/>
+		                	</group>
+		               		<separator colspan="4" string="Normalization Section"/>
+ 	 	                	<group colspan="4" col="4">
+	 	                		<sheet>
+			                    	<separator colspan="4" string="Normalized features formatting"/>
+			                    	<field name="fmtend"/>
+			                    	<newline/>
+			                    	<separator colspan="4" string="Normative reference"/>
+			                    	<field name="unitab"/>
+		                    	</sheet>
+		                    	<newline/>
+   	               			</group>
+		 	            	<group colspan="4" col="4" string="Template BOM">
+			        			<field name="bom_tmpl"/>
+			   				</group>
+ 	                    </sheet>
+  	                </group>
+               </group>
             </form>
         </field>
     </record>
@@ -112,6 +117,34 @@
         action="plm_action_description_form"
         id="menu_description"
         parent="plm_menu_dictionaries"/>
+
+<!--	Product Menu Injection	-->
+
+    <record model="ir.ui.view" id="plm_component_tech_form">
+        <field name="name">plm.description.component</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="pdm.plm_component_form"/>
+        <field name="type">form</field>
+        <field name="priority" eval="10"/>
+        <field name="arch" type="xml">
+			<group name="DescArea" colspan="4" col="4" position="replace">
+				<separator string="Standard Description" colspan="4"/>
+			    <group col="4" colspan="2">
+			        <field name="std_description" nolabel="1" attrs="{'readonly':[('state','=','released')]}" on_change="on_change_stddesc(std_description)"/>
+			    </group>
+				<newline/>
+		    	<separator string="Technical Infos" colspan="4"/>
+			    <group col="4" colspan="4">
+			        <field name="std_umc1" 		attrs="{'readonly':[('std_umc1','=',False),('state','=','released')]}" />
+			        <field name="std_value1" 	attrs="{'readonly':[('std_umc1','=',False),('state','=','released')]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+			        <field name="std_umc2"  	attrs="{'readonly':[('std_umc2','=',False),('state','=','released')]}" />
+			        <field name="std_value2" 	attrs="{'readonly':[('std_umc2','=',False),('state','=','released')]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+			        <field name="std_umc3"  	attrs="{'readonly':[('std_umc3','=',False),('state','=','released')]}" />
+			        <field name="std_value3" 	attrs="{'readonly':[('std_umc3','=',False),('state','=','released')]}" on_change="on_change_stdvalue(std_description, std_umc1, std_value1, std_umc2, std_value2, std_umc3, std_value3)"/>
+			    </group>
+	        </group>
+    	</field>
+    </record>
     
     <record model="ir.ui.view" id="plm_base_component_tech_form">
         <field name="name">plm.description.base.component</field>

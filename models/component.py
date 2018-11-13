@@ -27,7 +27,7 @@ from openerp.osv import fields, orm
 from openerp.tools.translate import _
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                    signal_workflow, get_signal_workflow, move_workflow, \
+                    signal_workflow, get_signal_workflow, move_workflow, wf_message_post, \
                     isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft
 
 
@@ -72,21 +72,21 @@ class plm_component(orm.Model):
         context = context or self.pool['res.users'].context_get(cr, uid)
         return self.search(cr, uid, [('engineering_code', '=', name), ('engineering_revision', '=', revision)], context=context)
 
-    def _getExplodedBom(self, cr, uid, ids, level=0, currlevel=0, context=None):
-        """
-            Returns a flat list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
-        """
-        result = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        if level == 0 and currlevel > 1:
-            return result
-        components = self.browse(cr, uid, ids, context=context)
-        relType = self.pool['mrp.bom']
-        for component in components:
-            for bomid in component.bom_ids:
-                children = relType.GetExplodedBom(cr, uid, [bomid.id], level, currlevel, context=context)
-                result.extend(children)
-        return result
+#     def _getExplodedBom(self, cr, uid, ids, level=0, currlevel=0, context=None):
+#         """
+#             Returns a flat list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
+#         """
+#         result = []
+#         context = context or self.pool['res.users'].context_get(cr, uid)
+#         if level == 0 and currlevel > 1:
+#             return result
+#         components = self.browse(cr, uid, ids)
+#         relType = self.pool['mrp.bom']
+#         for component in components:
+#             for bomid in component.bom_ids:
+#                 children = relType.GetExplodedBom(cr, uid, [bomid.id], level, currlevel)
+#                 result.extend(children)
+#         return result
 
     def _getChildrenBom(self, cr, uid, component, level=0, currlevel=0, context=None):
         """
@@ -97,13 +97,21 @@ class plm_component(orm.Model):
         context = context or self.pool['res.users'].context_get(cr, uid)
         if level == 0 and currlevel > 1:
             return bufferdata
-        for bomid in component.bom_ids:
-            for bomline in bomid.bom_lines:
+        for bomid in component.product_tmpl_id.bom_ids:
+            for bomline in bomid.bom_line_ids:
                 children=self._getChildrenBom(cr, uid, bomline.product_id, level, currlevel+1, context=context)
                 bufferdata.extend(children)
                 bufferdata.append(bomline.product_id.id)
         result.extend(bufferdata)
         return getCleanList(result)
+
+    def RegMessage(self, cr, uid, request, default=None, context=None):
+        """
+            Registers a message for requested component
+        """
+        oid, message = request
+        wf_message_post(self, cr, uid, [oid], body=message, context=context)
+        return False
 
     def getLastTime(self, cr, uid, oid, default=None, context=None):
         context = context or self.pool['res.users'].context_get(cr, uid)
@@ -123,6 +131,25 @@ class plm_component(orm.Model):
         context = context or self.pool['res.users'].context_get(cr, uid)
         uiUser = userType.browse(cr, uid, uid, context=context)
         return uiUser.name
+
+    def getFromTemplateID(self, cr, uid, oid, context=None):
+        ret=False
+        if oid:
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            ids = self.search(cr, uid, [('product_tmpl_id', '=', oid)], context=context)
+            for prodItem in self.browse(cr, uid, getListIDs(ids), context=context):
+                ret=prodItem
+                break
+        return ret
+
+    def getTemplateItem(self, cr, uid, oid, context=None):
+        ret=False
+        if oid:
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            for prodItem in self.browse(cr, uid, getListIDs(oid), context=context):
+                ret=prodItem.product_tmpl_id
+                break
+        return ret
 
     ##  Customized Automations
     def on_change_name(self, cr, uid, oid, name=False, engineering_code=False, context=None):
@@ -321,7 +348,7 @@ class plm_component(orm.Model):
                     self._insertlog(cr, uid, oldObject.id, note=note, context=context)
                     newIndex = int(oldObject.engineering_revision) + 1
                     productsignal=get_signal_workflow(self, cr, uid, oldObject, 'undermodify', context=context)
-                    move_workflow(self, cr, uid, [oldObject.id], productsignal, 'undermodify', context=context)
+                    move_workflow(self, cr, uid, [oldObject.id], productsignal, 'undermodify')
                     default={
                              'name': oldObject.name,
                              'engineering_revision': newIndex,
@@ -329,20 +356,20 @@ class plm_component(orm.Model):
                              'state': 'draft',
                              'linkeddocuments': [(5)],  # Clean attached documents for new revision object
                              }
-                    values=dict(zip(default.keys(),default.values()))
+    
                     # Creates a new "old revision" object
-                    tmpID = self.copy(cr, uid, oldObject.id, values, context=context)
+                    tmpID = self.copy(cr, uid, oldObject.id, default, context=context)
                     if tmpID:
+                        wf_message_post(self, cr, uid, [oldObject.id], body='Created : New Revision.', context=context)
                         newID = tmpID
-                        objectID=self.browse(cr, uid, [newID], context=context)[0]
+                        self.write(cr, uid, newID, default, context=context)
                         note={
                                 'type': 'revision process',
                                 'reason': "Created new revision '{index}' for product '{name}'.".format(index=newIndex,name=oldObject.name),
                              }
                         self._insertlog(cr, uid, tmpID, note=note, context=context)
                         self._copy_productBom(cr, uid, oldObject.id, newID, ["normal","spbom"], context=context)
-                        self.write(cr, uid, newID, values, context=context)
-                        cr.execute("UPDATE product_template set name='{name}' where id = {id}".format(name=oldObject.name,id=objectID.product_tmpl_id.id))
+                        self.write(cr, uid, newID, default, context=context)
                         note={
                                 'type': 'revision process',
                                 'reason': "Copied BoM to new revision '{index}' for product '{name}'.".format(index=newIndex,name=oldObject.name),
@@ -500,28 +527,33 @@ class plm_component(orm.Model):
         if not checkObj:
             return False
         bomType = self.pool['mrp.bom']
-        objBoms = bomType.search(cr, uid, [('product_id', '=', idd), ('type', '=', 'normal'), ('bom_id', '=', False), ('active', '=', True)], context=context)
-        idBoms = bomType.search(cr, uid, [('product_id', '=', idd), ('type', '=', 'ebom'), ('bom_id', '=', False), ('active', '=', True)], context=context)
+        bomLType=self.pool['mrp.bom.line']
+        objBoms = bomType.search(cr, uid, [('product_tmpl_id', '=', checkObj.product_tmpl_id.id), ('type', '=', 'normal'), ('active', '=', True)], context=context)
+        idBoms = bomType.search(cr, uid, [('product_tmpl_id', '=', checkObj.product_tmpl_id.id), ('type', '=', 'ebom'), ('active', '=', True)], context=context)
 
         if not objBoms:
             if idBoms:
+                oldBomID=bomType.browse(cr, uid, idBoms[0], context=context)
                 context.update({'internal_writing':True})
+                default={'product_tmpl_id': oldBomID.product_tmpl_id.id,
+                         'type': 'normal', 'active': True,
+                         'name': oldBomID.name}
+                if oldBomID.product_id:
+                    default.update({'product_id': oldBomID.product_id.id})
                 self.processedIds.append(idd)
                 newidBom = bomType.copy(cr, uid, idBoms[0], default, context=context)
                 if newidBom:
-                    bomType.write(cr, uid, [newidBom],
-                                  {'name': checkObj.name, 'product_id': checkObj.id, 'type': 'normal', 'active': True, }, context=context)
+                    bomType.write(cr, uid, [newidBom], default, context=context)
                     oidBom = bomType.browse(cr, uid, newidBom, context=context)
-                    ok_rows = self._summarizeBom(cr, uid, oidBom.bom_lines)
-                    for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
-                        bomType.unlink(cr, uid, [bom_line.id], context=context)
+                    ok_rows = self._summarizeBom(cr, uid, oidBom.bom_line_ids)
+                    for bom_line in list(set(oidBom.bom_line_ids) ^ set(ok_rows)):
+                        bomLType.unlink(cr, uid, [bom_line.id], context=context)
                     for bom_line in ok_rows:
-                        bomType.write(cr, uid, [bom_line.id],
-                                      {'type': 'normal', 'source_id': False, 'name': bom_line.product_id.name,
-                                       'product_qty': bom_line.product_qty, }, context=context)
+                        bomLType.write(cr, uid, [bom_line.id],
+                                      {'type': 'normal', 'source_id': False, 'product_qty': bom_line.product_qty, }, context=context)
                         self._create_normalBom(cr, uid, bom_line.product_id.id, context=context)
         else:
-            for bom_line in bomType.browse(cr, uid, objBoms[0], context=context).bom_lines:
+            for bom_line in bomType.browse(cr, uid, objBoms[0], context=context).bom_line_ids:
                 self._create_normalBom(cr, uid, bom_line.product_id.id, context=context)
         return False
 
@@ -536,22 +568,23 @@ class plm_component(orm.Model):
         checkObjDest = self.browse(cr, uid, idDest, context=context)
         if checkObjDest:
             objBomType = self.pool['mrp.bom']
+            bomLType=self.pool['mrp.bom.line']
             for bomType in bomTypes:
-                objBoms = objBomType.search(cr, uid, [('product_id', '=', idDest), ('type', '=', bomType), ('bom_id', '=', False), ('active', '=', True)], context=context)
-                idBoms = objBomType.search(cr, uid, [('product_id', '=', idStart), ('type', '=', bomType), ('bom_id', '=', False), ('active', '=', True)], context=context)
+                objBoms = objBomType.search(cr, uid, [('product_id', '=', idDest), ('type', '=', bomType), ('active', '=', True)], context=context)
+                idBoms = objBomType.search(cr, uid, [('product_id', '=', idStart), ('type', '=', bomType), ('active', '=', True)], context=context)
                 if not objBoms:
+                    context.update({'internal_writing':True})
                     for oldObj in objBomType.browse(cr, uid, getListIDs(idBoms), context=context):
                         newidBom = objBomType.copy(cr, uid, oldObj.id, default, context=context)
                         if newidBom:
-                            context['internal_writing']=True
                             objBomType.write(cr, uid, [newidBom],
-                                          {'name': checkObjDest.name, 'product_id': checkObjDest.id, 'type': bomType, 'active': True, }, context=context)
+                                          {'name': checkObjDest.name, 'product_tmpl_id': checkObjDest.product_tmpl_id.id, 'type': bomType, 'active': True, }, context=context)
                             oidBom = objBomType.browse(cr, uid, newidBom, context=context)
-                            ok_rows = self._summarizeBom(cr, uid, oidBom.bom_lines)
-                            for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
-                                objBomType.unlink(cr, uid, [bom_line.id], context=context)
+                            ok_rows = self._summarizeBom(cr, uid, oidBom.bom_line_ids)
+                            for bom_line in list(set(oidBom.bom_line_ids) ^ set(ok_rows)):
+                                bomLType.unlink(cr, uid, [bom_line.id], context=context)
                             for bom_line in ok_rows:
-                                objBomType.write(cr, uid, [bom_line.id],
+                                bomLType.write(cr, uid, [bom_line.id],
                                               {'type': bomType, 'source_id': False, 'name': bom_line.product_id.name,
                                                'product_qty': bom_line.product_qty, }, context=context)
         return False
@@ -595,6 +628,7 @@ class plm_component(orm.Model):
         for idd in ids:
             self.processedIds = []
             self._create_normalBom(cr, uid, idd, context=context)
+        wf_message_post(self, cr, uid, ids, body='Created Normal Bom.', context=context)
         return False
 
     def _action_ondocuments(self, cr, uid, ids, signal="", status="", context=None):
@@ -615,7 +649,7 @@ class plm_component(orm.Model):
         for document in documents:
             docsignal=get_signal_workflow(self, cr, uid, document, status, context=context)
             if docsignal:
-                move_workflow(documentType, cr, uid, [document.id], docsignal, status, context=context)
+                move_workflow(documentType, cr, uid, [document.id], docsignal, status)
                 ret.append(document.id)
         return ret
 
@@ -746,11 +780,12 @@ class plm_component(orm.Model):
         status = 'obsoleted'
         action = 'obsolete'
 
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing':True})
-
-        for oldObject in self.browse(cr, uid, ids, context=context):
-            move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
+#         context = context or self.pool['res.users'].context_get(cr, uid)
+#         context.update({'internal_writing':True})
+# 
+#         for oldObject in self.browse(cr, uid, ids, context=context):
+#             move_workflow(self, cr, uid, oldObject.id, action, status)
+        wf_message_post(self, cr, uid, ids, body='Status moved to: {status}.'.format(status=status), context=context)
         self._action_ondocuments(cr, uid, ids, action, status, context=context)
         return True
 
@@ -760,11 +795,12 @@ class plm_component(orm.Model):
         """
         status = 'undermodify'
         action = 'modify'
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing':True})
-
-        for oldObject in self.browse(cr, uid, ids, context=context):
-            move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
+#         context = context or self.pool['res.users'].context_get(cr, uid)
+#         context.update({'internal_writing':True})
+# 
+#         for oldObject in self.browse(cr, uid, ids, context=context):
+#             move_workflow(self, cr, uid, oldObject.id, action, status)
+        wf_message_post(self, cr, uid, ids, body='Status moved to: {status}.'.format(status=status), context=context)
         self._action_ondocuments(cr, uid, ids, action, status, context=context)
         return True
 
@@ -792,9 +828,11 @@ class plm_component(orm.Model):
         actIDs=list(set(allIDs)-set(ids))       # Force to obtain only related documents
         for currObj in self.browse(cr,uid,actIDs,context=context):
             productsignal=get_signal_workflow(self, cr, uid, currObj, status, context=context)
-            move_workflow(self, cr, uid, [currObj.id], productsignal, status, context=context)
+            move_workflow(self, cr, uid, [currObj.id], productsignal, status)
         ret=self.write(cr, uid, ids, default, context=context)
         self.logging_workflow(cr, uid, ids, action, status, context=context)
+        if (ret):
+            wf_message_post(self, cr, uid, ids, body=_('Status moved to: {status}.'.format(status=status)))
         return ret
 
     def _action_to_release(self, cr, uid, ids, excludeStatuses, includeStatuses, context=None):
@@ -820,14 +858,16 @@ class plm_component(orm.Model):
             if last_ids:
                 for currObj in self.browse(cr, uid, last_ids, context=context):
                     productsignal=get_signal_workflow(self, cr, uid, currObj, 'obsoleted', context=context)
-                    move_workflow(self, cr, uid, [currObj.id], productsignal, 'obsoleted', context=context)
+                    move_workflow(self, cr, uid, [currObj.id], productsignal, 'obsoleted')
         self._action_ondocuments(cr, uid, allIDs, action, status, context=context)
         actIDs=list(set(allIDs)-set(ids))       # Force to obtain only related documents
         for currObj in self.browse(cr,uid,actIDs,context=context):
             productsignal=get_signal_workflow(self, cr, uid, currObj, status, context=context)
-            move_workflow(self, cr, uid, [currObj.id], productsignal, status, context=context)
+            move_workflow(self, cr, uid, [currObj.id], productsignal, status)
         ret=self.write(cr, uid, ids, default, context=context)
         self.logging_workflow(cr, uid, ids, action, status, context=context)
+        if (ret):
+            wf_message_post(self, cr, uid, allIDs, body='Status moved to: {status}.'.format(status=status), context=context)
         return ret
 
     #######################################################################################################################################33
@@ -947,6 +987,8 @@ class plm_component(orm.Model):
             if tmpID:
                 newID=tmpID
                 self.write(cr, uid, [newID], default, context=context) 
+        if newID and previous_name:
+            wf_message_post(self, cr, uid, [newID], body='Copied starting from : {value}.'.format(value=previous_name), context=context)
         return newID
 
     def unlink(self, cr, uid, ids, context=None):
@@ -977,7 +1019,7 @@ class plm_component(orm.Model):
                     context.update({'internal_writing':True})
                     for product in self.browse(cr, uid, getListIDs(existingIDs), context=context):
                         productsignal=get_signal_workflow(self, cr, uid, product, status, context=context)
-                        move_workflow(self, cr, uid, [product.id], productsignal, status, context=context)
+                        move_workflow(self, cr, uid, [product.id], productsignal, status)
                 self._insertlog(cr, uid, checkObj.id, note=note, context=context)
                 ret=ret | super(plm_component, self).unlink(cr, uid, [checkObj.id], context=context)
         return ret

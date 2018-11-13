@@ -2,8 +2,10 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    
+#    Created on : 2018-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -776,6 +778,31 @@ class plm_config_settings(orm.Model):
                    
         return tables, columns
 
+    def execute(self, cr, uid, ids, context=None):
+        """ Method called when the user clicks on the ``Next`` button.
+
+        Execute *must* be overloaded unless ``action_next`` is overloaded
+        (which is something you generally don't need to do).
+
+        If ``execute`` returns an action dictionary, that action is executed
+        rather than just going to the next configuration item.
+        """
+        pass
+
+    def cancel(self, cr, uid, ids, context=None):
+        """ Method called when the user click on the ``Skip`` button.
+
+        ``cancel`` should be overloaded instead of ``action_skip``. As with
+        ``execute``, if it returns an action dictionary that action is
+        executed in stead of the default (going to the next configuration item)
+
+        The default implementation is a NOOP.
+
+        ``cancel`` is also called by the default implementation of
+        ``action_cancel``.
+        """
+        pass
+    
     def Refresh(self, cr, uid, request=None, context=None):
         """
             Refreshes Materialized Views.
@@ -843,28 +870,28 @@ class plm_config_settings(orm.Model):
 #         cr.execute("CREATE INDEX IF NOT EXISTS idx_id_ext_component ON ext_component (id)")
 #         cr.execute("CREATE INDEX IF NOT EXISTS idx__tmpl_id_ext_component ON ext_component (tmpl_id)")
         
+        cr.execute("CREATE INDEX IF NOT EXISTS idx_product_tmpl_id_mrp_bom ON mrp_bom (product_tmpl_id)")
         cr.execute("CREATE INDEX IF NOT EXISTS idx_type_mrp_bom ON mrp_bom (type)")
         cr.execute(
             """
             CREATE OR REPLACE VIEW ext_bom AS (
-               SELECT f.id, f.create_date, d.login as created, c.write_date, e.login as changed, a.id as father_id, a.name as father,a.engineering_code as father_code,a.engineering_revision as father_rv,a.description as father_desc,b.id as child_id, b.name as child,b.engineering_code as child_code,b.engineering_revision as child_rv,b.description as child_desc
-                    FROM ext_component a, ext_component b, mrp_bom c, res_users d, res_users e, mrp_bom f
+               SELECT f.id, f.create_date, d.login as created, f.write_date, e.login as changed, a.id as father_id, a.name as father,a.engineering_code as father_code,a.engineering_revision as father_rv,a.description as father_desc,b.id as child_id, b.name as child,b.engineering_code as child_code,b.engineering_revision as child_rv,b.description as child_desc
+                    FROM ext_component a, ext_component b, mrp_bom c, res_users d, res_users e, mrp_bom_line f
                     WHERE
                     b.id IN
                         ( 
-                            SELECT distinct(product_id) FROM mrp_bom
+                            SELECT distinct(product_id) FROM mrp_bom_line
                             WHERE
-                                type = 'ebom'
-                            AND bom_id IS NOT NULL
+                            type = 'ebom'
                         )
                     AND f.product_id = b.id
-                    AND c.id = f.bom_id 
-                    AND c.type = 'ebom'
-                    AND a.id = c.product_id
                     AND d.id = f.create_uid
-                    AND e.id = f.create_uid
-                    order by a.name,b.name
-                )
+                    AND e.id = f.write_uid
+                    AND c.id=f.bom_id 
+                    AND c.type = 'ebom'
+                    AND a.tmpl_id = c.product_tmpl_id
+                    ORDER BY a.name,b.name
+                    )
             """
         )
 #         cr.execute("CREATE INDEX IF NOT EXISTS idx_id_ext_bom ON ext_bom (id)")

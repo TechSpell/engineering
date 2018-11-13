@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ # -*- coding: utf-8 -*-
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
@@ -23,18 +23,15 @@ import StringIO
 import os
 import base64
 import time
-from operator import itemgetter
 
-from openerp.tools.translate import _
-from openerp import pooler
+from operator import itemgetter
+from book_collector import BookCollector
+
+from openerp import api
 from openerp.report.render import render
 from openerp.report.interface import report_int
 from openerp.report import report_sxw
 
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
-from report.pyPdf import PdfFileWriter, PdfFileReader
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
-from book_collector import BookCollector
 #constant
 FIRST_LEVEL=0
 BOM_SHOW_FIELDS=['Position','Code','Description','Quantity']
@@ -125,7 +122,7 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
             keyIndex=0
             for l in object:
                 res={}
-                product=l.product_id
+                product=l.product_id.product_tmpl_id
                 if product.name in listed.keys():
                     res=tmp_result[listed[product.name]]
                     res['pqty']=res['pqty']+l.product_qty
@@ -139,8 +136,8 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
                     res['previ']=product.engineering_revision
                     res['pqty']=l.product_qty
                     res['uname']=l.product_uom.name
-                    res['pweight']=product.weight_net
-                    res['code']=l.code
+                    res['pweight']=product.weight
+                    res['code']=l.product_id.default_code
                     res['level']=level
                     tmp_result.append(res)
                     listed[product.name]=keyIndex
@@ -152,7 +149,7 @@ class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
         return result
 
     def bom_type(self, object):
-        result=dict(self.pool[object._model._name].fields_get(self.cr, self.uid)['type']['selection']).get(object.type,'')
+        result=dict(object.fields_get(self.cr, self.uid)['type']['selection']).get(object.type,'')
         return _(result)
 
 HEADER=report_sxw.report_sxw("report.spare.parts.header", 
@@ -172,18 +169,16 @@ class component_spare_parts_report(report_int):
     """   
     def create(self, cr, uid, ids, datas, context=None):
         recursion=True
-        if self._Service__name == 'report.product.product.spare.parts.pdf.one':
+        if self._report_int__name== 'report.product.product.spare.parts.pdf.one':
             recursion=False
         self.processedObjs=[]
-        self.pool = pooler.get_pool(cr.dbname)
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        componentType=self.pool['product.product']
-        bomType=self.pool['mrp.bom']
-        userType=self.pool['res.users']
-        user=userType.browse(cr, uid, uid, context=context)
+        env=api.Environment(cr, uid, context or {})
+        componentType=env['product.product']
+        userType=env['res.users']
+        user=userType.browse(uid)
         msg = "Printed by "+str(user.name)+" : "+ str(time.strftime("%d/%m/%Y %H:%M:%S"))
         output = BookCollector(customTest=(True,msg))
-        components=componentType.browse(cr, uid, ids, context=context)
+        components=componentType.browse(ids)
         for component in components:
             self.processedObjs=[]
             buf=self.getFirstPage(cr, uid, ids, context=context)
@@ -199,40 +194,39 @@ class component_spare_parts_report(report_int):
         return (False, '')    
    
     def getSparePartsPdfFile(self, cr, uid, product=None, output=None, recursion=False, context=None):
+        env=api.Environment(cr, uid, context or {})
+        bomType=env['mrp.bom']
         packedObjs=[]
         packedIds=[]
-        if product in self.processedObjs:
-            return
-        bomType=self.pool['mrp.bom']
-        bomIds=bomType.search(cr,uid,[('product_id','=',product.id),('type','=','spbom'),('bom_id','=',False)], context=context)
-#        if len(bomIds)<1:
-#            bomIds=bomType.search(cr,uid,[('product_id','=',product.id),('type','=','normal'),('bom_id','=',False)], context=context)
-#        if len(bomIds)<1:
-#            bomIds=bomType.search(cr,uid,[('product_id','=',product.id),('type','=','ebom'),('bom_id','=',False)], context=context)
-        if len(bomIds)>0:
-            BomObject=bomType.browse(cr, uid, bomIds[0], context=context)
-            if BomObject:
-                self.processedObjs.append(product)
-                for bom_line in BomObject.bom_lines:
-                    packedObjs.append(bom_line.product_id)
-                    packedIds.append(bom_line.id)
-                if len(packedIds)>0:
-                    for pageStream in self.getPdfComponentLayout(cr, uid, product, context=context):
+        if (product!=None) and not(product in self.processedObjs):
+            bomIds=bomType.search( [('product_id','=',product.id),('type','=','spbom')] )
+            if len(bomIds)<1:
+                bomIds=bomType.search( [('product_tmpl_id','=',product.product_tmpl_id.id),('type','=','spbom')] )
+            if len(bomIds)>0:
+                BomObject=bomIds[0]
+                if BomObject!=None:
+                    self.processedObjs.append(product)
+                    for bom_line in BomObject.bom_line_ids:
+                        packedObjs.append(bom_line.product_id)
+                        packedIds.append(bom_line.id)
+                    if len(packedIds)>0:
+                        for pageStream in self.getPdfComponentLayout(cr, uid, product, context=context):
+                            output.addPage(pageStream)
+                        stream,typerep=BODY.create(cr, uid, [BomObject.id], data={'report_type': u'pdf'}, context=context) 
+                        pageStream=StringIO.StringIO()
+                        pageStream.write(stream)
                         output.addPage(pageStream)
-                    stream,typerep=BODY.create(cr, uid, [BomObject.id], data={'report_type': u'pdf'},context=context) 
-                    pageStream=StringIO.StringIO()
-                    pageStream.write(stream)
-                    output.addPage(pageStream)
-                    if recursion:
-                        for packedObj in packedObjs:
-                            if not packedObj in self.processedObjs:
-                                self.getSparePartsPdfFile(cr, uid, packedObj, output, recursion, context=context)   
+                        if recursion:
+                            for packedObj in packedObjs:
+                                if not packedObj in self.processedObjs:
+                                    self.getSparePartsPdfFile(cr, uid, packedObj, output, recursion, context=context)   
  
     def getPdfComponentLayout(self, cr, uid, component, context=None):
         ret=[]
-        docRepository=self.pool['plm.document']._get_filestore(cr)
+        env=api.Environment(cr, uid, context or {})
+        docRepository=env['plm.document']._get_filestore()
         for document in component.linkeddocuments:
-            if document.usedforspare:
+            if (document.usedforspare) and (document.type=='binary'):
                 if document.printout:
                     ret.append(StringIO.StringIO(base64.decodestring(document.printout)))
                 elif isPdf(document.datas_fname):

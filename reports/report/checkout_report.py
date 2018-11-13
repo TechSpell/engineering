@@ -21,18 +21,17 @@
 ##############################################################################
 import StringIO
 import base64, logging
-from report.render import render
-from report.interface import report_int
+
+from openerp.report.render import render
+from openerp.report.interface import report_int
 from openerp import pooler
 from openerp.osv import orm
 from openerp.tools.translate import _
 
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
 try:
     from PyPDF2 import PdfFileWriter, PdfFileReader
 except Exception as msg:
     logging.error("This module requires PyPDF2. Please contact your system administrator to install it.")
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
 
 class external_pdf(render):
 
@@ -53,7 +52,6 @@ class checkout_custom_report(report_int):
     def create(self, cr, uid, ids, datas, context=None):
         ret=(False, '')
         self.pool = pooler.get_pool(cr.dbname)
-        context = context or self.pool['res.users'].context_get(cr, uid)
         checkoutType=self.pool['plm.checkout']
         try:
             output=PdfFileWriter()

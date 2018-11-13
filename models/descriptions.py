@@ -244,7 +244,7 @@ class plm_component(orm.Model):
             description2=False
             description3=False
             thisDescription=self.pool['plm.description']
-            thisObject=thisDescription.browse(cr, uid, std_descriptionID, context=context)
+            thisObject=thisDescription.browse(cr, uid, std_descriptionID)
             if thisObject.description:
                 description=thisObject.description
                 if thisObject.fmtend:

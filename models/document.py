@@ -33,7 +33,7 @@ from openerp.tools.translate import _
 from openerp.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                        get_signal_workflow, signal_workflow, move_workflow, \
+                        get_signal_workflow, signal_workflow, move_workflow, wf_message_post, \
                         isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft
 
 # To be adequated to plm.component class states
@@ -487,7 +487,7 @@ class plm_document(orm.Model):
                          }
                     self._insertlog(cr, uid, oldObject.id, note=note, context=context)
                     docsignal=get_signal_workflow(self, cr, uid, oldObject, 'undermodify', context=context)
-                    move_workflow(self, cr, uid, [oldObject.id], docsignal, 'undermodify', context=context)
+                    move_workflow(self, cr, uid, [oldObject.id], docsignal, 'undermodify')
                     newIndex=int(oldObject.revisionid) + 1
                     default = {
                                 'name': oldObject.name,
@@ -499,6 +499,7 @@ class plm_document(orm.Model):
                                 }
                     tmpID = super(plm_document, self).copy(cr, uid, oldObject.id, default, context=context)
                     if tmpID!=None:
+                        wf_message_post(self, cr, uid, [oldObject.id], body='Created : New Revision.', context=context)
                         newID = tmpID
                         note={
                                 'type': 'revision process',
@@ -546,6 +547,7 @@ class plm_document(orm.Model):
                 }
                 tmpID=super(plm_document,self).copy(cr, uid, oldObject.id, default, context=context)
                 if tmpID!=None:
+                    wf_message_post(self, cr, uid, [oldObject.id], body='Created : New Minor Revision.', context=context)
                     newID = tmpID
                     note={
                             'type': 'minor revision process',
@@ -766,6 +768,14 @@ class plm_document(orm.Model):
             listedDocuments.append(document['name'])
         return packDictionary(retValues)
 
+    def RegMessage(self, cr, uid, request, default=None, context=None):
+        """
+            Registers a message for requested document
+        """
+        oid, message = request
+        self.wf_message_post(cr, uid, [oid], body=message)
+        return False
+
     def CleanUp(self, cr, uid, ids, default=None, context=None):
         """
             Remove faked documents
@@ -859,9 +869,11 @@ class plm_document(orm.Model):
         docIDs=list(set(allIDs)-set(ids))       # Force to obtain only related documents
         for currObj in self.browse(cr, uid, docIDs, context=context):
             docsignal=get_signal_workflow(self, cr, uid, currObj, status, context=context)
-            move_workflow(self, cr, uid, [currObj.id], docsignal, status, context=context)
+            move_workflow(self, cr, uid, [currObj.id], docsignal, status)
         ret=self.write(cr, uid, ids, default, context=context)
         self.logging_workflow(cr, uid, ids, action, status, context=context)
+        if ret:
+            wf_message_post(self, cr, uid, allIDs, body='Status moved to: {status}.'.format(status=status), context=context)
         return ret
  
     def ActionUpload(self, cr, uid, ids, context=None):
@@ -946,7 +958,7 @@ class plm_document(orm.Model):
         for oldObject in self.browse(cr, uid, ids, context=context):
             last_ids = self._getbyrevision(cr, uid, oldObject.name, oldObject.revisionid - 1, context=context)
             if last_ids:
-                move_workflow(self, cr, uid, last_ids, 'obsolete', 'obsoleted', context=context)
+                move_workflow(self, cr, uid, last_ids, 'obsolete', 'obsoleted')
         return self._action_onrelateddocuments(cr, uid, ids, default, action, status, context=context)
 
     def action_obsolete(self, cr, uid, ids, context=None):
@@ -956,11 +968,12 @@ class plm_document(orm.Model):
         status='obsoleted'
         action = 'obsolete'
 
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing': True})
-
-        for oldObject in self.browse(self, cr, uid, ids, context=context):
-            move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
+#         context = context or self.pool['res.users'].context_get(cr, uid)
+#         context.update({'internal_writing': True})
+# 
+#         for oldObject in self.browse(self, cr, uid, ids, context=context):
+#             move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
+        wf_message_post(self, cr, uid, ids, body='Status moved to: {status}.'.format(status=status), context=context)
         return True
 
     def action_modify(self, cr, uid, ids, context=None):
@@ -970,11 +983,11 @@ class plm_document(orm.Model):
         status='undermodify'
         action = 'modify'
 
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing': True})
-
-        for oldObject in self.browse(self, cr, uid, ids, context=context):
-            move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
+#         context = context or self.pool['res.users'].context_get(cr, uid)
+#         context.update({'internal_writing': True})
+# 
+#         for oldObject in self.browse(self, cr, uid, ids, context=context):
+#             move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
         wf_message_post(self, cr, uid, ids, body='Status moved to: {status}.'.format(status=status), context=context)
         return True
 
@@ -984,32 +997,7 @@ class plm_document(orm.Model):
         return os.path.join(dms_Root_Path, cr.dbname)
 
     def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None, count=False):
-        # Grab ids, bypassing 'count'
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        ids = orm.Model.search(self, cr, uid, args, offset=offset, limit=limit, order=order, context=context, count=False)
-        if not ids:
-            return 0 if count else []
-
-        # Filter out documents that are in directories that the user is not allowed to read.
-        # Must use pure SQL to avoid access rules exceptions (we want to remove the records,
-        # not fail), and the records have been filtered in parent's search() anyway.
-        cr.execute('SELECT id, parent_id from plm_document WHERE id in %s', (tuple(ids),))
-
-        # cont a dict of parent -> attach
-        parents = {}
-        for attach_id, attach_parent in cr.fetchall():
-            parents.setdefault(attach_parent, []).append(attach_id)
-        parent_ids = parents.keys()
-
-        # filter parents
-        visible_parent_ids = self.pool['document.directory'].search(cr, uid, [('id', 'in', list(parent_ids))])
-
-        # null parents means allowed
-        ids = parents.get(None, [])
-        for parent_id in visible_parent_ids:
-            ids.extend(parents[parent_id])
-
-        return len(ids) if count else ids
+        return self._search(cr, uid, args, offset=offset, limit=limit, order=order, context=context, count=False)
 
     def copy(self, cr, uid, oid, default={}, context=None):
         """
@@ -1053,6 +1041,8 @@ class plm_document(orm.Model):
                     'configuration': OldRel.configuration,
                     'link_kind': OldRel.link_kind,
                 }, context=context)
+        if newID and previous_name:
+            wf_message_post(self, cr, uid, [newID], body='Copied starting from : {value}.'.format(value=previous_name), context=context)
         return newID
 
     def create(self, cr, uid, vals, context=None):
@@ -1139,47 +1129,10 @@ class plm_document(orm.Model):
                     context.update({'internal_writing': True})
                     for document in self.browse(cr, uid, getListIDs(existingIDs), context=context):
                         docsignal=get_signal_workflow(self, cr, uid, document, status, context=context)
-                        move_workflow(self, cr, uid, [document.id], docsignal, status, context=context)
+                        move_workflow(self, cr, uid, [document.id], docsignal, status)
                 self._insertlog(cr, uid, checkObj.id, note=note, context=context)
                 ret=ret | super(plm_document, self).unlink(cr, uid, ids, context=context)
         return ret
-
-    def _check_duplication(self, cr, uid, vals, ids=[], op='create'):
-        """
-            Overridden, due to revision id management, filename can be duplicated, 
-            because system has to manage several revisions of a document.
-        """
-        name = vals.get('name', False)
-        parent_id = vals.get('parent_id', False)
-        res_model = vals.get('res_model', False)
-        res_id = vals.get('res_id', 0)
-        revisionid = vals.get('revisionid', 0)
-        if op == 'write':
-            for thisfile in self.browse(cr, uid, ids, context=None):  # FIXME fields_only
-                if not name:
-                    name = thisfile.name
-                if not parent_id:
-                    parent_id = thisfile.parent_id and thisfile.parent_id.id or False
-                if not res_model:
-                    res_model = thisfile.res_model and thisfile.res_model or False
-                if not res_id:
-                    res_id = thisfile.res_id and thisfile.res_id or 0
-                if not revisionid:
-                    revisionid = thisfile.revisionid and thisfile.revisionid or 0
-                res = self.search(cr, uid,
-                                  [('id', '<>', thisfile.id), ('name', '=', name), ('parent_id', '=', parent_id),
-                                   ('res_model', '=', res_model), ('res_id', '=', res_id),
-                                   ('revisionid', '=', revisionid)])
-                if len(res) > 1:
-                    return False
-        if op == 'create':
-            res = self.search(cr, uid, [('name', '=', name), ('parent_id', '=', parent_id), ('res_id', '=', res_id),
-                                        ('res_model', '=', res_model), ('revisionid', '=', revisionid)])
-            if len(res):
-                return False
-        return True
-
-    #   Overridden methods for this entity
 
     def _get_checkout_state(self, cr, uid, ids, field_name, args, context={}):
         outVal = {}  # {id:value}
@@ -1543,6 +1496,7 @@ class plm_checkout(orm.Model):
                 if objectItem:
                     ret=objectItem
                     self.logging_operation(cr, uid, docIDs, 'Check-Out', context=context)
+                    wf_message_post(documentType, cr, uid, docIDs, body='Checked-Out')
         return ret
 
     def unlink(self, cr, uid, ids, context=None):
@@ -1569,6 +1523,7 @@ class plm_checkout(orm.Model):
                 return False
         self._adjustRelations(cr, uid, docIDs, False, context=context)
         ret=super(plm_checkout, self).unlink(cr, uid, getListIDs(ids), context=context)
+        wf_message_post(documentType, cr, uid, docIDs, body='Checked-In')
         self.logging_operation(cr, uid, docIDs, 'Check-In', context=context)
         return ret
 

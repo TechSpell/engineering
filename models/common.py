@@ -167,12 +167,20 @@ def move_workflow(entity, cr, uid, ids, signal="", status="", context=None):
         Emits workflow signal as requested.
     """
     if signal and status:
-        context = context or entity.pool['res.users'].context_get(cr, uid)
-        context['internal_writing']=True
+#         context = context or entity.pool['res.users'].context_get(cr, uid)
+#         context['internal_writing']=True
         if signal_workflow(entity, cr, uid, ids, signal):
             entity.write(cr, uid, ids, {'state': status}, context=context)
             entity.logging_workflow(cr, uid, ids, signal, status, context=context)
-  
+
+def wf_message_post(entity, cr, uid, ids=[], body="", context=None):
+    """
+        Writing messages to follower, on multiple objects
+    """
+    if not (body==""):
+        for idd in getListIDs(ids):
+            entity.message_post(cr, uid, idd, body=body, context=context)
+
 def isAdministrator(entity, cr, uid, context=None):
     """
         Checks if this user is in PLM Administrator group

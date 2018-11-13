@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-##############################################################################
+#############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
 #    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
@@ -21,4 +20,5 @@
 ##############################################################################
 import report
 import component_report
+import component_kanban
 import document_report

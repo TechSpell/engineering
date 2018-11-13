@@ -45,7 +45,7 @@ class plm_component(orm.Model):
                 'engineering_treatment':    [ 'engineering_treatment', "COMPTTERM", "char",     ],
                 'engineering_surface':      [ 'engineering_surface',   "COMPTSUP",  "char",     ],
                 'description':              [ 'description',           "COMPDES",   "char",     ],
-                'weight_net':               [ 'weight_net',            "COMPPESO",  "float",    ],
+                'weight':                   [ 'weight',                "COMPPESO",  "float",    ],
                 }
         if editor=='thinkdesign':
             properties={
@@ -55,7 +55,7 @@ class plm_component(orm.Model):
                 'engineering_treatment':    [ 'engineering_treatment', "COMPTTERM", "char",     ],
                 'engineering_surface':      [ 'engineering_surface',   "COMPTSUP",  "char",     ],
                 'description':              [ 'description',           "COMPDES",   "char",     ],
-                'weight_net':               [ 'weight_net',            "COMPPESO",  "float",    ],
+                'weight':                   [ 'weight',                "COMPPESO",  "float",    ],
                }
         return properties
     
@@ -71,9 +71,7 @@ class plm_component(orm.Model):
                     "state"                 :{"changed":"", "enabled":False, "mandatory":False,  "default":"draft",                              },   
                     "tmp_material"          :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",                                   },   
                     "tmp_surface"           :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40,                     },   
-                    "weight_net"            :{"changed":"", "enabled":True,  "mandatory":False,  "default": 0.0,                                 },   
-                    "uom_id"                :{"changed":"", "enabled":True,  "mandatory":False,  "default":0,                                    },   
-                    "uom_po_id"             :{"changed":"", "enabled":True,  "mandatory":False,  "default":0,                                    },   
+                    "weight"                :{"changed":"", "enabled":True,  "mandatory":False,  "default": 0.0,                                 },   
                     "engineering_material"  :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",                                   },   
                     "engineering_surface"   :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40,                     },   
                     "description"           :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40, "multiline": True,  },   
@@ -113,18 +111,18 @@ class plm_component(orm.Model):
 #                                 },
 #                             } 
 #     })
-        properties['uom_id'].update(                                            # Entity field to apply automation button
-            {"automation": {
-                "destination"   : { "fields" : ["uom_po_id",],                  # Fields to use as destination (writing the value)
-                                },
-                            } 
-             })
-        properties['uom_po_id'].update(                                         # Entity field to apply automation button
-            {"automation": {
-                "destination"   : { "fields" : ["uom_id",],                     # Fields to use as destination (writing the value)
-                                },
-                            },
-            })
+#         properties['uom_id'].update(                                            # Entity field to apply automation button
+#             {"automation": {
+#                 "destination"   : { "fields" : ["uom_po_id",],                  # Fields to use as destination (writing the value)
+#                                 },
+#                             } 
+#              })
+#         properties['uom_po_id'].update(                                         # Entity field to apply automation button
+#             {"automation": {
+#                 "destination"   : { "fields" : ["uom_id",],                     # Fields to use as destination (writing the value)
+#                                 },
+#                             } 
+#              })
         properties['tmp_material'].update(                                        # Entity field to apply automation button
             {"automation": {
                 "source"        : { 
