@@ -879,6 +879,37 @@ class plm_temporary(models.AbstractModel):
         return ret
     
     @api.model
+    def action_NewDocRevision(self, ids):
+        """
+            Call for NewRevision method
+        """
+        ret=False
+        revised=[]
+        
+        active_ids=self._context.get('active_ids', [])
+        active_model=self._context.get('active_model', None)
+        if active_ids and active_model:
+            objectType=self.env[active_model]
+            for thisId in active_ids:
+                if isAnyReleased(objectType, thisId):
+                    newID, newIndex=objectType.NewRevision( (getListIDs(thisId),"","") )
+                    #TODO: To be implemented management by server options.
+#                     objectType.processedIds=[]
+#                     objectType._copyProductBom( thisId, newID)
+                    revised.append(newID)
+            if revised:
+                ret={
+                    'name': _('New Revisions'),
+                    'view_type': 'form',
+                    "view_mode": 'tree,form',
+                    'res_model': active_model,
+                    'type': 'ir.actions.act_window',
+                    'domain': "[('id','in', [" + ','.join(map(str, revised)) + "])]",
+                    }
+                        
+        return ret
+
+    @api.model
     def action_NewRevision(self, ids):
         """
             Call for NewRevision method
@@ -908,4 +939,4 @@ class plm_temporary(models.AbstractModel):
                     }
                         
         return ret
-    
+     
