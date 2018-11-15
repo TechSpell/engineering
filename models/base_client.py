@@ -515,7 +515,7 @@ class plm_config_settings(orm.Model):
                         objIDs.sort()
                         tmpobjectIDs=userType.browse(cr, uid, objIDs, context=context)
                         if tmpobjectIDs:
-                            objectID=tmpobjectIDs[0]
+                            objectID=tmpobjectIDs[len(tmpobjectIDs)-1]
                             break
         return objectID
     

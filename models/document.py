@@ -959,7 +959,7 @@ class plm_document(orm.Model):
         context = context or self.pool['res.users'].context_get(cr, uid)
         context.update({'internal_writing': True})
 
-        for oldObject in self.browse(self, cr, uid, ids, context=context):
+        for oldObject in self.browse(cr, uid, ids, context=context):
             move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
         return True
 
@@ -973,9 +973,8 @@ class plm_document(orm.Model):
         context = context or self.pool['res.users'].context_get(cr, uid)
         context.update({'internal_writing': True})
 
-        for oldObject in self.browse(self, cr, uid, ids, context=context):
+        for oldObject in self.browse(cr, uid, ids, context=context):
             move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
-        wf_message_post(self, cr, uid, ids, body='Status moved to: {status}.'.format(status=status), context=context)
         return True
 
     #   Overridden methods for this entity
