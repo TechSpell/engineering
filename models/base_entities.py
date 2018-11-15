@@ -964,4 +964,34 @@ class plm_temporary(orm.TransientModel):
                     }
                         
         return ret
+
+    def action_NewDocRevision(self, cr, uid, ids, context=None):
+        """
+            Call for NewRevision method
+        """
+        ret=False
+        revised=[]
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        active_ids=context.get('active_ids', [])
+        active_model=context.get('active_model', None)
+        if active_ids and active_model:
+            objectType=self.pool[active_model]
+            for thisId in active_ids:
+                if isAnyReleased(objectType, cr, uid, thisId, context=context):
+                    newID, newIndex=objectType.NewRevision(cr, uid, (getListIDs(thisId),"",""), context=context)
+                    #TODO: To be implemented management by server options.
+#                     objectType.processedIds=[]
+#                     objectType._copyProductBom(cr, uid, thisId, newID, context=context)
+                    revised.append(newID)
+            if revised:
+                ret={
+                    'name': _('New Revisions'),
+                    'view_type': 'form',
+                    "view_mode": 'tree,form',
+                    'res_model': active_model,
+                    'type': 'ir.actions.act_window',
+                    'domain': "[('id','in', [" + ','.join(map(str, revised)) + "])]",
+                    }
+                        
+        return ret
     

@@ -273,7 +273,7 @@
             <separator string=""/>
             <group colspan="4" col="4">
                 <button icon="gtk-cancel" special="cancel" string="Cancel"/>
-                <button icon="terp-gtk-go-back-rtl" string="New Revision" name="action_NewRevision" type="object"/>
+                <button icon="terp-gtk-go-back-rtl" string="New Revision" name="action_NewDocRevision" type="object"/>
             </group>
         </form>
         </field>
