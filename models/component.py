@@ -1037,9 +1037,7 @@ class plm_component(models.Model):
                             undermodifyIds.append(existID)
                     move_workflow (self, obsoletedIds, 'reactivate', 'released')
                     if undermodifyIds:
-                        if not self.browse(undermodifyIds).with_context({'internal_writing':True}).write(values):
-                            logging.warning("unlink : Unable to update state to old products: {ids}.".format(ids=undermodifyIds))
-                            return False
+                        move_workflow (self, undermodifyIds, 'reactivate', 'released')
 
                 note={
                         'type': 'unlink object',
