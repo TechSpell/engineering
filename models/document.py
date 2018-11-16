@@ -961,7 +961,8 @@ class plm_document(models.Model):
                     }
         
         for oldObject in self.browse(ids):
-            last_ids.extend(self._getbyrevision(oldObject.name, oldObject.revisionid - 1))
+            objObsolete=self._getbyrevision(oldObject.name, oldObject.revisionid - 1)
+            last_ids.append(objObsolete.id)
         move_workflow(self, last_ids, 'obsolete', 'obsoleted')
         return self._action_onrelateddocuments(ids, default, action, status)
 
@@ -1157,10 +1158,7 @@ class plm_document(models.Model):
                         move_workflow(self, obsoletedIds, 'reactivate', 'released')
                         wf_message_post(self, obsoletedIds, body='Removed : Latest Revision.')
                     if undermodifyIds:
-                        underMods=self.browse(undermodifyIds)
-                        if not underMods.with_context({'internal_writing':True}).write(values):
-                            logging.warning("unlink : Unable to update state to old documents: {ids}.".format(ids=undermodifyIds))
-                            return False
+                        move_workflow(self, undermodifyIds, 'reactivate', 'released')
                         wf_message_post(self, undermodifyIds, body='Removed : Latest Revision.')
                 note={
                     'type': 'unlink object',
