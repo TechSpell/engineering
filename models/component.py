@@ -644,7 +644,7 @@ class plm_component(models.Model):
                 if (document.id not in docIDs):
                     if documentType.ischecked_in(document.id):
                         docIDs.append(document.id)
-        idMoves=move_workflow(self, docIDs, action, status)
+        idMoves=move_workflow(documentType, docIDs, action, status)
         self.logging_workflow(idMoves, action, status)
             
         return docIDs
