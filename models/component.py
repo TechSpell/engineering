@@ -811,8 +811,8 @@ class plm_component(models.Model):
                             'statusName': _('Released'),
                             'action': action,
                             'docaction': 'reactivate',
-                            'excludeStatuses': ['draft', 'confirmed', 'transmitted', 'undermodify','released'],
-                            'includeStatuses': ['obsoleted'],
+                            'excludeStatuses': ['draft', 'confirmed', 'transmitted', 'released'],
+                            'includeStatuses': ['undermodify', 'obsoleted'],
                             }
         default={
                 'engineering_writable': False,
