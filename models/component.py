@@ -866,7 +866,8 @@ class plm_component(models.Model):
             raise UserError(_("WorkFlow Error.\n\nOne or more parts cannot be released."))
         allProdObjs = self.browse(allIDs)
         for oldObject in allProdObjs:
-            last_ids.extend(self._getbyrevision(oldObject.engineering_code, oldObject.engineering_revision - 1))
+            objObsolete=self._getbyrevision(oldObject.engineering_code, oldObject.engineering_revision - 1)
+            last_ids.append(objObsolete.id)
         
         idMoves=move_workflow(self, last_ids, 'obsolete', 'obsoleted')
         self.logging_workflow(idMoves, 'obsolete', 'obsoleted')
