@@ -789,7 +789,7 @@ class plm_component(models.Model):
                             'action': action,
                             'docaction': 'obsolete',
                             'excludeStatuses': ['draft', 'confirmed', 'transmitted', 'obsoleted'],
-                            'includeStatuses': ['undermodify','released'],
+                            'includeStatuses': ['undermodify', 'released'],
                             }
         default={
                 'engineering_writable': False,
@@ -871,6 +871,7 @@ class plm_component(models.Model):
         
         idMoves=move_workflow(self, last_ids, 'obsolete', 'obsoleted')
         self.logging_workflow(idMoves, 'obsolete', 'obsoleted')
+        self._action_ondocuments(last_ids, 'obsolete', 'obsoleted')
 
         self._action_ondocuments(allIDs, action, status)
         for currId in allProdObjs:
