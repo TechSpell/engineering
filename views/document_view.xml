@@ -9,10 +9,10 @@
         <field name="arch" type="xml">
             <form string="Document"  version="7.0">
                <header name="WFArea">
-					<button name="checkuploadeddoc" states="uploaded" string="Check Upload Document" icon="gtk-apply" groups="pdm.group_plm_integrationuser"/>
-                 	<button name="release" states="confirmed" string="Release Document" icon="gtk-apply" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}"/>
-                	<button name="correct" states="confirmed" string="Correct Document" icon="gtk-cancel"/>
-                	<button name="confirm" states="draft" string="Confirm Document" icon="gtk-go-forward" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}" groups="pdm.group_plm_admin,pdm.group_plm_integrationuser"/>
+					<button name="action_checkuploadeddoc" states="uploaded" string="Check Upload Document" type="object"  groups="pdm.group_plm_integrationuser"/>
+                 	<button name="action_release" states="confirmed" string="Release Document" type="object" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}"/>
+                	<button name="action_correct" states="confirmed" string="Correct Document" type="object" />
+                	<button name="action_confirm" states="draft" string="Confirm Document" type="object" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}" groups="pdm.group_plm_admin,pdm.group_plm_integrationuser"/>
                 	<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
                </header>
                <sheet>

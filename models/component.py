@@ -871,6 +871,7 @@ class plm_component(models.Model):
         
         idMoves=move_workflow(self, last_ids, 'obsolete', 'obsoleted')
         self.logging_workflow(idMoves, 'obsolete', 'obsoleted')
+        self._action_ondocuments(last_ids, 'obsolete', 'obsoleted')
 
         self._action_ondocuments(allIDs, action, status)
         for currId in allProdObjs:

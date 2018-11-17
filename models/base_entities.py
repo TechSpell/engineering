@@ -886,15 +886,15 @@ class plm_temporary(osv.osv.osv_memory):
         return ret
     
     @api.model
-    def action_NewRevision(self, ids):
+    def action_NewRevision(self, context):
         """
             Call for NewRevision method
         """
         ret=False
         revised=[]
         
-        active_ids=self._context.get('active_ids', [])
-        active_model=self._context.get('active_model', None)
+        active_ids=context.get('active_ids', [])
+        active_model=context.get('active_model', None)
         if active_ids and active_model:
             objectType=self.env[active_model]
             for thisId in active_ids:
@@ -916,15 +916,15 @@ class plm_temporary(osv.osv.osv_memory):
                         
         return ret
 
-    def action_NewDocRevision(self, ids):
+    def action_NewDocRevision(self, context):
         """
             Call for NewRevision method
         """
         ret=False
         revised=[]
         
-        active_ids=self._context.get('active_ids', [])
-        active_model=self._context.get('active_model', None)
+        active_ids=context.get('active_ids', [])
+        active_model=context.get('active_model', None)
         if active_ids and active_model:
             objectType=self.env[active_model]
             for thisId in active_ids:
