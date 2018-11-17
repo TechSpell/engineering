@@ -285,7 +285,7 @@
             <separator string=""/>
             <footer>
                 <button class="btn-default" special="cancel" string="Cancel"/>
-                <button class="btn-primary" string="New Revision" name="action_NewRevision" type="object"/>
+                <button class="btn-primary" string="New Revision" name="action_NewDocRevision" type="object"/>
             </footer>
         </form>
         </field>
