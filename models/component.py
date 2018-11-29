@@ -867,7 +867,8 @@ class plm_component(models.Model):
         allProdObjs = self.browse(allIDs)
         for oldObject in allProdObjs:
             objObsolete=self._getbyrevision(oldObject.engineering_code, oldObject.engineering_revision - 1)
-            last_ids.append(objObsolete.id)
+            if objObsolete and objObsolete.id:
+                last_ids.append(objObsolete.id)
         
         idMoves=move_workflow(self, last_ids, 'obsolete', 'obsoleted')
         self.logging_workflow(idMoves, 'obsolete', 'obsoleted')
