@@ -962,7 +962,8 @@ class plm_document(models.Model):
         
         for oldObject in self.browse(ids):
             objObsolete=self._getbyrevision(oldObject.name, oldObject.revisionid - 1)
-            last_ids.append(objObsolete.id)
+            if objObsolete and objObsolete.id:
+                last_ids.append(objObsolete.id)
         move_workflow(self, last_ids, 'obsolete', 'obsoleted')
         return self._action_onrelateddocuments(ids, default, action, status)
 
