@@ -19,150 +19,203 @@
 #
 ##############################################################################
 
+from odoo        import models, fields, api
+from odoo.tools import drop_view_if_exists
 
-from openerp.osv import orm, fields
-import tools
+class report_plm_document_file(models.Model):
+    _name = "report.plm_document.file"
+    _description = "Files details by Directory"
+    _auto = False
+
+    year        =   fields.Char('Year', size=64,readonly=True)
+    month       =   fields.Char('Month', size=24,readonly=True)
+    nbr         =   fields.Integer('# of Files', readonly=True)
+    file_size   =   fields.Integer('File Size [kB]', readonly=True)
+
+    _order = "month"
+
+    @api.model_cr
+    def init(self):
+        cr = self._cr        
+        drop_view_if_exists(cr, 'report_plm_document_file')
+        cr.execute("""
+            create or replace view report_plm_document_file as (
+                select min(f.id) as id,
+                        EXTRACT(YEAR FROM f.create_date) as year,
+                        min(to_char(f.create_date, 'MM')||'-'||to_char(f.create_date,'Month')) as month,
+                        count(*) as nbr,
+                        sum(f.file_size)/1024 as file_size
+                from plm_document f
+                group by EXTRACT(MONTH FROM f.create_date), EXTRACT(YEAR FROM f.create_date)
+              )
+        """)
 
 
-class report_plm_document_user(orm.Model):
+class report_plm_document_user(models.Model):
     _name = "report.plm_document.user"
     _description = "Files details by Users"
     _auto = False
-    _columns = {
-        'name': fields.char('Year', size=64, readonly=True),
-        'month': fields.selection(
-            [('01', 'January'), ('02', 'February'), ('03', 'March'), ('04', 'April'), ('05', 'May'), ('06', 'June'),
-             ('07', 'July'), ('08', 'August'), ('09', 'September'), ('10', 'October'), ('11', 'November'),
-             ('12', 'December')], 'Month', readonly=True),
-        'day': fields.char('Day', size=64, readonly=True),
-        'user_id': fields.integer('Owner', readonly=True),
-        'user': fields.char('User', size=64, readonly=True),
-        'directory': fields.char('Directory', size=64, readonly=True),
-        'datas_fname': fields.char('File', size=64, readonly=True),
-        'create_date': fields.datetime('Date Created', readonly=True),
-        'change_date': fields.datetime('Modified Date', readonly=True),
-        'file_size': fields.integer('File Size  [kB]', readonly=True),
-        'nbr': fields.integer('# of Files', readonly=True),
-        'type': fields.char('Directory Type', size=64, readonly=True),
-    }
 
-    def init(self, cr):
-        tools.drop_view_if_exists(cr, 'report_plm_document_user')
+    year            =   fields.Char('Year', size=64,readonly=True)
+    month           =   fields.Selection([('01','January'), ('02','February'), ('03','March'), ('04','April'), ('05','May'), ('06','June'),
+                                  ('07','July'), ('08','August'), ('09','September'), ('10','October'), ('11','November'), ('12','December')],'Month',readonly=True)
+    day             =   fields.Char('Day', size=64,readonly=True)
+    user_id         =   fields.Integer('Owner', readonly=True)
+    user            =   fields.Char('User',size=64,readonly=True)
+    name            =   fields.Char('Document', size=64,readonly=True)
+    docname         =   fields.Char('Name', size=64,readonly=True)
+    directory       =   fields.Char('Directory',size=64,readonly=True)
+    revision        =   fields.Char('Revision', size=64,readonly=True)
+    datas_fname     =   fields.Char('File',size=64,readonly=True)
+    create_date     =   fields.Datetime('Date Created', readonly=True)
+    change_date     =   fields.Datetime('Modified Date', readonly=True)
+    change_user     =   fields.Char('Modified by',size=64,readonly=True)
+    file_size       =   fields.Integer('File Size [kB]', readonly=True)
+    nbr             =   fields.Integer('# of Files', readonly=True)
+    preview         =   fields.Binary('Preview Content', readonly=True)
+
+    @api.model_cr
+    def init(self):
+        cr = self._cr        
+        drop_view_if_exists(cr, 'report_plm_document_user')
         cr.execute("""
             CREATE OR REPLACE VIEW report_plm_document_user as (
                  SELECT
                      min(f.id) as id,
-                     to_char(f.create_date, 'YYYY') as name,
+                     to_char(f.create_date, 'YYYY') as year,
                      to_char(f.create_date, 'MM') as month,
                      to_char(f.create_date, 'DD') as day,
-                     f.user_id as user_id,
+                     f.create_uid as user_id,
+                     f.write_uid as change_id,
                      u.login as user,
+                     v.login as change_user,
                      count(*) as nbr,
-                     d.name as directory,
+                     f.name as name,
+                     f.name as docname,
+                     f.revisionid::text as revision,
                      f.datas_fname as datas_fname,
                      f.create_date as create_date,
                      f.file_size/1024 as file_size,
-                     min(d.type) as type,
-                     f.write_date as change_date
+                     f.write_date as change_date,
+                     f.preview as preview
                  FROM plm_document f
-                     left join document_directory d on (f.parent_id=d.id and d.name<>'')
-                     inner join res_users u on (f.user_id=u.id)
-                 group by to_char(f.create_date, 'YYYY'), to_char(f.create_date, 'MM'),to_char(f.create_date, 'DD'),d.name,f.parent_id,d.type,f.create_date,f.user_id,f.file_size,u.login,d.type,f.write_date,f.datas_fname
+                     inner join res_users u on (f.create_uid=u.id)
+                     inner join res_users v on (f.write_uid=v.id)
+                 group by to_char(f.create_date, 'YYYY'), to_char(f.create_date, 'MM'),to_char(f.create_date, 'DD'),f.create_date,f.create_uid,f.write_uid,f.name,f.revisionid::text,f.file_size,u.login,v.login,f.write_date,f.preview,f.datas_fname
              )
         """)
 
 
-report_plm_document_user()
-
-
-class report_plm_files_partner(orm.Model):
+class report_plm_files_partner(models.Model):
     _name = "report.plm_files.partner"
     _description = "Files details by Partners"
     _auto = False
-    _columns = {
-        'name': fields.char('Year', size=64, required=False, readonly=True),
-        'file_size': fields.integer('File Size [kB]', readonly=True),
-        'nbr': fields.integer('# of Files', readonly=True),
-        'partner': fields.char('Partner', size=64, readonly=True),
-        'month': fields.selection(
-            [('01', 'January'), ('02', 'February'), ('03', 'March'), ('04', 'April'), ('05', 'May'), ('06', 'June'),
-             ('07', 'July'), ('08', 'August'), ('09', 'September'), ('10', 'October'), ('11', 'November'),
-             ('12', 'December')], 'Month', readonly=True),
-    }
 
-    def init(self, cr):
-        tools.drop_view_if_exists(cr, 'report_plm_files_partner')
+    name        =   fields.Char('Year',size=64,required=False, readonly=True)
+    file_size   =   fields.Integer('File Size [kB]', readonly=True)
+    nbr         =   fields.Integer('# of Files', readonly=True)
+    partner     =   fields.Char('Partner',size=64,readonly=True)
+    month       =   fields.Selection([('01','January'), ('02','February'), ('03','March'), ('04','April'), ('05','May'), ('06','June'),
+                                  ('07','July'), ('08','August'), ('09','September'), ('10','October'), ('11','November'), ('12','December')],'Month',readonly=True)
+    @api.model_cr
+    def init(self):
+        cr = self._cr        
+        drop_view_if_exists(cr, 'report_plm_files_partner')
         cr.execute("""
             CREATE VIEW report_plm_files_partner as (
                 SELECT min(f.id) AS id,
                        COUNT(*) AS nbr,
                        to_char(date_trunc('month', f.create_date),'YYYY') AS name,
                        to_char(date_trunc('month', f.create_date),'MM') AS month,
-                       SUM(f.file_size)/1024 AS file_size,
-                       p.name AS partner
-
-                FROM plm_document f
-                  LEFT JOIN res_partner p ON (f.partner_id=p.id)
+                       SUM(f.file_size)/1024 AS file_size
+                FROM plm_document f 
                 WHERE f.datas_fname IS NOT NULL
-                GROUP BY p.name, date_trunc('month', f.create_date)
+                GROUP BY date_trunc('month', f.create_date)
              )
          """)
 
 
-class report_plm_document_file(orm.Model):
-    _name = "report.plm_document.file"
-    _description = "Files details by Directory"
-    _auto = False
-    _columns = {
-        'file_size': fields.integer('File Size [kB]', readonly=True),
-        'nbr': fields.integer('# of Files', readonly=True),
-        'month': fields.char('Month', size=24, readonly=True),
-    }
-    _order = "month"
-
-    def init(self, cr):
-        tools.drop_view_if_exists(cr, 'report_plm_document_file')
-        cr.execute("""
-           create or replace view report_plm_document_file as (
-                select min(f.id) as id,
-                       count(*) as nbr,
-                       min(EXTRACT(MONTH FROM f.create_date)||'-'||to_char(f.create_date,'Month')) as month,
-                       sum(f.file_size) as file_size
-                from plm_document f
-                group by EXTRACT(MONTH FROM f.create_date)
-             )
-        """)
-
-
-class report_plm_document_wall(orm.Model):
+class report_plm_document_wall(models.Model):
     _name = "report.plm_document.wall"
     _description = "Users that did not inserted documents since one month"
     _auto = False
-    _columns = {
-        'name': fields.date('Month', readonly=True),
-        'user_id': fields.many2one('res.users', 'Owner', readonly=True),
-        'user': fields.char('User', size=64, readonly=True),
-        'month': fields.char('Month', size=24, readonly=True),
-        'last': fields.datetime('Last Posted Time', readonly=True),
-    }
 
-    def init(self, cr):
-        tools.drop_view_if_exists(cr, 'report_document_wall')
+    name        =   fields.Date('Month', readonly=True)
+    user_id     =   fields.Many2one('res.users', 'Owner',readonly=True)
+    user        =   fields.Char('User',size=64,readonly=True)
+    month       =   fields.Char('Month', size=24,readonly=True)
+    last        =   fields.Datetime('Last Posted Time', readonly=True)
+
+
+    @api.model_cr
+    def init(self):
+        cr = self._cr        
+        drop_view_if_exists(cr, 'report_plm_document_wall')
         cr.execute("""
-            create or replace view report_document_wall as (
+            create or replace view report_plm_document_wall as (
                select max(f.id) as id,
                to_char(min(f.create_date),'YYYY-MM-DD HH24:MI:SS') as last,
-               f.user_id as user_id, f.user_id as user,
-               to_char(f.create_date,'Month') as month
+               to_char(f.create_date,'Month') as month,
+               f.create_uid as user
                from plm_document f
                where f.create_date in (
                    select max(i.create_date)
                    from ir_attachment i
-                   inner join res_users u on (i.user_id=u.id)
-                   group by i.user_id) group by f.user_id,f.create_date
+                   inner join res_users u on (i.create_uid=u.id)
+                   group by i.create_uid) group by f.create_uid,f.create_date
                    having (CURRENT_DATE - to_date(to_char(f.create_date,'YYYY-MM-DD'),'YYYY-MM-DD')) > 30
              )
         """)
 
 
-# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:
+class report_plm_checkout_board(models.Model):
+    _name = "report.plm_checkout.board"
+    _description = "Checked-Out Documents"
+    _auto = False
+
+    year            =   fields.Char('Year', size=64,readonly=True)
+    month           =   fields.Selection([('01','January'), ('02','February'), ('03','March'), ('04','April'), ('05','May'), ('06','June'),
+                                  ('07','July'), ('08','August'), ('09','September'), ('10','October'), ('11','November'), ('12','December')],'Month',readonly=True)
+    day             =   fields.Char('Day', size=64,readonly=True)
+    user_id         =   fields.Integer('Owner', readonly=True)
+    user            =   fields.Char('User',size=64,readonly=True)
+    name            =   fields.Char('Document', size=64,readonly=True)
+    docname         =   fields.Char('Name', size=64,readonly=True)
+    directory       =   fields.Char('PWS Directory',size=128,readonly=True)
+    revision        =   fields.Char('Revision', size=64,readonly=True)
+    hostname        =   fields.Char('Hostname',size=64,readonly=True)
+    create_date     =   fields.Datetime('Date Created', readonly=True)
+    change_date     =   fields.Datetime('Modified Date', readonly=True)
+    change_user     =   fields.Char('Modified by',size=64,readonly=True)
+    nbr             =   fields.Integer('# of Files', readonly=True)
+
+    @api.model_cr
+    def init(self):
+        cr = self._cr        
+        drop_view_if_exists(cr, 'report_plm_checkout_board')
+        cr.execute("""
+            CREATE OR REPLACE VIEW report_plm_checkout_board as (
+                 SELECT
+                     min(f.id) as id,
+                     to_char(f.create_date, 'YYYY') as year,
+                     to_char(f.create_date, 'MM') as month,
+                     to_char(f.create_date, 'DD') as day,
+                     f.create_date as create_date,
+                     f.create_uid as user_id,
+                     f.write_uid as change_user,
+                     f.write_date as change_date,
+                     f.hostpws as directory,
+                     f.hostname as hostname,
+                     u.login as user,
+                     v.name as name,
+                     v.name as docname,
+                     v.revisionid::text as revision,
+                     count(*) as nbr
+                 FROM plm_checkout f
+                     INNER JOIN res_users u on (f.create_uid=u.id)
+                     INNER JOIN plm_document v on (f.documentid=v.id)
+                 GROUP BY to_char(f.create_date, 'YYYY'), to_char(f.create_date, 'MM'),to_char(f.create_date, 'DD'),f.create_date,f.create_uid,f.write_date,f.write_uid,v.name,v.revisionid::text,u.login,f.hostpws,f.hostname
+             )
+        """)
+
+

@@ -1,8 +1,11 @@
-#############################################################################
+# -*- encoding: utf-8 -*-
+##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2016-2017 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    
+#    Created on : 2017-03-21
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,7 +21,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import report
-import component_report
-import component_kanban
-import document_report
+
+def normalize(value):
+    tmpvalue="{value}".format(value=value)
+    return tmpvalue.replace('"', '\"').replace("'", '\"').replace("%", "%%").strip()
+

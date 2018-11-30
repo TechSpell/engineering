@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
 <data>
-    <menuitem name="Collaboration Tools" id="plm_menu_checkout" parent="plm_menu" sequence="13"
-    		groups="group_plm_admin,group_plm_integrationuser"/>
-
 <!--
-    <record model="ir.ui.view" id="view_plm_checkout">
-        <field name="name">form.plm.checkout.view</field>
+     <record model="ir.ui.view" id="view_plm_checkout">
+        <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
         <field name="priority" eval="1"/>
         <field name="type">form</field>
@@ -67,14 +64,14 @@
             </form>
         </field>
     </record>
-
+-->
     <record model="ir.ui.view" id="plm_checkout_form">
         <field name="name">plm.checkout</field>
         <field name="model">plm.checkout</field>
         <field name="priority" eval="1"/>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <form string="Checked-Out Document">
+            <form string="Checked-Out Document" create="false" edit="false">
                 <group>
                     <field name="userid" select="1" />
                     <field name="hostname" select="1"/>
@@ -85,7 +82,6 @@
             </form>
         </field>
     </record>
--->    
 
     <record model="ir.ui.view" id="plm_checkout_search">
         <field name="name">plm.checkout</field>
@@ -129,7 +125,7 @@
         <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Documents in Check-Out" create="false">
+            <tree string="Documents in Check-Out" create="false" >
                 <field name="userid" select="1"/>
                 <field name="hostname" select="1"/>
                 <field name="hostpws" select="1"/>
@@ -148,12 +144,6 @@
         <field name="view_id" ref="plm_checkout_tree"/>
         <field name="search_view_id" ref="plm_checkout_search"/>
     </record>
-
-    <menuitem
-        name="Search on Checked-Out Documents"
-        action="action_plm_checkout"
-        id="menu_checkout"
-        parent="plm_menu_checkout"/>
 
 </data>
 </openerp>

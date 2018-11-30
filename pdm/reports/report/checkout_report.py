@@ -21,18 +21,17 @@
 ##############################################################################
 import StringIO
 import base64, logging
-from report.render import render
-from report.interface import report_int
-from openerp import pooler
-from openerp.osv import orm
-from openerp.tools.translate import _
 
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
+from odoo import api, models
+from odoo.report.interface import report_int
+from odoo.report.render import render
+
 try:
     from PyPDF2 import PdfFileWriter, PdfFileReader
 except Exception as msg:
     logging.error("This module requires PyPDF2. Please contact your system administrator to install it.")
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
+
+from odoo.exceptions import UserError
 
 class external_pdf(render):
 
@@ -52,16 +51,14 @@ class checkout_custom_report(report_int):
     """
     def create(self, cr, uid, ids, datas, context=None):
         ret=(False, '')
-        self.pool = pooler.get_pool(cr.dbname)
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        checkoutType=self.pool['plm.checkout']
+        env = api.Environment(cr, uid, context or {})
         try:
             output=PdfFileWriter()
         except Exception as msg:
-            raise orm.except_orm(_("This module requires PyPDF2. Please contact your system administrator to install it."))
+            raise UserError(_("This module requires PyPDF2. Please contact your system administrator to install it."))
         packed=[]
         document=None
-        checkouts=checkoutType.browse(cr, uid, ids)
+        checkouts=env['plm.checkout'].browse(ids)
         for checkout in checkouts:
             document=checkout.documentid
             if document.printout:

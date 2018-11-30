@@ -19,25 +19,25 @@
 #
 ##############################################################################
 
-from openerp.osv import orm, fields
-import openerp.tools as tools
+from odoo        import models, fields, api
+from odoo.tools import drop_view_if_exists
 
-
-class report_plm_component(orm.Model):
+class report_plm_component(models.Model):
     _name = "report.plm_component"
     _description = "Report Component"
     _auto = False
+            
+    count_component_draft       =   fields.Integer('Draft', readonly=True)
+    count_component_confirmed   =   fields.Integer('Confirmed', readonly=True)
+    count_component_released    =   fields.Integer('Released', readonly=True)
+    count_component_modified    =   fields.Integer('Under Modify', readonly=True)
+    count_component_obsoleted   =   fields.Integer('Obsoleted', readonly=True)
 
-    _columns = {
-        'count_component_draft': fields.integer('Draft', readonly=True),
-        'count_component_confirmed': fields.integer('Confirmed', readonly=True),
-        'count_component_released': fields.integer('Released', readonly=True),
-        'count_component_modified': fields.integer('Under Modify', readonly=True),
-        'count_component_obsoleted': fields.integer('Obsoleted', readonly=True),
-    }
 
-    def init(self, cr):
-        tools.drop_view_if_exists(cr, 'report_plm_component')
+    @api.model_cr
+    def init(self):
+        cr = self._cr
+        drop_view_if_exists(cr, 'report_plm_component')
         cr.execute("""
             CREATE OR REPLACE VIEW report_plm_component AS (
                 SELECT
@@ -48,5 +48,31 @@ class report_plm_component(orm.Model):
                     (SELECT count(*) FROM product_template WHERE state = 'undermodify') AS count_component_modified,
                     (SELECT count(*) FROM product_template WHERE state = 'obsoleted') AS count_component_obsoleted
              )
+        """)
+
+
+class report_plm_component_year(models.Model):
+    _name = "report.plm_component.year"
+    _description = "Report Component Status by Year"
+    _auto = False
+            
+    year        =   fields.Char('Year', size=64,readonly=True)
+    state       =   fields.Char('Status', size=24,readonly=True)
+    nbr         =   fields.Integer('# of Products', readonly=True)
+
+
+    @api.model_cr
+    def init(self):
+        cr = self._cr
+        drop_view_if_exists(cr, 'report_plm_component_year')
+        cr.execute("""
+            create or replace view report_plm_component_year as (
+                select min(f.id) as id,
+                    EXTRACT(YEAR FROM f.create_date) as year,
+                    f.state as state,
+                    count(*) as nbr
+                from product_template f
+                group by EXTRACT(YEAR FROM f.create_date), f.state
+              )
         """)
 

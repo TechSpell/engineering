@@ -2,8 +2,10 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    
+#    Created on : 2016-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -28,12 +30,12 @@ import os, stat
 import time
 from datetime import datetime
 
-from openerp.osv import fields, orm
-from openerp.tools.translate import _
-from openerp.tools import config as tools_config
+from odoo import models, fields, api, _, osv
+from odoo.exceptions import UserError
+from odoo.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                        get_signal_workflow, signal_workflow, move_workflow, \
+                        get_signal_workflow, signal_workflow, move_workflow, wf_message_post, \
                         isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft
 
 # To be adequated to plm.component class states
@@ -76,22 +78,22 @@ def getnewminor(minorString):
     return minorString
 
 
-class plm_document(orm.Model):
+class plm_document(models.Model):
     _name = 'plm.document'
     _table = 'plm_document'
-    _inherit = 'ir.attachment'
+    _inherit = ['mail.thread','ir.attachment']
 
-    def _insertlog(self, cr, uid, ids, changes={}, note={}, context=None):
+    def _insertlog(self, ids, changes={}, note={}):
         ret=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         op_type, op_note=["unknown",""]
-        for objID in self.browse(cr, uid, getListIDs(ids), context=context):
+        for objID in self.browse(getListIDs(ids)):
             if note:
                 op_type="{type}".format(type=note['type'])
                 op_note="{reason}".format(reason=note['reason'])
             elif changes:
                 op_type='change value'
-                op_note=self.pool['plm.logging'].getchanges(cr, uid, objID, changes, context=context)
+                op_note=self.env['plm.logging'].getchanges(objID, changes)
             if op_note:
                 values={
                         'name': objID.name,
@@ -101,58 +103,54 @@ class plm_document(orm.Model):
                         'op_type': op_type,
                         'op_note': op_note,
                         'op_date': datetime.now(),
-                        'userid': uid,
+                        'userid': self._uid,
                         }
-                objectItem=self.pool['plm.logging'].create(cr, uid, values, context=context)
+                objectItem=self.env['plm.logging'].create(values)
                 if objectItem:
                     ret=True
         return ret
 
-    def _is_checkedout_for_me(self, cr, uid, oid, context=None):
+    def _is_checkedout_for_me(self, oid):
         """
             Get if given document (or its latest revision) is checked-out for the requesting user
         """
         act = False
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        checkType = self.pool['plm.checkout']
-        for lastDoc in self._getlastrev(cr, uid, [oid], context=context):
-            for docID in checkType.search(cr, uid, [('documentid', '=', lastDoc)], context=context):
-                objectCheck = checkType.browse(cr, uid, docID, context=context)
-                if objectCheck.userid.id == uid:
+        
+        checkType = self.env['plm.checkout']
+        for lastDoc in self._getlastrev([oid]):
+            for objectCheck in checkType.search([('documentid', '=', lastDoc)]):
+                if objectCheck.userid.id== self._uid:
                     act = True
                     break
         return act
 
-    def _getlastrev(self, cr, uid, ids, context=None):
+    def _getlastrev(self, ids):
         result = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        for objDoc in self.browse(cr, uid, getCleanList(ids), context=context):
-            docIds = self.search(cr, uid, [('name', '=', objDoc.name),
-                                           ('type', '=', 'binary')], order='revisionid, minorrevision',
-                                           context=context)
-            docIds.sort()  # Ids are not surely ordered, but revision are always in creation order.
-            result.append(docIds[len(docIds) - 1])
+        for objDoc in self.browse(getCleanList(ids)):
+            docIds = self.search([('name', '=', objDoc.name),
+                                           ('type', '=', 'binary')], order='revisionid, minorrevision' )
+            result.append(docIds[len(docIds) - 1].id)
         return getCleanList(result)
 
-    def _data_get_files(self, cr, uid, ids, listedFiles=([], []), forceFlag=False, context=None):
+    def _data_get_files(self, ids, listedFiles=([], []), forceFlag=False):
         """
             Get Files to return to Client as list: [ docID, nameFile, contentFile, writable, lastupdate ]
         """
         result = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         datefiles, listfiles = listedFiles
-        for objDoc in self.browse(cr, uid, ids, context=context):
+        for objDoc in self.browse(ids):
             if objDoc.type == 'binary':
-                timeDoc = self.getLastTime(cr, uid, objDoc.id)
+                timeDoc = self.getLastTime(objDoc.id)
                 timeSaved = time.mktime(timeDoc.timetuple())
                 timeStamp=timeDoc.strftime('%Y-%m-%d %H:%M:%S')
                 try:
-                    isCheckedOutToMe = self._is_checkedout_for_me(cr, uid, objDoc.id, context=context)
+                    isCheckedOutToMe = self._is_checkedout_for_me(objDoc.id)
                     if not (objDoc.datas_fname in listfiles):
                         if (not objDoc.store_fname) and (objDoc.db_datas):
                             value = objDoc.db_datas
                         else:
-                            value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
+                            value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
                         result.append(
                             (objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeStamp))
                     else:
@@ -167,49 +165,51 @@ class plm_document(orm.Model):
                             if (not objDoc.store_fname) and (objDoc.db_datas):
                                 value = objDoc.db_datas
                             else:
-                                value = file(os.path.join(self._get_filestore(cr), objDoc.store_fname), 'rb').read()
+                                value = file(os.path.join(self._get_filestore(), objDoc.store_fname), 'rb').read()
                             result.append(
                                 (objDoc.id, objDoc.datas_fname, base64.encodestring(value), isCheckedOutToMe, timeStamp))
                         else:
                             result.append((objDoc.id, objDoc.datas_fname, False, isCheckedOutToMe, timeStamp))
-                except Exception, ex:
-                    logging.error(
-                        "_data_get_files : Unable to access to document (" + str(objDoc.name) + "). Error :" + str(ex))
-                    result.append((objDoc.id, objDoc.datas_fname, False, True, self.GetServerTime(cr, uid, ids).strftime('%Y-%m-%d %H:%M:%S')))
+                except Exception as ex:
+                    logging.error("[_data_get_files] : Unable to access to document '{}'.".format(objDoc.name))
+                    logging.error("Exception raised was : %r" %(ex))
+                    result.append((objDoc.id, objDoc.datas_fname, False, True, self.GetServerTime().strftime('%Y-%m-%d %H:%M:%S')))
         return result
 
-    def _data_get(self, cr, uid, ids, name, arg, context=None):
+    @api.depends('store_fname', 'db_datas')
+    def _data_get(self):
         result = {}
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        ids=self._ids
         value = False
-        for objDoc in self.browse(cr, uid, ids, context=context):
+        for objDoc in self.browse(ids):
             if objDoc.type == 'binary':
                 if not objDoc.store_fname:
                     value = objDoc.db_datas
                     if not value or len(value) < 1:
-                        raise orm.except_orm(_('Stored Document Error'), _(
-                            "Document %s - %s cannot be accessed" % (str(objDoc.name), str(objDoc.revisionid))))
+                        raise UserError(_("Stored Document Error\nDocument '{}-{}' cannot be accessed.".format(objDoc.name,objDoc.revisionid)))
                 else:
-                    filestore = os.path.join(self._get_filestore(cr), objDoc.store_fname)
+                    filestore = os.path.join(self._get_filestore(), objDoc.store_fname)
                     if os.path.exists(filestore):
                         value = file(filestore, 'rb').read()
                 if value and len(value) > 0:
-                    result[objDoc.id] = base64.encodestring(value)
+                    objDoc.datas = base64.encodestring(value)
+                    result[objDoc.id] = objDoc.datas
                 else:
                     result[objDoc.id] = ''
         return result
 
-    def _data_set(self, cr, uid, oid, name, value, args=None, context=None):
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        oiDocument = self.browse(cr, uid, oid, context=context)
+    def _data_set(self):
+        oid=self.id
+        oiDocument=self
+        value=oiDocument.datas
         if oiDocument.type == 'binary':
             if not value:
                 filename = oiDocument.store_fname
                 try:
-                    os.unlink(os.path.join(self._get_filestore(cr), filename))
+                    os.unlink(os.path.join(self._get_filestore(), filename))
                 except:
                     pass
-                cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (oid,))
+                self._cr.execute('update plm_document set store_fname=NULL WHERE id=%s', (oid,))
                 return True
             try:
                 printout = False
@@ -219,68 +219,66 @@ class plm_document(orm.Model):
                 if oiDocument.preview:
                     preview = oiDocument.preview
                 db_datas = b''  # Clean storage field.
-                fname, filesize = self._manageFile(cr, uid, oid, binvalue=value, context=context)
-                cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s',
+                fname, filesize = self._manageFile(oid, binvalue=value)
+                self._cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s',
                            (fname, filesize, db_datas, oid))
-                context.update({'internal_writing':True})              
-                self.pool['plm.backupdoc'].create(cr, uid, {
-                    'userid': uid,
+                self.env['plm.backupdoc'].with_context({'internal_writing':True}).create({
+                    'userid': self._uid,
                     'existingfile': fname,
                     'documentid': oid,
                     'printout': printout,
                     'preview': preview
-                }, context=context)
+                })
 
                 return True
-            except Exception, ex:
-                raise orm.except_orm(_('Error in _data_set'), str(ex))
+            except Exception as ex:
+                logging.error("[_data_set] Error processing values.")
+                logging.error("Exception raised was: %r" %(ex))
         else:
             return True
 
-    def _explodedocs(self, cr, uid, oid, kinds, listed_documents=[], recursion=True, context=None):
+    def _explodedocs(self, oid, kinds, listed_documents=[], recursion=True):
         result = []
         if not(oid in listed_documents):
-            context = context or self.pool['res.users'].context_get(cr, uid)
-            documentRelation = self.pool['plm.document.relation']
-            docRelIds = documentRelation.search(cr, uid, [('parent_id', '=', oid), ('link_kind', 'in', kinds)], context=context)
-            if docRelIds:
-                for child in documentRelation.browse(cr, uid, docRelIds, context=context):
-                    if recursion:
-                        listed_documents.append(oid)
-                        result.extend(self._explodedocs(cr, uid, child.child_id.id, kinds, listed_documents, recursion, context=context))
-                    result.append(child.child_id.id)
+            
+            documentRelation = self.env['plm.document.relation']
+            for child in documentRelation.search([('parent_id', '=', oid), ('link_kind', 'in', kinds)]):
+                if recursion:
+                    listed_documents.append(oid)
+                    result.extend(self._explodedocs(child.child_id.id, kinds, listed_documents, recursion))
+                result.append(child.child_id.id)
         return result
 
-    def _relateddocs(self, cr, uid, oid, kinds, listed_documents=[], recursion=True, context=None):
+    def _relateddocs(self, oid, kinds, listed_documents=[], recursion=True):
         """
             Returns fathers (recursively) of this document.
         """
         result = []
         if not (oid in listed_documents):
-            context = context or self.pool['res.users'].context_get(cr, uid)
-            documentRelation = self.pool['plm.document.relation']
-            docRelIds=documentRelation.GetFathers(cr, uid, oid, kinds, context=context)
+            
+            documentRelation = self.env['plm.document.relation']
+            docRelIds=documentRelation.GetFathers(oid, kinds)
             for fthID in docRelIds.keys():
-                for father in documentRelation.browse(cr, uid, docRelIds[fthID], context=context):
+                for father in documentRelation.browse(docRelIds[fthID]):
                     if recursion:
                         listed_documents.append(oid)
-                        result.extend(self._relateddocs(cr, uid, father.parent_id.id, kinds, listed_documents, recursion, context=context))
+                        result.extend(self._relateddocs(father.parent_id.id, kinds, listed_documents, recursion))
                     if father.parent_id:
                         result.append(father.parent_id.id)
         return getCleanList(result)
 
-    def _data_check_files(self, cr, uid, ids, listedFiles=([], []), forceFlag=False, otherFlag=False, context=None):
+    def _data_check_files(self, ids, listedFiles=([], []), forceFlag=False, otherFlag=False):
         result = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         multiplyFactor = 1
         datefiles, listfiles = listedFiles
-        for objDoc in self.browse(cr, uid, getCleanList(ids), context=context):
+        for objDoc in self.browse(getCleanList(ids)):
             if objDoc.type == 'binary':
-                timeDoc = self.getLastTime(cr, uid, objDoc.id)
+                timeDoc = self.getLastTime(objDoc.id)
                 timeSaved = time.mktime(timeDoc.timetuple())
 
                 if not otherFlag:
-                    isCheckedOutToMe = self._is_checkedout_for_me(cr, uid, objDoc.id, context=context)
+                    isCheckedOutToMe = self._is_checkedout_for_me(objDoc.id)
                 elif otherFlag == 1:
                     isCheckedOutToMe = False
                 elif otherFlag == 2:
@@ -289,7 +287,7 @@ class plm_document(orm.Model):
                     collectable = True
                     isNewer = True
                 else:
-                    isCheckedOutToMe = self._is_checkedout_for_me(cr, uid, objDoc.id, context=context)
+                    isCheckedOutToMe = self._is_checkedout_for_me(objDoc.id)
 
                 if otherFlag < 2:
                     if (objDoc.datas_fname in listfiles):
@@ -314,26 +312,24 @@ class plm_document(orm.Model):
                 if (objDoc.file_size < 1) and (objDatas):
                     file_size = len(objDoc.datas)
                 else:
-                    if os.path.exists(os.path.join(self._get_filestore(cr), objDoc.store_fname)):
+                    if objDoc.store_fname and os.path.exists(os.path.join(self._get_filestore(), objDoc.store_fname)):
                         file_size = objDoc.file_size
                 if file_size < 1:
                     collectable = False
                 result.append((objDoc.id, objDoc.datas_fname, file_size, collectable * multiplyFactor, isCheckedOutToMe, timeDoc.strftime('%Y-%m-%d %H:%M:%S')))
         return getCleanList(result)
 
-    def _manageFile(self, cr, uid, oid, binvalue=None, context=None):
+    def _manageFile(self, oid, binvalue=None):
         """
             use given 'binvalue' to save it on physical repository and to read size (in bytes).
         """
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        path = self._get_filestore(cr)
+        
+        path = self._get_filestore()
         if not os.path.isdir(path):
             try:
                 os.makedirs(path)
             except:
-                raise orm.except_orm(_('Document Error'),
-                                     _("Permission denied or directory %s cannot be created." % (str(path))))
-
+                raise UserError(_("Document Error\nPermission denied or directory '{}' cannot be created.".format(path)))
         flag = None
         # This can be improved
         for dirs in os.listdir(path):
@@ -341,7 +337,7 @@ class plm_document(orm.Model):
                 flag = dirs
                 break
         if binvalue == None:
-            fileStream = self._data_get(cr, uid, [oid], name=None, arg=None, context=context)
+            fileStream = self._data_get([oid], name=None, arg=None)
             binvalue = fileStream[fileStream.keys()[0]]
 
         flag = flag or create_directory(path)
@@ -353,7 +349,7 @@ class plm_document(orm.Model):
         fobj.close()
         return (os.path.join(flag, filename), len(value))
 
-    def _iswritable(self, cr, uid, oid):
+    def _iswritable(self, oid):
         checkState = ('draft')
         if not oid.type == 'binary':
             logging.warning("_iswritable : Document (" + str(oid.name) + "-" + str(
@@ -369,22 +365,19 @@ class plm_document(orm.Model):
             return False
         return True
 
-    def GetNextDocumentName(self, cr, uid, request, context=None):
+    @api.model
+    def GetNextDocumentName(self, request):
         """
             Gets new document name from a an initial part name
         """
         ret= ""
         partName, length=request
         if partName and length:
-            context = context or self.pool['res.users'].context_get(cr, uid)
-            criteria=[( 'name', 'like', "{name}-".format(name=partName) + "_"*length )]
-            ids=self.search(cr, uid,  criteria, context=context)
-            count=len(ids)
+            count=len(self.search([('name', 'like', "{name}-".format(name=partName) + "_"*length )] ))
             while ret=="":
                 chkname="{name}-%0{length}d".format(name=partName,length=length)%(count)
                 count+=1
-                criteria=[('name', '=', chkname)]
-                docuIds = self.search(cr, uid, criteria, context=context)
+                docuIds = self.search([('name', '=', chkname)] )
                 if (docuIds==None) or (len(docuIds)==0):
                     ret=chkname
                 if count>1000:
@@ -393,101 +386,103 @@ class plm_document(orm.Model):
                     break
         return ret
 
-    def CheckIn(self, cr, uid, ids, context=None):
+    @api.model
+    def CheckIn(self, ids):
         """
             Executes Check-In on requested document
         """
-        idChks=[]
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        objCheckOut=self.pool['plm.checkout']
-        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
-            idChks.extend(objCheckOut.search(cr,uid,[('documentid', '=', tmpObject.id)], context=context))
-        context.update({'internal_writing': True})
-        return objCheckOut.unlink(cr, uid, idChks, context=context)
+        objCheckOut=self.env['plm.checkout']
+        for tmpObject in self.browse(getListIDs(ids)):
+            for checkObj in objCheckOut.search([('documentid', '=', tmpObject.id)] ):
+                checkObj.with_context({'internal_writing':True}).unlink()
+        return True
 
-    def CheckOut(self, cr, uid, request, context=None):
+    @api.model
+    def CheckOut(self, request):
         """
             Executes Check-In on requested document
         """
         ret=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing': True})
         ids, hostName, pwsPath=request
-        objCheckOut=self.pool['plm.checkout']
-        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
-            if objCheckOut.create(cr, uid, {
-                            'documentid':tmpObject.id, 'userid':uid, 'hostname':hostName, 'hostpws':pwsPath
-                            }, context=context):
+        objCheckOut=self.env['plm.checkout']
+        for tmpObject in self.browse(getListIDs(ids)):
+            if objCheckOut.with_context({'internal_writing':True}).create({
+                            'documentid':tmpObject.id, 'userid':self._uid, 'hostname':hostName, 'hostpws':pwsPath
+                            }):
                 ret=True
         return ret
 
-    def CheckInRecursive(self, cr, uid, ids, context=None):
+    @api.model
+    def CheckInRecursive(self, ids):
         """
              Executes recursive Check-In starting from requested document.
               Returns list of involved files.
        """
         ret=[]
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        for idDoc,namefile,_,_,_,_ in self.checkAllFiles(cr, uid, [getListIDs(ids),[[],[]],False], context=context):
-            if self.CheckIn(cr, uid, idDoc, context=context):
+        
+        for idDoc,namefile,_,_,_,_ in self.checkAllFiles([getListIDs(ids),[[],[]],False]):
+            if self.CheckIn(idDoc):
                 ret.append(namefile)
         return getCleanList(ret)
 
-    def CheckOutRecursive(self, cr, uid, request, context=None):
+    @api.model
+    def CheckOutRecursive(self, request):
         """
              Executes recursive Check-Out starting from requested document.
               Returns list of involved files.
        """
         ret=[]
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         ids, hostName, pwsPath=request
-        for idDoc,namefile,_,_,_,_ in self.checkAllFiles(cr, uid, [getListIDs(ids),[[],[]],False], context=context):
-            if self.CheckOut(cr, uid, [idDoc, hostName, pwsPath], context=context):
+        for idDoc,namefile,_,_,_,_ in self.checkAllFiles([getListIDs(ids),[[],[]],False]):
+            if self.CheckOut([idDoc, hostName, pwsPath]):
                 ret.append(namefile)
         return getCleanList(ret)
 
-    def IsSaveable(self, cr, uid, ids, context=None):
+    @api.model
+    def IsSaveable(self, ids):
         """
             Answers about capability to save requested document
         """
         ret=True
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
-            ret=ret and self._iswritable(cr, uid, tmpObject.id)
+        
+        for tmpObject in self.browse(getListIDs(ids)):
+            ret=ret and self._iswritable(tmpObject.id)
         return ret
 
-    def IsRevisable(self, cr, uid, ids, context=None):
+    @api.model
+    def IsRevisable(self, ids):
         """
             Answers about capability to create a new revision of current document
         """
         ret=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
+        
+        for tmpObject in self.browse(getListIDs(ids)):
             if tmpObject.state in ['released','undermodify','obsoleted']:
                 ret=True
                 break
         return ret
 
-    def NewRevision(self, cr, uid, request, context=None):
+    @api.model
+    def NewRevision(self, request):
         """
             Creates a new revision of the document
         """
         newID = False
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing': True, 'new_revision': True})
         newIndex = 0
         ids, hostName, pwsPath=request
-        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
-            latestIDs = self.GetLatestIds(cr, uid, [(tmpObject.name, tmpObject.revisionid, False)], context=context)
-            for oldObject in self.browse(cr, uid, latestIDs, context=context):
-                if isAnyReleased(self, cr, uid, oldObject.id, context=context):
+        thisContext={ 'internal_writing':True, 'new_revision':True, }        
+        for tmpObject in self.browse(getListIDs(ids)):
+            latestIDs = self.GetLatestIds([(tmpObject.name, tmpObject.revisionid, False)] )
+            for oldObject in self.browse(latestIDs):
+                if isAnyReleased(self, oldObject.id):
                     note={
                             'type': 'revision process',
                             'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
                          }
-                    self._insertlog(cr, uid, oldObject.id, note=note, context=context)
-                    docsignal=get_signal_workflow(self, cr, uid, oldObject, 'undermodify', context=context)
-                    move_workflow(self, cr, uid, [oldObject.id], docsignal, 'undermodify', context=context)
+                    self._insertlog(oldObject.id, note=note)
+                    docsignal=get_signal_workflow(oldObject, 'undermodify')
+                    move_workflow(self, [oldObject.id], docsignal, 'undermodify')
                     newIndex=int(oldObject.revisionid) + 1
                     default = {
                                 'name': oldObject.name,
@@ -496,44 +491,45 @@ class plm_document(orm.Model):
                                 'writable': True,
                                 'state': 'draft',
                                 'linkedcomponents': [(5)],  # Clean attached products for new revision object
-                                }
-                    tmpID = super(plm_document, self).copy(cr, uid, oldObject.id, default, context=context)
+                               }
+                    tmpID = oldObject.with_context(thisContext).copy(default)
                     if tmpID!=None:
-                        newID = tmpID
+                        wf_message_post(self, [oldObject.id], body='Created : New Revision.')
+                        newID = tmpID.id
                         note={
                                 'type': 'revision process',
                                 'reason': "Created new revision '{index}' for document '{name}'.".format(index=newIndex,name=oldObject.name),
                              }
-                        self._insertlog(cr, uid, newID, note=note, context=context)
-                        self.CheckOut(cr, uid, [[newID], hostName, pwsPath], context=context)            # Take in Check-Out the new Document revision.
-                        
-                        self._copy_DocumentBom(cr, uid, oldObject.id, newID, context=context)
-                        self._cleanComponentLinks(cr, uid, [(newID,False)], context=context)
-                        self.write(cr, uid, newID, default, context=context)
+                        self._insertlog(newID, note=note)
+                        self.CheckOut([[newID], hostName, pwsPath])             # Take in Check-Out the new Document revision.
+    
+                        self._copy_DocumentBom(oldObject.id, newID)
+                        self._cleanComponentLinks([(newID,False)])
+                        tmpID.with_context(thisContext).write(default)
                         note={
                                 'type': 'revision process',
                                 'reason': "Copied Document Relations to new revision '{index}' for document '{name}'.".format(index=newIndex,name=oldObject.name),
                              }
-                        self._insertlog(cr, uid, newID, note=note, context=context)
+                        self._insertlog(newID, note=note)
             break
         return (newID, newIndex)
 
-    def NewMinorRevision(self,cr,uid,request,context=None):
+    @api.model
+    def NewMinorRevision(self, request):
         """
             create a new revision of the document
         """
         newID=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing': True})
+        thisContext={ 'internal_writing':True, 'new_revision':True, }
         ids, hostName, pwsPath=request
-        for tmpObject in self.browse(cr, uid, ids, context=context):
-            latestIDs=self.GetLatestIds(cr, uid,[(tmpObject.name,tmpObject.revisionid,False)], context=context)
-            for oldObject in self.browse(cr, uid, latestIDs, context=context):
+        for tmpObject in self.browse(ids):
+            latestIDs=self.GetLatestIds([(tmpObject.name,tmpObject.revisionid,False)] )
+            for oldObject in self.browse(latestIDs):
                 note={
                         'type': 'minor revision process',
                         'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
                      }
-                self._insertlog(cr, uid, oldObject.id, note=note, context=context)
+                self._insertlog(oldObject.id, note=note)
                 newminor=getnewminor(oldObject.minorrevision)
                 default={
                         'name':oldObject.name,
@@ -544,49 +540,57 @@ class plm_document(orm.Model):
                         'writable':True,
                         'state':'draft',
                 }
-                tmpID=super(plm_document,self).copy(cr, uid, oldObject.id, default, context=context)
+                tmpID=oldObject.with_context(thisContext).copy(default)
                 if tmpID!=None:
-                    newID = tmpID
+                    wf_message_post(self, [oldObject.id], body='Created : New Minor Revision.')
+                    newID = tmpID.id
                     note={
                             'type': 'minor revision process',
                             'reason': "Created new minor revision '{index}' for '{old}'.".format(index=newminor,old=oldObject.name),
                          }
-                    self._insertlog(cr, uid, tmpID, note=note, context=context)
-                    self.CheckOut(cr, uid, [[newID], hostName, pwsPath], context=context)             # Take in Check-Out the new Document revision.
-                    self.write(cr, uid, newID, {'writable':True, 'state':'draft' }, context=context)
+                    self._insertlog(newID, note=note)
+                    self.CheckOut([[newID], hostName, pwsPath])             # Take in Check-Out the new Document revision.
+                    tmpID.with_context(thisContext).write(default)
             break
         return (newID, default['revisionid'], default['minorrevision']) 
 
-    def Clone(self, cr, uid, request, default={}, context=None):
+    @api.model
+    def Clone(self, request):
         """
              Creates a new copy of the document
        """
         exitValues = {}
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        ids, hostName, pwsPath=request
-        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
+        ids, hostName, pwsPath, default=request
+        for tmpObject in self.browse(getListIDs(ids)):
             note={
                     'type': 'clone object',
                     'reason': "Creating new cloned entity starting from '{old}'.".format(old=tmpObject.name),
                  }
-            self._insertlog(cr, uid, tmpObject.id, note=note, context=context)
-            newID = self.copy(cr, uid, tmpObject.id, default, context=context)
-            if newID:
-                newEnt = self.browse(cr, uid, newID, context=context)
-                exitValues['_id'] = newID
-                exitValues['name'] = newEnt.name
-                exitValues['revisionid'] = newEnt.revisionid
-                self.CheckOut(cr, uid, [[newID], hostName, pwsPath], context=context)             # Take in Check-Out the new Document revision.
+            self._insertlog(tmpObject.id, note=note)
+            tmpID=tmpObject.with_context({'internal_writing':True}).copy(default)
+            if tmpID!=None:
+                newID = tmpID.id
+                exitValues = {
+                            '_id': newID,
+                            'name': "Copy of {name}".format(name=tmpID.name),
+                            'revisionid': 0,
+                            'minorrevision':"A",
+                            'writable': True,
+                            'state': 'draft',
+                            }
+                wf_message_post(self, [newID], body="Cloned : starting from '{name}-{rev}'.".format(name=tmpID.name, rev=tmpID.revisionid))
+                self.CheckOut([[newID], hostName, pwsPath])             # Take in Check-Out the new Document revision.
                 break
         return packDictionary(exitValues)
 
-    def CloneVirtual(self, cr, uid, ids, default={}, context=None):
+    @api.model
+    def CloneVirtual(self, ids, default={}):
         """
             Creates a false new copy of the document
         """
         exitValues = {}
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
+        
+        for tmpObject in self.browse(getListIDs(ids)):
             new_name = "Copy of {name}".format(name=tmpObject.name)
             exitValues['_id'] = False
             exitValues['name'] = new_name
@@ -598,14 +602,13 @@ class plm_document(orm.Model):
             break
         return packDictionary(exitValues)
 
-    def getDocumentID(self,cr ,uid, document, context=None):
+    def getDocumentID(self, document):
         """
             Gets ExistingID from document values.
         """
         existingID=False
         execution=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
-
+ 
         fullNamePath='full_file_name'
         if (fullNamePath in document) and document[fullNamePath]:
             execution=True
@@ -638,18 +641,18 @@ class plm_document(orm.Model):
                         criteria.append( ('minorrevision', '=', document['minorrevision']) )
                         order=None
             if criteria:
-                existingIDs = self.search(cr, uid, criteria, order=order, context=context)
+                existingIDs = self.search(criteria, order=order)
                 if existingIDs:
-                    existingIDs.sort()
-                    existingID = existingIDs[len(existingIDs) - 1]
+                    existingID = existingIDs[len(existingIDs) - 1].id
             return existingID
         
-    def CheckDocumentsToSave(self, cr, uid, documents, default=None, context=None):
+    @api.model
+    def CheckDocumentsToSave(self, documents, default=None):
         """
             Save or Update Documents
         """
         retValues = {}
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         listedDocuments=[]
         fullNamePath='full_file_name'
         for document in unpackDictionary(documents):
@@ -669,17 +672,17 @@ class plm_document(orm.Model):
             if document['name'] in listedDocuments:
                 continue
 
-            existingID=self.getDocumentID(cr, uid, document, context=context)
+            existingID=self.getDocumentID(document)
 
             if existingID:
                 hasSaved = False
-                hasCheckedOut=self._is_checkedout_for_me(cr, uid, existingID, context=context)
+                hasCheckedOut=self._is_checkedout_for_me(existingID)
                 if hasCheckedOut:
-                    objDocument = self.browse(cr, uid, existingID, context=context)
+                    objDocument = self.browse(existingID)
                     if ('_lastupdate' in document) and document['_lastupdate']:
                         lastupdate=datetime.strptime(str(document['_lastupdate']),'%Y-%m-%d %H:%M:%S')
-                        logging.debug("CheckDocumentsToSave : time db : {timedb} time file : {timefile}".format(timedb=self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S'), timefile=document['_lastupdate']))
-                        if self._iswritable(cr, uid, objDocument) and self.getLastTime(cr, uid, existingID) < lastupdate:
+                        logging.debug("CheckDocumentsToSave : time db : {timedb} time file : {timefile}".format(timedb=self.getLastTime(existingID).strftime('%Y-%m-%d %H:%M:%S'), timefile=document['_lastupdate']))
+                        if self._iswritable(objDocument) and self.getLastTime(existingID) < lastupdate:
                             hasSaved = True
 
             retValues[getFileName(document[fullNamePath])]={
@@ -690,18 +693,17 @@ class plm_document(orm.Model):
         return packDictionary(retValues)
 
 
-    def SaveOrUpdate(self, cr, uid, request, default=None, context=None):
+    @api.model
+    def SaveOrUpdate(self, request, default=None):
         """
             Save or Update Documents
         """
         retValues = {}
-        context = context or self.pool['res.users'].context_get(cr, uid)
         listedDocuments=[]
         fullNamePath='datas_fname'
         documents, [hostName,pwsPath]=unpackDictionary(request)
-        modelFields=self.pool['plm.config.settings'].GetFieldsModel(cr, uid,self._name, context=context)
+        modelFields=self.env['plm.config.settings'].GetFieldsModel(self._name)
         for document in documents:
-            context.update({'internal_writing': False})
             document=getCleanBytesDictionary(document)
             hasSaved = False
             hasCheckedOut=False
@@ -733,30 +735,31 @@ class plm_document(orm.Model):
                 del (document[fieldName])
             if not existingID:
                 logging.debug("[SaveOrUpdate] Document {name} is creating.".format(name=document['name']))
-                context.update({'internal_writing': True})
-                existingID = self.create(cr, uid, document, context=context)
-                if autocheckout:
-                    hasCheckedOut=self.CheckOut(cr, uid, [existingID, hostName, pwsPath], context=context)
-                hasSaved = True
+                objectItem=self.with_context({'internal_writing':True}).create(document)
+                if objectItem:
+                    existingID=objectItem.id
+                    if autocheckout:
+                        hasCheckedOut=self.CheckOut([existingID, hostName, pwsPath])
+                    hasSaved = True
             else:
                 if autocheckout:
-                    hasCheckedOut=self._is_checkedout_for_me(cr, uid, existingID, context=context)
+                    hasCheckedOut=self._is_checkedout_for_me(existingID)
                 else:
                     hasCheckedOut=True
                 if hasCheckedOut:
-                    objDocument = self.browse(cr, uid, existingID, context=context)
+                    objDocument = self.browse(existingID)
                     if objDocument:
                         document['revisionid']=objDocument.revisionid
-                        if self._iswritable(cr, uid, objDocument) and (self.getLastTime(cr, uid, existingID) < lastupdate):
+                        if self._iswritable(objDocument) and (self.getLastTime(existingID) < lastupdate):
                             logging.debug("[SaveOrUpdate] Document {name}/{revi} is updating.".format(name=document['name'],revi=document['revisionid']))
                             hasSaved = True
-                            if not self.write(cr, uid, [existingID], document, context=context):
+                            if not objDocument.with_context({'internal_writing':False}).write(document):
                                 logging.error("[SaveOrUpdate] Document {name}/{revi} cannot be updated.".format(name=document['name'],revi=document['revisionid']))
                                 hasSaved = False
                     else:
                         logging.error("[SaveOrUpdate] Document {name}/{revi} doesn't exist anymore.".format(name=document['name'],revi=document['revisionid']))
                 else:
-                    userName=self.getUserSign(cr, uid, uid, context=context)
+                    userName=self.getUserSign(self._uid)
                     logging.error("[SaveOrUpdate] Document {name}/{revi} was not checked-out for {user}.".format(name=document['name'],revi=document['revisionid'],user=userName))
    
             retValues[getFileName(document[fullNamePath])]={
@@ -766,270 +769,272 @@ class plm_document(orm.Model):
             listedDocuments.append(document['name'])
         return packDictionary(retValues)
 
-    def CleanUp(self, cr, uid, ids, default=None, context=None):
+    @api.model
+    def RegMessage(self, request, default=None):
+        """
+            Registers a message for requested document
+        """
+        oid, message = request
+        self.wf_message_post([oid], body=message)
+        return False
+
+    @api.model
+    def CleanUp(self, ids, default=None):
         """
             Remove faked documents
         """
-        cr.execute("delete from plm_document where store_fname=NULL and type='binary'")
+        self._cr.execute("delete from plm_document where store_fname=NULL and type='binary'")
         return True
 
-    def QueryLast(self, cr, uid, request=([], []), default=None, context=None):
+    @api.model
+    def QueryLast(self, request=([], []), default=None):
         """
             Query to return values based on columns selected.
         """
         expData = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
         queryFilter, columns = request
         if len(columns) < 1:
             return expData
         if 'revisionid' in queryFilter:
             del queryFilter['revisionid']
-        allIDs=self.search(cr, uid, queryFilter, order='revisionid', context=context)
+        allIDs=self.search(queryFilter, order='revisionid')
         if len(allIDs) > 0:
-            tmpData = self.export_data(cr, uid, allIDs, columns)
+            tmpData = allIDs.export_data(columns)
             if 'datas' in tmpData:
                 expData = tmpData['datas']
         return expData
 
-    def _cleanComponentLinks(self, cr, uid, relations=[], context=None):
+    def _cleanComponentLinks(self, relations=[]):
         """
             Clean document component relations..
         """
-        objType = self.pool['plm.component.document.rel']
-        objType.CleanStructure(cr, uid, relations, context=context)
+        objType = self.env['plm.component.document.rel']
+        objType.CleanStructure(relations)
 
-
-    def _copy_DocumentBom(self, cr, uid, idStart, idDest=None, context=None):
+    def _copy_DocumentBom(self, idStart, idDest=None):
         """
             Create a new 'bomType' BoM (arrested at first level BoM children).
         """
         default = {}
         if not idDest:
             idDest=idStart
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        checkObjDest = self.browse(cr, uid, idDest, context=context)
+        
+        checkObjDest = self.browse(idDest)
         if checkObjDest:
-            objBomType = self.pool['plm.document.relation']
-            objBoms = objBomType.search(cr, uid, [('parent_id', '=', idDest), ], context=context)
-            idBoms = objBomType.search(cr, uid, [('parent_id', '=', idStart), ], context=context)
+            objBomType = self.env['plm.document.relation']
+            objBoms = objBomType.search([('parent_id', '=', idDest), ])
+            idBoms = objBomType.search([('parent_id', '=', idStart), ])
             if not objBoms:
-                for oldObj in objBomType.browse(cr, uid, getListIDs(idBoms), context=context):
+                for oldObj in idBoms:
                     default={
                              'parent_id': idDest,
                              'child_id': oldObj.child_id.id,
-                             'kind': oldObj.link_kind,
+                             'link_kind': oldObj.link_kind,
                              'configuration': '',
-                             'userid': False,
                              }
-                    objBomType.create(cr,uid, default, context=context)
+                    objBomType.create(default)
         return False
                     
-    def ischecked_in(self, cr, uid, ids, context=None):
+    def ischecked_in(self, ids):
         """
             Check if a document is checked-in 
         """
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        checkoutType = self.pool['plm.checkout']
+        
+        checkoutType = self.env['plm.checkout']
 
-        for document in self.browse(cr, uid, getListIDs(ids), context=context):
-            if checkoutType.search(cr, uid, [('documentid', '=', document.id)], context=context):
+        for document in self.browse(getListIDs(ids)):
+            if checkoutType.search([('documentid', '=', document.id)]):
                 logging.warning(
                     _("The document %s - %s has not checked-in" % (str(document.name), str(document.revisionid))))
                 return False
         return True
 
-    def logging_workflow(self, cr, uid, ids, action, status, context=None):
+    def logging_workflow(self, ids, action, status):
         note={
                 'type': 'workflow movement',
                 'reason': "Applying workflow action '{action}', moving to status '{status}.".format(action=action, status=status),
              }
-        self._insertlog(cr, uid, ids, note=note, context=context)
+        self._insertlog(ids, note=note)
 
-    def _action_onrelateddocuments(self, cr, uid, ids, default={}, action="", status="", context=None):
+    def _action_onrelateddocuments(self, ids, default={}, action="", status=""):
         """
             Move workflow on documents related to given ones.
         """
+        ret=False
         fthkindList = ['RfTree', 'LyTree']          # Get relation names due to fathers
         chnkindList = ['HiTree','RfTree', 'LyTree'] # Get relation names due to children
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context['internal_writing']=True
+        
         allIDs=getCleanList(ids)
-        relIDs = self.getRelatedDocs(cr, uid, ids, fthkindList, chnkindList, context=context)
+        relIDs = self.getRelatedDocs(ids, fthkindList, chnkindList)
         allIDs.extend(relIDs)                   # Force to obtain involved documents
         docIDs=list(set(allIDs)-set(ids))       # Force to obtain only related documents
-        for currObj in self.browse(cr, uid, docIDs, context=context):
-            docsignal=get_signal_workflow(self, cr, uid, currObj, status, context=context)
-            move_workflow(self, cr, uid, [currObj.id], docsignal, status, context=context)
-        ret=self.write(cr, uid, ids, default, context=context)
-        self.logging_workflow(cr, uid, ids, action, status, context=context)
+        for currObj in self.browse(docIDs):
+            docsignal=get_signal_workflow(currObj, action)
+            move_workflow(self,[currObj.id], action, docsignal)
+        ret=self.browse(ids).with_context({'internal_writing':True}).write(default)
+        if ret:
+            wf_message_post(self, allIDs, body='Status moved to: {status}.'.format(status=status))
         return ret
  
-    def ActionUpload(self, cr, uid, ids, context=None):
+    @api.model
+    def ActionUpload(self, ids):
         """
             action to be executed after automatic upload
         """
         signal='uploaddoc'
-        signal_workflow(self, cr, uid, ids, signal)
+        signal_workflow(self, ids, signal)
         return False
 
-    def action_upload(self,cr,uid,ids,context=None):
+    @api.multi
+    def action_upload(self):
         """
             action to be executed after automatic upload
         """
         status='uploaded'
         action = 'upload'
+        ids=self._ids
         default = {
                     'writable': False,
                     'state': status,
                     }
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing': True})
-        self.logging_workflow(cr, uid, ids, default, action, status, context=context)
-        return self._action_onrelateddocuments(cr, uid, ids, default, action, status, context=context)
+        
+        self.logging_workflow(ids, default, action, status)
+        return self._action_onrelateddocuments(ids, default, action, status)
 
-    def action_draft(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_draft(self):
         """
             release the object
         """
         status='draft'
         action = 'draft'
+        ids=self._ids
         default = {
                     'writable': True,
                     'state': status,
                     }
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        return self._action_onrelateddocuments(cr, uid, ids, default, action, status, context=context)
+        
+        return self._action_onrelateddocuments(ids, default, action, status)
 
-    def action_correct(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_correct(self):
         """
             release the object
         """
         status='draft'
         action = 'correct'
+        ids=self._ids
         default = {
                     'writable': True,
                     'state': status,
                     }
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        return self._action_onrelateddocuments(cr, uid, ids, default, action, status, context=context)
+        
+        return self._action_onrelateddocuments(ids, default, action, status)
 
-    def action_confirm(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_confirm(self):
         """
             action to be executed for Draft state
         """
         ret=False
         status='confirmed'
         action='confirm'
+        ids=self._ids
         default = {
                    'writable': False,
                    'state': status
                    }
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        if self.ischecked_in(cr, uid, ids, context=context):
-            ret=self._action_onrelateddocuments(cr, uid, ids, default, action, status, context=context)
+        
+        if self.ischecked_in(ids):
+            ret=self._action_onrelateddocuments(ids, default, action, status)
         else:
-            signal_workflow(self, cr, uid, ids, 'correct')
+            signal_workflow(self, ids, 'correct')
         return ret
 
-    def action_release(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_release(self):
         """
             release the object
         """
         status='released'
         action = 'release'
+        ids=self._ids
         default = {
                     'writable': False,
                     'state': status,
                     }
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing': True})
-        for oldObject in self.browse(cr, uid, ids, context=context):
-            last_ids = self._getbyrevision(cr, uid, oldObject.name, oldObject.revisionid - 1, context=context)
-            if last_ids:
-                move_workflow(self, cr, uid, last_ids, 'obsolete', 'obsoleted', context=context)
-        return self._action_onrelateddocuments(cr, uid, ids, default, action, status, context=context)
+        
+        for oldObject in self.browse(ids):
+            for last_id in self._getbyrevision(oldObject.name, oldObject.revisionid - 1):
+                move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
+        return self._action_onrelateddocuments(ids, default, action, status)
 
-    def action_obsolete(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_obsolete(self):
         """
             obsolete the object
         """
+        ids=self._ids
         status='obsoleted'
         action = 'obsolete'
-
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing': True})
-
-        for oldObject in self.browse(cr, uid, ids, context=context):
-            move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
+        for oldObject in self.browse(ids):
+            move_workflow(self, oldObject.id, action, status)
+        wf_message_post(self, ids, body='Status moved to: {status}.'.format(status=status))
         return True
 
-    def action_modify(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_modify(self):
         """
             modify the object
         """
+        ids=self._ids
         status='undermodify'
         action = 'modify'
-
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing': True})
-
-        for oldObject in self.browse(cr, uid, ids, context=context):
-            move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
+        for oldObject in self.browse(ids):
+            move_workflow(self, oldObject.id, action, status)
+        wf_message_post(self, ids, body='Status moved to: {status}.'.format(status=status))
         return True
 
+    @api.one
+    def _get_checkout_state(self):
+        chechRes = self.getCheckedOut(self.id, None)
+        if chechRes:
+            self.checkout_user = str(chechRes[2])
+        else:
+            self.checkout_user = ''
+        
+    @api.one
+    def _is_checkout(self):
+        chechRes = self.getCheckedOut(self.id, None)
+        if chechRes:
+            self.is_checkout = True
+        else:
+            self.is_checkout = False
+    
     #   Overridden methods for this entity
-    def _get_filestore(self, cr):
+ 
+    def _get_filestore(self):
         dms_Root_Path = tools_config.get('document_path', os.path.join(tools_config['root_path'], 'filestore'))
-        return os.path.join(dms_Root_Path, cr.dbname)
+        return os.path.join(dms_Root_Path, self._cr.dbname)
 
-    def search(self, cr, uid, args, offset=0, limit=None, order=None, context=None, count=False):
-        # Grab ids, bypassing 'count'
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        ids = orm.Model.search(self, cr, uid, args, offset=offset, limit=limit, order=order, context=context, count=False)
-        if not ids:
-            return 0 if count else []
-
-        # Filter out documents that are in directories that the user is not allowed to read.
-        # Must use pure SQL to avoid access rules exceptions (we want to remove the records,
-        # not fail), and the records have been filtered in parent's search() anyway.
-        cr.execute('SELECT id, parent_id from plm_document WHERE id in %s', (tuple(ids),))
-
-        # cont a dict of parent -> attach
-        parents = {}
-        for attach_id, attach_parent in cr.fetchall():
-            parents.setdefault(attach_parent, []).append(attach_id)
-        parent_ids = parents.keys()
-
-        # filter parents
-        visible_parent_ids = self.pool['document.directory'].search(cr, uid, [('id', 'in', list(parent_ids))])
-
-        # null parents means allowed
-        ids = parents.get(None, [])
-        for parent_id in visible_parent_ids:
-            ids.extend(parents[parent_id])
-
-        return len(ids) if count else ids
-
-    def copy(self, cr, uid, oid, default={}, context=None):
-        """
-            Overwrite the default copy method
-        """
+    @api.multi
+    def copy(self, default={}):
         newID = False
         previous_name=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        oid=self.id
+        
         # get All document relation
-        documentRelation = self.pool['plm.document.relation']
-        docRelIds = documentRelation.search(cr, uid, [('parent_id', '=', oid)], context=context)
-        if not context.get('new_revision', False):
-            previous_name = self.browse(cr, uid, oid, context=context).name
+        documentRelation = self.env['plm.document.relation']
+        if not self._context.get('new_revision', False):
+            previous_name = self.browse(oid).name
             if not 'name' in default:
                 new_name = 'Copy of %s' % previous_name
-                l = self.search(cr, uid, [('name', '=', new_name)], order='revisionid', context=context)
-                if len(l) > 0:
-                    new_name = '%s (%s)' % (new_name, len(l) + 1)
+                lenny = self.search([('name', '=', new_name)], order='revisionid')
+                if len(lenny) > 0:
+                    new_name = '%s (%s)' % (new_name, len(lenny) + 1)
                 default['name'] = new_name
             # manage copy of the file
-            fname, filesize = self._manageFile(cr, uid, oid, context=context)
+            fname, filesize = self._manageFile(oid)
             # assign default value
             default['store_fname'] = fname
             default['file_size'] = filesize
@@ -1039,30 +1044,36 @@ class plm_document(orm.Model):
                 'type': 'copy object',
                 'reason': "Previous name was '{old} new one is '{new}'.".format(old=previous_name,new=new_name),
                  }
-            self._insertlog(cr, uid, oid, note=note, context=context)
+            self._insertlog(oid, note=note)
 
-        tmpID = super(plm_document, self).copy(cr, uid, oid, default, context=context)
+        tmpID = super(plm_document, self).copy(default)
         if tmpID!=None:
             newID = tmpID
             # create all the document relation
-            for OldRel in documentRelation.browse(cr, uid, getListIDs(docRelIds), context=context):
-                documentRelation.create(cr, uid, {
-                    'parent_id': newID,
+            for OldRel in documentRelation.search([('parent_id', '=', oid)]):
+                documentRelation.create({
+                    'parent_id': newID.id,
                     'child_id': OldRel.child_id.id,
                     'configuration': OldRel.configuration,
                     'link_kind': OldRel.link_kind,
-                }, context=context)
+                })
+        if newID and previous_name:
+            wf_message_post(self, [newID.id], body='Copied starting from : {value}.'.format(value=previous_name))
         return newID
 
-    def create(self, cr, uid, vals, context=None):
+    @api.model
+    def create(self, vals=None):
         ret=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         if vals and vals.get('name', False):
-            existingID=self.getDocumentID(cr, uid, vals, context=context)
+            existingID=self.getDocumentID(vals)
             if existingID:
-                ret=existingID
+                ret=self.browse(existingID)
             else:
                 try:
+                    status=vals.get('state','draft')
+                    vals.update({'state': status})
+
                     minor=vals.get('minorrevision',False)
                     if not minor:
                         minor=vals['minorrevision']="A"
@@ -1070,199 +1081,133 @@ class plm_document(orm.Model):
                     if not major:
                         major=vals['revisionid']=0
                     
-                    ret=super(plm_document, self).create(cr, uid, vals, context=context)
-                    values={
-                            'name': vals['name'],
-                            'revision': "{major}-{minor}".format(major=major,minor=minor),
-                            'file': vals['datas_fname'],
-                            'type': self._name,
-                            'op_type': 'creation',
-                            'op_note': 'Create new entity on database',
-                            'op_date': datetime.now(),
-                            'userid': uid,
-                            }
-                    self.pool['plm.logging'].create(cr, uid, values, context=context)
-                except Exception, ex:
+                    objectItem=super(plm_document, self).create(vals)
+                    if objectItem:
+                        ret=objectItem                      # Returns the objectItem instead the id to be coherent
+                        values={
+                                'name': vals['name'],
+                                'revision': "{major}-{minor}".format(major=major,minor=minor),
+                                'file': vals['datas_fname'],
+                                'type': self._name,
+                                'op_type': 'creation',
+                                'op_note': 'Create new entity on database',
+                                'op_date': datetime.now(),
+                                'userid': self._uid,
+                                }
+                        self.env['plm.logging'].create(values)
+                except Exception as ex:
                     logging.error("Exception {msg}. It has tried to create with values : {vals}.".format(msg=ex, vals=vals))
         return ret
 
-    def write(self, cr, uid, ids, vals, context=None):
+    @api.multi
+    def write(self, vals):
         ret=True
         if vals:
-            context = context or self.pool['res.users'].context_get(cr, uid)
-            check=context.get('internal_writing', False)
+            ids=self._ids
+            check=self._context.get('internal_writing', False)
             if not check:
-                for docItem in self.browse(cr, uid, ids, context=context):
-                    if not isDraft(self,cr, uid, docItem.id, context=context):
-                    
-                        raise orm.except_orm(_('Edit Entity Error'),
-                                             _("The entity '{name}-{rev}' is in a status that does not allow you to make save action".format(name=docItem.name,rev=docItem.revisionid)))
+                for docItem in self.browse(ids):
+                    if not isDraft(self, docItem.id):
+                        raise UserError(_("Edit Entity Error.\n\nThe entity '{name}-{rev}' is in a status that does not allow you to make save action.".format(name=docItem.name,rev=docItem.revisionid)))
                         ret=False
                         break
                     if not docItem.writable:
-                        raise orm.except_orm(_('Edit Entity Error'),
-                                             _("The entity '{name}-{rev}' cannot be written.".format(name=docItem.name,rev=docItem.revisionid)))
+                        raise UserError(_("Edit Entity Error.\n\nThe entity '{name}-{rev}' cannot be written.".format(name=docItem.name,rev=docItem.revisionid)))
                         break
             if ret:
-                self._insertlog(cr, uid, ids, changes=vals, context=context)
-                ret=super(plm_document, self).write(cr, uid, ids, vals, context=context)
+                self._insertlog(ids, changes=vals)
+                ret=super(plm_document, self).write(vals)
         return ret
 
-    def unlink(self, cr, uid, ids, context=None):
+    @api.multi
+    def unlink(self):
         ret=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        isAdmin = isAdministrator(self, cr, uid, context=context)
+        ids=self._ids
+        isAdmin = isAdministrator(self)
 
-        if not self.pool['plm.document.relation'].IsChild(cr, uid, ids, context=context):
+        if not self.env['plm.document.relation'].IsChild(ids):
             note={
                 'type': 'unlink object',
                 'reason': "Removed entity from database.",
              }
-            for checkObj in self.browse(cr, uid, ids, context=context):
+            for checkObj in self.browse(ids):
                 checkApply=False
-                if isAnyReleased(self, cr, uid, checkObj.id, context=context):
+                if isAnyReleased(self, checkObj.id):
                     if isAdmin:
                         checkApply=True
-                elif isDraft(self, cr, uid, checkObj.id, context=context):
+                elif isDraft(self, checkObj.id):
                     checkApply=True
 
                 if not checkApply:
                     continue            # Apply unlink only if have respected rules.
-    
-                existingIDs = self.search(cr, uid, [
-                                        ('name', '=', checkObj.name), 
-                                        ('revisionid', '=', checkObj.revisionid - 1)
-                                        ])
+                criteria=[
+                            ('name', '=', checkObj.name), 
+                            ('revisionid', '=', checkObj.revisionid - 1)
+                        ]
+                existingIDs = self.search(criteria)
                 if len(existingIDs) > 0:
                     status='released'
-                    context.update({'internal_writing': True})
-                    for document in self.browse(cr, uid, getListIDs(existingIDs), context=context):
-                        docsignal=get_signal_workflow(self, cr, uid, document, status, context=context)
-                        move_workflow(self, cr, uid, [document.id], docsignal, status, context=context)
-                self._insertlog(cr, uid, checkObj.id, note=note, context=context)
-                ret=ret | super(plm_document, self).unlink(cr, uid, ids, context=context)
+                    for document in existingIDs:
+                        docsignal=get_signal_workflow(document, status)
+                        move_workflow(self, [document.id], docsignal, status)
+                self._insertlog(checkObj.id, note=note)
+                ret=ret | super(plm_document, checkObj).unlink()
         return ret
 
-    def _check_duplication(self, cr, uid, vals, ids=[], op='create'):
-        """
-            Overridden, due to revision id management, filename can be duplicated, 
-            because system has to manage several revisions of a document.
-        """
-        name = vals.get('name', False)
-        parent_id = vals.get('parent_id', False)
-        res_model = vals.get('res_model', False)
-        res_id = vals.get('res_id', 0)
-        revisionid = vals.get('revisionid', 0)
-        if op == 'write':
-            for thisfile in self.browse(cr, uid, ids, context=None):  # FIXME fields_only
-                if not name:
-                    name = thisfile.name
-                if not parent_id:
-                    parent_id = thisfile.parent_id and thisfile.parent_id.id or False
-                if not res_model:
-                    res_model = thisfile.res_model and thisfile.res_model or False
-                if not res_id:
-                    res_id = thisfile.res_id and thisfile.res_id or 0
-                if not revisionid:
-                    revisionid = thisfile.revisionid and thisfile.revisionid or 0
-                res = self.search(cr, uid,
-                                  [('id', '<>', thisfile.id), ('name', '=', name), ('parent_id', '=', parent_id),
-                                   ('res_model', '=', res_model), ('res_id', '=', res_id),
-                                   ('revisionid', '=', revisionid)])
-                if len(res) > 1:
-                    return False
-        if op == 'create':
-            res = self.search(cr, uid, [('name', '=', name), ('parent_id', '=', parent_id), ('res_id', '=', res_id),
-                                        ('res_model', '=', res_model), ('revisionid', '=', revisionid)])
-            if len(res):
-                return False
-        return True
-
-    #   Overridden methods for this entity
-
-    def _get_checkout_state(self, cr, uid, ids, field_name, args, context={}):
-        outVal = {}  # {id:value}
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        for docId in ids:
-            chechRes = self.getCheckedOut(cr, uid, docId, None, context=context)
-            if chechRes:
-                outVal[docId] = str(chechRes[2])
-            else:
-                outVal[docId] = ''
-        return outVal
-
-    def _is_checkout(self, cr, uid, ids, field_name, args, context={}):
-        outRes = {}
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        for docId in ids:
-            outRes[docId] = False
-            chechRes = self.getCheckedOut(cr, uid, docId, None, context=context)
-            if chechRes:
-                outRes[docId] = True
-        return outRes
-
-    _columns = {
-        'usedforspare': fields.boolean('Used for Spare',
-                                       help="Drawings marked here will be used printing Spare Part Manual report."),
-        'revisionid': fields.integer('Revision Index', required=True),
-        'minorrevision': fields.char('Minor Revision Label'),
-        'writable': fields.boolean('Writable'),
-        'datas': fields.function(_data_get, method=True, fnct_inv=_data_set, string='File Content', type="binary"),
-        'printout': fields.binary('Printout Content', help="Print PDF content."),
-        'preview': fields.binary('Preview Content', help="Static preview."),
-        'state': fields.selection(USED_STATES, 'Status', help="The status of the product.", readonly="True"),
-        'checkout_user': fields.function(_get_checkout_state, type='char', string="Checked-Out To"),
-        'is_checkout': fields.function(_is_checkout, type='boolean', string="Is Checked-Out", store=False)
-    }
-
-    _defaults = {
-        'usedforspare': lambda *a: False,
-        'revisionid': lambda *a: 0,
-        'minorrevision': lambda *a: 'A',
-        'writable': lambda *a: True,
-        'state': lambda *a: 'draft',
-    }
+    usedforspare    =   fields.Boolean  (string=_('Used for Spare'),help=_("Drawings marked here will be used printing Spare Part Manual report."), default=False)
+    usedformftg     =   fields.Boolean  (string=_('Used for Manufacturing'),help=_("Drawings marked here will be used as skecthes for manufacturing on worksheets."), default=False)
+    revisionid      =   fields.Integer  (string=_('Revision Index'), required=True, default=0)
+    minorrevision   =   fields.Char     (string=_('Minor Revision'), required=True, default='A')
+    writable        =   fields.Boolean  (string=_('Writable'), default=True)
+    datas           =   fields.Binary   (string=_('File Content'), inverse='_data_set', compute='_data_get')
+    printout        =   fields.Binary   (string=_('Printout Content'), help=_("Print PDF content."))
+    preview         =   fields.Binary   (string=_('Preview Content'), help=_("Static preview."))
+    state           =   fields.Selection(USED_STATES,string=_('Status'), help=_("The status of the product."), readonly="True", required=True, default='draft')
+    checkout_user   =   fields.Char(string=_("Checked-Out to"), compute=_get_checkout_state)
+    is_checkout     =   fields.Boolean(string=_('Is Checked-Out'), compute=_is_checkout, store=False)
 
     _sql_constraints = [
         ('name_unique', 'unique (name,revisionid,minorrevision)', 'File name has to be unique!')
         # qui abbiamo la sicurezza dell'univocita del nome file
     ]
 
-    def CheckedIn(self, cr, uid, files, default=None, context=None):
+    @api.model
+    def CheckedIn(self, files, default=None):
         """
             Get checked status for requested files
         """
         retValues = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
 
         def getcheckedfiles(files):
             res = []
             for fileName in files:
-                ids = self.search(cr, uid, [('datas_fname', '=', fileName)], order='revisionid')
+                ids = self.search([('datas_fname', '=', fileName)], order='revisionid')
                 if len(ids) > 0:
-                    ids.sort()
-                    res.append([fileName, not (self._is_checkedout_for_me(cr, uid, ids[len(ids) - 1], context=context))])
+                    res.append([fileName, not (self._is_checkedout_for_me(ids[len(ids) - 1].id))])
             return res
 
         if len(files) > 0:  # no files to process
             retValues = getcheckedfiles(files)
         return retValues
 
-    def GetUpdated(self, cr, uid, vals, context=None):
+    @api.model
+    def GetUpdated(self, vals):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
-        docData, attribNames = unpackDictionary(vals)
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        ids = self.GetLatestIds(cr, uid, docData, context=context)
-        return packDictionary(self.read(cr, uid, getCleanList(ids), attribNames))
+        docData, attribNames = vals
+                
+        ids = self.GetLatestIds(docData)
+        return packDictionary(self.read(getCleanList(ids), attribNames))
 
-    def GetLatestIds(self, cr, uid, vals, context=None):
+    @api.model
+    def GetLatestIds(self, vals):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
         """
         ids = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         for request in vals:
             docName, _, updateDate = request
             if updateDate:
@@ -1270,31 +1215,31 @@ class plm_document(orm.Model):
             else:
                 criteria=[('name', '=', docName)]
     
-            docIds = self.search(cr, uid, criteria, order='revisionid,minorrevision', context=context)
+            docIds = self.search(criteria, order='revisionid,minorrevision')
             if len(docIds) > 0:
-                docIds.sort()
-                ids.append(docIds[len(docIds) - 1])
+                ids.append(docIds[len(docIds) - 1].id)
         return getCleanList(ids)
 
-    def CheckWholeSetFiles(self, cr, uid, request, default=None, context=None):
+    @api.model
+    def CheckWholeSetFiles(self, request, default=None):
         """
             Evaluate documents to return
         """
         required,wholeset=[[],[]]
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         if request:
-            oid, listedFiles, selection = request
-            if oid:
-                required=self.checkAllFiles(cr, uid, [ oid, listedFiles, selection ], default=None, context=None)
-                wholeset=self.checkAllFiles(cr, uid, [ oid, ([],[]), selection ],   default=None, context=None)
+            ids, listedFiles, selection = request
+            if ids:
+                required=self.checkAllFiles([ getListIDs(ids), listedFiles, selection ], default=None)
+                wholeset=self.checkAllFiles([ getListIDs(ids), ([],[]), selection ],   default=None)
         return packDictionary([required,wholeset])
         
-    def checkAllFiles(self, cr, uid, request, default=None, context=None):
+    @api.model
+    def checkAllFiles(self, request, default=None):
         """
             Evaluate documents to return
         """
         outputData=[]
-        context = context or self.pool['res.users'].context_get(cr, uid)
         execFlag = 2  # Used to force writable flag as mine
         forceFlag = False
         listed_models = []
@@ -1310,40 +1255,38 @@ class plm_document(orm.Model):
 
         for oid in ids:
             kind = 'LyTree'  # Get relations due to layout connected
-            docArray = self._relateddocs(cr, uid, oid, [kind], listed_documents, context=context)
+            docArray = self._relateddocs(oid, [kind], listed_documents)
             kind = 'SdTree'  # Get relations due to service files connected
-            othArray = self._explodedocs(cr, uid, oid, [kind], listed_documents, context=context)
-
+            othArray = self._explodedocs(oid, [kind], listed_documents)
+    
             kind = 'HiTree'  # Get Hierarchical tree relations due to children
-            modArray = self._explodedocs(cr, uid, oid, [kind], listed_models, context=context)
+            modArray = self._explodedocs(oid, [kind], listed_models)
             for item in modArray:
                 kind = 'LyTree'  # Get relations due to layout connected
-                docArray.extend(self._relateddocs(cr, uid, item, [kind], listed_documents, context=context))
+                docArray.extend(self._relateddocs(item, [kind], listed_documents))
                 kind = 'SdTree'  # Get relations due to service files connected
-                othArray.extend(self._explodedocs(cr, uid, item, [kind], listed_documents, context=context))
+                othArray.extend(self._explodedocs(item, [kind], listed_documents))
                 
             modArray.extend(docArray)
  
             docArray=getCleanList(modArray)
             
-
             if selection == 2:
-                docArray = self._getlastrev(cr, uid, docArray, context=context)
-
+                docArray = self._getlastrev(docArray)
+    
             if not oid in docArray:
                 docArray.append(oid)  # Add requested document to package
-            outputData = self._data_check_files(cr, uid, docArray, listedFiles, forceFlag, context=context)
+            outputData.extend(self._data_check_files(docArray, listedFiles, forceFlag))
             if othArray:
-                altothData = self._data_check_files(cr, uid, othArray, listedFiles, True, execFlag, context=context)
-                if altothData:
-                    outputData.extend(altothData)
-        return outputData
+                outputData.extend(self._data_check_files(othArray, listedFiles, True, execFlag))
+        return getCleanList(outputData)
 
-    def GetSomeFiles(self, cr, uid, request, default=None, context=None):
+    @api.model
+    def GetSomeFiles(self, request, default=None):
         """
             Extract documents to be returned.
         """
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         forceFlag = False
         ids, listedFiles, selection = request
         if selection == False:
@@ -1354,16 +1297,17 @@ class plm_document(orm.Model):
             selection = selection * (-1)
 
         if selection == 2:
-            docArray = self._getlastrev(cr, uid, ids, context=context)
+            docArray = self._getlastrev(ids)
         else:
             docArray = ids
-        return packDictionary(self._data_get_files(cr, uid, docArray, listedFiles, forceFlag, context=context))
+        return packDictionary(self._data_get_files(docArray, listedFiles, forceFlag))
 
-    def GetAllFiles(self, cr, uid, request, default=None, context=None):
+    @api.model
+    def GetAllFiles(self, request, default=None):
         """
             Extract documents to be returned 
         """
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         forceFlag = False
         listed_models = []
         listed_documents = []
@@ -1377,114 +1321,110 @@ class plm_document(orm.Model):
             selection = selection * (-1)
 
         kind = 'HiTree'  # Get Hierarchical tree relations due to children
-        docArray = self._explodedocs(cr, uid, oid, [kind], listed_models, context=context)
+        docArray = self._explodedocs(oid, [kind], listed_models)
 
         if not oid in docArray:
             docArray.append(oid)  # Add requested document to package
 
         for item in docArray:
             kinds = ['LyTree', 'RfTree']  # Get relations due to layout connected
-            modArray.extend(self._relateddocs(cr, uid, item, kinds, listed_documents, context=context))
-            modArray.extend(self._explodedocs(cr, uid, item, kinds, listed_documents, context=context))
+            modArray.extend(self._relateddocs(item, kinds, listed_documents))
+            modArray.extend(self._explodedocs(item, kinds, listed_documents))
         #             kind='RfTree'               # Get relations due to referred connected
-        #             modArray.extend(self._relateddocs(cr, uid, item, kind, listed_documents, context=context))
-        #             modArray.extend(self._explodedocs(cr, uid, item, kind, listed_documents, context=context))
+        #             modArray.extend(self._relateddocs(item, kind, listed_documents))
+        #             modArray.extend(self._explodedocs(item, kind, listed_documents))
 
         modArray.extend(docArray)
         docArray = getCleanList(modArray)  # Get unique documents object IDs
 
         if selection == 2:
-            docArray = self._getlastrev(cr, uid, docArray, context=context)
+            docArray = self._getlastrev(docArray)
 
         if not oid in docArray:
             docArray.append(oid)  # Add requested document to package
-        return packDictionary(self._data_get_files(cr, uid, docArray, listedFiles, forceFlag, context=context))
+        return packDictionary(self._data_get_files(docArray, listedFiles, forceFlag))
 
-    def getRelatedDocs(self, cr, uid, ids, fthkindList=[], chnkindList=[], context=None):
+    def getRelatedDocs(self, ids, fthkindList=[], chnkindList=[]):
         """
             Extracts documents related to current one(s) (layouts, referred models, etc.)
         """
         result = []
         listed_documents = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         for oid in ids:
-            result.extend(self._relateddocs(cr, uid, oid, fthkindList, listed_documents, False, context=context))
-            result.extend(self._explodedocs(cr, uid, oid, chnkindList, listed_documents, False, context=context))
+            result.extend(self._relateddocs(oid, fthkindList, listed_documents, False))
+            result.extend(self._explodedocs(oid, chnkindList, listed_documents, False))
         return (getCleanList(result))
 
-    def GetRelatedDocs(self, cr, uid, ids, default=None, context=None):
+    @api.model
+    def GetRelatedDocs(self, ids, default=None):
         """
             Return document infos related to current one(s) (layouts, referred models, etc.)
         """
         result = []
         kindList = ['RfTree', 'LyTree']  # Get relations due to referred models
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        read_docs = self.getRelatedDocs(cr, uid, ids, kindList, kindList, context=context)
-        for document in self.browse(cr, uid, read_docs, context=context):
+        
+        read_docs = self.getRelatedDocs(ids, kindList, kindList)
+        for document in self.browse(read_docs):
             result.append([document.id, document.name, document.preview])
         return result
 
-    def GetServerTime(self, cr, uid, oid, default=None, context=None):
+    @api.model
+    def GetServerTime(self):
         """
             calculate the server db time 
         """
         return datetime.now()
 
-    def getLastTime(self, cr, uid, oid, default=None, context=None):
+    def getLastTime(self, oid, default=None):
         """
             get document last modification time 
         """
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        obj = self.browse(cr, uid, oid, context=context)
+        
+        obj = self.browse(oid)
         if (obj.write_date != False):
             return datetime.strptime(obj.write_date, '%Y-%m-%d %H:%M:%S')
         else:
             return datetime.strptime(obj.create_date, '%Y-%m-%d %H:%M:%S')
 
-    def getUserSign(self, cr, uid, oid, default=None, context=None):
+    def getUserSign(self, oid, default=None):
         """
             get the user name
         """
-        userType = self.pool['res.users']
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        uiUser = userType.browse(cr, uid, oid, context=context)
+        userType = self.env['res.users']
+        
+        uiUser = userType.browse(oid)
         return uiUser.name
 
-    def _getbyrevision(self, cr, uid, name, revision, context=None):
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        return self.search(cr, uid, [('name', '=', name), ('revisionid', '=', revision)], context=context)
+    def _getbyrevision(self, name, revision):
+        
+        return self.search([('name', '=', name), ('revisionid', '=', revision)])
 
-    def getCheckedOut(self, cr, uid, oid, default=None, context=None):
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        checkoutType = self.pool['plm.checkout']
-        checkoutIDs = checkoutType.search(cr, uid, [('documentid', '=', oid)], context=context)
-        for checkoutID in checkoutIDs:
-            objDoc = checkoutType.browse(cr, uid, checkoutID, context=context)
-            return (objDoc.documentid.name, objDoc.documentid.revisionid, self.getUserSign(cr, objDoc.userid.id, 1),
+    def getCheckedOut(self, oid, default=None):
+        
+        checkoutType = self.env['plm.checkout']
+        for objDoc in checkoutType.search([('documentid', '=', oid)]):
+            return (objDoc.documentid.name, objDoc.documentid.revisionid, self.getUserSign(objDoc.userid.id, 1),
                     objDoc.hostname)
         return False
 
 
-class plm_checkout(orm.Model):
+class plm_checkout(models.Model):
     _name = 'plm.checkout'
-    _columns = {
-        'create_date': fields.datetime('Date Created', readonly=True),
-        'userid': fields.many2one('res.users', 'Related User', ondelete='cascade'),
-        'hostname': fields.char('Hostname', size=64),
-        'hostpws': fields.char('PWS Directory', size=1024),
-        'documentid': fields.many2one('plm.document', 'Related Document', ondelete='cascade'),
-    }
+    
+    userid      = fields.Many2one ('res.users',    string=_('Related User'),               ondelete='cascade')
+    hostname    = fields.Char     (                string=_('Hostname'),     size=64)
+    hostpws     = fields.Char     (                string=_('PWS Directory'),size=1024)
+    documentid  = fields.Many2one ('plm.document', string=_('Related Document'),           ondelete='cascade')
 
     _sql_constraints = [
         ('documentid', 'unique (documentid)', 'The documentid must be unique !')
     ]
 
-    def _insertlog(self, cr, uid, ids, changes={}, note={}, context=None):
+    def _insertlog(self, ids, changes={}, note={}):
         ret=False
-        objectItem=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
         op_type, op_note=["unknown",""]
-        for objID in self.pool['plm.document'].browse(cr, uid, getListIDs(ids), context=context):
+        for objID in self.env['plm.document'].browse(getListIDs(ids)):
             if note:
                 op_type="{type}".format(type=note['type'])
                 op_note="{reason}".format(reason=note['reason'])
@@ -1497,90 +1437,94 @@ class plm_checkout(orm.Model):
                         'op_type': op_type,
                         'op_note': op_note,
                         'op_date': datetime.now(),
-                        'userid': uid,
+                        'userid': self._uid,
                         }
-                objectItem=self.pool['plm.logging'].create(cr, uid, values, context=context)
+                objectItem=self.env['plm.logging'].create(values)
                 if objectItem:
                     ret=True
         return ret
 
-    def logging_operation(self, cr, uid, ids, operation, context=None):
+    def logging_operation(self, ids, operation):
         note={
                 'type': 'CheckDoc',
                 'reason': "Applying '{operation}' operation to document.".format(operation=operation),
              }
-        self._insertlog(cr, uid, ids, note=note, context=context)
+        self._insertlog(ids, note=note)
 
-    def _adjustRelations(self, cr, uid, oids, userid=False, context=None):
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        docRelType = self.pool['plm.document.relation']
+    def _adjustRelations(self, oids, userid=False):
+        
+        docRelType = self.env['plm.document.relation']
         if userid:
-            ids = docRelType.search(cr, uid, [('child_id', 'in', getListIDs(oids)), ('userid', '=', False)], context=context)
+            ids = docRelType.search([('child_id', 'in', getListIDs(oids)), ('userid', '=', False)])
         else:
-            ids = docRelType.search(cr, uid, [('child_id', 'in', getListIDs(oids))], context=context)
-        if ids:
-            values = {'userid': userid, }
-            docRelType.write(cr, uid, ids, values, context=context)
+            ids = docRelType.search([('child_id', 'in', getListIDs(oids))])
+        values = {'userid': userid, }
+        for oid in ids:
+            oid.write(values)
 
-    def create(self, cr, uid, vals, context=None):
+    #   Overridden methods for this entity
+
+    @api.multi
+    def create(self, vals):
         ret=False
         docIDs=[]
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        check=context.get('internal_writing', False)
+        
+        check=self._context.get('internal_writing', False)
         if check:
-            documentType = self.pool['plm.document']
-            docObj = documentType.browse(cr, uid, vals['documentid'], context=context)
+            documentType = self.env['plm.document']
+            docObj = documentType.browse(vals['documentid'])
             if docObj.state=='draft':
                 values = {'writable': True, }
-                if not documentType.write(cr, uid, [docObj.id], values, context=context):
+                if not docObj.with_context({'internal_writing':True}).write(values):
                     logging.error("create : Unable to check-out the required document (" + str(docObj.name) + "-" + str(
                         docObj.revisionid) + ").")
                     return ret
-                self._adjustRelations(cr, uid, getListIDs(docObj.id), uid, context=context)
+                self._adjustRelations(getListIDs(docObj.id), self._uid)
                 docIDs.append(docObj.id)
-                objectItem=super(plm_checkout, self).create(cr, uid, vals, context=context)
+                objectItem=super(plm_checkout, self).create(vals)
                 if objectItem:
                     ret=objectItem
-                    self.logging_operation(cr, uid, docIDs, 'Check-Out', context=context)
+                    self.logging_operation(docIDs, 'Check-Out')
+                    wf_message_post(documentType, docIDs, body='Checked-Out')
         return ret
 
-    def unlink(self, cr, uid, ids, context=None):
-        documentType = self.pool['plm.document']
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        check=context.get('internal_writing', False)
+    @api.multi
+    def unlink(self):
+        documentType = self.env['plm.document']
+        ids=self._ids
+        
+        check=self._context.get('internal_writing', False)
         if not check:
-            if not isAdministrator(self, cr, uid, context=context):
+            if not isAdministrator(self):
                 logging.error(
-                    "unlink : Unable to Check-In the required document.\n You aren't authorized in this context.")
-                raise orm.except_orm(_('Check-In Error'), _(
-                    "Unable to Check-In the required document.\n You aren't authorized in this context."))
-            else:
-                context.update({'internal_writing':True})
-        checkObjs = self.browse(cr, uid, getListIDs(ids), context=context)
+                    "[unlink] : Unable to Check-In the required document.\n You aren't authorized in this context.")
+                raise UserError(_("Unable to Check-In the required document.\n\nYou aren't authorized in this context."))
         docIDs = []
         values = {'writable': False, }
-        for checkObj in checkObjs:
+        for checkObj in self.browse(getListIDs(ids)):
             docIDs.append(checkObj.documentid.id)
-            if not documentType.write(cr, uid, [checkObj.documentid.id], values, context=context):
+            if not checkObj.documentid.with_context({'internal_writing':True}).write(values):
                 logging.error(
-                    "unlink : Unable to check-in the document (" + str(checkObj.documentid.name) + "-" + str(
+                    "[unlink] : Unable to check-in the document (" + str(checkObj.documentid.name) + "-" + str(
                         checkObj.documentid.revisionid) + ").\n You can't change writable flag.")
                 return False
-        self._adjustRelations(cr, uid, docIDs, False, context=context)
-        ret=super(plm_checkout, self).unlink(cr, uid, getListIDs(ids), context=context)
-        self.logging_operation(cr, uid, docIDs, 'Check-In', context=context)
+        self._adjustRelations(docIDs, False)
+        ret=super(plm_checkout, self).unlink()
+        wf_message_post(documentType,  docIDs, body='Checked-In')
+        self.logging_operation(docIDs, 'Check-In')
         return ret
 
-class plm_document_relation(orm.Model):
+
+class plm_document_relation(models.Model):
     _name = 'plm.document.relation'
-    _columns = {
-        'parent_id': fields.many2one('plm.document', 'Related parent document', ondelete='cascade'),
-        'child_id': fields.many2one('plm.document', 'Related child document', ondelete='cascade'),
-        'configuration': fields.char('Configuration Name', size=1024),
-        'link_kind': fields.char('Kind of Link', size=64, required=True),
-        'create_date': fields.datetime('Date Created', readonly=True),
-        'userid': fields.many2one('res.users', 'CheckOut User', readonly="True"),
-    }
+    
+    parent_id       =   fields.Many2one ('plm.document', string=_('Related parent document'), ondelete='cascade')
+    child_id        =   fields.Many2one ('plm.document', string=_('Related child document'),  ondelete='cascade')
+    configuration   =   fields.Char     (                string=_('Configuration Name'),    size=1024)
+    link_kind       =   fields.Char     (                string=_('Kind of Link'),          size=64, required=True)
+    create_date     =   fields.Datetime (                string=_('Date Created'),                   readonly=True)
+    userid          =   fields.Many2one ('res.users',    string=_('CheckOut User'),                  readonly="True")
+    
     _defaults = {
         'link_kind': lambda *a: 'HiTree',
         'userid': lambda *a: False,
@@ -1589,33 +1533,36 @@ class plm_document_relation(orm.Model):
         ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !'))
     ]
 
-    def CleanStructure(self, cr, uid, parent_ids=[], context=None):
-        cleanIds=[]
+    @api.model
+    def CleanStructure(self, parent_ids=[]):
+        executed=[]
         for parent_id in parent_ids:
             criteria = [('parent_id', '=', parent_id)]
-            cleanIds.extend(self.search(cr, uid, criteria, context=context))
-        self.unlink(cr, uid, getCleanList(cleanIds), context=context)
+            if not(criteria in executed):
+                executed.append(criteria)
+                oIds=self.search(criteria)
+                oIds.unlink()
         return False
 
-    def SaveStructure(self, cr, uid, relations=[], level=0, currlevel=0, context=None):
+    @api.model
+    def SaveStructure(self, relations=[], level=0, currlevel=0):
         """
             Save Document relations
         """
         ret=False
         savedItems = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
 
         def cleanStructure(relations):
             res = {}
-            cleanIds = []
+            oIds=self
             for relation in relations:
                 res['parent_id'], res['child_id'], res['configuration'], res['link_kind'] = relation
                 if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
                     criteria = [('child_id', '=', res['child_id'])]
                 else:
                     criteria = [('parent_id', '=', res['parent_id'])]
-                cleanIds.extend(self.search(cr, uid, criteria, context=context))
-            self.unlink(cr, uid, getCleanList(cleanIds), context=context)
+                oIds |= self.search(criteria)
+            oIds.unlink()
 
         def saveChild(relation):
             """
@@ -1629,15 +1576,15 @@ class plm_document_relation(orm.Model):
                     if (len(str(res['parent_id'])) > 0) and (len(str(res['child_id'])) > 0):
                         if not ((res['parent_id'], res['child_id']) in savedItems):
                             savedItems.append((res['parent_id'], res['child_id']))
-                            self.create(cr, uid, res, context=context)
+                            self.create(res)
                 else:
-                    logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist.")
-                    logging.error("Arguments ({}).".format(relation))
+                    logging.error(
+                        "saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(
+                            relation) + ") ")
                     ret=True
             except Exception as ex:
-                logging.error("saveChild : Unable to create a relation between documents.")
-                logging.error("Arguments ({}).".format(relation))
-                logging.error("Exception ({}).".format(ex))
+                logging.error(
+                    "saveChild : Unable to create a relation. Arguments (%s) Exception (%s)" % (str(relation), str(ex)))
                 ret=True
             return ret
         
@@ -1647,74 +1594,68 @@ class plm_document_relation(orm.Model):
                 ret=saveChild(relation)
         return ret
 
-    def IsChild(self, cr, uid, ids, context=None):
+    @api.model
+    def IsChild(self, ids):
         """
             Check if a Document is child in a docBoM relation.
         """
         ret=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         for idd in getListIDs(ids):
-            if self.search(cr, uid, [('child_id', '=', idd)], context=context):
+            if self.search([('child_id', '=', idd)]):
                 ret=ret|True
+                break
         return ret
 
-    def GetChildren(self, cr, uid, ids, link=["HiTree"], context=None):
+    @api.model
+    def GetChildren(self, ids, link=["HiTree"]):
         """
             Gets children documents as existing in 'link' relation.
         """
         ret={}
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        docLinks=[]
         for idd in getListIDs(ids):
-            links=self.search(cr, uid, [('parent_id', '=', idd), ('link_kind', 'in', getListIDs(link))], context=context)
-            if links:
-                ret[idd]=links
+            for docLink in self.search([('parent_id', '=', idd), ('link_kind', 'in', getListIDs(link))]):
+                docLinks.append(docLink.id)
+            ret[idd]=getListIDs(docLinks)
         return ret
 
-    def GetFathers(self, cr, uid, ids, link=["HiTree"], context=None):
+    @api.model
+    def GetFathers(self, ids, link=["HiTree"]):
         """
             Gets fathers documents as existing in 'link' relation.
         """
         ret={}
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        docLinks=[]
         for idd in getListIDs(ids):
-            links=self.search(cr, uid, [('child_id', '=', idd), ('link_kind', 'in', getListIDs(link))], context=context)
-            if links:
-                ret[idd]=links
+            for docLink in self.search([('child_id', '=', idd), ('link_kind', 'in', getListIDs(link))]):
+                docLinks.append(docLink.id)
+            ret[idd]=getListIDs(docLinks)
         return ret
 
 
-class plm_backupdoc(orm.Model):
+class plm_backupdoc(models.Model):
     _name = 'plm.backupdoc'
-    _columns = {
-        'userid': fields.many2one('res.users', 'Related User', ondelete='cascade'),
-        'create_date': fields.datetime('Date Created', readonly=True),
-        'createdate': fields.datetime('Date Created', readonly=True),
-        'existingfile': fields.char('Physical Document Location', size=1024),
-        'documentid': fields.many2one('plm.document', 'Related Document', ondelete='cascade'),
-        'revisionid': fields.related('documentid', 'revisionid', type="integer", relation="plm.document",
-                                     string="Revision", store=False),
-        'minorrevision': fields.related('documentid', 'minorrevision', type="char", relation="plm.document",
-                                     string="Minor Revision", store=False),
-        'state': fields.related('documentid', 'state', type="char", relation="plm.document", string="Status",
-                                store=False),
-        'printout': fields.binary('Printout Content'),
-        'preview': fields.binary('Preview Content'),
-    }
-    _defaults = {
-        'createdate': lambda self, cr, uid, ctx: time.strftime("%Y-%m-%d %H:%M:%S"),
-    }
 
-    def _insertlog(self, cr, uid, ids, changes={}, note={}, context=None):
-        ret=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
+    userid          =   fields.Many2one ('res.users', _('Related User'), ondelete='cascade')
+    existingfile    =   fields.Char     (_('Physical Document Location'),size=1024)
+    documentid      =   fields.Many2one ('plm.document', _('Related Document'), ondelete='cascade')
+    revisionid      =   fields.Integer  (related="documentid.revisionid",string=_("Revision"),store=False)
+    minorrevision   =   fields.Char     (_('Minor Revision'),store=False)
+    state           =   fields.Selection(related="documentid.state",string=_("Status"),store=False)
+    printout        =   fields.Binary   (_('Printout Content'))
+    preview         =   fields.Binary   (_('Preview Content'))
+
+    def _insertlog(self, ids, changes={}, note={}):
+        ret=False       
         op_type, op_note=["unknown",""]
-        for objID in self.pool['plm.document'].browse(cr, uid, getListIDs(ids), context=context):
+        for objID in self.env['plm.document'].browse(getListIDs(ids)):
             if note:
                 op_type="{type}".format(type=note['type'])
                 op_note="{reason}".format(reason=note['reason'])
             elif changes:
                 op_type='change value'
-                op_note=self.pool['plm.logging'].getchanges(cr, uid, objID, changes, context=context)
+                op_note=self.env['plm.logging'].getchanges(objID, changes)
             if op_note:
                 values={
                         'name': objID.name,
@@ -1724,93 +1665,90 @@ class plm_backupdoc(orm.Model):
                         'op_type': op_type,
                         'op_note': op_note,
                         'op_date': datetime.now(),
-                        'userid': uid,
+                        'userid': self._uid,
                         }
-                objectItem=self.pool['plm.logging'].create(cr, uid, values, context=context)
+                objectItem=self.env['plm.logging'].create(values)
                 if objectItem:
                     ret=True
         return ret
 
-    def logging_operation(self, cr, uid, ids, operation, context=None):
+    def logging_operation(self, ids, operation):
         note={
                 'type': 'BackupDoc',
                 'reason': "Applying '{operation}' operation to document.".format(operation=operation),
              }
-        self._insertlog(cr, uid, ids, note=note, context=context)
+        self._insertlog(ids, note=note)
 
-    def create(self, cr, uid, vals, context=None):
+    @api.multi
+    def create(self, vals):
         ret=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        check=context.get('internal_writing', False)
+        
+        check=self._context.get('internal_writing', False)
         if check:
-            objectItem=super(plm_backupdoc, self).create(cr, uid, vals, context=context)
+            objectItem=super(plm_backupdoc, self).create(vals)
             if objectItem:
                 ret=objectItem
                 if vals.get('documentid', False):
-                    self.logging_operation(cr, uid, vals['documentid'], 'Stored Copy', context=context)
+                    self.logging_operation(vals['documentid'], 'Stored Copy')
         return ret
 
-    def unlink(self, cr, uid, ids, context=None):
+    @api.multi
+    def unlink(self):
         committed = False
-        documentType = self.pool['plm.document']
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        check=context.get('internal_writing', False)
+        documentType = self.env['plm.document']
+        ids=self._ids
+        
+        check=self._context.get('internal_writing', False)
         if not check:
-            if not isAdministrator(self, cr, uid, context=context):
+            if not isAdministrator(self):
                 logging.warning(
                     "unlink : Unable to remove the required documents. You aren't authorized in this context.")
-                raise orm.except_orm(_('Backup Error'), _(
-                    "Unable to remove the required document.\n You aren't authorized in this context."))
-        checkObjs = self.browse(cr, uid, ids, context=context)
+                raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
+        checkObjs = self.browse(ids)
         for checkObj in checkObjs:
             if not int(checkObj.documentid):
-                return super(plm_backupdoc, self).unlink(cr, uid, ids, context=context)
+                return super(plm_backupdoc, self).unlink(ids)
             currentname = checkObj.documentid.store_fname
             if checkObj.existingfile != currentname:
-                fullname = os.path.join(documentType._get_filestore(cr), checkObj.existingfile)
+                fullname = os.path.join(documentType._get_filestore(), checkObj.existingfile)
                 if os.path.exists(fullname):
                     if os.path.exists(fullname):
                         os.chmod(fullname, stat.S_IWRITE)
                         os.unlink(fullname)
                         committed = True
-                        self.logging_operation(cr, uid, checkObj.documentid, 'Removed Physical Copy', context=context)
+                        self.logging_operation(checkObj.documentid, 'Removed Physical Copy')
                 else:
                     logging.warning(
                         "unlink : Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(
                             checkObj.documentid.revisionid) + ") from backup set. You can't change writable flag.")
-                    raise orm.except_orm(_('Check-In Error'), _(
-                        "Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(
-                            checkObj.documentid.revisionid) + ") from backup set.\n It isn't a backup file, it's original current one."))
+                    raise UserError(_("Unable to remove the document '{}-{}' from backup set.\nIt isn't a backup file, it's original current one.".format(checkObj.documentid.name,checkObj.documentid.revisionid)))
         if committed:
-            return super(plm_backupdoc, self).unlink(cr, uid, ids, context=context)
+            return super(plm_backupdoc, self).unlink(ids)
         else:
             return False
 
-    def action_restore_document(self, cr, uid, ids, context=None):
+    def action_restore_document(self, ids):
         committed = False
-        documentType = self.pool['plm.document']
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        check=context.get('internal_writing', False)
+        documentType = self.env['plm.document']
+        
+        check=self._context.get('internal_writing', False)
         if not check:
-            if not isAdministrator(self, cr, uid, context=context):
+            if not isAdministrator(self):
                 logging.warning(
                     "unlink : Unable to remove the required documents.\n You aren't authorized in this context.")
-                raise orm.except_orm(_('Backup Error'), _(
-                    "Unable to remove the required document.\n You aren't authorized in this context."))
-        checkObj=self.browse(cr, uid, context['active_id'], context=context)
-        objDoc=documentType.browse(cr, uid, checkObj.documentid.id, context=context)
-        if objDoc.state == 'draft' and documentType.ischecked_in(cr, uid, ids, context=context):
+                raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
+        checkObj=self.browse(self._context['active_id'])
+        objDoc=documentType.browse(checkObj.documentid.id)
+        if objDoc.state == 'draft' and documentType.ischecked_in(ids):
             if checkObj.existingfile != objDoc.store_fname:
-                context.update({'internal_writing':True})
-                committed=documentType.write(cr, uid, [objDoc.id],
-                                               {'store_fname': checkObj.existingfile, 'printout': checkObj.printout,
-                                                'preview': checkObj.preview, }, context=context)
+                committed=objDoc.with_context({'internal_writing':True}).write(
+                                               {'store_fname': checkObj.existingfile, 
+                                                'printout': checkObj.printout,
+                                                'preview': checkObj.preview, } )
                 if not committed:
                     logging.warning("action_restore_document : Unable to restore the document (" + str(
                         checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set.")
-                    raise orm.except_orm(_('Check-In Error'), _(
-                        "Unable to restore the document (" + str(checkObj.documentid.name) + "-" + str(
-                            checkObj.documentid.revisionid) + ") from backup set.\n Check if it's checked-in, before to proceed."))
-        self.unlink(cr, uid, ids, context=context)
+                    raise UserError(_("Unable to restore the document '{}-{}' from backup set.\nCheck if it's checked-in, before to retry.".format(checkObj.documentid.name,checkObj.documentid.revisionid)))
+        self.browse(ids).with_context({'internal_writing':True}).unlink()
         return committed
 

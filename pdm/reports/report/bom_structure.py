@@ -1,8 +1,11 @@
-## -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    
+#    Created on : 2016-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -27,10 +30,10 @@
 #
 ##############################################################################
 import os
-import time
-from report import report_sxw
 from operator import itemgetter
-from tools.translate import _
+
+from odoo  import _, models, api
+from odoo.report import report_sxw
 
 
 def _moduleName():
@@ -55,20 +58,21 @@ def _createtemplate():
     fileName=thisModule+'.xml'
     fileOut = open(os.path.join(filepath,fileName), 'w')
     
-    listout=[('report_plm_bom_structure_all','BOM All Levels','plm.bom.structure.all')]
-    listout.append(('report_plm_bom_structure_one','BOM One Level','plm.bom.structure.one'))
-    listout.append(('report_plm_bom_structure_all_sum','BOM All Levels Summarized','plm.bom.structure.all.sum'))
-    listout.append(('report_plm_bom_structure_one_sum','BOM One Level Summarized','plm.bom.structure.one.sum'))
-    listout.append(('report_plm_bom_structure_leaves','BOM Only Leaves Summarized','plm.bom.structure.leaves'))
+    listout=[('bom_structure_all','bom_template_all','BOM All Levels','bom.structure.all')]
+    listout.append(('bom_structure_one','bom_template_one','BOM One Level','bom.structure.one'))
+    listout.append(('bom_structure_all_sum','bom_template_all_sum','BOM All Levels Summarized','bom.structure.all.sum'))
+    listout.append(('bom_structure_one_sum','bom_template_one_sum','BOM One Level Summarized','bom.structure.one.sum'))
+    listout.append(('bom_structure_leaves','bom_template_leaves','BOM Only Leaves Summarized','bom.structure.leaves'))
+    listout.append(('bom_structure_flat','bom_template_flat','BOM All Flat Summarized','bom.structure.flat'))
 
     fileOut.write(u'<?xml version="1.0"?>\n<openerp>\n    <data>\n\n')
     fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
   
-    for label,description,name in listout:
-        fileOut.write(u'        <report auto="True"\n                header="True"\n                model="mrp.bom"\n')
-        fileOut.write(u'                id="%s"\n                string="%s"\n                name="%s"\n' %(label,description,name))
-        fileOut.write(u'                rml="%s/reports/report/%s.rml"\n' %(openerpModule, thisModule))
-        fileOut.write(u'                report_type="pdf"\n                file=""\n                 />\n')
+    for label,template,description,name in listout:
+        fileOut.write(u'        <report model="mrp.bom"\n')
+        fileOut.write(u'                id="%s"\n                string="%s"\n                name="%s.%s"\n' %(label,description,openerpModule,name))
+        fileOut.write(u'                file="%s.report.%s"\n' %(openerpModule,template))
+        fileOut.write(u'                report_type="qweb-pdf"\n />\n')
     
     fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
     fileOut.write(u'    </data>\n</openerp>\n')
@@ -78,268 +82,404 @@ _createtemplate()
 ###############################################################################################################à
 
 def BomSort(myObject):
+    valid=False
     bomobject=[]
     res={}
     index=0
     for l in myObject:
         res[str(index)]=l.itemnum
         index+=1
+        if l.itemnum>0:
+            valid=True
+    if not valid:
+        res={}
+        index=0
+        for l in myObject:
+            res[str(index)]=l.product_id.product_tmpl_id.name
+            index+=1
     items = res.items()
     items.sort(key = itemgetter(1))
     for res in items:
         bomobject.append(myObject[int(res[0])])
     return bomobject
 
-class bom_structure_all_custom_report(report_sxw.rml_parse):
-    def __init__(self, cr, uid, name, context):
-        super(bom_structure_all_custom_report, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({
-            'time': time,
-            'get_children':self.get_children,
-            'bom_type':self.bom_type,
-            'trans':_translate,
-        })
+def SummarizeBom(bomobject, level=1, result={}, ancestorName=""):
+
+    for l in bomobject:
+        evaluate=True
+        fatherName=l.bom_id.product_id.name
+        productName=l.product_id.name
+        fatherRef="%s-%d" %(fatherName,level-1)
+        productRef="%s-%s-%d" %(ancestorName,productName,level)
+        if fatherRef in result:
+            listed=result[fatherRef]
+        else:
+            result[fatherRef]={}
+            listed={}
+            
+        if productRef in listed and listed[productRef]['father']==fatherName:
+            res=listed[productRef]
+            res['pqty']=res['pqty']+l.product_qty
+            evaluate=False
+        else:
+            res={}
+            res['product']=l.product_id
+            res['name']=l.product_id.name
+            res['ancestor']=ancestorName
+            res['father']=fatherName
+            res['pqty']=l.product_qty
+            res['level']=level
+            listed[productRef]=res
+        
+        result[fatherRef]=listed
+        if evaluate:
+            for bomId in l.product_id.bom_ids:
+                if bomId.type == l.bom_id.type:
+                    if bomId.bom_line_ids:
+                        result.update(SummarizeBom(bomId.bom_line_ids, level+1, result,fatherName))
+                        break
+
+    return result
+
+def QuantityInBom(listedBoM={}, productName=""):
+    found=[]
+    result=0.0
+    for fatherRef in listedBoM.keys():
+        for listedName in listedBoM[fatherRef]:
+            listedline=listedBoM[fatherRef][listedName]
+            if (listedline['name'] == productName) and not (listedline['father'] in found):
+                result+=listedline['pqty'] * QuantityInBom(listedBoM, listedline['father'])    
+                found.append(listedline['father'])
+                break
+    if not found:
+        result=1.0
+    return result
+
+def bom_type(myObject):
+    result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
+    return _(result)
+
+class BomStructureAllReport(models.AbstractModel):
+    _name = 'report.%s.bom.structure.all' %(openerpModule)
 
     def get_children(self, myObject, level=0):
         result=[]
 
-        def _get_rec(bomobject,level):
+        def getLevelObjects(bomobject,level):
             myObject=BomSort(bomobject)
 
             for l in myObject:
                 res={}
-                res['name']=l.name
+                product=l.product_id.product_tmpl_id
+                res['name']=product.name
                 res['item']=l.itemnum
                 res['ancestor']=l.bom_id.product_id
-                res['pname']=l.product_id.name
-                res['pdesc']=_(l.product_id.description)
+                res['pname']=product.name
+                res['pdesc']=_(product.description)
                 res['pcode']=l.product_id.default_code
-                res['previ']=l.product_id.engineering_revision
+                res['previ']=product.engineering_revision
                 res['pqty']=l.product_qty
-                res['uname']=l.product_uom.name
-                res['pweight']=l.product_id.weight_net
-                res['code']=l.code
+                res['uname']=l.product_uom_id.name
+                res['pweight']=product.weight
+                res['code']=l.product_id.default_code
                 res['level']=level
                 result.append(res)
-                if l.child_complete_ids:
-                    _get_rec(l.child_complete_ids,level+1)
+                for bomId in l.product_id.bom_ids:
+                    if bomId.type == l.bom_id.type:
+                        getLevelObjects(bomId.bom_line_ids,level+1)
             return result
 
-        children=_get_rec(myObject,level+1)
+        return getLevelObjects(myObject,level+1)
 
-        return children
+    @api.multi
+    def render_html(self, docids, data=None):
+        docargs = {
+            'doc_ids': docids,
+            'doc_model': 'mrp.bom',
+            'docs': self.env['mrp.bom'].browse(docids),
+            'get_children': self.get_children,
+            'bom_type':bom_type,
+            'data': data,
+        }
+        return self.env['report'].render('%s.bom_template_all'%(openerpModule), docargs)
 
-    def bom_type(self, myObject):
-        result=dict(self.pool[myObject._model._name].fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type,'')
-        return _(result)
 
-report_sxw.report_sxw('report.plm.bom.structure.all','mrp.bom','/'+openerpModule+'/reports/report/'+thisModule+'.rml',parser=bom_structure_all_custom_report,header='internal')
-
-
-class bom_structure_one_custom_report(report_sxw.rml_parse):
-    def __init__(self, cr, uid, name, context):
-        super(bom_structure_one_custom_report, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({
-            'time': time,
-            'get_children':self.get_children,
-            'bom_type':self.bom_type,
-            'trans':_translate,
-        })
+class BomStructureOneReport(models.AbstractModel):
+    _name = 'report.%s.bom.structure.one' %(openerpModule)
 
     def get_children(self, myObject, level=0):
         result=[]
 
-        def _get_rec(bomobject,level):
+        def getLevelObjects(bomobject,level):
             myObject=BomSort(bomobject)
             for l in myObject:
                 res={}
-                res['name']=l.name
+                product=l.product_id.product_tmpl_id
+                res['name']=product.name
                 res['item']=l.itemnum
-                res['pname']=l.product_id.name
-                res['pdesc']=_(l.product_id.description)
+                res['pname']=product.name
+                res['pdesc']=_(product.description)
                 res['pcode']=l.product_id.default_code
-                res['previ']=l.product_id.engineering_revision
+                res['previ']=product.engineering_revision
                 res['pqty']=l.product_qty
-                res['uname']=l.product_uom.name
-                res['pweight']=l.product_id.weight_net
-                res['code']=l.code
+                res['uname']=l.product_uom_id.name
+                res['pweight']=product.weight
+                res['code']=l.product_id.default_code
                 res['level']=level
                 result.append(res)
             return result
 
-        children=_get_rec(myObject,level+1)
+        return getLevelObjects(myObject,level+1)
 
-        return children
+    @api.multi
+    def render_html(self, docids, data=None):
+        docargs = {
+            'doc_ids': docids,
+            'doc_model': 'mrp.bom',
+            'docs': self.env['mrp.bom'].browse(docids),
+            'get_children': self.get_children,
+            'bom_type':bom_type,
+            'data': data,
+        }
+        return self.env['report'].render('%s.bom_template_one'%(openerpModule), docargs)
 
-    def bom_type(self, myObject):
-        result=dict(self.pool[myObject._model._name].fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type,'')
-        return _(result)
 
-report_sxw.report_sxw('report.plm.bom.structure.one','mrp.bom','/'+openerpModule+'/reports/report/'+thisModule+'.rml',parser=bom_structure_one_custom_report,header='internal')
-
-
-class bom_structure_all_sum_custom_report(report_sxw.rml_parse):
-    def __init__(self, cr, uid, name, context):
-        super(bom_structure_all_sum_custom_report, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({
-            'time': time,
-            'get_children':self.get_children,
-            'bom_type':self.bom_type,
-            'trans':_translate,
-        })
+class BomStructureAllSumReport(models.AbstractModel):
+    _name = 'report.%s.bom.structure.all.sum' %(openerpModule)
 
     def get_children(self, myObject, level=0):
         result=[]
+        results={}
 
-        def _get_rec(bomobject,level):
+        def getLevelObjects(bomobject, listedBoM, level, ancestor=""):
+            listed=[]
             myObject=BomSort(bomobject)
             tmp_result=[]
-            listed={}
-            keyIndex=0
             for l in myObject:
+                productName=l.product_id.name
+                if productName in listed:
+                    continue
                 res={}
-                if l.name in listed.keys():
-                    res=tmp_result[listed[l.name]]
-                    if res['pfather']==l.bom_id.product_id.name:
-                        res['pqty']=res['pqty']+l.product_qty
-                        tmp_result[listed[l.name]]=res
-                else:
-                    res['name']=l.name
-                    res['item']=l.itemnum
-                    res['pfather']=l.bom_id.product_id.name
-                    res['pname']=l.product_id.name
-                    res['pdesc']=_(l.product_id.description)
-                    res['pcode']=l.product_id.default_code
-                    res['previ']=l.product_id.engineering_revision
-                    res['pqty']=l.product_qty
-                    res['uname']=l.product_uom.name
-                    res['pweight']=l.product_id.weight_net
-                    res['code']=l.code
-                    res['level']=level
-                    tmp_result.append(res)
-                    listed[l.name]=keyIndex
-                    keyIndex+=1
-                    if l.child_complete_ids:
-                        buffer=_get_rec(l.child_complete_ids,level+1)
-                        for elem in range(0,len(buffer)):
-                            listed['nullitem%s' %(str(keyIndex))]=keyIndex
-                            keyIndex+=1
-                        tmp_result.extend(buffer)
+                listed.append(productName)
+                fatherName=l.bom_id.product_id.name
+                fatherRef="%s-%d" %(fatherName, level-1)
+                if fatherRef in listedBoM.keys():
+                    listedName="%s-%s-%d" %(ancestor, productName, level)
+                    if listedName in listedBoM[fatherRef]:
+                        listedline=listedBoM[fatherRef][listedName]
+                        product=listedline['product']
+                        res['name']=product.name
+                        res['item']=l.itemnum
+                        res['pfather']=fatherName
+                        res['pname']=product.name
+                        res['pdesc']=_(product.description)
+                        res['pcode']=l.product_id.default_code
+                        res['previ']=product.engineering_revision
+                        res['pqty']=listedline['pqty']
+                        res['uname']=l.product_uom_id.name
+                        res['pweight']=product.weight
+                        res['code']=l.product_id.default_code
+                        res['level']=level
+                        tmp_result.append(res)
+                        
+                        for bomId in l.product_id.bom_ids:
+                            if bomId.type == l.bom_id.type:
+                                if bomId.bom_line_ids:
+                                    tmp_result.extend(getLevelObjects(bomId.bom_line_ids,listedBoM,level+1,fatherName))
             return tmp_result
 
-        result.extend(_get_rec(myObject,level+1))
-
+        results=SummarizeBom(myObject,level+1,results)
+        result.extend(getLevelObjects(myObject,results,level+1))
         return result
 
-    def bom_type(self, myObject):
-        result=dict(self.pool[myObject._model._name].fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type,'')
-        return _(result)
+    @api.multi
+    def render_html(self, docids, data=None):
+        docargs = {
+            'doc_ids': docids,
+            'doc_model': 'mrp.bom',
+            'docs': self.env['mrp.bom'].browse(docids),
+            'get_children': self.get_children,
+            'bom_type':bom_type,
+            'data': data,
+        }
+        return self.env['report'].render('%s.bom_template_all_sum'%(openerpModule), docargs)
 
-report_sxw.report_sxw('report.plm.bom.structure.all.sum','mrp.bom','/'+openerpModule+'/reports/report/'+thisModule+'.rml',parser=bom_structure_all_sum_custom_report,header='internal')
 
-class bom_structure_one_sum_custom_report(report_sxw.rml_parse):
-    def __init__(self, cr, uid, name, context):
-        super(bom_structure_one_sum_custom_report, self).__init__(cr, uid, name, context=context)
-        self.localcontext.update({
-            'time': time,
-            'get_children':self.get_children,
-            'bom_type':self.bom_type,
-            'trans':_translate,
-        })
+class BomStructureOneSumReport(models.AbstractModel):
+    _name = 'report.%s.bom.structure.one.sum' %(openerpModule)
 
     def get_children(self, myObject, level=0):
         result=[]
 
-        def _get_rec(bomobject,level):
+        def getLevelObjects(bomobject,level):
             myObject=BomSort(bomobject)
             tmp_result=[]
             listed={}
             keyIndex=0
             for l in myObject:
                 res={}
-                if l.name in listed.keys():
-                    res=tmp_result[listed[l.name]]
+                product=l.product_id.product_tmpl_id
+                if product.name in listed.keys():
+                    res=tmp_result[listed[product.name]]
                     res['pqty']=res['pqty']+l.product_qty
-                    tmp_result[listed[l.name]]=res
+                    tmp_result[listed[product.name]]=res
                 else:
-                    res['name']=l.name
+                    res['name']=product.name
                     res['item']=l.itemnum
-                    res['pname']=l.product_id.name
-                    res['pdesc']=_(l.product_id.description)
+                    res['pname']=product.name
+                    res['pdesc']=_(product.description)
                     res['pcode']=l.product_id.default_code
-                    res['previ']=l.product_id.engineering_revision
+                    res['previ']=product.engineering_revision
                     res['pqty']=l.product_qty
-                    res['uname']=l.product_uom.name
-                    res['pweight']=l.product_id.weight_net
-                    res['code']=l.code
+                    res['uname']=l.product_uom_id.name
+                    res['pweight']=product.weight
+                    res['code']=l.product_id.default_code
                     res['level']=level
                     tmp_result.append(res)
-                    listed[l.name]=keyIndex
+                    listed[l.product_id.name]=keyIndex
                     keyIndex+=1
-            return result.extend(tmp_result)
+            result.extend(tmp_result)
 
-        children=_get_rec(myObject,level+1)
+        getLevelObjects(myObject,level+1)
 
         return result
 
-    def bom_type(self, myObject):
-        result=dict(self.pool[myObject._model._name].fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type,'')
-        return _(result)
+    @api.multi
+    def render_html(self, docids, data=None):
+        docargs = {
+            'doc_ids': docids,
+            'doc_model': 'mrp.bom',
+            'docs': self.env['mrp.bom'].browse(docids),
+            'get_children': self.get_children,
+            'bom_type':bom_type,
+            'data': data,
+        }
+        return self.env['report'].render('%s.bom_template_one_sum'%(openerpModule), docargs)
 
-report_sxw.report_sxw('report.plm.bom.structure.one.sum','mrp.bom','/'+openerpModule+'/reports/report/'+thisModule+'.rml',parser=bom_structure_one_sum_custom_report,header='internal')
 
-class bom_structure_leaves_custom_report(report_sxw.rml_parse):
-    def __init__(self, cr, uid, name, context):
-        super(bom_structure_leaves_custom_report, self).__init__(cr, uid, name, context=context)
-        self.keyIndex=0
-        self.localcontext.update({
-            'time': time,
-            'get_children':self.get_children,
-            'bom_type':self.bom_type,
-            'trans':_translate,
-        })
+class BomStructureLeavesReport(models.AbstractModel):
+    _name = 'report.%s.bom.structure.leaves' %(openerpModule)
 
     def get_children(self, myObject, level=0):
         result=[]
-        listed={}
-        
+        results={}
+        listed=[]
 
-        def _get_rec(bomobject,level,fth_qty):
+        def getLevelObjects(bomobject, listedBoM, listed, level, ancestor=""):
+            
             myObject=BomSort(bomobject)
+            tmp_result=[]
             for l in myObject:
+                productName=l.product_id.name
+                if productName in listed:
+                    continue
                 res={}
-                if l.name in listed.keys():
-                    res=result[listed[l.name]]
-                    res['pqty']=res['pqty']+l.product_qty*fth_qty
-                    result[listed[l.name]]=res
-                else:
-                    res['name']=l.name
-                    res['item']=l.itemnum
-                    res['pfather']=l.bom_id.product_id.name
-                    res['pname']=l.product_id.name
-                    res['pdesc']=_(l.product_id.description)
-                    res['pcode']=l.product_id.default_code
-                    res['previ']=l.product_id.engineering_revision
-                    res['pqty']=l.product_qty*fth_qty
-                    res['uname']=l.product_uom.name
-                    res['pweight']=l.product_id.weight_net
-                    res['code']=l.code
-                    res['level']=level
-                    if l.child_complete_ids:
-                        _get_rec(l.child_complete_ids,level+1,l.product_qty)
-                    else:
-                        result.append(res)
-                        listed[l.name]=self.keyIndex
-                        self.keyIndex+=1
+                listed.append(productName)
+                fatherName=l.bom_id.product_id.name
+                fatherRef="%s-%d" %(fatherName, level-1)
+                if fatherRef in listedBoM.keys():
+                    listedName="%s-%s-%d" %(ancestor, productName, level)
+                    if listedName in listedBoM[fatherRef]:
+                        listedline=listedBoM[fatherRef][listedName]
+                        product=listedline['product']
+                        productRef="%s-%d" %(product.name, level)
+                        if not productRef in listedBoM.keys():
+                            quantity=QuantityInBom(listedBoM, product.name)
+                            res['name']=product.name
+                            res['item']=l.itemnum
+                            res['pfather']=fatherName
+                            res['pname']=product.name
+                            res['pdesc']=_(product.description)
+                            res['pcode']=l.product_id.default_code
+                            res['previ']=product.engineering_revision
+                            res['pqty']=quantity
+                            res['uname']=l.product_uom_id.name
+                            res['pweight']=product.weight
+                            res['code']=l.product_id.default_code
+                            res['level']=level
+                            tmp_result.append(res)
+                        
+                        for bomId in l.product_id.bom_ids:
+                            if bomId.type == l.bom_id.type:
+                                if bomId.bom_line_ids:
+                                    tmp_result.extend(getLevelObjects(bomId.bom_line_ids,listedBoM,listed,level+1,fatherName))
+            return tmp_result
 
-            return result
-
-        _get_rec(myObject,level+1,1)
-
+        results=SummarizeBom(myObject,level+1,results)
+        result.extend(getLevelObjects(myObject,results,listed,level+1))
         return result
 
-    def bom_type(self, myObject):
-        result=dict(self.pool[myObject._model._name].fields_get(self.cr, self.uid)['type']['selection']).get(myObject.type,'')
-        return _(result)
+    @api.multi
+    def render_html(self, docids, data=None):
+        docargs = {
+            'doc_ids': docids,
+            'doc_model': 'mrp.bom',
+            'docs': self.env['mrp.bom'].browse(docids),
+            'get_children': self.get_children,
+            'bom_type':bom_type,
+            'data': data,
+        }
+        return self.env['report'].render('%s.bom_template_leaves'%(openerpModule), docargs)
 
-report_sxw.report_sxw('report.plm.bom.structure.leaves','mrp.bom','/'+openerpModule+'/reports/report/'+thisModule+'.rml',parser=bom_structure_leaves_custom_report,header='internal')
+
+class BomStructureFlatReport(models.AbstractModel):
+    _name = 'report.%s.bom.structure.flat' %(openerpModule)
+
+    def get_children(self, myObject, level=0):
+        result=[]
+        results={}
+        listed=[]
+
+        def getLevelObjects(bomobject, listedBoM, listed, level, ancestor=""):
+            
+            myObject=BomSort(bomobject)
+            tmp_result=[]
+            for l in myObject:
+                productName=l.product_id.name
+                if productName in listed:
+                    continue
+                res={}
+                listed.append(productName)
+                fatherName=l.bom_id.product_id.name
+                fatherRef="%s-%d" %(fatherName, level-1)
+                if fatherRef in listedBoM.keys():
+                    listedName="%s-%s-%d" %(ancestor, productName, level)
+                    if listedName in listedBoM[fatherRef]:
+                        listedline=listedBoM[fatherRef][listedName]
+                        product=listedline['product']
+                        quantity=QuantityInBom(listedBoM, product.name)
+                        res['name']=product.name
+                        res['item']=l.itemnum
+                        res['pfather']=fatherName
+                        res['pname']=product.name
+                        res['pdesc']=_(product.description)
+                        res['pcode']=l.product_id.default_code
+                        res['previ']=product.engineering_revision
+                        res['pqty']=quantity
+                        res['uname']=l.product_uom_id.name
+                        res['pweight']=product.weight
+                        res['code']=l.product_id.default_code
+                        res['level']=level
+                        tmp_result.append(res)
+                        
+                        for bomId in l.product_id.bom_ids:
+                            if bomId.type == l.bom_id.type:
+                                if bomId.bom_line_ids:
+                                    tmp_result.extend(getLevelObjects(bomId.bom_line_ids,listedBoM,listed,level+1,fatherName))
+            return tmp_result
+
+        results=SummarizeBom(myObject,level+1,results)
+        result.extend(getLevelObjects(myObject,results,listed,level+1))
+        return result
+        
+    @api.multi
+    def render_html(self, docids, data=None):
+        docargs = {
+            'doc_ids': docids,
+            'doc_model': 'mrp.bom',
+            'docs': self.env['mrp.bom'].browse(docids),
+            'get_children': self.get_children,
+            'bom_type':bom_type,
+            'data': data,
+        }
+        return self.env['report'].render('%s.bom_template_flat'%(openerpModule), docargs)

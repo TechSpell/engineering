@@ -31,10 +31,10 @@
     'sequence': 10,
     'summary': 'PLM Engineering integration with main CAD editors',
     'images': ['images/main_screenshot.png'],
-    'depends': ['base', 'process','board','document','product','mrp'],
+    'depends': ['base','board','document','product','mrp'],
     'description': """
-Product Lifecycle Management in LibreERP
-========================================
+Product Lifecycle Management in Odoo
+====================================
 
 This application enables a group of people to intelligently and efficiently manage 3D Models and 2D Drawings, directly from CAD editors.
 
@@ -69,43 +69,45 @@ Supported Editors :
         * Catia V.5
        
     """,
-    'init_xml': [
+    'data': [
+             'security/base_plm_security.xml',
+             'security/res.groups.csv',
+             'security/ir.model.access.csv',
+             'views/import_stylesheet.xml',
+             'views/document_view.xml',
+             'views/document_workflow.xml',
+             'views/checkout_view.xml',
+             'views/board_view.xml',
+             'views/res_config_view.xml',
+             'views/compare_bom_view.xml',
+             'views/backupdoc_view.xml',
+             'views/component_view.xml',
+             'views/component_workflow.xml',
+             'views/document_relations.xml',
+             'views/relations_view.xml',
+             'views/description_sequence.xml',
+             'views/description_view.xml',
+             'views/sparebom_view.xml',            
+             'views/material_sequence.xml',
+             'views/material_view.xml',
+             'views/finishing_sequence.xml',
+             'views/finishing_view.xml',
+             'views/codelist_view.xml',
+             'views/logging.xml',
+             'reports/report/component_report.xml',
+             'reports/report/component_kanban.xml',            
+             'reports/report/document_report.xml',
+             'reports/report/checkout_report.xml',
+             'reports/report/bom_structure_templates.xml',
+             'reports/report/bom_structure.xml',
+       ],
+    'demo': [
         ],
-    'update_xml': [
-        'security/base_plm_security.xml',
-        'views/board_view.xml',
-        'views/backupdoc_view.xml',
-        'views/checkout_view.xml',
-        'views/compare_bom_view.xml',
-        'views/component_view.xml',
-        'views/component_workflow.xml',
-        'views/description_view.xml',
-        'views/description_sequence.xml',
-        'views/document_view.xml',
-        'views/document_workflow.xml',
-        'views/document_relations.xml',
-        'views/finishing_sequence.xml',
-        'views/finishing_view.xml',
-        'views/codelist_view.xml',
-        'views/material_sequence.xml',
-        'views/material_view.xml',
-        'views/relations_view.xml',
-        'views/res_config_view.xml',
-        'views/sparebom_view.xml',
-        'views/logging.xml',
-        'reports/report/bom_structure.xml',
-        'reports/report/component_report.xml',
-        'reports/report/document_report.xml',
-        'reports/report/checkout_report.xml',
-        'security/ir.model.access.csv',
-        'security/res.groups.csv',
-        ],
-    'demo_xml': [
+    'test': [
         ],
     'installable': True,
     'application': True,
     'auto_install': False,
-    'active': False,
     'license': 'LGPL-3',
 }
 

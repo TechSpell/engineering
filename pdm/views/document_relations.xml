@@ -9,6 +9,7 @@
             <field name="arch" type="xml">
                 <form string="Show Document Relation">
                 <group colspan="4" col="4">
+	                <field name="name" invisible="True"/>
 	               	<separator colspan="4" string="Parent Preview"/>
 	                <group colspan="2" col="2">
 	                    <field name="parent_id" readonly="True"/>
@@ -89,6 +90,7 @@
                     <field name="parent_id"/>
                     <field name="child_id"/>
                     <field name="link_kind" string="Document Relation Kind"/>
+ 					<filter string="Latest" name="latest" icon="terp-stock_symbol-selection" domain="[('parent_state', 'not in', ['obsoleted','undermodify']),('child_state', 'not in', ['obsoleted','undermodify'])]"/>
                     <newline/>
                     <group expand="0" string="Group By...">
                         <filter string="Parent" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'parent_id'}"/>
@@ -104,12 +106,14 @@
     	<field name="res_model">plm.document.relation</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+    	<field name="context">{"search_default_latest":1}</field>      
     </record>
 
     <menuitem
         name="Search on Document Relations"
         action="plm_action_document_relations"
         id="menu_document_relations"
+        sequence="20"
         parent="plm_document_menu"/>
 
 </data>

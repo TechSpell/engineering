@@ -24,16 +24,14 @@ import base64, logging
 import StringIO
 from reportlab.pdfgen import canvas
 
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
 try:
     from PyPDF2 import PdfFileWriter, PdfFileReader
 except Exception as msg:
     logging.error("This module requires PyPDF2. Please contact your system administrator to install it.")
-# NOTE : TO BE ADDED TO FINAL CONFIGURATION. NOT IN STANDARD PYTHON
 
-from report.render import render
-from openerp.osv import orm
-from openerp.tools.translate import _
+from odoo.report.render import render
+from odoo.exceptions import UserError
+
 
 def isPdf(fileName):
     if (os.path.splitext(fileName)[1].lower()=='.pdf'):
@@ -66,7 +64,7 @@ class BookCollector(object):
         try:
             self.collector=PdfFileWriter()
         except Exception as msg:
-            raise orm.except_orm(_("This module requires PyPDF2. Please contact your system administrator to install it."))
+            raise UserError(_("This module requires PyPDF2. Please contact your system administrator to install it."))
         
         self.customTest=customTest
         self.pageCount=1
@@ -132,32 +130,33 @@ def packDocuments(docRepository,documents,bookCollector):
     output3 = [] 
     output4 = []
     for document in documents:
-        if not document.id in packed:
-            Flag=False 
-            if document.printout:
-                input1 = StringIO.StringIO(base64.decodestring(document.printout))
-                Flag=True
-            elif isPdf(document.datas_fname):
-                value=getDocumentStream(docRepository,document)
-                if value:
-                    input1 = StringIO.StringIO(value)
+        if document.type=='binary':
+            if not document.id in packed:
+                Flag=False 
+                if document.printout:
+                    input1 = StringIO.StringIO(base64.decodestring(document.printout))
                     Flag=True
-            if Flag:
-                page=PdfFileReader(input1)
-                orientation,paper=paperFormat(page.getPage(0).mediaBox)
-                if(paper==0)  :
-                    output0.append(input1)
-                elif(paper==1):
-                    output1.append(input1)
-                elif(paper==2):
-                    output2.append(input1)
-                elif(paper==3):
-                    output3.append(input1)
-                elif(paper==4):
-                    output4.append(input1)
-                else: 
-                    output0.append(input1)
-                packed.append(document.id)
+                elif isPdf(document.datas_fname):
+                    value=getDocumentStream(docRepository,document)
+                    if value:
+                        input1 = StringIO.StringIO(value)
+                        Flag=True
+                if Flag:
+                    page=PdfFileReader(input1)
+                    orientation,paper=paperFormat(page.getPage(0).mediaBox)
+                    if(paper==0)  :
+                        output0.append(input1)
+                    elif(paper==1):
+                        output1.append(input1)
+                    elif(paper==2):
+                        output2.append(input1)
+                    elif(paper==3):
+                        output3.append(input1)
+                    elif(paper==4):
+                        output4.append(input1)
+                    else: 
+                        output0.append(input1)
+                    packed.append(document.id)
     for pag in output0+output1+output2+output3+output4:
         bookCollector.addPage(pag)
     if bookCollector != None:

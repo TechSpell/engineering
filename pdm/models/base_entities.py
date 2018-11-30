@@ -23,11 +23,11 @@
 import logging
 from datetime import datetime
 
-from openerp.osv import fields, orm
-from openerp.tools.translate import _
-from decimal_precision import decimal_precision as dp
+from odoo import models, fields, api, _, osv
+from odoo.exceptions import UserError
+import odoo.addons.decimal_precision as dp
 
-from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, \
+from .common import BOMTYPES, getListIDs, getCleanList, \
                     isAdministrator, isDraft, isAnyReleased, isObsoleted
                     
 
@@ -36,79 +36,53 @@ USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Rel
                ('obsoleted', 'Obsoleted')]
 
 
-class plm_component(orm.Model):
-    _name = 'product.template'
+class plm_component(models.Model):
     _inherit = 'product.template'
-    _columns = {
-        'state': fields.selection(USED_STATES, 'Status', help="The status of the product in its LifeCycle.",
-                                  readonly="True"),
-        'engineering_code': fields.char('Part Number',
-                                        help="This is engineering reference to manage a different P/N from item Name.",
-                                        size=64),
-        'engineering_revision': fields.integer('Revision', required=True, help="The revision of the product."),
-        'engineering_writable': fields.boolean('Writable'),
-        'engineering_material': fields.char('Raw Material', size=128, required=False,
-                                            help="Raw material for current product, only description for titleblock."),
-        #  'engineering_treatment': fields.char('Treatment',size=64,required=False,help="Thermal treatment for current product"),
-        'engineering_surface': fields.char('Surface Finishing', size=128, required=False,
-                                           help="Surface finishing for current product, only description for titleblock."),
-    }
 
-    _defaults = {
-                 'state': lambda *a: 'draft',
-                 'engineering_revision': lambda self,cr,uid,ctx:0,
-                 'engineering_writable': lambda *a: True,
-                 'type': 'product',
-                 'standard_price': 0,
-                 'volume':0,
-                 'weight':0,
-                 'cost_method':0,
-                 'sale_ok':0,
-                 'state':'draft',
-                 'mes_type':'fixed',
-                 'cost_method':'standard',
-                 'supply_method': 'produce',
-                 'procure_method': 'make_to_order',
-                 'categ_id': 1,
-                 'purchase_ok': 0,
-                 'uom_id': 1,
-                 'uom_po_id': 1,
-    }
+    state                   =   fields.Selection    (USED_STATES, string=_('Status'),           readonly="True",         default='draft',       help=_("The status of the product in its LifeCycle."))
+    engineering_code        =   fields.Char         (             string=_('Part Number'),      size=64,                                        help=_("This is engineering reference to manage a different P/N from item Name."))
+    engineering_revision    =   fields.Integer      (             string=_('Revision'),                   required=True, default=0,             help=_("The revision of the product."))
+    engineering_writable    =   fields.Boolean      (             string=_('Writable'),                                  default=True)
+    engineering_material    =   fields.Char         (             string=_('Raw Material'),     size=128, required=False,                       help=_("Raw material for current product, only description for titleblock."))
+#   engineering_treatment   =   fields.Char         (             string=_('Treatment'),        size=64,  required=False,                       help=_("Thermal treatment for current product"))
+    engineering_surface     =   fields.Char         (             string=_('Surface Finishing'),size=128, required=False,                       help=_("Surface finishing for current product, only description for titleblock."))
+
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
     ]
 
-    def init(self, cr):
-        cr.execute("""
-            -- Index: product_template_engcode_index
-             
-            DROP INDEX IF EXISTS product_template_engcode_index;
-             
-            CREATE INDEX product_template_engcode_index
-              ON product_template
-              USING btree
-              (engineering_code);
-            """)
- 
-        cr.execute("""
-            -- Index: product_template_engcoderev_index
-             
-            DROP INDEX IF EXISTS product_template_engcoderev_index;
-             
-            CREATE INDEX product_template_engcoderev_index
-              ON product_template
-              USING btree
-              (engineering_code, engineering_revision);
-            """)
+#     @api.model_cr
+#     def init(self):
+#         cr = self._cr
+#         cr.execute("""
+#             -- Index: product_template_engcode_index
+#              
+#             DROP INDEX IF EXISTS product_template_engcode_index;
+#              
+#             CREATE INDEX product_template_engcode_index
+#               ON product_template
+#               USING btree
+#               (engineering_code);
+#             """)
+#  
+#         cr.execute("""
+#             -- Index: product_template_engcoderev_index
+#              
+#             DROP INDEX IF EXISTS product_template_engcoderev_index;
+#              
+#             CREATE INDEX product_template_engcoderev_index
+#               ON product_template
+#               USING btree
+#               (engineering_code, engineering_revision);
+#             """)
 
 
-class plm_component_document_rel(orm.Model):
+class plm_component_document_rel(models.Model):
     _name = 'plm.component.document.rel'
     _description = "Component Document Relations"
-    _columns = {
-        'component_id': fields.many2one('product.product', 'Linked Component', ondelete='cascade'),
-        'document_id': fields.many2one('plm.document', 'Linked Document', ondelete='cascade'),
-    }
+    
+    component_id    =   fields.Many2one('product.product', string=_('Linked Component'), ondelete='cascade')
+    document_id     =   fields.Many2one('plm.document',    string=_('Linked Document'),  ondelete='cascade')
 
     _sql_constraints = [
         (
@@ -116,11 +90,10 @@ class plm_component_document_rel(orm.Model):
             _('Component and Document relation has to be unique !')),
     ]
     
-    def CleanStructure(self, cr, uid, relations, context=None):
+    def CleanStructure(self, relations):
         res = []
-        ids=[]
         criteria=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        rl_to_delete=self
         for document_id, component_id in relations:
             latest = (document_id, component_id)
             if latest in res:
@@ -133,19 +106,18 @@ class plm_component_document_rel(orm.Model):
             elif component_id:
                 criteria=[ ('component_id', '=', component_id) ]
             if criteria:
-                ids.extend(self.search(cr, uid, criteria, context=context))
-        if ids:
-            self.unlink(cr, uid, ids, context=context)
+                rl_to_delete |= self.search(criteria)
+        rl_to_delete.unlink()
 
-    def SaveStructure(self, cr, uid, relations=[], level=0, currlevel=0, context=None):
+    @api.model
+    def SaveStructure(self, relations=[], level=0, currlevel=0):
         """
             Save Document relations
         """
         ret=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
 
         def cleanStructure(relations):
-            self.CleanStructure(cr, uid, relations, context=context)
+            self.CleanStructure(relations)
 
         def saveChild(args):
             """
@@ -155,7 +127,7 @@ class plm_component_document_rel(orm.Model):
             try:
                 res = {}
                 res['document_id'], res['component_id'] = args
-                self.create(cr, uid, res, context=context)
+                self.create(res)
             except:
                 logging.error("saveChild : Unable to create a link. Arguments (%s)." % (str(args)))
                 ret=True
@@ -174,38 +146,109 @@ HELP+="it is considered as a set or pack: the products are replaced by the compo
 HELP+="between the sale order to the picking without going through the production order." 
 HELP+="The normal BoM will generate one production order per BoM level."                   
 
-class plm_relation(orm.Model):
-    _name = 'mrp.bom'
-    _inherit = 'mrp.bom'
-    _columns = {
-        'create_date': fields.datetime(_('Creation Date'), readonly=True),
-        'source_id': fields.many2one('plm.document', 'name', ondelete='no action', readonly=True,
-                                     help='This is the document object that declares this BoM.'),
-        'type': fields.selection(BOMTYPES, _('BoM Type'), required=True, help=_(HELP)),
-        'itemnum': fields.integer(_('Cad Item Position')),
-        'itemlbl': fields.char(_('Cad Item Position Label'), size=64),
-        'weight': fields.float('Weight', digits_compute=dp.get_precision('Stock Weight'),
-                                   help="The BoM net weight in Kg."),
+         
+class plm_relation_line(models.Model):
+    _inherit = 'mrp.bom.line'
+    
+    create_date = fields.Datetime   (             string=_('Creation Date'),     readonly=True)
+    source_id   = fields.Many2one   ('plm.document','name',ondelete='no action', readonly=True, help=_("This is the document object that declares this BoM."))
+    type        = fields.Selection  (BOMTYPES, string=_('BoM Type'),             required=True, help=_(HELP))
+    itemnum     = fields.Integer    (          string=_('CAD Item Position'),                   help=_("This is the item reference position into the CAD document that declares this BoM."))
+    itemlbl     = fields.Char       (          string=_('Cad Item Position Label'), size=64,    help=_("This is the item reference position into the CAD document that declares this BoM (As literal)."))
+
+    _defaults = {
+        'product_uom' : 1,
     }
+    
+    _order = 'itemnum'
+
+    @api.onchange('product_id')
+    def onchange_plmproduct_id(self):
+        """ Changes UoM if product_id changes.
+        @param product_id: Changed product_id
+        @return:  Dictionary of changed values
+        """
+        values = {}
+        father_id=False
+        product_id=False
+        if self._context and 'product_id' in self._context and 'father_id' in self._context and 'father_tmpl_id' in self._context:
+            options=self.env['plm.config.settings'].GetOptions()
+
+            prodTypeObj=self.env['product.product']
+            father_id=self._context['father_id']
+            if not father_id:
+                fatherObj=prodTypeObj.getFromTemplateID(self._context['father_tmpl_id'])
+                father_id=fatherObj.id if fatherObj else False 
+            product_id=self._context['product_id']
+            if father_id and product_id:
+                prodTypeObj.alreadyListed=[]
+                productObj=prodTypeObj.browse(product_id)
+                fatherIDs=prodTypeObj.recurse_father_part_compute([father_id, product_id])
+                if (father_id == product_id) or (product_id in fatherIDs[father_id]):
+                    logging.warning("Writing BoM check: This is a circular reference to: %s - %d." %(productObj.product_tmpl_id.name, productObj.product_tmpl_id.engineering_revision))
+                    values.update({'product_id': False})
+                if not options.get('opt_duplicatedrowsinbom', True):
+                    listed_products=[]
+                    if 'parent' in self._context:
+                        if 'bom_line_ids' in self._context['parent']:
+                            mrp_bom_lines=self._context['parent']['bom_line_ids']
+                            for mrp_bom_line in mrp_bom_lines:
+                                prod_id=False
+                                req, bom_line, vals=mrp_bom_line
+                                if req and req!=2:
+                                    if bom_line:
+                                        prod_id=self.browse(bom_line).product_id.id
+                                else:
+                                    if vals and 'product_id' in vals:
+                                        prod_id=vals['product_id']
+                                if prod_id:
+                                    listed_products.append(prod_id)
+                        if (product_id in listed_products):
+                            logging.warning("Writing BoM check: This is a duplicated line : %s - %d." %(productObj.product_tmpl_id.name, productObj.product_tmpl_id.engineering_revision))
+                            values.update({'product_id': False})
+                if options.get('opt_autonumbersinbom', False):
+                    if 'parent' in self._context:
+                        length=0
+                        step=options.get('opt_autostepinbom', 5)
+                        if 'bom_line_ids' in self._context['parent']:
+                            mrp_bom_lines=self._context['parent']['bom_line_ids']
+                            length=len(mrp_bom_lines)
+                        values.update({'itemnum': step*(length+1) })
+                if options.get('opt_autotypeinbom', False):
+                    if ('parent' in self._context) and ('type' in self._context['parent']):
+                        values.update({'type': self._context['parent']['type'] })
+        if values:
+            return {'value': values }
+
+class plm_relation(models.Model):
+    _inherit = 'mrp.bom'
+
+    _packed = []
+    
+    create_date = fields.Datetime   (          string=_('Creation Date'),    readonly=True)
+    type        = fields.Selection  (BOMTYPES, string=_('BoM Type'),         required=True,                           help=_(HELP))
+    weight      = fields.Float      (          string=_('Weight') ,          digits=dp.get_precision('Stock Weight'), help=_("The BoM net weight in Kg."))
+
     _defaults = {
         'product_uom' : 1,
         'weight' : 0.0,
     }
 
-    def init(self, cr):
+    @api.model_cr
+    def init(self):
         self._packed = []
 
-    def _insertlog(self, cr, uid, ids, changes={}, note={}, context=None):
+    def _insertlog(self, ids, changes={}, note={}):
         newID=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         op_type, op_note=["unknown",""]
-        for bomObject in self.browse(cr, uid, getListIDs(ids), context=context):
+        for bomObject in self.browse( getListIDs(ids)):
             if note:
                 op_type="{type}".format(type=note['type'])
                 op_note="{reason}".format(reason=note['reason'])
             elif changes:
                 op_type='change value'
-                op_note=self.pool['plm.logging'].getchanges(cr, uid, bomObject, changes, context=context)
+                op_note=self.env['plm.logging'].getchanges( bomObject, changes)
             if op_note:
                 values={
                         'name': bomObject.product_id.name,
@@ -214,57 +257,53 @@ class plm_relation(orm.Model):
                         'op_type': op_type,
                         'op_note': op_note,
                         'op_date': datetime.now(),
-                        'userid': uid,
+                        'userid': self._uid,
                         }
-                objectItem=self.pool['plm.logging'].create(cr, uid, values, context=context)
+                
+                objectItem=self.env['plm.logging'].create(values)
                 if objectItem:
                     newID=objectItem
         return newID
 
-    def _getinbomidnullsrc(self, cr, uid, pid, context=None):
+    def _getinbomidnullsrc(self, pid):
         counted = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        ids = self.search(cr, uid, [('product_id', '=', pid), ('bom_id', '!=', False),
-                                     ('type', 'in', ['ebom', 'normal', 'spbom'])], context=context)
-        for obj in self.browse(cr, uid, getListIDs(ids), context=context):
+        bomLType=self.env['mrp.bom.line']
+        for obj in bomLType.search( [('product_id', '=', pid), ('bom_id', '!=', False),
+                                     ('type', 'in', ['ebom', 'normal', 'spbom'])]):
             if not obj.bom_id in counted:
                 counted.append(obj.bom_id)
         return counted
 
-    def _getinbom(self, cr, uid, pid, sid, context=None):
+    def _getinbom(self, pid, sid):
         counted = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        ids = self.search(cr, uid, [('product_id', '=', pid), ('bom_id', '!=', False), ('source_id', '=', sid),
-                                    ('type', 'in', ['ebom', 'normal', 'spbom'])], context=context)
-        for obj in self.browse(cr, uid, getListIDs(ids), context=context):
+        bomLType=self.env['mrp.bom.line']
+        for obj in bomLType.search( [('product_id', '=', pid), ('bom_id', '!=', False), ('source_id', '=', sid),
+                                    ('type', 'in', ['ebom', 'normal', 'spbom'])]):
             if not obj.bom_id in counted:
                 counted.append(obj.bom_id)
         return counted
 
-    def _getbomidnullsrc(self, cr, uid, pid, context=None):
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        ids = self.search(cr, uid, [('product_id', '=', pid), ('bom_id', '=', False), ('type', 'in', ['ebom', 'normal', 'spbom'])], context=context)
-        return self.browse(cr, uid, getListIDs(ids), context=context)
+    def _getbomidnullsrc(self, pid):
+        
+        templId=self.env['product.product'].getTemplateItem( pid)
+        return self.search( [('product_tmpl_id', '=', templId.id), ('type', 'in', ['ebom', 'normal', 'spbom'])])
+    
+    def _getbomid(self, pid, sid):
+        
+        return self._getidbom( pid, sid)
 
-    def _getbomid(self, cr, uid, pid, sid, context=None):
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        ids = self._getidbom(cr, uid, pid, sid)
-        return self.browse(cr, uid, getListIDs(ids), context=None)
+    def _getidbom(self, pid, sid):
+        
+        templId=self.env['product.product'].getTemplateItem( pid)
+        return self.search( [('product_tmpl_id', '=', templId.id), ('type', 'in', ['ebom', 'normal', 'spbom'])])
 
-    def _getidbom(self, cr, uid, pid, sid, context=None):
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        ids = self.search(cr, uid, [('product_id', '=', pid), ('bom_id', '=', False), ('source_id', '=', sid),
-                                    ('type', 'in', ['ebom', 'normal', 'spbom'])], context=context)
-        return getCleanList(ids)
-
-    def _getpackdatas(self, cr, uid, relDatas, context=None):
+    def _getpackdatas(self, relDatas):
         prtDatas = {}
-        context = context or self.pool['res.users'].context_get(cr, uid)
         tmpids = getListedDatas(relDatas)
         if len(tmpids) < 1:
             return prtDatas
-        compType = self.pool['product.product']
-        tmpDatas = compType.read(cr, uid, tmpids, context=context)
+        compType = self.env['product.product']
+        tmpDatas = compType.read( tmpids)
         for tmpData in tmpDatas:
             for keyData in tmpData.keys():
                 if tmpData[keyData]==None:
@@ -272,10 +311,9 @@ class plm_relation(orm.Model):
             prtDatas[str(tmpData['id'])] = tmpData
         return prtDatas
 
-    def _getpackreldatas(self, cr, uid, relDatas, prtDatas, context=None):
+    def _getpackreldatas(self, relDatas, prtDatas):
         relids = {}
         relationDatas = {}
-        context = context or self.pool['res.users'].context_get(cr, uid)
         tmpids = getListedDatas(relDatas)
         if len(tmpids) < 1:
             return prtDatas
@@ -286,31 +324,32 @@ class plm_relation(orm.Model):
 
         if len(relids) < 1:
             return relationDatas
-        setobj = self.pool['mrp.bom']
+        setobj = self.env['mrp.bom']
         for keyData in relids.keys():
-            relationDatas[keyData] = setobj.read(cr, uid, relids[keyData], context=context)
+            relationDatas[keyData] = setobj.read(relids[keyData])
         return relationDatas
 
-    def _bomid(self, cr, uid, pid, sid=None, context=None):
-        context = context or self.pool['res.users'].context_get(cr, uid)
+    def _bomid(self, pid, sid=None):
+        
         if not sid:
-            return self._getbomidnullsrc(cr, uid, pid, context=context)
+            return self._getbomidnullsrc( pid)
         else:
-            return self._getbomid(cr, uid, pid, sid, context=context)
+            return self._getbomid( pid, sid)
 
-    def _inbomid(self, cr, uid, pid, sid=None, context=None):
-        context = context or self.pool['res.users'].context_get(cr, uid)
+    def _inbomid(self, pid, sid=None):
+        
         if not sid:
-            return self._getinbomidnullsrc(cr, uid, pid, context=context)
+            return self._getinbomidnullsrc( pid)
         else:
-            return self._getinbom(cr, uid, pid, sid, context=context)
+            return self._getinbom( pid, sid)
 
-    def GetWhereUsed(self, cr, uid, ids, context=None):
+    @api.model
+    def GetWhereUsed(self, ids):
         """
             Return a list of all fathers of a Part (all levels)
         """
         self._packed = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         relDatas = []
         if len(ids) < 1:
             return None
@@ -319,64 +358,66 @@ class plm_relation(orm.Model):
             sid = ids[1]
         oid = ids[0]
         relDatas.append(oid)
-        relDatas.append(self._implodebom(cr, uid, self._inbomid(cr, uid, oid, sid, context=context), context=context))
-        prtDatas = self._getpackdatas(cr, uid, relDatas, context=context)
-        return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas, context=context))
+        relDatas.append(self._implodebom( self._inbomid( oid, sid)))
+        prtDatas = self._getpackdatas( relDatas)
+        return (relDatas, prtDatas, self._getpackreldatas( relDatas, prtDatas))
 
-    def GetExplose(self, cr, uid, ids, context=None):
+    @api.model
+    def GetExplose(self, ids):
         """
             Returns a list of all children in a Bom (all levels)
         """
         self._packed = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        relDatas = [ids[0], self._explodebom(cr, uid, self._bomid(cr, uid, ids[0], context=context), False, context=context)]
-        prtDatas = self._getpackdatas(cr, uid, relDatas, context=context)
-        return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas))
+        
+        relDatas = [ids[0], self._explodebom( self._bomid( ids[0]), False)]
+        prtDatas = self._getpackdatas( relDatas)
+        return (relDatas, prtDatas, self._getpackreldatas( relDatas, prtDatas))
 
-    def _explodebom(self, cr, uid, bomObjects, check=True, context=None):
+    def _explodebom(self, bomObjects, check=True):
         """
             Explodes a BoM entity in a structured list ( check=False : all levels, check=True : one level )
         """
         output=[]
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         for bomObject in bomObjects:
-            for bom_line in bomObject.bom_lines:
+            for bom_line in bomObject.bom_line_ids:
                 if check and (bom_line.product_id.id in self._packed):
                     continue
-                innerids=self._explodebom(cr, uid, self._bomid(cr, uid, bom_line.product_id.id, context=context), check, context=context)
+                innerids=self._explodebom( self._bomid( bom_line.product_id.id), check)
                 self._packed.append(bom_line.product_id.id)
                 output.append([bom_line.product_id.id, innerids])
         return(output)
 
-    def explodebom(self, cr, uid, bomObjects, check=True, context=None):
+    def explodebom(self, bomObjects, check=True):
         """
             Explodes a BoM entity in a flat list ( check=False : all levels, check=True : one level )
         """
         output=[]
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         for bomObject in bomObjects:
-            for bom_line in bomObject.bom_lines:
+            for bom_line in bomObject.bom_line_ids:
                 if bom_line.product_id.id in self._packed:
                     continue
                 if check:
                     continue
-                innerids=self.explodebom(cr, uid, self._bomid(cr, uid, bom_line.product_id.id, context=context), check)
+                innerids=self.explodebom( self._bomid( bom_line.product_id.id), check)
                 self._packed.append(bom_line.product_id.id)
                 output.append(bom_line.product_id.id)
                 output.extend(innerids)
         return(output)
 
-    def GetExploseSum(self, cr, uid, ids, context=None):
+    @api.model
+    def GetExploseSum(self, ids):
         """
             Return a list of all children in a Bom taken once (all levels)
         """
         self._packed = []
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        relDatas = [ids[0], self._explodebom(cr, uid, self._bomid(cr, uid, ids[0], context=context), True, context=context)]
-        prtDatas = self._getpackdatas(cr, uid, relDatas, context=context)
-        return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas, context=context))
+        
+        relDatas = [ids[0], self._explodebom( self._bomid( ids[0]), True)]
+        prtDatas = self._getpackdatas( relDatas)
+        return (relDatas, prtDatas, self._getpackreldatas( relDatas, prtDatas))
 
-    def _implodebom(self, cr, uid, bomObjects, context=None):
+    def _implodebom(self, bomObjects):
         """
             Executed implosion for a a BoM object, returning a structured list.
         """
@@ -387,12 +428,12 @@ class plm_relation(orm.Model):
             if bomObject.product_id.id in self._packed:
                 continue
             self._packed.append(bomObject.product_id.id)
-            context = context or self.pool['res.users'].context_get(cr, uid)
-            innerids=self._implodebom(cr, uid, self._inbomid(cr, uid, bomObject.product_id.id, context=context), context=context)
+            
+            innerids=self._implodebom( self._inbomid( bomObject.product_id.id))
             parentIDs.append((bomObject.product_id.id,innerids))
         return (parentIDs)
 
-    def implodebom(self, cr, uid, bomObjects, context=None):
+    def implodebom(self, bomObjects):
         """
             Executes implosion for a a BoM object, returning a flat list.
         """
@@ -400,17 +441,18 @@ class plm_relation(orm.Model):
         for bomObject in bomObjects:
             if not bomObject.product_id:
                 continue
-            context = context or self.pool['res.users'].context_get(cr, uid)
-            innerids=self.implodebom(cr, uid, self._inbomid(cr, uid, bomObject.product_id.id, context=context))
+            
+            innerids=self.implodebom( self._inbomid( bomObject.product_id.id))
             parentIDs.append(bomObject.product_id.id)
             parentIDs.extend(innerids)
         return (parentIDs)
 
-    def GetWhereUsedSum(self, cr, uid, ids, context=None):
+    @api.model
+    def GetWhereUsedSum(self, ids):
         """
             Return a list of all fathers of a Part (all levels)
         """
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         self._packed = []
         relDatas = []
         if len(ids) < 1:
@@ -420,51 +462,34 @@ class plm_relation(orm.Model):
             sid = ids[1]
         oid = ids[0]
         relDatas.append(oid)
-        relDatas.append(self._implodebom(cr, uid, self._inbomid(cr, uid, oid, sid, context=context), context=context))
-        prtDatas = self._getpackdatas(cr, uid, relDatas, context=context)
-        return (relDatas, prtDatas, self._getpackreldatas(cr, uid, relDatas, prtDatas, context=context))
+        relDatas.append(self._implodebom( self._inbomid( oid, sid)))
+        prtDatas = self._getpackdatas( relDatas)
+        return (relDatas, prtDatas, self._getpackreldatas( relDatas, prtDatas))
 
-    def GetExplodedBom(self, cr, uid, ids, level=0, currlevel=0, context=None):
-        """
-            Return a list of all children in a BoM ( level = 0 one level only, level = 1 all levels)
-        """
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        self._packed = []
-        result = []
-        if level == 0 and currlevel > 1:
-            return result
-        bomids = self.browse(cr, uid, ids, context=context)
-        for bomid in bomids:
-            for bom in bomid.bom_lines:
-                children = self.GetExplodedBom(cr, uid, [bom.id], level, currlevel + 1, context=context)
-                result.extend(children)
-            if len(str(bomid.bom_id)) > 0:
-                result.append(bomid.id)
-        return result
-
-    def SaveStructure(self, cr, uid, relations=[], level=0, currlevel=0, context=None):
+    @api.model
+    def SaveStructure(self, relations=[], level=0, currlevel=0):
         """
             Save EBom relations
         """
         ret=False
         listedParent=[]
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_process':True, 'internal_writing':True})
-        modelFields=self.pool['plm.config.settings'].GetFieldsModel(cr, uid,self._name)
+        bomLType=self.env['mrp.bom.line']
+        modelFields=self.env['plm.config.settings'].GetFieldsModel(bomLType._name)
 
         def cleanStructure(sourceID=None):
             """
-                Cleans relations having sourceID
+                Cleans relations having sourceID (in mrp.bom.line)
             """
             bomIDs=[]
-            if not sourceID == None:
-                ids=self.search(cr,uid,[('source_id', '=', sourceID),('bom_id','!=',False)], context=context)
-                for bomLine in self.browse(cr,uid, getListIDs(ids), context=context):
-                    bomIDs.append(bomLine.bom_id.id)
-                self.unlink(cr, uid, ids, context=context)                                 # Cleans mrp.bom.line
-            for bomID in self.browse(cr, uid, getCleanList(bomIDs), context=context):
-                if not bomID.bom_lines:
-                    self.unlink(cr, uid, [bomID.id], context=context)                                     # Cleans mrp.bom
+            bl_to_delete = bomLType
+            if not sourceID==None:
+                for bomLine in bomLType.search([('source_id','=',sourceID)]):
+                    bomIDs.append(bomLine.bom_id)
+                    bl_to_delete |= bomLine
+                bl_to_delete.unlink()                           # Cleans mrp.bom.lines
+            for bomID in getCleanList(bomIDs):
+                bomID.unlink()                                  # Cleans mrp.bom
+                    
 
         def toCleanRelations(relations):
             """
@@ -496,7 +521,7 @@ class plm_relation(orm.Model):
                             else:
                                 if saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs):
                                     tmpBomId=toCompute(childName, relations)
-                        self.RebaseProductWeight(cr, uid, bomID, self.RebaseBomWeight(cr, uid, bomID, context=context), context=context)
+                        self.RebaseProductWeight( bomID, self.RebaseBomWeight( bomID))
             return bomID
 
         def getParent(name, partID=None, kindBom='ebom'):
@@ -506,20 +531,22 @@ class plm_relation(orm.Model):
             ret=False
             if partID:
                 try:
+                    objTempl=self.env['product.product'].getTemplateItem(partID)
                     res={
                          'type': kindBom,
                          'product_id': partID,
-                         'name': name,
+                         'product_tmpl_id': objTempl.id,
                          }
                                              
-                    criteria=[('product_id','=',res['product_id']),
-                              ('type','=',res['type']),
-                              ('bom_id','=',False)]
-                    ids=self.search(cr, uid, criteria, context=context)
+                    criteria=[('product_tmpl_id','=',res['product_tmpl_id']),
+                              ('type','=',res['type'])]
+                    ids=self.search(criteria)
                     if ids:
-                        ret=ids[0]                                          # Gets Existing one
+                        ret=ids[0].id                   # Gets Existing one
                     else:
-                        ret=self.create(cr, uid, res, context=context)      # Creates a new one
+                        objectItem=self.create(res)     # Creates a new one
+                        if objectItem:
+                            ret=objectItem.id
                 except Exception as msg:
                     logging.error("[getParent] :  Unable to create a BoM for part '{name}'.".format(name=name))
                     logging.error("Exception raised was : {msg}.".format(msg=msg))
@@ -527,7 +554,7 @@ class plm_relation(orm.Model):
 
         def saveChild(name, partID=None, sourceID=None, bomID=None, kindBom='ebom', args=None):
             """
-                Saves the relation ( child side in mrp.bom )
+                Saves the relation ( child side in mrp.bom.line )
             """
             ret=False
             if bomID and partID:
@@ -535,7 +562,6 @@ class plm_relation(orm.Model):
                     res={
                          'type': kindBom,
                          'product_id': partID,
-                         'name': name,
                          'bom_id': bomID,
                          }
                     if sourceID:
@@ -548,9 +574,9 @@ class plm_relation(orm.Model):
                     if ('product_qty' in res):
                         if isinstance(res['product_qty'], float) and (res['product_qty']<1e-6):
                             res.update({'product_qty': 1.0})
-                    if not ('product_uom' in res):
-                        res.update({'product_uom': 1})
-                    ret=self.create(cr, uid, res, context=context)
+                    objectItem=bomLType.with_context({'internal_writing':True,'internal_process':True}).create(res)
+                    if objectItem:
+                        ret=objectItem
                 except Exception as msg:
                     logging.error("[saveChild] :  Unable to create a relation for part '{name}' with source ({src})."\
                                   .format(name=name, src=sourceID))
@@ -564,17 +590,18 @@ class plm_relation(orm.Model):
                 ret=True
         return ret
 
-    def IsChild(self, cr, uid, ids, typebom=None, context=None):
+    @api.model
+    def IsChild(self, ids, typebom=None):
         """
             Checks if a Product is child in a BoM relation.
         """
         ret=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         for idd in getListIDs(ids):
-            criteria=[('product_id', '=', idd),('bom_id', '!=', False)]
+            criteria=[('product_id', '=', idd)]
             if typebom:
                 criteria.append(('type', '=', typebom))
-            if self.search(cr, uid, criteria, context=context):
+            if self.env['mrp.bom.line'].search(criteria):
                 ret=ret|True
         return ret
 
@@ -583,363 +610,270 @@ class plm_relation(orm.Model):
             Evaluates net weight for assembly, based on BoM object
         """
         weight = 0.0
-        for bom_line in bomObj.bom_lines:
-            weight += (bom_line.product_qty * bom_line.product_id.product_tmpl_id.weight_net)
+        for bom_line in bomObj.bom_line_ids:
+            weight += (bom_line.product_qty * bom_line.product_id.product_tmpl_id.weight)
         return weight
 
-    def RebaseProductWeight(self, cr, uid, parentBomID, weight=0.0, context=None):
+    @api.model
+    def RebaseProductWeight(self, parentBomID, weight=0.0):
         """
             Evaluates net weight for assembly, based on product ID
         """
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        for bomObj in self.browse(cr, uid, getListIDs(parentBomID), context=context):
+        
+        for bomObj in self.browse( getListIDs(parentBomID)):
             if bomObj.product_id.engineering_writable:
-                self.pool['product.product'].write(cr, uid, [bomObj.product_id.id], {'weight_net': weight}, context=context)
+                bomObj.product_id.write( {'weight': weight} )
 
-    def RebaseBomWeight(self, cr, uid, bomID, context=None):
+    @api.model
+    def RebaseBomWeight(self, bomID):
         """
             Evaluates net weight for assembly, based on BoM ID
         """
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         weight = 0.0
-        for bomId in self.browse(cr, uid, getListIDs(bomID), context=context):
-            if bomId.bom_lines:
+        for bomId in self.browse( getListIDs(bomID)):
+            if bomId.bom_line_ids:
                 weight = self._sumBomWeight(bomId)
-                super(plm_relation, self).write(cr, uid, [bomId.id], {'weight': weight}, context=context)
+                super(plm_relation, bomId).write( {'weight': weight} )
         return weight
 
-    def checkwrite(self, cr, uid, bomIDs, context=None):
+    def checkwrite(self, bomIDs):
         """
             Avoids to save an edited Engineering Bom
         """
         ret=False
-        productType=self.pool['product.product']
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        options=self.pool['plm.config.settings'].GetOptions(cr,uid, context=context)
+        productType=self.env['product.product']
+        
+        options=self.env['plm.config.settings'].GetOptions()
 
-        for bomObject in self.browse(cr, uid, getListIDs(bomIDs), context=context):
-            prodItem=bomObject.product_id
-            if not options.get('opt_editbom', False):
-                if not isDraft(productType,cr, uid, prodItem.id, context=context):
+        for bomObject in self.browse( getListIDs(bomIDs)):
+            prodItem=productType.getFromTemplateID(bomObject.product_tmpl_id.id)
+            if prodItem:
+                if not options.get('opt_editbom', False):
+                    if not isDraft(productType, prodItem.id):
+                        ret=True
+                        break
+                if not options.get('opt_editreleasedbom', False):
+                    if isAnyReleased(productType, prodItem.id):
+                        ret=True
+                        break
+                if isObsoleted(productType, prodItem.id):
                     ret=True
                     break
-            if not options.get('opt_editreleasedbom', False):
-                if isAnyReleased(productType,cr, uid, prodItem.id, context=context):
-                    ret=True
-                    break
-            if  isObsoleted(productType,cr, uid, prodItem.id, context=context):
-                ret=True
-                break
         return ret
     
-    def checkcreation(self, cr, uid, vals, fatherIDs=[], context=None):
+    def checkcreation(self, vals, fatherIDs=[]):
         ret={}
         thisID=vals.get('product_id',False)
         if thisID:
             self._packed=[]
-            exploded=self.explodebom(cr, uid, self._bomid(cr, uid, thisID, context=context), False, context=context)
-            imploded=self.implodebom(cr, uid, self._inbomid(cr, uid, thisID, context=context))
+            exploded=self.explodebom( self._bomid( thisID), False)
+            imploded=self.implodebom( self._inbomid( thisID))
             checklist1=list(set(exploded).intersection(fatherIDs))
             if not(thisID in fatherIDs) and not checklist1 and not(thisID in imploded):
                 newIDs=getCleanList(fatherIDs)
                 newIDs.append(thisID)
-                bomLines=vals.get('bom_lines',[])
+                bomLines=vals.get('bom_line_ids',[])
                 if bomLines:
                     theseLines=[]                
                     for status, value, bom_line in bomLines:
-                        thisLine=self.checkcreation(cr, uid, bom_line, newIDs, context=context)
+                        thisLine=self.checkcreation( bom_line, newIDs)
                         if thisLine:
                             theseLines.append([status, value, thisLine])
-                    vals['bom_lines']=theseLines
+                    vals['bom_line_ids']=theseLines
                 ret=vals
             else:
                 logging.warning("[mrp.bom::checkcreation] : Discharged relation creating circular reference.")
         return ret
 
-    def validatecreation(self, cr, uid, fatherID, vals, context=None):
+    def validatecreation(self, fatherID, vals):
         fatherIDs=[fatherID]
-        bomLines=vals.get('bom_lines',[])
+        bomLines=vals.get('bom_line_ids',[])
         if bomLines:
             theseLines=[]                
             for operation, productID, bom_line in bomLines:
-                thisLine=self.checkcreation(cr, uid, bom_line, fatherIDs, context=context)
+                thisLine=self.checkcreation( bom_line, fatherIDs)
                 if thisLine:
                     theseLines.append([operation, productID, thisLine])
-            vals['bom_lines']=theseLines
+            vals['bom_line_ids']=theseLines
         ret=vals
         return ret
 
-    def validatechanges(self, cr, uid, bomID, vals, context=None):
+    def validatechanges(self, bomID, vals):
         ret={}
-        for father in self.browse(cr, uid, getListIDs(bomID), context=context):
+        for father in self.browse( getListIDs(bomID)):
             fatherIDs=[father.product_id.id]
-            bomLines=vals.get('bom_lines',[])
+            bomLines=vals.get('bom_line_ids',[])
             if bomLines:
                 theseLines=[]                
                 for operation, productID, bom_line in bomLines:
                     if operation==0:
-                        thisLine=self.checkcreation(cr, uid, bom_line, fatherIDs, context=context)
+                        thisLine=self.checkcreation( bom_line, fatherIDs)
                         if thisLine:
                             theseLines.append([operation, productID, thisLine])
                     else:
                         theseLines.append([operation, productID, bom_line])
-                vals['bom_lines']=theseLines
+                vals['bom_line_ids']=theseLines
             ret=vals
         return ret
 
-    def logcreate(self, cr, uid, productID, vals, context=None):
-        for product in self.pool['product.product'].browse(cr, uid, getListIDs(productID), context=context):
+    def logcreate(self, productID, vals):
+        for product in self.env['product.product'].browse( getListIDs(productID)):
             values={
                     'name': product.name,
                     'revision': product.engineering_revision,
                     'type': self._name,
                     'op_type': 'creation',
-                    'op_note': 'Create new BoM relation on database',
+                    'op_note': 'Create new entity on database',
                     'op_date': datetime.now(),
-                    'userid': uid,
+                    'userid': self._uid,
                     }
-            self.pool['plm.logging'].create(cr, uid, values, context=context)
-
-    def manage_products_id(self, cr, uid, product_id, father_id, context=None):
-        if father_id and product_id:
-            bom_lines=[]
-            for bomObj in self._bomid(cr, uid, father_id, context=context):
-                for bom_line in bomObj.bom_lines:
-                    bom_lines.append(bom_line.product_id.id)
-            try:
-                if self.mrp_boms:
-                    if not father_id in self.mrp_boms:
-                        self.mrp_bom_lines=[]
-                    else:
-                        self.mrp_bom_lines=list(set(self.mrp_boms[father_id]))
-            except:
-                self.mrp_bom_lines=[]
-                self.mrp_boms= {}
-            self.mrp_bom_lines.extend(bom_lines)
-            self.mrp_boms.update({ father_id : list(set(self.mrp_bom_lines)) })
-
-    def queue_products_id(self, product_id, father_id):
-        if father_id and product_id:
-            self.mrp_bom_lines.append(product_id)
-            self.mrp_boms.update({ father_id : list(set(self.mrp_bom_lines)) })
-
-    def unqueue_products_id(self, father_id):
-        if father_id:
-            try:
-                if self.mrp_boms:
-                    self.mrp_boms.pop(father_id, None)
-            except:
-                self.mrp_bom_lines=[]
-                self.mrp_boms={}
-
-    def onchange_plmproduct_id(self, cr, uid, ids, product_id, father_id, context=None):
-        """ Changes UoM if product_id changes.
-        @param product_id: Changed product_id
-        @return:  Dictionary of changed values
-        """
-        okFlag=True
-        values={'name': False}
-        if father_id and product_id:
-            self.manage_products_id(cr, uid, product_id, father_id, context=context)
-            context = context or self.pool['res.users'].context_get(cr, uid)
-            options=self.pool['plm.config.settings'].GetOptions(cr, uid, context=context)
-            prodTypeObj=self.pool['product.product']
-            prodTypeObj.alreadyListed=[]
-            productObj=prodTypeObj.browse(cr, uid, product_id, context=context)
-            fatherIDs=prodTypeObj.recurse_father_part_compute(cr, uid, [father_id, product_id], context=context)
-            if (father_id == product_id) or (product_id in fatherIDs[father_id]) or (product_id in self.mrp_boms.keys()):
-                logging.warning("Writing BoM check: This is a circular reference to: %s - %d." %(productObj.product_tmpl_id.name, productObj.product_tmpl_id.engineering_revision))
-                values.update({'product_id': False})
-                okFlag=False
-            if not options.get('opt_duplicatedrowsinbom', True):
-                if (product_id in self.mrp_bom_lines):
-                    logging.warning("Writing BoM check: This is a duplicated line : %s - %d." %(productObj.product_tmpl_id.name, productObj.product_tmpl_id.engineering_revision))
-                    values.update({'product_id': False})
-                    okFlag=False
-            if options.get('opt_autonumbersinbom', False):
-                length=0
-                step=options.get('opt_autostepinbom', 5)
-                length=len(self.mrp_bom_lines)
-                values.update({'itemnum': step*(length+1) })
-            if options.get('opt_autotypeinbom', False):
-                if ('parent' in context) and ('type' in context['parent']):
-                    values.update({'type': context['parent']['type'] })
-        self.queue_products_id(product_id, father_id)
-        if values:
-            if okFlag:
-                values.update({'name': productObj.name})
-            return {'value': values }
-
-
+            self.env['plm.logging'].create( values)
   
 #   Overridden methods for this entity
-    def create(self, cr, uid, vals, context=None):
+    @api.model
+    def create(self, vals):
         ret=False
         if vals:
-            context = context or self.pool['res.users'].context_get(cr, uid)
             productID=vals.get('product_id',False)
-            result=self.validatecreation(cr, uid, productID, vals, context=context)
+            if not productID:
+                templID=vals.get('product_tmpl_id',False)
+                prodItem=self.env['product.product'].getFromTemplateID( templID)
+                if prodItem:
+                    productID=prodItem.id
+            result=self.validatecreation(productID, vals)
             if result:
                 try:
-                    ret=super(plm_relation,self).create(cr, uid, result, context=context)
-                    if ret:
-                        self.logcreate(cr, uid, productID, vals, context=context)
-                        self.unqueue_products_id(productID)
+                    self.logcreate(productID, vals)
+                    ret=super(plm_relation,self).create(result)
                 except Exception as ex:
                     raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, result))
         return ret
 
-    def write(self, cr, uid, ids, vals, context=None):
+    @api.multi
+    def write(self, vals):
         """
             Avoids to save an edited Engineering Bom
         """
         ret=False
+        ids=self._ids
         if vals:
-            context = context or self.pool['res.users'].context_get(cr, uid)
-            check=context.get('internal_writing', False)
+            check=self._context.get('internal_writing', False)
             bomIDs=getListIDs(ids)
-            if not check and self.checkwrite(cr, uid, bomIDs, context=context):
-                raise orm.except_orm(_('Writing check'), 
-                                     _("Current Bill of Material of product isn't modifiable."))
+            if not check and self.checkwrite( bomIDs):
+                raise UserError(_("Current Bill of Material of product isn't modifiable."))
 
-            self._insertlog(cr, uid, bomIDs, changes=vals, context=context)
-            result=self.validatechanges(cr, uid, bomIDs, vals, context=None)
-            ret=super(plm_relation,self).write(cr, uid, bomIDs, result, context=context)
-            self.RebaseBomWeight(cr, uid, bomIDs, context=context)
+            self._insertlog( bomIDs, changes=vals)
+            result=self.validatechanges(bomIDs, vals)
+            ret=super(plm_relation, self.browse(bomIDs)).write(result)
+            self.RebaseBomWeight( bomIDs)
         return ret
 
-    def copy(self, cr, uid, oid, default={}, context=None):
+    @api.multi
+    def copy(self, default=None):
         """
             Return new object copied (removing SourceID)
         """
-        compType = self.pool['product.product']
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        context.update({'internal_writing':True})
+        oid=self.id
+        compType = self.env['product.product']
+        
         note={
                 'type': 'copy object',
                 'reason': "Copied a new BoM for the product.",
              }
-        self._insertlog(cr, uid, oid, note=note, context=context)
-        newId = super(plm_relation, self).copy(cr, uid, oid, default, context=context)
-        if newId:
-            newOid = self.browse(cr, uid, newId, context=context)
-            for bom_line in newOid.bom_lines:
-                lateRevIdC = compType.GetLatestIds(cr, uid, [(bom_line.product_id.engineering_code, False, False)],
-                                                   context=context)  # Get Latest revision of each Part
-                self.write(cr, uid, [bom_line.id],
-                        {
-                            'product_id': lateRevIdC[0],
-                            'name': bom_line.product_id.name
-                        }, context=context)
-        return newId
+        self._insertlog( oid, note=note)
+        newOid = super(plm_relation, self).copy(default)
+        if newOid:
+            for bom_line in newOid.bom_line_ids:
+                lateRevIdC=compType.GetLatestIds( [(bom_line.product_id.engineering_code, False, False)] )  # Get Latest revision of each Part
+                bom_line.write( { 'product_id': lateRevIdC[0],} )
+        return newOid
 
-    def unlink(self, cr, uid, ids, context=None):
+    @api.multi
+    def unlink(self):
         ret=False
+        ids=self._ids
         processIds=[]
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        check=context.get('internal_writing', False)
+        check=self._context.get('internal_writing', False)
         if not check:
-            isAdmin = isAdministrator(self, cr, uid, context=context)
-    
-            for bomID in self.browse(cr, uid, getListIDs(ids), context=context):
-                if not self.IsChild(cr, uid, bomID.product_id.id, context=context):
+            isAdmin = isAdministrator(self)
+
+            for bomID in self.browse(getListIDs(ids)):
+                if not self.IsChild(bomID.product_id.id, bomID.type):
                     checkApply=False
-                    if isAnyReleased(self.pool['product.product'], cr, uid, bomID.product_id.id, context=context):
+                    if isAnyReleased(self.env['product.product'],  bomID.product_id.id):
                         if isAdmin:
                             checkApply=True
-                    elif isDraft(self.pool['product.product'], cr, uid, bomID.product_id.id, context=context):
+                    elif isDraft(self.env['product.product'],  bomID.product_id.id):
                         checkApply=True
 
                     if not checkApply:
                         continue            # Apply unlink only if have respected rules.
-                    processIds.append(bomID.id)
+                    processIds.append(bomID)
         else:
-            processIds.extend(ids)
+            processIds=self.browse(getListIDs(ids))
         note={
                 'type': 'unlink object',
                 'reason': "Removed entity from database.",
              }
-        if processIds:
-            self._insertlog(cr, uid, processIds, note=note, context=context)
-            ret=ret | super(plm_relation, self).unlink(cr, uid, processIds, context=context)
+        for processId in processIds:
+            self._insertlog(processId.id, note=note)
+            ret=ret | super(plm_relation, processId).unlink()
         return ret
-
-    def _check_product(self, cr, uid, ids, context=None):
-        """
-            Override original one, to allow to have multiple lines with same Part Number
-        """
-        return True
-
-    _constraints = [
-        (_check_product, 'BoM line product should not be same as BoM product.', ['product_id']),
-    ]
 
 plm_relation()
 
 
-class plm_material(orm.Model):
+class plm_material(models.Model):
     _name = "plm.material"
     _description = "Materials"
-    _columns = {
-        'name': fields.char('Designation', size=128, required=True),
-        'description': fields.char('Description', size=128),
-        'sequence': fields.integer('Sequence',
-                                   help="Gives the sequence order when displaying a list of product categories."),
-    }
-    #    _defaults = {
-    #        'name': lambda obj, cr, uid, context: obj.pool.get('ir.sequence').get(cr, uid, 'plm.material'),
-    #    }
+
+    name         = fields.Char     (string=_('Designation'),    size=128, required=True)
+    description  = fields.Char     (string=_('Description'),    size=128)
+    sequence     = fields.Integer  (string=_('Sequence'),       help=_("Gives the sequence order when displaying a list of product categories."))
+
     _sql_constraints = [
         ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
     ]
 
 
-class plm_finishing(orm.Model):
+class plm_finishing(models.Model):
     _name = "plm.finishing"
     _description = "Surface Finishing"
-    _columns = {
-        'name': fields.char('Specification', size=128, required=True),
-        'description': fields.char('Description', size=128),
-        'sequence': fields.integer('Sequence',
-                                   help="Gives the sequence order when displaying a list of product categories."),
-    }
-    #    _defaults = {
-    #        'name': lambda obj, cr, uid, context: obj.pool.get('ir.sequence').get(cr, uid, 'plm.finishing'),
-    #    }
+
+    name         = fields.Char     (string=_('Designation'),    size=128, required=True)
+    description  = fields.Char     (string=_('Description'),    size=128)
+    sequence     = fields.Integer  (string=_('Sequence'),       help=_("Gives the sequence order when displaying a list of product categories."))
+
     _sql_constraints = [
         ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
     ]
 
 
-class plm_codelist(orm.Model):
+class plm_codelist(models.Model):
     _name = "plm.codelist"
     _description = "Code List"
-    _columns = {
-        'name': fields.char('Part Number', size=128, required=True),
-        'description': fields.char('Description', size=128),
-        'sequence_id': fields.many2one('ir.sequence', 'name', ondelete='no action', 
-                                     help='This is the sequence object related to this P/N rule.'),
-    }
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
-    ]
+    
+    name        = fields.Char      (                string=_('Part Number'),   size=128,   help=_("Choose the Part Number rule."))
+    description = fields.Char      (                string=_('Description'),   size=128,   help=_("Description of Part Number Rule."))
+    sequence_id = fields.Many2one  ('ir.sequence',  string=_('Sequence'),                  help=_("This is the sequence object related to this P/N rule."))
 
-class plm_temporary(orm.TransientModel):
+
+class plm_temporary(osv.osv.osv_memory):
     _name = "plm.temporary"
     _description = "Temporary Class"
 
-    _columns = {
-        'name': fields.char('Temp', size=128),
-    }
+    name    =   fields.Char(_('Temp'), size=128)
 
-    def action_create_normalBom(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_create_normalBom(self, context={}):
         """
             Create a new Spare BoM if doesn't exist (action callable from views)
         """
         ret=False
-        context = context or self.pool['res.users'].context_get(cr, uid)
+        
         if 'active_ids' in context:
-            self.pool['product.product'].action_create_normalBom_WF(cr, uid, context['active_ids'], context=context)
+            self.env['product.product'].action_create_normalBom_WF(context['active_ids'])
             ret={
                 'name': _('Bill of Materials'),
                 'view_type': 'form',
@@ -950,23 +884,24 @@ class plm_temporary(orm.TransientModel):
                 }
         return ret
     
-    def action_NewRevision(self, cr, uid, ids, context=None):
+    @api.model
+    def action_NewRevision(self, ids):
         """
             Call for NewRevision method
         """
         ret=False
         revised=[]
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        active_ids=context.get('active_ids', [])
-        active_model=context.get('active_model', None)
+        
+        active_ids=self._context.get('active_ids', [])
+        active_model=self._context.get('active_model', None)
         if active_ids and active_model:
-            objectType=self.pool[active_model]
+            objectType=self.env[active_model]
             for thisId in active_ids:
-                if isAnyReleased(objectType, cr, uid, thisId, context=context):
-                    newID, newIndex=objectType.NewRevision(cr, uid, getListIDs(thisId), context=context)
+                if isAnyReleased(objectType, thisId):
+                    newID, newIndex=objectType.NewRevision( getListIDs(thisId))
                     #TODO: To be implemented management by server options.
 #                     objectType.processedIds=[]
-#                     objectType._copyProductBom(cr, uid, thisId, newID, context=context)
+#                     objectType._copyProductBom( thisId, newID)
                     revised.append(newID)
             if revised:
                 ret={
@@ -980,23 +915,23 @@ class plm_temporary(orm.TransientModel):
                         
         return ret
 
-    def action_NewDocRevision(self, cr, uid, ids, context=None):
+    def action_NewDocRevision(self, ids):
         """
             Call for NewRevision method
         """
         ret=False
         revised=[]
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        active_ids=context.get('active_ids', [])
-        active_model=context.get('active_model', None)
+        
+        active_ids=self._context.get('active_ids', [])
+        active_model=self._context.get('active_model', None)
         if active_ids and active_model:
-            objectType=self.pool[active_model]
+            objectType=self.env[active_model]
             for thisId in active_ids:
-                if isAnyReleased(objectType, cr, uid, thisId, context=context):
-                    newID, newIndex=objectType.NewRevision(cr, uid, (getListIDs(thisId),"",""), context=context)
+                if isAnyReleased(objectType, thisId):
+                    newID, newIndex=objectType.NewRevision( (getListIDs(thisId),"","") )
                     #TODO: To be implemented management by server options.
 #                     objectType.processedIds=[]
-#                     objectType._copyProductBom(cr, uid, thisId, newID, context=context)
+#                     objectType._copyProductBom( thisId, newID)
                     revised.append(newID)
             if revised:
                 ret={
