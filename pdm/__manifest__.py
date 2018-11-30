@@ -27,7 +27,7 @@
     'author': 'TechSpell srl',
     'website': 'http://www.techspell.eu',
     'support': 'help@techspell.eu',
-    'category': 'Product Lifecycle Management',
+    'category': 'Document Management',
     'sequence': 10,
     'summary': 'PLM Engineering integration with main CAD editors',
     'images': ['images/main_screenshot.png'],
