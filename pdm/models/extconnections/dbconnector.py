@@ -19,6 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
 from datetime import datetime
 from sqlalchemy import *
 import logging
@@ -42,7 +43,7 @@ def get_connection(dataConn):
     return connection
 
 
-def saveParts(ObjectOE, connection, prtInfos, targetTable, datamap, datatyp):
+def saveParts(ObjectOE, cr, uid, connection, prtInfos, targetTable, datamap, datatyp):
     """
         Updates parts if exist in DB otherwise it create them.
     """
@@ -107,9 +108,9 @@ def saveParts(ObjectOE, connection, prtInfos, targetTable, datamap, datatyp):
     return checked
 
 
-def saveBoms(ObjectOE, connection, checked, allIDs, dataTargetTable, datamap, datatyp, kindBomname,
+def saveBoms(ObjectOE, cr, uid, connection, checked, allIDs, dataTargetTable, datamap, datatyp, kindBomname,
              bomTargetTable, parentColName, childColName, bomdatamap, bomdatatyp):
-    def checkChildren(ObjectOE, connection, components, datamap, kindName='normal'):
+    def checkChildren(ObjectOE, cr, uid, connection, components, datamap, kindName='normal'):
         for component in components:
             for bomid in component.bom_ids:
                 if not (bomid.type.lower() == kindName):
@@ -117,10 +118,10 @@ def saveBoms(ObjectOE, connection, checked, allIDs, dataTargetTable, datamap, da
                 for bom in bomid.bom_lines:
                     if not bom.product_id.name in childNames:
                         childNames.append(bom.product_id.name)
-                        childIDs.append(bom.product_id)
+                        childIDs.append(bom.product_id.id)
 
-        tmpData = childIDs.export_data(datamap.keys())
-        return saveParts(ObjectOE, connection, tmpData.get('datas'), dataTargetTable, datamap, datatyp)
+        tmpData = ObjectOE.export_data(cr, uid, childIDs, datamap.keys())
+        return saveParts(ObjectOE, cr, uid, connection, tmpData.get('datas'), dataTargetTable, datamap, datatyp)
 
     def removeBoms(connection, bomTargetTable, parentColName, parentName):
         trans = connection.begin()
@@ -139,8 +140,8 @@ def saveBoms(ObjectOE, connection, checked, allIDs, dataTargetTable, datamap, da
 
     if connection:
         trans = connection.begin()
-        components = ObjectOE.browse(allIDs)
-        entityChecked.update(checkChildren(ObjectOE, connection, components, datamap, kindName))
+        components = ObjectOE.browse(cr, uid, allIDs)
+        entityChecked.update(checkChildren(ObjectOE, cr, uid, connection, components, datamap, kindName))
 
         for component in components:
             if not component.name in entityChecked.keys():
@@ -173,7 +174,7 @@ def saveBoms(ObjectOE, connection, checked, allIDs, dataTargetTable, datamap, da
                     namesString = "%s, %s" % (parentColName, childColName)
                     valuesString = "'%s', '%s'" % (normalize(component.name), normalize(bom.product_id.name))
 
-                    expData = bom.export_data(bomdatamap.keys())
+                    expData = ObjectOE.pool.get('mrp.bom').export_data(cr, uid, [bom.id], bomdatamap.keys())
                     if expData.get('datas'):
                         bomDict = dict(zip(bomdatamap.keys(), expData.get('datas')[0]))
                         for column in bomDict:

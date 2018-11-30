@@ -23,11 +23,11 @@
 import logging
 from datetime import datetime
 
-from odoo  import models, fields, api, _, osv
-from odoo.exceptions import UserError
+from openerp.osv import fields, orm
+from openerp.tools.translate import _
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                    signal_workflow, get_signal_workflow, move_workflow, wf_message_post, \
+                    signal_workflow, get_signal_workflow, move_workflow, \
                     isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft
 
 
@@ -35,24 +35,26 @@ from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, 
 # STATEFORRELEASE=['confirmed']
 # STATESRELEASABLE=['confirmed','transmitted','released','undermodify','obsoleted']
 
-class plm_component(models.Model):
+class plm_component(orm.Model):
     _name = 'product.product'
     _inherit = 'product.product'
-
-    create_date     =   fields.Datetime(_('Date Created'),     readonly=True)
-    write_date      =   fields.Datetime(_('Date Modified'),    readonly=True)
+    _columns = {
+        'create_date': fields.datetime('Date Created', readonly=True),
+        'write_date': fields.datetime('Date Modified', readonly=True),
+    }
 
     #   Internal methods
-    def _insertlog(self, ids, changes={}, note={}):
-        ret=False
+    def _insertlog(self, cr, uid, ids, changes={}, note={}, context=None):
+        newID=False
+        context = context or self.pool['res.users'].context_get(cr, uid)
         op_type, op_note=["unknown",""]
-        for objID in self.browse(getListIDs(ids)):
+        for objID in self.browse(cr, uid, getListIDs(ids), context=context):
             if note:
                 op_type="{type}".format(type=note['type'])
                 op_note="{reason}".format(reason=note['reason'])
             elif changes:
                 op_type='change value'
-                op_note=self.env['plm.logging'].getchanges(objID, changes)
+                op_note=self.pool['plm.logging'].getchanges(cr, uid, objID, changes, context=context)
             if op_note:
                 values={
                         'name': objID.name,
@@ -61,60 +63,51 @@ class plm_component(models.Model):
                         'op_type': op_type,
                         'op_note': op_note,
                         'op_date': datetime.now(),
-                        'userid': self._uid,
+                        'userid': uid,
                         }
-                objectItem=self.env['plm.logging'].create(values)
-                if objectItem:
-                    ret=True
-        return ret
+                newID=self.pool['plm.logging'].create(cr, uid, values, context=context)
+        return newID
 
-    def _getbyrevision(self, name, revision):
-        return self.search([('engineering_code', '=', name), ('engineering_revision', '=', revision)])
+    def _getbyrevision(self, cr, uid, name, revision, context=None):
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        return self.search(cr, uid, [('engineering_code', '=', name), ('engineering_revision', '=', revision)], context=context)
 
-#     def _getExplodedBom(self, ids, level=0, currlevel=0):
-#         """
-#             Returns a flat list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
-#         """
-#         result = []
-#         
-#         if level == 0 and currlevel > 1:
-#             return result
-#         components = self.browse(ids)
-#         relType = self.env['mrp.bom']
-#         for component in components:
-#             for bomid in component.bom_ids:
-#                 children = relType.GetExplodedBom([bomid.id], level, currlevel)
-#                 result.extend(children)
-#         return result
+    def _getExplodedBom(self, cr, uid, ids, level=0, currlevel=0, context=None):
+        """
+            Returns a flat list of all children in a Bom ( level = 0 one level only, level = 1 all levels)
+        """
+        result = []
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        if level == 0 and currlevel > 1:
+            return result
+        components = self.browse(cr, uid, ids, context=context)
+        relType = self.pool['mrp.bom']
+        for component in components:
+            for bomid in component.bom_ids:
+                children = relType.GetExplodedBom(cr, uid, [bomid.id], level, currlevel, context=context)
+                result.extend(children)
+        return result
 
-    def _getChildrenBom(self, component, level=0, currlevel=0):
+    def _getChildrenBom(self, cr, uid, component, level=0, currlevel=0, context=None):
         """
             Returns a flat list of each child, listed once, in a Bom ( level = 0 one level only, level = 1 all levels)
         """
         result = []
         bufferdata = []
+        context = context or self.pool['res.users'].context_get(cr, uid)
         if level == 0 and currlevel > 1:
             return bufferdata
-        for bomid in component.product_tmpl_id.bom_ids:
-            for bomline in bomid.bom_line_ids:
-                children=self._getChildrenBom(bomline.product_id, level, currlevel+1)
+        for bomid in component.bom_ids:
+            for bomline in bomid.bom_lines:
+                children=self._getChildrenBom(cr, uid, bomline.product_id, level, currlevel+1, context=context)
                 bufferdata.extend(children)
                 bufferdata.append(bomline.product_id.id)
         result.extend(bufferdata)
         return getCleanList(result)
 
-    @api.model
-    def RegMessage(self, request, default=None):
-        """
-            Registers a message for requested component
-        """
-        oid, message = request
-        wf_message_post(self, [oid], body=message)
-        return False
-
-    def getLastTime(self, oid, default=None):
-        
-        return self.getUpdTime(self.browse(oid))
+    def getLastTime(self, cr, uid, oid, default=None, context=None):
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        return self.getUpdTime(self.browse(cr, uid, oid, context=context))
 
     def getUpdTime(self, obj):
         if(obj.write_date!=False):
@@ -122,61 +115,44 @@ class plm_component(models.Model):
         else:
             return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
 
-    def getUserName(self):
+    def getUserName(self, cr, uid, context=None):
         """
             Gets the user name
         """
-        userType = self.env['res.users']
-        
-        uiUser = userType.browse(self._uid)
+        userType = self.pool['res.users']
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        uiUser = userType.browse(cr, uid, uid, context=context)
         return uiUser.name
 
-    def getFromTemplateID(self, oid):
-        ret=False
-        if oid:
-            for prodItem in self.search([('product_tmpl_id', '=', oid)]):
-                ret=prodItem
-                break
-        return ret
-
-    def getTemplateItem(self, oid):
-        ret=False
-        if oid:
-            
-            for prodItem in self.browse(getListIDs(oid)):
-                ret=prodItem.product_tmpl_id
-                break
-        return ret
-
     ##  Customized Automations
-    def on_change_name(self, oid, name=False, engineering_code=False):
-        
+    def on_change_name(self, cr, uid, oid, name=False, engineering_code=False, context=None):
+        context = context or self.pool['res.users'].context_get(cr, uid)
         if name:
-            results = self.search([('name', '=', name)])
+            results = self.search(cr, uid, [('name', '=', name)], context=context)
             if len(results) > 0:
-                raise UserError(_("Update Part Error.\n\nPart {} already exists.\nClose with OK to reuse, with Cancel to discharge.".format(name)))
+                raise orm.except_orm(_('Update Part Warning'), _(
+                    "Part %s already exists.\nClose with OK to reuse, with Cancel to discharge." % (name)))
             if not engineering_code:
                 return {'value': {'engineering_code': name}}
         return {}
 
     ##  External methods
-    @api.model
-    def Clone(self, ids, default=None):
+    def Clone(self, cr, uid, ids, default=None, context=None):
         """
             Creates a new copy of the component
         """
         default = {}
         exitValues = {}            
-        
-        for tmpObject in self.browse(getListIDs(ids)):
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
             note={
                     'type': 'clone object',
                     'reason': "Creating new cloned entity starting from '{old}'.".format(old=tmpObject.name),
                  }
-            self._insertlog(tmpObject.id, note=note)
-            newID = self.copy(tmpObject.id, default)
+            self._insertlog(cr, uid, tmpObject.id, note=note, context=context)
+            newID = self.copy(cr, uid, tmpObject.id, default, context=context)
             if newID:
-                newEnt = self.browse(newID)
+                newEnt = self.browse(cr, uid, newID, context=context)
                 exitValues = {
                               '_id': newID,
                               'name': newEnt.name,
@@ -188,15 +164,14 @@ class plm_component(models.Model):
                 break
         return packDictionary(exitValues)
 
-    @api.model
-    def CloneVirtual(self, ids, default=None):
+    def CloneVirtual(self, cr, uid, ids, default=None, context=None):
         """
             Creates a "false" new copy of the component.
             Really returns only new values avoiding creation of new object.
         """
         exitValues = {}
-        
-        for tmpObject in self.browse(getListIDs(ids)):
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
             new_name = "Copy of {name}".format(name=tmpObject.name)
             exitValues = {
                           '_id': False,
@@ -210,46 +185,43 @@ class plm_component(models.Model):
             break
         return packDictionary(exitValues)
 
-    @api.model
-    def GetUpdated(self, vals):
+    def GetUpdated(self, cr, uid, vals, context=None):
         """
             Gets Last/Requested revision of given items (by name, revision, update time)
         """
         partData, attribNames = vals
-        
-        ids = self.GetLatestIds(partData)
-        return packDictionary(self.read(getCleanList(ids), attribNames))
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        ids = self.GetLatestIds(cr, uid, partData, context=context)
+        return packDictionary(self.read(cr, uid, getCleanList(ids), attribNames, context=context))
 
-    @api.model
-    def GetStdPartName(self, vals):
+    def GetStdPartName(self, cr, uid, vals, context=None):
         """
             Gets new P/N reading from entity chosen (taking it from new index on sequence).
         """
         ret=""
-        entID, objectName = vals
-        if entID and objectName:
-            
-            userType=self.env[objectName] if (objectName in self.env) else None
+        entID, entityName = vals
+        if entID and entityName:
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            userType=self.pool.get(entityName)
             if not(userType==None):
-                for objID in userType.browse(getListIDs(entID)):
-                    ret=self.GetNewPNfromSeq(objID.sequence_id)
+                for objID in userType.browse(cr,uid, getListIDs(entID), context=context):
+                    ret=self.GetNewPNfromSeq(cr, uid, objID.sequence_id, context=context)
                     break
         return ret
 
-    @api.model
-    def GetNewPNfromSeq(self, seqID=None):
+    def GetNewPNfromSeq(self, cr, uid, seqID=None, context=None):
         """
             Gets new P/N from sequence (checks for P/N existence).
         """
         ret=""
         if seqID:
-            
+            context = context or self.pool['res.users'].context_get(cr, uid)
             count=0
             while ret=="":
-                chkname=self.env['ir.sequence'].browse(seqID.id)._next()
+                chkname=self.pool['ir.sequence']._next(cr, uid, [seqID.id], context=context)
                 count+=1
                 criteria=[('name', '=', chkname)]
-                partIds = self.search(criteria)
+                partIds = self.search(cr, uid, criteria, context=context)
                 if (partIds==None) or (len(partIds)==0):
                     ret=chkname
                 if count>1000:
@@ -258,13 +230,12 @@ class plm_component(models.Model):
                     break
         return ret
 
-    @api.model
-    def GetLatestIds(self, vals):
+    def GetLatestIds(self, cr, uid, vals, context=None):
         """
             Gets Last/Requested revision of given items (by name, revision, update time)
         """
         ids = []
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         for request in vals:
             partName, _, updateDate = request
             if updateDate:
@@ -272,18 +243,18 @@ class plm_component(models.Model):
             else:
                 criteria=[('engineering_code', '=', partName)]
     
-            partIds = self.search(criteria, order='engineering_revision')
+            partIds = self.search(cr, uid, criteria, order='engineering_revision', context=context)
             if len(partIds) > 0:
-                ids.append(partIds[len(partIds) - 1].id)
+                partIds.sort()
+                ids.append(partIds[len(partIds) - 1])
         return getCleanList(ids)
 
-    @api.model
-    def GetId(self, request):
+    def GetId(self, cr, uid, request, context=None):
         """
             Gets Last/Requested revision of given items (by name, revision, update time)
         """
         idd = False
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         partName, partRev, _ = request
 #         partName, partRev, updateDate = request
 #         if updateDate:
@@ -302,56 +273,55 @@ class plm_component(models.Model):
         else:
             criteria=[('engineering_code', '=', partName)]
 
-        partIds = self.search(criteria, order='engineering_revision')
+        partIds = self.search(cr, uid, criteria, order='engineering_revision', context=context)
         if len(partIds) > 0:
-            idd=partIds[len(partIds) - 1].id
+            partIds.sort()
+            idd=partIds[len(partIds) - 1]
         return idd
 
-    @api.model
-    def IsSaveable(self, ids):
+    def IsSaveable(self, cr, uid, ids, context=None):
         """
             Answers about capability to save requested product
         """
         ret=True
-        
-        for tmpObject in self.browse(getListIDs(ids)):
-            ret=ret and self._iswritable(tmpObject)
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
+            ret=ret and self._iswritable(cr, uid, tmpObject.id)
         return ret
 
-    @api.model
-    def IsRevisable(self, ids):
+    def IsRevisable(self, cr, uid, ids, context=None):
         """
             Gets if a product is revisable or not.
         """
         ret=False
-        
-        for tmpObject in self.browse(getListIDs(ids)):
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
             if tmpObject.state in ['released','undermodify','obsoleted']:
                 ret=True
                 break
         return ret
 
-    
-    @api.model
-    def NewRevision(self, ids):
+    def NewRevision(self, cr, uid, ids, context=None):
         """
             Creates a new revision of current product
         """
         newID, newIndex = [ False, 0 ]
-        
-        thisContext={ 'internal_writing':True, 'new_revision':True, }
-        for tmpObject in self.browse(getListIDs(ids)):
-            latestIDs = self.GetLatestIds( [(tmpObject.engineering_code, tmpObject.engineering_revision, False)] )
-            for oldObject in self.browse(latestIDs):
-                if isAnyReleased(self, oldObject.id):
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        context.update({'internal_writing': True, 'new_revision':True})
+        for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
+            latestIDs = self.GetLatestIds(cr, uid,
+                                          [(tmpObject.engineering_code, tmpObject.engineering_revision, False)],
+                                          context=context)
+            for oldObject in self.browse(cr, uid, latestIDs, context=context):
+                if isAnyReleased(self, cr, uid, oldObject.id, context=context):
                     note={
                             'type': 'revision process',
                             'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
                          }
-                    self._insertlog(oldObject.id, note=note)
+                    self._insertlog(cr, uid, oldObject.id, note=note, context=context)
                     newIndex = int(oldObject.engineering_revision) + 1
-                    productsignal=get_signal_workflow(oldObject, 'undermodify')
-                    move_workflow(self, [oldObject.id], productsignal, 'undermodify')
+                    productsignal=get_signal_workflow(self, cr, uid, oldObject, 'undermodify', context=context)
+                    move_workflow(self, cr, uid, [oldObject.id], productsignal, 'undermodify', context=context)
                     default={
                              'name': oldObject.name,
                              'engineering_revision': newIndex,
@@ -359,36 +329,35 @@ class plm_component(models.Model):
                              'state': 'draft',
                              'linkeddocuments': [(5)],  # Clean attached documents for new revision object
                              }
-    
+                    values=dict(zip(default.keys(),default.values()))
                     # Creates a new "old revision" object
-                    tmpID = oldObject.with_context(thisContext).copy(default)
+                    tmpID = self.copy(cr, uid, oldObject.id, values, context=context)
                     if tmpID:
-                        wf_message_post(self, [oldObject.id], body='Created : New Revision.')
-                        newID = tmpID.id
-                        tmpID.write({'name': oldObject.name, })
+                        newID = tmpID
+                        objectID=self.browse(cr, uid, [newID], context=context)[0]
                         note={
                                 'type': 'revision process',
                                 'reason': "Created new revision '{index}' for product '{name}'.".format(index=newIndex,name=oldObject.name),
                              }
-                        self._insertlog(newID, note=note)
-                        oldObject.with_context(thisContext)._copy_productBom(newID, ["normal","spbom"])
-                        tmpID.with_context(thisContext).write( {'name': oldObject.name, } )
+                        self._insertlog(cr, uid, tmpID, note=note, context=context)
+                        self._copy_productBom(cr, uid, oldObject.id, newID, ["normal","spbom"], context=context)
+                        self.write(cr, uid, newID, values, context=context)
+                        cr.execute("UPDATE product_template set name='{name}' where id = {id}".format(name=oldObject.name,id=objectID.product_tmpl_id.id))
                         note={
                                 'type': 'revision process',
                                 'reason': "Copied BoM to new revision '{index}' for product '{name}'.".format(index=newIndex,name=oldObject.name),
                              }
-                        self._insertlog(newID, note=note)
+                        self._insertlog(cr, uid, tmpID, note=note, context=context)
             break
         return (newID, newIndex)
 
-    @api.model
-    def CheckProductsToSave(self, request, default=None):
+    def CheckProductsToSave(self, cr, uid, request, default=None, context=None):
         """
             Checks if given products has to be saved. 
         """
         listedParts = []
         retValues = {}
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         for part in unpackDictionary(request):
             part=getCleanBytesDictionary(part)
             hasSaved = True
@@ -399,22 +368,23 @@ class plm_component(models.Model):
                 continue
 
             if ('engineering_code' in part) and ('engineering_revision' in part):
-                existingIDs = self.search([
+                existingIDs = self.search(cr, uid, [
                       ('engineering_code', '=', part['engineering_code'])
-                    , ('engineering_revision', '=', part['engineering_revision'])])
+                    , ('engineering_revision', '=', part['engineering_revision'])], context=context)
             elif ('engineering_code' in part) and not('engineering_revision' in part):
-                existingIDs = self.search([
+                existingIDs = self.search(cr, uid, [
                     ('engineering_code', '=', part['engineering_code']) ]
-                    , order='engineering_revision')
+                    , order='engineering_revision', context=context)
             if existingIDs:
-                existingID = existingIDs[len(existingIDs) - 1].id
+                existingIDs.sort()
+                existingID = existingIDs[len(existingIDs) - 1]
             if existingID:
                 hasSaved = False
-                objPart = self.browse(existingID)
+                objPart = self.browse(cr, uid, existingID, context=context)
                 part['engineering_revision']=objPart.engineering_revision
                 if ('_lastupdate' in part) and part['_lastupdate']:
                     if (self.getUpdTime(objPart) < datetime.strptime(part['_lastupdate'], '%Y-%m-%d %H:%M:%S')):
-                        if self._iswritable(objPart):
+                        if self._iswritable(cr, uid, objPart):
                             hasSaved = True
 
             retValues[part['engineering_code']]={
@@ -424,16 +394,16 @@ class plm_component(models.Model):
         return packDictionary(retValues)
 
     
-    @api.model
-    def SaveOrUpdate(self, request, default=None):
+    def SaveOrUpdate(self, cr, uid, request, default=None, context=None):
         """
             Saves or Updates Parts
         """
         listedParts = []
         retValues = {}
-        modelFields=self.env['plm.config.settings'].GetFieldsModel(self._name)
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        modelFields=self.pool['plm.config.settings'].GetFieldsModel(cr, uid,self._name, context=context)
         for part in unpackDictionary(request):
+            context.update({'internal_writing': False})
             part=getCleanBytesDictionary(part)
             hasSaved = False
             existingID=False
@@ -451,13 +421,13 @@ class plm_component(models.Model):
 
             if not('componentID' in part) or not(part['componentID']):
                 if ('engineering_code' in part) and ('engineering_revision' in part):
-                    existingIDs = self.search([
+                    existingIDs = self.search(cr, uid, [
                           ('engineering_code', '=', part['engineering_code'])
-                        , ('engineering_revision', '=', part['engineering_revision'])])
+                        , ('engineering_revision', '=', part['engineering_revision'])], context=context)
                 elif ('engineering_code' in part) and not('engineering_revision' in part):
-                    existingIDs = self.search([
+                    existingIDs = self.search(cr, uid, [
                         ('engineering_code', '=', part['engineering_code']) ]
-                        , order='engineering_revision')
+                        , order='engineering_revision', context=context)
                 if existingIDs:
                     existingIDs.sort()
                     existingID = existingIDs[len(existingIDs) - 1].id
@@ -468,21 +438,22 @@ class plm_component(models.Model):
             for fieldName in list(set(part.keys()).difference(set(modelFields))):
                 del (part[fieldName])
             if not existingID:
+                context.update({'internal_writing': True})
                 logging.debug("[SaveOrUpdate] Part {name} is creating.".format(name=part['engineering_code']))
-                objectItem=self.with_context({'internal_writing':True}).create(part)
-                if objectItem:
-                    existingID=objectItem.id
+                tmpID = self.create(cr, uid, part, context=context)
+                if tmpID!=None:
+                    existingID=tmpID
                     hasSaved = True
             else:
-                objPart = self.browse(existingID)
+                objPart = self.browse(cr, uid, existingID, context=context)
                 if objPart:
                     part['name'] = objPart.name
                     part['engineering_revision']=objPart.engineering_revision
                     if (self.getUpdTime(objPart) < lastupdate):
-                        if self._iswritable(objPart):
+                        if self._iswritable(cr, uid, objPart):
                             logging.debug("[SaveOrUpdate] Part {name}/{revi} is updating.".format(name=part['engineering_code'],revi=part['engineering_revision']))
                             hasSaved = True
-                            if not objPart.with_context({'internal_writing':False}).write(part):
+                            if not self.write(cr, uid, [existingID], part, context=context):
                                 logging.error("[SaveOrUpdate] Part {name}/{revi} cannot be updated.".format(name=part['engineering_code'],revi=part['engineering_revision']))
                                 hasSaved = False
                 else:
@@ -494,100 +465,98 @@ class plm_component(models.Model):
             listedParts.append(part['engineering_code'])
         return packDictionary(retValues)
 
-    @api.model
-    def QueryLast(self, request=([], []), default=None):
+    def QueryLast(self, cr, uid, request=([], []), default=None, context=None):
         """
             Queries to return values based on columns selected.
         """
         objId = False
         expData = []
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         queryFilter, columns = request
         if len(columns) < 1:
             return expData
         if 'engineering_revision' in queryFilter:
             del queryFilter['engineering_revision']
-        allIDs = self.search(queryFilter, order='engineering_revision')
+        allIDs = self.search(cr, uid, queryFilter, order='engineering_revision', context=context)
         if len(allIDs) > 0:
+            allIDs.sort()
             objId = allIDs[len(allIDs) - 1]
         if objId:
-            tmpData = objId.export_data(columns)
+            tmpData = self.export_data(cr, uid, [objId], columns)
             if 'datas' in tmpData:
                 expData = tmpData['datas']
         return expData
 
     ##  Menu action Methods
-    def _create_normalBom(self, idd):
+    def _create_normalBom(self, cr, uid, idd, context=None):
         """
             Creates a new Normal Bom (recursive on all EBom children)
         """
         default = {}
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         if idd in self.processedIds:
             return False
-        checkObj=self.browse(idd)
+        checkObj=self.browse(cr, uid, idd, context=context)
         if not checkObj:
             return False
-        bomType = self.env['mrp.bom']
-        objBoms = bomType.search([('product_tmpl_id', '=', checkObj.product_tmpl_id.id), ('type', '=', 'normal'), ('active', '=', True)])
-        idBoms = bomType.search([('product_tmpl_id', '=', checkObj.product_tmpl_id.id), ('type', '=', 'ebom'), ('active', '=', True)])
+        bomType = self.pool['mrp.bom']
+        objBoms = bomType.search(cr, uid, [('product_id', '=', idd), ('type', '=', 'normal'), ('bom_id', '=', False), ('active', '=', True)], context=context)
+        idBoms = bomType.search(cr, uid, [('product_id', '=', idd), ('type', '=', 'ebom'), ('bom_id', '=', False), ('active', '=', True)], context=context)
 
         if not objBoms:
             if idBoms:
-                default={'product_tmpl_id': idBoms[0].product_tmpl_id.id,
-                         'type': 'normal', 'active': True, }
-                if idBoms[0].product_id:
-                    default.update({'product_id': idBoms[0].product_id.id})
+                context.update({'internal_writing':True})
                 self.processedIds.append(idd)
-                newidBom = idBoms[0].with_context({'internal_writing':True}).copy(default)
+                newidBom = bomType.copy(cr, uid, idBoms[0], default, context=context)
                 if newidBom:
-                    newidBom.with_context({'internal_writing':True}).write(default)
-                    ok_rows = self._summarizeBom(newidBom.bom_line_ids)
-                    for bom_line in list(set(newidBom.bom_line_ids) ^ set(ok_rows)):
-                        bom_line.unlink()
+                    bomType.write(cr, uid, [newidBom],
+                                  {'name': checkObj.name, 'product_id': checkObj.id, 'type': 'normal', 'active': True, }, context=context)
+                    oidBom = bomType.browse(cr, uid, newidBom, context=context)
+                    ok_rows = self._summarizeBom(cr, uid, oidBom.bom_lines)
+                    for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
+                        bomType.unlink(cr, uid, [bom_line.id], context=context)
                     for bom_line in ok_rows:
-                        bom_line.with_context({'internal_writing':True}).write(
-                                    {  'type': 'normal', 'source_id': False, 
-                                       'product_qty': bom_line.product_qty, } )
-                        self._create_normalBom(bom_line.product_id.id)
+                        bomType.write(cr, uid, [bom_line.id],
+                                      {'type': 'normal', 'source_id': False, 'name': bom_line.product_id.name,
+                                       'product_qty': bom_line.product_qty, }, context=context)
+                        self._create_normalBom(cr, uid, bom_line.product_id.id, context=context)
         else:
-            for bom_line in bomType.browse(objBoms[0].id).bom_line_ids:
-                self._create_normalBom(bom_line.product_id.id)
+            for bom_line in bomType.browse(cr, uid, objBoms[0], context=context).bom_lines:
+                self._create_normalBom(cr, uid, bom_line.product_id.id, context=context)
         return False
 
-    def _copy_productBom(self, idStart, idDest=None, bomTypes=["normal"]):
+    def _copy_productBom(self, cr, uid, idStart, idDest=None, bomTypes=["normal"], context=None):
         """
             Creates a new 'bomType' BoM (arrested at first level BoM children).
         """
         default = {}
         if not idDest:
             idDest=idStart
-        
-        checkObjDest = self.browse(idDest)
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        checkObjDest = self.browse(cr, uid, idDest, context=context)
         if checkObjDest:
-            objBomType = self.env['mrp.bom']
+            objBomType = self.pool['mrp.bom']
             for bomType in bomTypes:
-                objBoms = objBomType.search([('product_id', '=', idDest), ('type', '=', bomType), ('active', '=', True)])
-                idBoms = objBomType.search([('product_id', '=', idStart), ('type', '=', bomType), ('active', '=', True)])
+                objBoms = objBomType.search(cr, uid, [('product_id', '=', idDest), ('type', '=', bomType), ('bom_id', '=', False), ('active', '=', True)], context=context)
+                idBoms = objBomType.search(cr, uid, [('product_id', '=', idStart), ('type', '=', bomType), ('bom_id', '=', False), ('active', '=', True)], context=context)
                 if not objBoms:
-                    for oldObj in idBoms:
-                        newidBom = oldObj.with_context({'internal_writing':True}).copy(default)
+                    for oldObj in objBomType.browse(cr, uid, getListIDs(idBoms), context=context):
+                        newidBom = objBomType.copy(cr, uid, oldObj.id, default, context=context)
                         if newidBom:
-                            newidBom.with_context({'internal_writing':True}).write( 
-                                            {'name': checkObjDest.name, 
-                                             'product_tmpl_id': checkObjDest.product_tmpl_id.id, 
-                                             'type': bomType, 'active': True, })
-                            ok_rows = self._summarizeBom(newidBom.bom_line_ids)
-                            for bom_line in list(set(newidBom.bom_line_ids) ^ set(ok_rows)):
-                                bom_line.unlink()
+                            context['internal_writing']=True
+                            objBomType.write(cr, uid, [newidBom],
+                                          {'name': checkObjDest.name, 'product_id': checkObjDest.id, 'type': bomType, 'active': True, }, context=context)
+                            oidBom = objBomType.browse(cr, uid, newidBom, context=context)
+                            ok_rows = self._summarizeBom(cr, uid, oidBom.bom_lines)
+                            for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
+                                objBomType.unlink(cr, uid, [bom_line.id], context=context)
                             for bom_line in ok_rows:
-                                bom_line.with_context({'internal_writing':True}).write(
-                                               {'type': bomType, 'source_id': False, 
-                                                'name': bom_line.product_id.name,
-                                                'product_qty': bom_line.product_qty, })
+                                objBomType.write(cr, uid, [bom_line.id],
+                                              {'type': bomType, 'source_id': False, 'name': bom_line.product_id.name,
+                                               'product_qty': bom_line.product_qty, }, context=context)
         return False
 
-    def _summarizeBom(self, datarows):
+    def _summarizeBom(self, cr, uid, datarows):
         dic = {}
         for datarow in datarows:
             key = datarow.product_id.name
@@ -599,15 +568,16 @@ class plm_component(models.Model):
         return retd
 
     ##  Work Flow Internal Methods
-    def _get_recursive_parts(self, ids, excludeStatuses, includeStatuses):
+    def _get_recursive_parts(self, cr, uid, ids, excludeStatuses, includeStatuses, context=None):
         """
            Gets all ids related to current one as children
         """
         stopFlag = False
         tobeReleasedIDs = getListIDs(ids)
+        context = context or self.pool['res.users'].context_get(cr, uid)
         children = []
-        for oic in self.browse(ids):
-            children = self.browse(self._getChildrenBom(oic, 1))
+        for oic in self.browse(cr, uid, ids, context=context):
+            children = self.browse(cr, uid, self._getChildrenBom(cr, uid, oic, 1, context=context), context=context)
             for child in children:
                 if (not child.state in excludeStatuses) and (not child.state in includeStatuses):
                     stopFlag = True
@@ -617,39 +587,39 @@ class plm_component(models.Model):
                         tobeReleasedIDs.append(child.id)
         return (stopFlag, getCleanList(tobeReleasedIDs))
 
-    def action_create_normalBom_WF(self, ids):
+    def action_create_normalBom_WF(self, cr, uid, ids, context=None):
         """
             Creates a new Normal Bom if doesn't exist (action callable from code)
         """
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         for idd in ids:
             self.processedIds = []
-            self._create_normalBom(idd)
-        wf_message_post(self, ids, body='Created Normal Bom.')
+            self._create_normalBom(cr, uid, idd, context=context)
         return False
 
-    def _action_ondocuments(self, ids, signal="", status=""):
+    def _action_ondocuments(self, cr, uid, ids, signal="", status="", context=None):
         """
             Moves workflow on documents having the same state of component 
         """
         ret=[]
         docIDs = []
         documents=[]
-        documentType = self.env['plm.document']
-        for oldObject in self.browse(ids):
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        documentType = self.pool['plm.document']
+        for oldObject in self.browse(cr, uid, ids, context=context):
             for document in oldObject.linkeddocuments:
                 if (document.id not in docIDs):
-                    if documentType.ischecked_in(document.id):
+                    if documentType.ischecked_in(cr, uid, document.id, context=context):
                         docIDs.append(document.id)
                         documents.append(document)
         for document in documents:
-            docsignal=get_signal_workflow(document, status)
+            docsignal=get_signal_workflow(self, cr, uid, document, status, context=context)
             if docsignal:
-                move_workflow(document, [document.id], docsignal, status)
+                move_workflow(documentType, cr, uid, [document.id], docsignal, status, context=context)
                 ret.append(document.id)
         return ret
 
-    def _iswritable(self, oid):
+    def _iswritable(self, cr, user, oid):
         checkState = ('draft')
         if not oid.engineering_writable:
             logging.warning(
@@ -664,24 +634,21 @@ class plm_component(models.Model):
             return False
         return True
 
-    @api.model
-    def ActionUpload(self):
+    def ActionUpload(self,cr,uid,ids,context=None):
         """
             Action to be executed after automatic upload
         """
         signal='upload'
-        signal_workflow(self, self._ids, signal)
+        signal_workflow(self, cr, uid, ids, signal)
         return False
 
-    @api.multi
-    def action_upload(self):
+    def action_upload(self,cr,uid,ids,context=None):
         """
             Action to be executed for Uploaded state
         """
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         status = 'uploaded'
         action = 'upload'
-        ids=self._ids
         operationParams = {
                             'status': status,
                             'statusName': _('Uploaded'),
@@ -691,20 +658,20 @@ class plm_component(models.Model):
                             'includeStatuses': ['draft'],
                             }
         default = {
-                   'state': status,
                    'engineering_writable': False,
+                   'state': status,
                    }
-        self.logging_workflow(ids, action, status)
-        return self._action_to_perform(ids, operationParams, default)
+        context['internal_writing']=True
+        self.logging_workflow(cr, uid, ids, action, status, context=context)
+        return self._action_to_perform(cr, uid, ids, operationParams, default, context=context)
 
-    @api.multi
-    def action_draft(self):
+    def action_draft(self, cr, uid, ids, context=None):
         """
             Action to be executed for Draft state
         """
+        context = context or self.pool['res.users'].context_get(cr, uid)
         status = 'draft'
         action = 'draft'
-        ids=self._ids
         operationParams = {
                             'status': status,
                             'statusName': _('Draft'),
@@ -714,21 +681,20 @@ class plm_component(models.Model):
                             'includeStatuses': ['confirmed', 'uploaded', 'transmitted'],
                             }
         default = {
-                   'state': status,
                    'engineering_writable': True,
+                   'state': status,
                    }
-        self.logging_workflow(ids, action, status)
-        return self._action_to_perform(ids, operationParams, default)
+        context['internal_writing']=True
+        self.logging_workflow(cr, uid, ids, action, status, context=context)
+        return self._action_to_perform(cr, uid, ids, operationParams, default, context=context)
 
-    @api.multi
-    def action_confirm(self):
+    def action_confirm(self, cr, uid, ids, context=None):
         """
             Action to be executed for Confirmed state
         """
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         status = 'confirmed'
         action = 'confirm'
-        ids=self._ids
         operationParams = {
                             'status': status,
                             'statusName': _('Confirmed'),
@@ -738,21 +704,20 @@ class plm_component(models.Model):
                             'includeStatuses': ['draft'],
                             }
         default = {
-                   'state': status,
                    'engineering_writable': False,
+                   'state': status,
                    }
-        self.logging_workflow(ids, action, status)
-        return self._action_to_perform(ids, operationParams, default)
+        context['internal_writing']=True
+        self.logging_workflow(cr, uid, ids, action, status, context=context)
+        return self._action_to_perform(cr, uid, ids, operationParams, default, context=context)
 
-    @api.multi
-    def action_correct(self):
+    def action_correct(self, cr, uid, ids, context=None):
         """
             Action to be executed for Draft state (signal "correct")
         """
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         status='draft'
         action = 'correct'
-        ids=self._ids
         operationParams = {
                             'status': status,
                             'statusName': _('Draft'),
@@ -762,117 +727,120 @@ class plm_component(models.Model):
                             'includeStatuses': ['confirmed'],
                             }
         default = {
-                   'state': status,
-                   'engineering_writable': True,
-                   }
-        self.logging_workflow(ids, action, status)
-        return self._action_to_perform(ids, operationParams, default)
+                    'engineering_writable': True,
+                    'state': status,
+                    }
+        context['internal_writing']=True
+        self.logging_workflow(cr, uid, ids, action, status, context=context)
+        return self._action_to_perform(cr, uid, ids, operationParams, default, context=context)
 
-    @api.multi
-    def action_release(self):
+    def action_release(self, cr, uid, ids, context=None):
         excludeStatuses = ['released', 'undermodify', 'obsoleted']
         includeStatuses = ['confirmed']
-        return self._action_to_release(self._ids, excludeStatuses, includeStatuses)
+        return self._action_to_release(cr, uid, ids, excludeStatuses, includeStatuses, context=context)
 
-    @api.multi
-    def action_obsolete(self):
+    def action_obsolete(self, cr, uid, ids, context=None):
         """
             Action to be executed for Obsoleted state
         """
-        ids=self._ids
         status = 'obsoleted'
         action = 'obsolete'
-        for oldObject in self.browse(ids):
-            move_workflow(self, oldObject.id, action, status)
-        wf_message_post(self, ids, body='Status moved to: {status}.'.format(status=status))
-        self._action_ondocuments(ids, action, status)
+
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        context.update({'internal_writing':True})
+
+        for oldObject in self.browse(cr, uid, ids, context=context):
+            move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
+        self._action_ondocuments(cr, uid, ids, action, status, context=context)
         return True
 
-    @api.multi
-    def action_modify(self):
+    def action_modify(self, cr, uid, ids, context=None):
         """
-            action to be executed for Released state (signal "reactivate")
+            action to be executed for UnderModify state (signal "modify")
         """
-        ids=self._ids
         status = 'undermodify'
         action = 'modify'
-        for oldObject in self.browse(ids):
-            move_workflow(self, oldObject.id, action, status)
-        self._action_ondocuments(ids, action, status)
-        wf_message_post(self, ids, body='Status moved to: {status}.'.format(status=status))
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        context.update({'internal_writing':True})
+
+        for oldObject in self.browse(cr, uid, ids, context=context):
+            move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
+        self._action_ondocuments(cr, uid, ids, action, status, context=context)
         return True
 
-    def logging_workflow(self, ids, action, status):
+    def logging_workflow(self, cr, uid, ids, action, status, context=None):
         note={
                 'type': 'workflow movement',
                 'reason': "Applying workflow action '{action}', moving to status '{status}.".format(action=action, status=status),
              }
-        self._insertlog(ids, note=note)
+        self._insertlog(cr, uid, ids, note=note, context=context)
 
-    def _action_to_perform(self, ids, operationParams , default={}):
+    def _action_to_perform(self, cr, uid, ids, operationParams , default={}, context=None):
         """
             Executes on cascade to children products the required workflow operations.
         """
+        ret=False
+        full_ids=[]
         status=operationParams['status'] 
         action=operationParams['action']
         docaction=operationParams['docaction']
         excludeStatuses=operationParams['excludeStatuses']
         includeStatuses=operationParams['includeStatuses']
-        
-        stopFlag,allIDs=self._get_recursive_parts(ids, excludeStatuses, includeStatuses)
-        self._action_ondocuments(allIDs, docaction, status)
-
+        context.update({'internal_writing':True})
+        stopFlag,allIDs=self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses, context=context)
+        self._action_ondocuments(cr, uid, allIDs, docaction, status, context=context)
         actIDs=list(set(allIDs)-set(ids))       # Force to obtain only related documents
-        for currObj in self.browse(actIDs):
-            productsignal=get_signal_workflow(currObj, status)
-            move_workflow(self, [currObj.id], productsignal, status)
-        ret=self.browse(ids).with_context({'internal_writing':True}).write(default)
-        self.logging_workflow( ids, action, status)
-        if ret:
-            wf_message_post(self, ids, body='Status moved to: {status}.'.format(status=status))
+        for currObj in self.browse(cr,uid,actIDs,context=context):
+            productsignal=get_signal_workflow(self, cr, uid, currObj, status, context=context)
+            move_workflow(self, cr, uid, [currObj.id], productsignal, status, context=context)
+        ret=self.write(cr, uid, ids, default, context=context)
+        self.logging_workflow(cr, uid, ids, action, status, context=context)
         return ret
 
-    def _action_to_release(self, ids, excludeStatuses, includeStatuses):
+    def _action_to_release(self, cr, uid, ids, excludeStatuses, includeStatuses, context=None):
         """
              Action to be executed for Released state
         """
+        ret=False
+        full_ids = []
         status='released'
         action='release'
-        
-        default = {
-                   'state': status,
-                   'engineering_writable': False,
-                   }
-
-        stopFlag, allIDs = self._get_recursive_parts(ids, excludeStatuses, includeStatuses)
+        default={
+                'state': status,
+                'engineering_writable': False,
+                }
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        context.update({'internal_writing':True})
+        stopFlag, allIDs = self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses, context=context)
         if len(allIDs) < 1 or stopFlag:
-            raise UserError(_("WorkFlow Error.\n\nOne or more parts cannot be released."))
-        allProdObjs = self.browse(allIDs)
+            raise orm.except_orm(_('WorkFlow Error'), _("Part cannot be released."))
+        allProdObjs = self.browse(cr, uid, allIDs, context=context)
         for oldObject in allProdObjs:
-            for currObj in self._getbyrevision(oldObject.engineering_code, oldObject.engineering_revision - 1):
-                productsignal=get_signal_workflow(currObj, 'obsoleted')
-                move_workflow(self, currObj.id, productsignal, 'obsoleted')
-        self._action_ondocuments(allIDs, action, status)
+            last_ids = self._getbyrevision(cr, uid, oldObject.engineering_code, oldObject.engineering_revision - 1)
+            if last_ids:
+                for currObj in self.browse(cr, uid, last_ids, context=context):
+                    productsignal=get_signal_workflow(self, cr, uid, currObj, 'obsoleted', context=context)
+                    move_workflow(self, cr, uid, [currObj.id], productsignal, 'obsoleted', context=context)
+        self._action_ondocuments(cr, uid, allIDs, action, status, context=context)
         actIDs=list(set(allIDs)-set(ids))       # Force to obtain only related documents
-        for currObj in self.browse(actIDs):
-            productsignal=get_signal_workflow(currObj, status)
-            move_workflow(self, [currObj.id], productsignal, status)
-        ret=self.browse(ids).with_context({'internal_writing':True}).write(default)
-        self.logging_workflow(ids, action, status)
-        if (ret):
-            wf_message_post(self, ids, body='Status moved to: {status}.'.format(status=status))
+        for currObj in self.browse(cr,uid,actIDs,context=context):
+            productsignal=get_signal_workflow(self, cr, uid, currObj, status, context=context)
+            move_workflow(self, cr, uid, [currObj.id], productsignal, status, context=context)
+        ret=self.write(cr, uid, ids, default, context=context)
+        self.logging_workflow(cr, uid, ids, action, status, context=context)
         return ret
 
     #######################################################################################################################################33
 
     #   Overridden methods for this entity
 
-    @api.model
-    def create(self, vals):
+    def create(self, cr, uid, vals, context=None):
         ret=False
+        context = context or self.pool['res.users'].context_get(cr, uid)
         if vals and vals.get('name', False):
-            existingIDs = self.search([('name', '=', vals['name'])],
-                                      order='engineering_revision')
+            existingIDs = self.search(cr, uid, [('name', '=', vals['name'])],
+                                      order='engineering_revision',
+                                      context=context)
             if (vals.get('engineering_code', False)==False) or (vals['engineering_code'] == ''):
                 vals['engineering_code'] = vals['name']
             if (vals.get('engineering_revision', False)==False):
@@ -881,7 +849,7 @@ class plm_component(models.Model):
             if existingIDs:
                 existingID = existingIDs[len(existingIDs) - 1]
                 if ('engineering_revision' in vals):
-                    existObj = existingID
+                    existObj = self.browse(cr, uid, existingID, context=context)
                     if existObj:
                         if (vals['engineering_revision'] > existObj.engineering_revision):
                             vals['name'] = existObj.name
@@ -891,58 +859,57 @@ class plm_component(models.Model):
                     return existingID
 
             try:
-                objectItem=super(plm_component, self).create(vals)
-                if objectItem:
-                    ret=objectItem                  # Returns the objectItem instead the id to be coherent
-                    values={
-                            'name': vals['name'],
-                            'revision': vals['engineering_revision'],
-                            'type': self._name,
-                            'op_type': 'creation',
-                            'op_note': 'Create new entity on database',
-                            'op_date': datetime.now(),
-                            'userid': self._uid,
-                            }
-                    self.env['plm.logging'].create(values)
+                ret=super(plm_component, self).create(cr, uid, vals, context=context)
+                values={
+                        'name': vals['name'],
+                        'revision': vals['engineering_revision'],
+                        'type': self._name,
+                        'op_type': 'creation',
+                        'op_note': 'Create new entity on database',
+                        'op_date': datetime.now(),
+                        'userid': uid,
+                        }
+                self.pool['plm.logging'].create(cr, uid, values, context=context)
             except Exception as ex:
                 raise Exception(" (%r). It has tried to create with values : (%r)." % (ex, vals))
         return ret
 
-    @api.multi
-    def write(self, vals):
+    def write(self, cr, uid, ids, vals, context=None):
         ret=True
         if vals:
-            check=self._context.get('internal_writing', False)
-            thisprocess=self._context.get('internal_process', False)    # Avoids messages during internal processes.
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            check=context.get('internal_writing', False)
+            thisprocess=context.get('internal_process', False)
             if not check:
-                for prodItem in self.browse(self._ids):
-                    if not isDraft(self,prodItem.id):
+                for prodItem in self.browse(cr, uid, ids, context=context):
+                    if not isDraft(self,cr, uid, prodItem.id, context=context):
                         if not thisprocess:
-                            logging.error("The entity '{name}-{rev}' is in a status that does not allow you to make save action".format(name=prodItem.name,rev=prodItem.engineering_revision))
+                            raise orm.except_orm(_('Edit Entity Error'),
+                                             _("The entity '{name}-{rev}' is in a status that does not allow you to make save action".format(name=prodItem.name,rev=prodItem.engineering_revision)))
                         ret=False
                         break
                     if not prodItem.engineering_writable:
                         if not thisprocess:
-                            logging.error("The entity '{name}-{rev}' cannot be written.".format(name=prodItem.name,rev=prodItem.engineering_revision))
+                            raise orm.except_orm(_('Edit Entity Error'),
+                                             _("The entity '{name}-{rev}' cannot be written.".format(name=prodItem.name,rev=prodItem.engineering_revision)))
                         ret=False
                         break
             if ret:
-                self._insertlog(self._ids, changes=vals)
-                ret=super(plm_component, self).write(vals)
+                self._insertlog(cr, uid, ids, changes=vals, context=context)
+                ret=super(plm_component, self).write(cr, uid, ids, vals, context=context)
         return ret
-     
-    @api.multi
-    def copy(self, default={}):
+    
+    def copy(self, cr, uid, oid, default={}, context=None):
         newID=False
         override=False
         previous_name=False
-        oid=self.id
-        
-        if not self._context.get('new_revision', False):
-            previous_name = self.browse(oid).name
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        context.update({'internal_writing':True})
+        if not context.get('new_revision', False):
+            previous_name = self.browse(cr, uid, oid, context=context).name
             new_name=default.get('name', 'Copy of %s'%previous_name)
             if 'name' in default:
-                tmpIds = self.search([('name', 'like', new_name)])
+                tmpIds = self.search(cr, uid, [('name', 'like', new_name)], context=context)
                 if len(tmpIds) > 0:
                     new_name = '%s (%s)' % (new_name, len(tmpIds) + 1)
                 default.update({
@@ -963,9 +930,9 @@ class plm_component(models.Model):
                     'type': 'copy object',
                     'reason': "Previous name was '{old} new one is '{new}'.".format(old=previous_name,new=new_name),
                  }
-            self._insertlog(oid, note=note)
+            self._insertlog(cr, uid, oid, note=note, context=context)
 
-            tmpID=super(plm_component, self.browse(oid).with_context({'internal_writing':True})).copy(default)
+            tmpID=super(plm_component, self).copy(cr, uid, oid, default, context=context)
             if tmpID!=None:
                 newID=tmpID
                 if override:
@@ -974,48 +941,45 @@ class plm_component(models.Model):
                         'engineering_code': new_name,
                         'engineering_revision': 0,
                         }
-                    newID.write(values)
+                    self.write(cr, uid, [newID], values, context=context)
         else:
-            tmpID=super(plm_component, self.browse(oid).with_context({'internal_writing':True})).copy(default)
+            tmpID=super(plm_component, self).copy(cr, uid, oid, default, context=context)
             if tmpID:
                 newID=tmpID
-                newID.with_context({'internal_writing':True}).write(default) 
-        if newID and previous_name:
-            wf_message_post(self, getListIDs(newID), body='Copied starting from : {value}.'.format(value=previous_name))
+                self.write(cr, uid, [newID], default, context=context) 
         return newID
 
-    @api.multi
-    def unlink(self):
+    def unlink(self, cr, uid, ids, context=None):
         ret=False
-        ids=self._ids
-        
-        isAdmin = isAdministrator(self)
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        isAdmin = isAdministrator(self, cr, uid, context=context)
 
-        if not self.env['mrp.bom'].IsChild(ids):
+        if not self.pool['mrp.bom'].IsChild(cr, uid, ids, context=context):
             note={
                     'type': 'unlink object',
                     'reason': "Removed entity from database.",
                  }
-            for checkObj in self.browse(ids):
+            for checkObj in self.browse(cr, uid, ids, context=context):
                 checkApply=False
-                if isAnyReleased(self, checkObj.id):
+                if isAnyReleased(self, cr, uid, checkObj.id, context=context):
                     if isAdmin:
                         checkApply=True
-                elif isDraft(self, checkObj.id):
+                elif isDraft(self, cr, uid, checkObj.id, context=context):
                     checkApply=True
 
                 if not checkApply:
                     continue            # Apply unlink only if have respected rules.
     
-                existingIDs = self.search([('engineering_code', '=', checkObj.engineering_code),
-                                                       ('engineering_revision', '=', checkObj.engineering_revision - 1)])
+                existingIDs = self.search(cr, uid, [('engineering_code', '=', checkObj.engineering_code),
+                                                       ('engineering_revision', '=', checkObj.engineering_revision - 1)], context=context)
                 if len(existingIDs) > 0:
                     status='released'
-                    for product in getListIDs(existingIDs):
-                        productsignal=get_signal_workflow(product, status)
-                        move_workflow(self, [product.id], productsignal, status)
-                self._insertlog(checkObj.id, note=note)
-                ret=ret | super(plm_component, checkObj).unlink()
+                    context.update({'internal_writing':True})
+                    for product in self.browse(cr, uid, getListIDs(existingIDs), context=context):
+                        productsignal=get_signal_workflow(self, cr, uid, product, status, context=context)
+                        move_workflow(self, cr, uid, [product.id], productsignal, status, context=context)
+                self._insertlog(cr, uid, checkObj.id, note=note, context=context)
+                ret=ret | super(plm_component, self).unlink(cr, uid, [checkObj.id], context=context)
         return ret
 
 

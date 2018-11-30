@@ -19,11 +19,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+from datetime import datetime
 
-from odoo import models, fields, api, _, osv
+from openerp.osv import fields, orm
+from openerp.tools.translate import _
 
-
-class plm_component(models.Model):
+class plm_component(orm.Model):
     _name = 'product.product'
     _inherit = 'product.product'
     
@@ -31,7 +32,7 @@ class plm_component(models.Model):
 #   Override these properties to customize editor properties.     #
 ###################################################################
 
-    def editorProperties(self, editor=""):
+    def editorProperties(self, cr, uid, editor=""):
         """
             Assigns generic or specific name to editor properties
         """
@@ -44,7 +45,7 @@ class plm_component(models.Model):
                 'engineering_treatment':    [ 'engineering_treatment', "COMPTTERM", "char",     ],
                 'engineering_surface':      [ 'engineering_surface',   "COMPTSUP",  "char",     ],
                 'description':              [ 'description',           "COMPDES",   "char",     ],
-                'weight':                   [ 'weight',                "COMPPESO",  "float",    ],
+                'weight_net':               [ 'weight_net',            "COMPPESO",  "float",    ],
                 }
         if editor=='thinkdesign':
             properties={
@@ -54,11 +55,11 @@ class plm_component(models.Model):
                 'engineering_treatment':    [ 'engineering_treatment', "COMPTTERM", "char",     ],
                 'engineering_surface':      [ 'engineering_surface',   "COMPTSUP",  "char",     ],
                 'description':              [ 'description',           "COMPDES",   "char",     ],
-                'weight':                   [ 'weight',                "COMPPESO",  "float",    ],
+                'weight_net':               [ 'weight_net',            "COMPPESO",  "float",    ],
                }
         return properties
     
-    def defineProperties(self):
+    def defineProperties(self, cr, uid):
         """
             Defines the property set to be used
         """
@@ -70,7 +71,9 @@ class plm_component(models.Model):
                     "state"                 :{"changed":"", "enabled":False, "mandatory":False,  "default":"draft",                              },   
                     "tmp_material"          :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",                                   },   
                     "tmp_surface"           :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40,                     },   
-                    "weight"                :{"changed":"", "enabled":True,  "mandatory":False,  "default": 0.0,                                 },   
+                    "weight_net"            :{"changed":"", "enabled":True,  "mandatory":False,  "default": 0.0,                                 },   
+                    "uom_id"                :{"changed":"", "enabled":True,  "mandatory":False,  "default":0,                                    },   
+                    "uom_po_id"             :{"changed":"", "enabled":True,  "mandatory":False,  "default":0,                                    },   
                     "engineering_material"  :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",                                   },   
                     "engineering_surface"   :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40,                     },   
                     "description"           :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40, "multiline": True,  },   
@@ -110,18 +113,18 @@ class plm_component(models.Model):
 #                                 },
 #                             } 
 #     })
-#         properties['uom_id'].update(                                            # Entity field to apply automation button
-#             {"automation": {
-#                 "destination"   : { "fields" : ["uom_po_id",],                  # Fields to use as destination (writing the value)
-#                                 },
-#                             } 
-#              })
-#         properties['uom_po_id'].update(                                         # Entity field to apply automation button
-#             {"automation": {
-#                 "destination"   : { "fields" : ["uom_id",],                     # Fields to use as destination (writing the value)
-#                                 },
-#                             } 
-#              })
+        properties['uom_id'].update(                                            # Entity field to apply automation button
+            {"automation": {
+                "destination"   : { "fields" : ["uom_po_id",],                  # Fields to use as destination (writing the value)
+                                },
+                            } 
+             })
+        properties['uom_po_id'].update(                                         # Entity field to apply automation button
+            {"automation": {
+                "destination"   : { "fields" : ["uom_id",],                     # Fields to use as destination (writing the value)
+                                },
+                            },
+            })
         properties['tmp_material'].update(                                        # Entity field to apply automation button
             {"automation": {
                 "source"        : { 
@@ -148,15 +151,16 @@ class plm_component(models.Model):
 #   Override these properties to customize editor properties.     #
 ###################################################################
 
+plm_component()
 
-class plm_document(models.Model):
+class plm_document(orm.Model):
     _name = 'plm.document'
     _inherit = 'plm.document'
 
 ###################################################################
 #   Override these properties to customize editor properties.     #
 ###################################################################
-    def editorProperties(self, editor=""):
+    def editorProperties(self, cr, uid, editor=""):
         """
             Assigns generic or specific name to editor properties
         """
@@ -187,7 +191,7 @@ class plm_document(models.Model):
                 }
         return properties
     
-    def defineProperties(self):
+    def defineProperties(self, cr, uid):
         """
             Defines the property set to be used
         """
@@ -225,15 +229,17 @@ class plm_document(models.Model):
 #   Override these properties to customize editor properties.     #
 ###################################################################
 
+plm_document()
 
-class plm_relation(models.Model):
+
+class plm_relation(orm.Model):
     _name = 'mrp.bom'
     _inherit = 'mrp.bom'
 
 ###################################################################
 #   Override these properties to customize editor properties.     #
 ###################################################################
-    def editorProperties(self, editor=""):
+    def editorProperties(self, cr, uid, editor=""):
         """
             Assigns generic or specific name to editor properties
         """
@@ -250,7 +256,7 @@ class plm_relation(models.Model):
                 }
         return properties
     
-    def defineProperties(self):
+    def defineProperties(self, cr, uid):
         """
             Defines the property set to be used
         """
@@ -268,3 +274,4 @@ class plm_relation(models.Model):
 #   Override these properties to customize editor properties.     #
 ###################################################################
 
+plm_relation()

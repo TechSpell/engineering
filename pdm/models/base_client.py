@@ -2,10 +2,8 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
-#    
-#    Created on : 2016-03-01
-#    Author : Fabio Colognesi
+#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -23,70 +21,71 @@
 ##############################################################################
 
 import socket
-import logging
 import datetime
 from xml.etree.ElementTree import fromstring
 
-from odoo  import models, fields, api, _, osv
-from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
-import odoo.tools.config as tools_config
+from openerp.osv import fields, orm
+from openerp.tools.translate import _
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
+import openerp.tools.config as tools_config
 
 from .common import getIDs, getCleanList, isAdministrator, packDictionary, unpackDictionary, \
-                    getCleanBytesDictionary, getCleanBytesList
+                    getCleanBytesDictionary, getCleanBytesList, getListIDs
                     
 
-
-class plm_config_settings(models.Model):
+class plm_config_settings(orm.Model):
     _name = 'plm.config.settings'
+    _description = "PLM Settings"
+    _table = "plm_config_settings"
+    _order = 'plm_service_id'
+     
+    _columns = {
+        'plm_service_id': fields.char('Service ID', size=128,
+                                      help="Insert the Service ID and register your PLM module. Ask it to TechSpell."),
+        'activated_id': fields.char('Activated PLM client', size=128, readonly="True", help="Listed activated Client."),
+        'active_editor': fields.char('Client Editor Name', size=128, readonly="True", help="Used Editor Name"),
+        'active_node': fields.char('OS machine name', size=128, readonly="True", help="Editor Machine Name"),
+        'expire_date': fields.datetime('Expiration Date', readonly="True", help="Expiration Date"),
+        'active_os': fields.char('OS name', size=128, readonly="True", help="Editor OS Name"),
+        'active_os_rel': fields.char('OS release', size=128, readonly="True", help="Editor OS Release"),
+        'active_os_ver': fields.char('OS version', size=128, readonly="True", help="Editor OS Version"),
+        'active_os_arch': fields.char('OS architecture', size=128, readonly="True", help="Editor OS Architecture"),
+        'node_id': fields.char('Registered PLM client', size=128, readonly="True", help="Listed Registered Client."),
+        'domain_id': fields.char('Domain Name', size=128, readonly="True", help="Listed domain name."),
+        'active_kind': fields.char('Kind of license', size=128, readonly="True",
+                                   help="Kind of license code ('node-locked' = Local individual license, 'domain-assigned' = Domain level license)."),
+        'opt_editbom': fields.boolean("Edit BoM not in 'draft'", help="Allows to edit BoM if product is not in 'Draft' status. Default = False."),
+        'opt_editreleasedbom': fields.boolean("Edit BoM in 'released'", help="Allows to edit BoM if product is in 'Released' status. Default = False."),
+        'opt_duplicatedrowsinbom': fields.boolean("Allow rows duplicated in BoM", help="Allows to duplicate product rows editing a BoM. Default = True."),
+        'opt_autonumbersinbom': fields.boolean("Allow to assign automatic positions in BoM", help="Allows to assign automatically item positions editing a BoM. Default = False."),
+        'opt_autostepinbom': fields.integer("Assign step to automatic positions in BoM", help="Allows to use this step assigning item positions, editing a BoM. Default = 5."),
+        'opt_autotypeinbom': fields.boolean("Assign automatically types in BoM", help="Allows to use the same type of BoM in all new items, editing a BoM. Default = True."),
+    }
+    _defaults = {
+        'plm_service_id': lambda *a: False,
+        'activated_id': lambda *a: False,
+        'opt_duplicatedrowsinbom': lambda *a: True,
+        'opt_autostepinbom': lambda *a: 5,
+        'opt_autotypeinbom': lambda *a: True,
+    }
 
-    @api.multi
-    def execute(self):
-        pass
-
-    @api.multi
-    def cancel(self):
-        pass
-
-    plm_service_id  =   fields.Char(_('Service ID'),            size=128,   help=_("Insert the Service ID and register your PLM module. Ask it to TechSpell."))
-    activated_id    =   fields.Char(_('Activated PLM client'),  size=128,   help=_("Listed activated Client."))
-    active_editor   =   fields.Char(_('Client Editor Name'),    size=128,   help=_("Used Editor Name"))
-    active_node     =   fields.Char(_('OS machine name'),       size=128,   help=_("Editor Machine name"))
-    expire_date     =   fields.Datetime(_('Expiration Date'),               help=_("Expiration Date"))
-    active_os       =   fields.Char(_('OS name'),               size=128,   help=_("Editor OS name"))
-    active_os_rel   =   fields.Char(_('OS release'),            size=128,   help=_("Editor OS release"))
-    active_os_ver   =   fields.Char(_('OS version'),            size=128,   help=_("Editor OS version"))
-    active_os_arch  =   fields.Char(_('OS architecture'),       size=128,   help=_("Editor OS architecture"))
-    node_id         =   fields.Char(_('Registered PLM client'), size=128,   help=_("Listed registered Client."))
-    domain_id       =   fields.Char(_('Domain Name'),           size=128,   help=_("Listed domain name."))
-    active_kind     =   fields.Char(_('Kind of license'),       size=128,   help=_("Kind of license code ('node-locked' = Local individual license, 'domain-assigned' = Domain level license)."))
-
-#   Option fields managed for each Service ID
-    opt_editbom             =   fields.Boolean(_("Edit BoM not in 'draft'"),                    help=_("Allows to edit BoM if product is not in 'Draft' status. Default = False."))
-    opt_editreleasedbom     =   fields.Boolean(_("Edit BoM in 'released'"),                     help=_("Allows to edit BoM if product is in 'Released' status. Default = False."))
-    opt_duplicatedrowsinbom =   fields.Boolean(_("Allow rows duplicated in BoM"),               help=_("Allows to duplicate product rows editing a BoM. Default = True."),                          default = True)
-    opt_autonumbersinbom    =   fields.Boolean(_("Allow to assign automatic positions in BoM"), help=_("Allows to assign automatically item positions editing a BoM. Default = False."))
-    opt_autostepinbom       =   fields.Integer(_("Assign step to automatic positions in BoM"),  help=_("Allows to use this step assigning item positions, editing a BoM. Default = 5."),            default = 5)
-    opt_autotypeinbom       =   fields.Boolean(_("Assign automatically types in BoM"),          help=_("Allows to use the same type of BoM in all new items, editing a BoM. Default = True."),      default = True)
-#   Option fields managed for each Service ID
-
-    @api.model
-    def GetServiceIds(self, oids=None, default=None):
+    def GetServiceIds(self, cr, uid, oids=None, default=None, context=None):
         """
             Get all Service Ids registered.
         """
         ids = []
-        
-        for part in self.search([('activated_id', '=', False)]):
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        partIds = self.search(cr, uid, [('activated_id', '=', False)], context=context)
+        for part in self.browse(cr, uid, partIds, context=context):
             ids.append(part.plm_service_id)
         return getCleanList(ids)
 
-    @api.model
-    def RegisterActiveId(self, vals):
+    def RegisterActiveId(self, cr, uid, vals=[], default=None, context=None):
         """
             Registers Service Id & Activation infos.  [serviceID, activation, activeEditor, expirationDate, (system, node, release, version, machine, processor), nodeId, domainName ]
         """
         default = {}
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         serviceID, activation, activeEditor, expirationDate, (
         system, node, release, version, machine, processor), nodeId, domainName, kind = vals
         if activation:
@@ -105,230 +104,223 @@ class plm_config_settings(models.Model):
                 'active_kind': kind,
             })
 
-            for partId in self.search([('plm_service_id', '=', serviceID), ('activated_id', '=', activation),
-                                            ('active_editor', '=', activeEditor)]):
-                partId.write(default)
+            for partId in self.search(cr, uid, [('plm_service_id', '=', serviceID), ('activated_id', '=', activation),
+                                            ('active_editor', '=', activeEditor)], context=context):
+                self.write(cr, uid, [partId], default, context=context)
                 return False
 
-            self.create(default)
+            self.create(cr, uid, default, context=context)
         return False
 
-    @api.model
-    def GetActivationId(self, vals=[], default=None):
+    def GetActivationId(self, cr, uid, vals=[], default=None, context=None):
         """
             Gets activation codes as registered.
         """
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         results = []
         found = []
         today = datetime.datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT)
         nodeId, domainID, activeEditor, _ = vals
 
         if len(domainID) > 0:
-            for partId in self.search([('domain_id', '=', domainID), ('expire_date', '>', today)]):
+            partIds = self.search(cr, uid, [('domain_id', '=', domainID), ('expire_date', '>', today)], context=context)
+            for partId in self.browse(cr, uid, partIds, context=context):
                 results.append((partId.plm_service_id, partId.activated_id, partId.domain_id))
                 found.append(partId.id)
 
-        for partId in self.search([('node_id', '=', nodeId), ('expire_date', '>', today)]):
+        partIds = self.search(cr, uid, [('node_id', '=', nodeId), ('expire_date', '>', today)], context=context)
+        for partId in self.browse(cr, uid, partIds, context=context):
             if partId.id not in found:
                 results.append((partId.plm_service_id, partId.activated_id, partId.domain_id))
 
         return results
 
-    def getoptionfields(self):
+    def getoptionfields(self, cr, uid, context=None):
         ret=[]
-        for keyName in self._fields.keys():
+        for keyName in self._all_columns.keys():
             if keyName.startswith('opt_'):
                 ret.append(keyName)
         return ret
 
-    @api.model
-    def GetOptions(self, request=None, default=None):
+    def GetOptions(self, cr, uid, request=None, default=None, context=None):
         """
             Gets activation codes as registered.
         """
         results = {}
-        
-        optionNames=self.getoptionfields()
-        for optId in self.search([('activated_id', '=', False), ('plm_service_id', '!=', False)]):
-            for optionName in optionNames:
-                results[optionName]=optId[optionName]
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        optionNames=self.getoptionfields(cr,uid,context)
+        optIds = self.search(cr, uid, [('activated_id', '=', False), ('plm_service_id', '!=', False)], context=context)
+        if optIds:
+            for optId in self.browse(cr, uid, getListIDs(optIds), context=context):
+                for optionName in optionNames:
+                    results[optionName]=optId[optionName]
         return results
 
 ###################################################################
 #                        C R U D  Methods                         #
 ###################################################################
 
-    @api.model
-    def Create(self, request=[], default=None):
+    def Create(self, cr, uid, request=[], default=None, context=None):
         """
             Creates items on DB.
         """
         results=[]
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         objectName, values=request
-        userType=self.env[objectName] if objectName in self.env else None
+        userType=self.pool[objectName] if objectName in self.pool.models else None
         
         if userType!=None:
             for valueSet in values:
-                results.append(userType.create(valueSet))
+                results.append(userType.create(cr, uid, valueSet, context=context))          
         return results
 
-    @api.model
-    def Read(self, request=[], default=None):
+    def Read(self, cr, uid, request=[], default=None, context=None):
         """
             Read given fields on items on DB.
         """
         results=[]
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         objectName, criteria, fields = request        
         if len(fields)<1:
             return results
         
-        userType=self.env[objectName] if objectName in self.env else None
+        userType=self.pool[objectName] if objectName in self.pool.models else None
         
         if userType!=False and userType!=None:
-            ids=userType.search(criteria)
+            ids=userType.search(cr, uid, criteria, context=context)
             if ids:
-                tmpData=ids.export_data(fields)
+                tmpData=userType.export_data(cr, uid, ids, fields, context=context)
                 if 'datas' in tmpData:
                     results=tmpData['datas']
         return results
 
-    @api.model
-    def Update(self, request=[], default=None):
+    def Update(self, cr, uid, request=[], default=None, context=None):
         """
             Updates items on DB.
         """
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         objectName, criteria, values = request        
         if len(values)<1:
             return False        
-        userType=self.env[objectName] if objectName in self.env else None
+        userType=self.pool[objectName] if objectName in self.pool.models else None
         
         if userType!=None:
-            ids=userType.search(criteria)
+            ids=userType.search(cr, uid, criteria, context=context)
             for oid in ids:
-                oid.write(values)
+                userType.write(cr, uid, oid, values, context=context)
         return False
 
-    @api.model
-    def Delete(self, request=[], default=None):
+    def Delete(self, cr, uid, request=[], default=None, context=None):
         """
             Remove items from DB.
         """
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         objectName, criteria, values = request        
         if len(values)<1:
             return False        
-        userType=self.env[objectName] if objectName in self.env else None
+        userType=self.pool[objectName] if objectName in self.pool.models else None
         
         if userType!=None:
-            objIDs=userType
-            objIDs |= userType.search(criteria)
-            objIDs.unlink()
+            ids=userType.search(cr, uid, criteria, context=context)
+            if ids:
+                userType.unlink(cr, uid, ids, values, context=context)
         return False
     
 ###################################################################
 #                        C R U D  Methods                         #
 ###################################################################
 
-    @api.model
-    def GetDocumentByName(self, request=None, default=None):
+    def GetDocumentByName(self, cr, uid, request=None, default=None, context=None):
         """
             Gets content of document named <docName> (latest revision).          
         """
         docID, nameFile, contentFile, writable, lastupdate=[False, "","", False, False]
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         docName=request
         if docName:
-            docType=self.env["plm.document"]
-            docIds = docType.search([('name','=',docName),('type','=','binary')], order='revisionid')
+            docType=self.pool["plm.document"]
+            docIds = docType.search(cr, uid, [('name','=',docName),('type','=','binary')], order='revisionid', context=context)
             if docIds:
-                oid=docIds[len(docIds)-1].id
-                docID, nameFile, contentFile, writable, lastupdate = docType._data_get_files([oid])[0]
+                docIds.sort()   # Ids are not surely ordered, but revision are always in creation order.
+                oid=docIds[len(docIds)-1]
+                docID, nameFile, contentFile, writable, lastupdate = docType._data_get_files(cr, uid, [oid])[0]
         return docID, nameFile, contentFile, writable, lastupdate
 
-    @api.model
-    def GetCustomProcedure(self, request=None, default=None):
+    def GetCustomProcedure(self, cr, uid, request=None, default=None, context=None):
         """
             Gets document named 'CustomProcedure'           
         """
-        
-        _, _, contentFile, _, _ = self.GetDocumentByName('CustomProcedure', default)
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        _, _, contentFile, _, _ = self.GetDocumentByName(cr, uid, 'CustomProcedure', default, context=context)
         return contentFile
 
-    @api.model
-    def GetAttachedPDF(self, request=[], default=None):
+    def GetAttachedPDF(self, cr, uid, request=[], default=None, context=None):
         """
             Gets attached PDF.          
         """
         ids=request
         if ids:
+            context = context or self.pool['res.users'].context_get(cr, uid)
             from pdm.reports.report.document_report import create_report
-            ret, _ =create_report(self, ids, datas=None)         
+            ret, _ =create_report(cr, uid, ids, datas=None, context=None)         
         return ret
 
-    @api.model
-    def GetDataConnection(self, request=None, default=None):
+    def GetDataConnection(self, cr, uid, request=None, default=None, context=None):
         """
             Gets data for external connection to DB.
         """
-        
-        tableViews,columnViews=self.getColumnViews()
-        criteria=self.getCriteriaNames()
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        tableViews,columnViews=self.getColumnViews(cr, uid)
+        criteria=self.getCriteriaNames(cr, uid)
         user = tools_config.get('plm_db_user', False) or tools_config.get('db_user', False) or ''
         pwd = tools_config.get('plm_db_password', False) or tools_config.get('db_password', False) or ''
         host = tools_config.get('plm_db_host', False) or tools_config.get('db_host', False) or socket.gethostname()
         port = tools_config.get('plm_db_port', False) or tools_config.get('db_port', False) or 5432
-        dbname = self._cr.dbname
+        dbname = cr.dbname
         if (host=="127.0.0.1") or (host=="localhost") or (host==""):
             host=socket.gethostname()
         return ([user,pwd,host,port,dbname],tableViews,columnViews,criteria)
 
-    @api.model
-    def GetServerTime(self):
+    def GetServerTime(self, cr, uid, request=None, default=None, context=None):
         """
             calculate the server db time 
         """
         return datetime.datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT), DEFAULT_SERVER_DATETIME_FORMAT
 
-    @api.model
-    def GetUserSign(self):
+    def GetUserSign(self, cr, uid, ids=None, default=None, context=None):
         """
             Gets the user login, name and signature
         """
         ret=["","",""]
-        
-        for uiUser in self.env['res.users'].browse([self._uid]):
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        for uiUser in self.pool['res.users'].browse(cr, uid, [uid], context=context):
             ret=[uiUser.login, uiUser.name, uiUser.signature]
             break
         return ret
 
-    @api.model
-    def GetFieldsModel(self, objectName=""):
-        ret=[]
-        if objectName:
-            ret = list(self.env[objectName]._fields.keys())
-        return ret
-
-    @api.model
-    def GetDataModel(self, request=None, default=None):
+    def GetDataModel(self, cr, uid, request=None, default=None, context=None):
         """
             Get properties as assigned.
         """
-        return packDictionary(self.getDataModel(request, default))
+        return packDictionary(self.getDataModel(cr, uid, request, default, context=context))
 
-    def getDataModel(self, request=None, default=None):
+    def GetFieldsModel(self, cr, uid, objectName="", context=None):
+        ret=[]
+        if objectName:
+            ret = self.pool[objectName]._all_columns.keys()
+        return ret
+
+    def getDataModel(self, cr, uid, request=None, default=None, context=None):
         """
             Get properties as assigned.
         """
         retValues={}
         if request:
             objectName=request
-            
-            objType=self.env['ir.model']
-            for model in objType.search([('model','=',objectName)]):
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            objType=self.pool['ir.model']
+            ids=objType.search(cr, uid, [('model','=',objectName)], context=context)
+            for model in objType.browse(cr, uid, ids, context=context):
                 for field in model.field_id:
                     retValues.update({field.name:[
                                                    ('description', _(field.field_description)),
@@ -338,118 +330,107 @@ class plm_config_settings(models.Model):
                                                 ] })
         return retValues
 
-    def getViewArchitecture(self, criteria=None):
+    def getViewArchitecture(self, cr, uid, criteria=None, context=None):
         ret=None
         if criteria:
-            
+            context = context or self.pool['res.users'].context_get(cr, uid)
             #TODO: To be implemented inheritance on views.
-            ret=self.Read(['ir.ui.view', criteria, ["arch_db"]]) 
+            ret=self.Read(cr, uid, ['ir.ui.view', criteria, ["arch"]], context=context) 
         return ret
 
-    @api.model
-    def GetFormView(self, request=None, default=None):
+    def GetFormView(self, cr, uid, request=None, default=None, context=None):
         criteria=None
         viewName=request
         if viewName:
             criteria=[('name','=',viewName),('type','=','form')]
-        return self.getViewArchitecture(criteria)
+        return self.getViewArchitecture(cr, uid, criteria, context=context)
 
-    @api.model
-    def GetTreeView(self, request=None, default=None):
+    def GetTreeView(self, cr, uid, request=None, default=None, context=None):
         criteria=None
         viewName=request
         if viewName:
             criteria=[('name','=',viewName),('type','=','tree')]
-        return self.getViewArchitecture(criteria)
+        return self.getViewArchitecture(cr, uid, criteria, context=context)
 
-    @api.model
-    def GetFormViewByModel(self, request=None, default=None):
+    def GetFormViewByModel(self, cr, uid, request=None, default=None, context=None):
         criteria=None
         modelName=request
         if modelName:
             criteria=[('model','=',modelName),('type','=','form')]
-        return self.getViewArchitecture(criteria)
+        return self.getViewArchitecture(cr, uid, criteria, context=context)
         
-    @api.model
-    def GetTreeViewByModel(self, request=None, default=None):
+    def GetTreeViewByModel(self, cr, uid, request=None, default=None, context=None):
         criteria=None
         modelName=request
         if modelName:
             criteria=[('model','=',modelName),('type','=','tree')]
-        return self.getViewArchitecture(criteria)
+        return self.getViewArchitecture(cr, uid, criteria, context=context)
 
-    @api.model
-    def GetProperties(self, request=None, default=None):
+    def GetProperties(self, cr, uid, request=None, default=None, context=None):
         """
             Get properties as assigned.
         """
         objectName, editor=request
-        
-        userType=self.env[objectName] if objectName in self.env else None
-        return packDictionary(self.getEditProperties(userType, editor))
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        userType=self.pool[objectName] if objectName in self.pool.models else None
+        return packDictionary(self.getEditProperties(cr, uid, userType, editor))
 
-    @api.model
-    def GetValues(self, request=None, default=None):
+    def GetValues(self, cr, uid, request=None, default=None, context=None):
         """
             Get property values as requested.
         """
         objectName, editor, codeProperties, propNames=unpackDictionary(request)
         codeProperties=getCleanBytesDictionary(codeProperties)
         propNames=getCleanBytesList(propNames)
-        
-        userType=self.env[objectName] if objectName in self.env else None        
-        return packDictionary(self.getValueProperties(userType, editor, codeProperties, propNames))
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        userType=self.pool[objectName] if objectName in self.pool.models else None
+        return packDictionary(self.getValueProperties(cr, uid, userType, editor, codeProperties, propNames))
 
-    @api.model
-    def IsAdministrator(self, request=None, default=None):
+    def IsAdministrator(self, cr, uid, request=None, default=None, context=None):
         """
             Checks if this user is in PLM Administrator group
         """
-        return isAdministrator(self)
+        return isAdministrator(self, cr, uid, context=context)
     
-    @api.model
-    def GetEditorProperties(self, request=["", ""]):
+    def GetEditorProperties(self, cr, uid, request=["", ""], context=None):
         """
             Get Properties (as dictionary) to be managed in editor.
         """
         editor_properties={}
         objectName, editor=request
         if objectName:
-            
-            userType=self.env[objectName] if objectName in self.env else None
-            if userType!=None:        
-                editor_properties = userType.editorProperties(editor)   # In Extend Client
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            userType=self.pool[objectName] if objectName in self.pool.models else None
+            if userType:        
+                editor_properties = userType.editorProperties(cr, uid, editor)      # In Extend Client
         return packDictionary(editor_properties)
 
-    def getEditProperties(self, userType=None, editor=""):
+    def getEditProperties(self, cr, uid, userType=None, editor="", context=None):
         """
             Get Properties (as dictionary) to be managed in editor.
         """
         properties={}
         if userType!=None:
-            editor_properties = userType.editorProperties(editor)       # In Extend Client
-            base_properties = userType.defineProperties()               # In Extend Client
+            editor_properties = userType.editorProperties(cr, uid, editor)      # In Extend Client
+            base_properties = userType.defineProperties(cr, uid)                # In Extend Client
             if base_properties:
-                typeFields=userType._fields
+                typeFields=userType._all_columns
                 propList=list(set(base_properties.keys()).intersection(editor_properties.keys()))
                 keyList=list(set(typeFields.keys()).intersection(set(base_properties.keys())))
                 for keyName in keyList:
                     tmp_props=dict(zip(base_properties[keyName].keys(), base_properties[keyName].values()))
                     tmp_props['name']=typeFields[keyName].name
-                    tmp_props['label']=_(typeFields[keyName].string)
-                    fieldType=typeFields[keyName].type
+                    tmp_props['label']=_(typeFields[keyName].column.string)
+                    fieldType=typeFields[keyName].column._type
 
                     tmp_props['tooltip']=""
-                    if typeFields[keyName].help:
-                        tmp_props['tooltip']=_(typeFields[keyName].help)
+                    if typeFields[keyName].column.help:
+                        tmp_props['tooltip']=_(typeFields[keyName].column.help)
     
                     if (fieldType in["char","string","text"]):
                         tmp_props['type']="string"
                         tmp_props['value']=""
-                        try:
-                            tmp_props['size']=typeFields[keyName].size if not typeFields[keyName].size==None else 255
-                        except:
-                            tmp_props['size']=4096
+                        tmp_props['size']=typeFields[keyName].column.size if not typeFields[keyName].column.size==None else 255
                     elif (fieldType in["int","integer"]):
                         tmp_props['type']="int"
                         tmp_props['value']=0
@@ -462,27 +443,20 @@ class plm_config_settings(models.Model):
                     elif (fieldType in["float","double","decimal"]):
                         tmp_props['type']="float"
                         tmp_props['value']=0.0
-                        tmp_props['decimal']=typeFields[keyName].digits[1]
-                    elif (fieldType=="selection"):    
+                        tmp_props['decimal']=typeFields[keyName].column.digits[1]
+                    elif (fieldType=="selection") and typeFields[keyName].column.selection:    
                         tmp_props['type']="string"
                         tmp_props['value']=""
-                        tmp_props['selection']={}
-                        try:
-                            if typeFields[keyName].related:
-                                tmp_props['selection']=dict(typeFields[keyName].related_field.selection)
-                            else:
-                                tmp_props['selection']=dict(typeFields[keyName].selection)
-                        except:
-                            tmp_props['selection']={"", "No valid values"}
-                    elif (fieldType in ["many2one","one2many","many2many"]) and typeFields[keyName]._related_comodel_name:    
+                        tmp_props['selection']=dict(typeFields[keyName].column.selection)
+                    elif (fieldType in ["many2one","one2many","many2many"]) and typeFields[keyName].column._obj:    
                         criteria=[('id','!=', False),] 
                         tmp_props['value']=False
-                        entityName=typeFields[keyName]._related_comodel_name
-                        columns=self.getBaseObject(entityName)
+                        entityName=typeFields[keyName].column._obj   
+                        columns=self.getBaseObject(cr, uid, entityName, context=context)
                         values=[]
                         dictvalues={}
                         if not tmp_props.get('viewonly', False):
-                            values,dictvalues=self.getDataObject(entityName, criteria, columns.keys())
+                            values,dictvalues=self.getDataObject(cr, uid, entityName, criteria, columns.keys(), context=context)
                         tmp_props['type']='object'
                         tmp_props['object']={
                                              "entity": entityName,
@@ -492,7 +466,7 @@ class plm_config_settings(models.Model):
                                              "dictvalues":dictvalues,
                                             }
  
-                    if typeFields[keyName].required:
+                    if typeFields[keyName].column.required:
                         tmp_props['mandatory']=True         # If required forces external assignment.
     
                     if keyName in propList:
@@ -504,12 +478,12 @@ class plm_config_settings(models.Model):
                     if ('code' in tmp_props) and isinstance(tmp_props['code'], dict):
                         entityName=tmp_props['code'].get('entity', "")
                         if entityName:
-                            columns=self.getBaseObject(entityName)
+                            columns=self.getBaseObject(cr, uid, entityName, context=context)
                             values=[]
                             dictvalues={}
                             if columns:
                                 criteria=[('id','!=', False),] 
-                                values,dictvalues=self.getDataObject(entityName, criteria, columns.keys())
+                                values,dictvalues=self.getDataObject(cr, uid, entityName, criteria, columns.keys(), context=context)
                             tmp_props['code'].update({
                                                 "columns": columns,
                                                 "columnnames": columns.keys(),
@@ -520,14 +494,14 @@ class plm_config_settings(models.Model):
                     properties[keyName]=tmp_props
         return properties
 
-    def getCodedObject(self, userType=None, codeProperties={}):
+    def getCodedObject(self, cr, uid, userType=None, codeProperties={}, context=None):
         """
             Gets object responding to the first satisfied criteria, expressed by
             codeProperties dictionary ('name' will be evaluated first , anyway).
         """
         objectID=None
         if userType!=None and codeProperties:
-            
+            context = context or self.pool['res.users'].context_get(cr, uid)
             listNames=codeProperties.keys()
             if 'name' in listNames:         # This guitar riff to ensure 'name' is evaluated as first one.
                 listNames.remove('name')
@@ -536,17 +510,20 @@ class plm_config_settings(models.Model):
                 value=codeProperties[keyName].get('value', None)
                 if value:
                     criteria=[(keyName, '=', value)]
-                    objIDs = userType.search(criteria, order='id')
+                    objIDs = userType.search(cr, uid, criteria, order='id', context=context)
                     if len(objIDs) > 0:
-                        objectID=objIDs[len(objIDs)-1]
-                        break
+                        objIDs.sort()
+                        tmpobjectIDs=userType.browse(cr, uid, objIDs, context=context)
+                        if tmpobjectIDs:
+                            objectID=tmpobjectIDs[len(tmpobjectIDs)-1]
+                            break
         return objectID
     
-    def getBaseObject(self, userType=False):
+    def getBaseObject(self, cr, uid, userType=False, context=None):
         ret={}
-        productXmls=self.GetTreeViewByModel(userType)
+        productXmls=self.GetTreeViewByModel(cr, uid, userType, context=context)
         if productXmls:
-            dataModel=self.getDataModel(userType)
+            dataModel=self.getDataModel(cr, uid, userType, context=context)
             productXml=fromstring(productXmls[0][0])
             for item in productXml.iter("field"):
                 if item.attrib['name'] in dataModel:
@@ -554,19 +531,20 @@ class plm_config_settings(models.Model):
                     ret.update( { item.attrib['name']: _(modelData['description']) } )
         return ret
 
-    def getDataObject(self, userType="", criteria=[], columns=[]):
+    def getDataObject(self, cr, uid, userType="", criteria=[], columns=[], context=None):
         values,dictvalues=[[],{}]
         if userType and columns:
-            objectType=self.env[userType]
-            typeFields=objectType._fields
-            for objectID in objectType.search(criteria, order='id'):
+            objectType=self.pool[userType]
+            typeFields=objectType._all_columns
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            allIDs = objectType.search(cr, uid, criteria, order='id', context=context)
+            for objectID in objectType.browse(cr, uid, allIDs, context=context):
                 dict_data={}
                 row_data=[objectID.id]
                 for columnName in columns:
-                    if typeFields[columnName].type in ["many2one","one2many","many2many"]:
+                    if typeFields[columnName].column._type in ["many2one","one2many","many2many"]:
                         dict_data.update({ columnName: objectID[columnName].id })
-                        if 'name' in objectID[columnName]._fields:
-                            row_data.append(objectID[columnName].name)
+                        row_data.append(objectID[columnName].name)
 #                         else:
 #                             row_data.append(objectID[columnName].id)
                     else:
@@ -577,34 +555,34 @@ class plm_config_settings(models.Model):
         return values,dictvalues
 
     
-    def getValueProperties(self, userType=False, editor="", codeProperties={}, propNames=[]):
+    def getValueProperties(self, cr, uid, userType=None, editor="", codeProperties={}, propNames=[], context=None):
         """
             Get Properties (as dictionary) to be managed in editor.
         """
         properties={}
-        if (userType!=None and userType!=False) and codeProperties:
-            
-            objectID=self.getCodedObject(userType, codeProperties)
+        if userType!=None and codeProperties:
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            objectID=self.getCodedObject(cr, uid, userType, codeProperties)
             if objectID:
-                typeFields=userType._fields
-                base_properties = self.getEditProperties(userType, editor)               # In Extend Client
+                typeFields=userType._all_columns
+                base_properties = self.getEditProperties(cr, uid, userType, editor, context=context)               # In Extend Client
                 for keyName in base_properties.keys():
                     tmp_props=dict(zip(base_properties[keyName].keys(), base_properties[keyName].values()))
                     tmp_props['value']=objectID[keyName]
 
-                    if (typeFields[keyName].type in ["many2one","one2many","many2many"]) and typeFields[keyName]._related_comodel_name:
-                        entityName=typeFields[keyName]._related_comodel_name  
+                    if (typeFields[keyName].column._type in ["many2one","one2many","many2many"]) and typeFields[keyName].column._obj:
+                        entityName=typeFields[keyName].column._obj  
                         rows=[]
-                        columns=self.getBaseObject(entityName)
+                        columns=self.getBaseObject(cr,uid, entityName, context=context)
                         related=getIDs(objectID[keyName])
                         if related:
                             criteria=[('id','in', related),]
-                            rows,_=self.getDataObject(entityName, criteria, columns.keys())
+                            rows,_=self.getDataObject(cr,uid, entityName, criteria, columns.keys(), context=context)
 
                         tmp_props['object'].update({
                                              "rows": rows,
                                             })
-                        tmp_props['value']=related
+                        tmp_props['value']=getIDs(objectID[keyName])
 
                     properties[keyName]=tmp_props
 
@@ -614,18 +592,16 @@ class plm_config_settings(models.Model):
                                         }
         return properties
 
-    @api.model
-    def GetServiceNodes(self, oids=[], default=None):
+    def GetServiceNodes(self, cr, uid, oids=[], default=None, context=None):
         """
             Get all Service Ids registered.
         """
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         message=_("Insert your Activation Code as provided by TechSpell.")
-        ids=self.GetServiceIds(oids, default=default)
+        ids=self.GetServiceIds(cr, uid, oids, default=default, context=context)
         return ids, message
 
-    @api.model
-    def GetMethodNames(self, request=None, default=None):
+    def GetMethodNames(self, cr, uid, request=None, default=None, context=None):
         """
             Get Client method names and translated labels.
         """
@@ -654,8 +630,7 @@ class plm_config_settings(models.Model):
 
         return results
  
-    @api.model
-    def GetClientMessages(self, request=None, default=None):
+    def GetClientMessages(self, cr, uid, request=None, default=None, context=None):
         """
             Get Client translated messages.
         """
@@ -684,7 +659,7 @@ class plm_config_settings(models.Model):
 
         return results
     
-    def getCriteriaNames(self):
+    def getCriteriaNames(self, cr, uid, context=None):
         """
             Gets criteria names and their translated labels.
         """
@@ -703,7 +678,7 @@ class plm_config_settings(models.Model):
                     "is not null": _("Is Not Null"),
                 }
 
-    def getColumnViews(self):
+    def getColumnViews(self, cr, uid, context=None):
         """
             Gets tables and columns (label and visibility) for materialized views.
         """
@@ -801,31 +776,28 @@ class plm_config_settings(models.Model):
                    
         return tables, columns
 
-    @api.model_cr
-    def Refresh(self):
+    def Refresh(self, cr, uid, request=None, context=None):
         """
             Refreshes Materialized Views.
         """
-        cr = self._cr
-#         logging.debug("Refreshing Materialized Views: Start.")
+#         logging.warning("Refreshing Materialized Views: Start.")
 #         cr.execute("REFRESH MATERIALIZED VIEW ext_component")
 #         cr.execute("REFRESH MATERIALIZED VIEW ext_document")
-#         logging.debug("Refreshing Materialized Views: End.")
+#         logging.warning("Refreshing Materialized Views: End.")
         return False
 
-    @api.model_cr
-    def init(self):
+    def init(self, cr):
         """
             Creates views for external Clients.
         """
-        cr = self._cr
-  
         cr.execute("DROP VIEW IF EXISTS ext_checkout CASCADE")
         cr.execute("DROP VIEW IF EXISTS ext_bom CASCADE")
         cr.execute("DROP VIEW IF EXISTS ext_docbom CASCADE")
         cr.execute("DROP VIEW IF EXISTS ext_linkdoc CASCADE")
         cr.execute("DROP VIEW IF EXISTS ext_component CASCADE")
         cr.execute("DROP VIEW IF EXISTS ext_document CASCADE")
+#         cr.execute("DROP MATERIALIZED VIEW IF EXISTS ext_component CASCADE")
+#         cr.execute("DROP MATERIALIZED VIEW IF EXISTS ext_document CASCADE")
         #TODO: To be evaluated if creation can be parametric so to allow view configuration. 
  
         cr.execute("CREATE INDEX IF NOT EXISTS idx_documentid_plm_checkout ON plm_checkout (documentid)")
@@ -871,28 +843,28 @@ class plm_config_settings(models.Model):
 #         cr.execute("CREATE INDEX IF NOT EXISTS idx_id_ext_component ON ext_component (id)")
 #         cr.execute("CREATE INDEX IF NOT EXISTS idx__tmpl_id_ext_component ON ext_component (tmpl_id)")
         
-        cr.execute("CREATE INDEX IF NOT EXISTS idx_product_tmpl_id_mrp_bom ON mrp_bom (product_tmpl_id)")
         cr.execute("CREATE INDEX IF NOT EXISTS idx_type_mrp_bom ON mrp_bom (type)")
         cr.execute(
             """
             CREATE OR REPLACE VIEW ext_bom AS (
-               SELECT f.id, f.create_date, d.login as created, f.write_date, e.login as changed, a.id as father_id, a.name as father,a.engineering_code as father_code,a.engineering_revision as father_rv,a.description as father_desc,b.id as child_id, b.name as child,b.engineering_code as child_code,b.engineering_revision as child_rv,b.description as child_desc
-                    FROM ext_component a, ext_component b, mrp_bom c, res_users d, res_users e, mrp_bom_line f
+               SELECT f.id, f.create_date, d.login as created, c.write_date, e.login as changed, a.id as father_id, a.name as father,a.engineering_code as father_code,a.engineering_revision as father_rv,a.description as father_desc,b.id as child_id, b.name as child,b.engineering_code as child_code,b.engineering_revision as child_rv,b.description as child_desc
+                    FROM ext_component a, ext_component b, mrp_bom c, res_users d, res_users e, mrp_bom f
                     WHERE
                     b.id IN
                         ( 
-                            SELECT distinct(product_id) FROM mrp_bom_line
+                            SELECT distinct(product_id) FROM mrp_bom
                             WHERE
-                            type = 'ebom'
+                                type = 'ebom'
+                            AND bom_id IS NOT NULL
                         )
                     AND f.product_id = b.id
-                    AND d.id = f.create_uid
-                    AND e.id = f.write_uid
-                    AND c.id=f.bom_id 
+                    AND c.id = f.bom_id 
                     AND c.type = 'ebom'
-                    AND a.tmpl_id = c.product_tmpl_id
-                    ORDER BY a.name,b.name
-                    )
+                    AND a.id = c.product_id
+                    AND d.id = f.create_uid
+                    AND e.id = f.create_uid
+                    order by a.name,b.name
+                )
             """
         )
 #         cr.execute("CREATE INDEX IF NOT EXISTS idx_id_ext_bom ON ext_bom (id)")
@@ -998,49 +970,52 @@ class plm_config_settings(models.Model):
                      )
             """
         )
-       
+      
+plm_config_settings()
 
-class plm_logging(models.Model):
+
+class plm_logging(orm.Model):
     _name = 'plm.logging'
     _description = "PLM Log Activities"
     _table = "plm_logging"
     _order = 'name'
 
-    name        = fields.Char     (             string=_('Name'),           size=64, help=_("Entity name."))
-    revision    = fields.Char     (             string=_('Revision'),       size=64, help=_("Revision involved."))
-    file        = fields.Char     (             string=_('File'),           size=64, help=_("File name (in case of documents)."))
-    type        = fields.Char     (             string=_('Type'),           size=64, help=_("Entity Type."))
-    op_type     = fields.Char     (             string=_('Operation Type'), size=64, help=_("Operation Type."))
-    op_note     = fields.Char     (             string=_('Operation Note'), size=64, help=_("Description of Operation."))
-    op_date     = fields.Datetime (             string=_('Operation Date'),          help=_("Operation Date."))
-    userid      = fields.Many2one ('res.users', string=_('Related User'),            help=_("Related User."))
+    _columns = {
+        'name': fields.char('Name', help="Entity name."),
+        'revision': fields.char('Revision', help="Revision involved."),
+        'file': fields.char('File', help="File name (in case of documents)."),
+        'type': fields.char('Type', help="Entity Type."),
+        'op_type': fields.char('Operation Type', help="Operation Type"),
+        'op_note': fields.char('Operation Note', help="Description of Operation"),
+        'op_date': fields.datetime('Operation Date', help="Operation Date"),
+        'userid': fields.many2one('res.users', 'Related User'),
+    }
 
     #######################################################################################################################################33
 
     #   Overridden methods for this entity
 
-    @api.multi
-    def unlink(self):
+    def unlink(self, cr, uid, ids, context=None):
         return False
 
-    @api.model
-    def create(self, values={}):
+    def create(self, cr, uid, values={}, context=None):
         newID=False
         if values and values.get('name', False):
+            context = context or self.pool['res.users'].context_get(cr, uid)
             try:
-                newID=super(plm_logging, self).create(values)
+                newID=super(plm_logging, self).create(cr, uid, values, context=context)
             except Exception as ex:
-                logging.error("(%r). It has tried to create with values : (%r)." % (ex, values))
+                raise Exception(" (%r). It has tried to create with values : (%r)." % (ex, values))
         return newID
 
-    def getchanges(self, objectID=None, values={}):
+    def getchanges(self, cr, uid, objectID=None, values={}, context=None):
         changes=""
         if objectID and values:
-            just2check=objectID._proper_fields
+            just2check=objectID._all_columns.keys()
+            changes="Changed values: "
             for keyName in values.keys():
                 if keyName in just2check:
                     changes+="'{key}' was '{old}' now is '{new}', ".format(key=keyName, old=objectID[keyName], new=values[keyName])
-            if changes:
-                changes="Changed values: "+changes
         return changes
 
+plm_logging()

@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <openerp>
     <data>
-
         <report id="report_plm_checkout_pdf"
                 string="Print Drawings Pdf"
                 model="plm.checkout"
@@ -10,6 +9,5 @@
                 file=""
                 header="False"
                 />
-
     </data>
 </openerp>

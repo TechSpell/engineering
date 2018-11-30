@@ -10,10 +10,10 @@
         <form string="Creation of Spare BoM">
             <label string="Are you sure you want to create a new Spare BoM?" colspan="4"/>
             <separator string="" colspan="4" />
-            <footer>
-            	<button class="btn-default" special="cancel" string="Cancel"/>
-            	<button class="btn-primary" string="Create Spare BoM" name="action_create_spareBom" type="object"/>
-            </footer>
+            <group colspan="4" col="4">
+            	<button icon="gtk-cancel" special="cancel" string="Cancel"/>
+            	<button icon="terp-gtk-go-back-rtl" string="Create Spare BoM" name="action_create_spareBom" type="object"/>
+            </group>
         </form>
         </field>
     </record>

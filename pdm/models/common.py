@@ -26,10 +26,11 @@ import pickle
 from array import array
 from xmlrpclib import Binary
 
-import odoo.netsvc as netsvc
-from odoo import  SUPERUSER_ID, _
+import openerp.netsvc as netsvc
+from openerp.tools.translate import _
 
 BOMTYPES=[('normal',_('Normal BoM')),('phantom',_('Sets / Phantom')),('ebom',_('Engineering BoM')),('spbom',_('Spare BoM'))]
+SUPERUSER_ID=1
 
 def normalize(value):
     tmpvalue="{value}".format(value=value)
@@ -127,7 +128,7 @@ def getInteger(value=''):
     return numvalue
 
 #   WorkFlow common internal method to apply changes
-def signal_workflow(entity, ids, signal):
+def signal_workflow(entity, cr, uid, ids, signal):
     """
         Emits workflow signal as requested.
     """
@@ -136,61 +137,63 @@ def signal_workflow(entity, ids, signal):
         ret=True
         wf_service = netsvc.LocalService("workflow")
         for idd in getListIDs(ids):
-            wf_service.trg_validate(entity._uid, entity._name, idd, signal, entity._cr)
+            wf_service.trg_validate(uid, entity._name, idd, signal, cr)
     return ret
 
-def get_signal_workflow(entity, status=""):
+def get_signal_workflow(self, cr, uid, entity, status="", context=None):
     signal=""
-    instanceType=entity.env['workflow.instance']
-    activityType=entity.env['workflow.activity']
-    workitemType=entity.env['workflow.workitem']
-    transitionType=entity.env['workflow.transition']
-    for instance in instanceType.search( [("res_id", "=", entity.id),("res_type", "=", entity._name)] ):
-        for workitem in workitemType.search( [("inst_id", "=", instance.id)] ):
+    instanceType=self.pool.get('workflow.instance')
+    activityType=self.pool.get('workflow.activity')
+    workitemType=self.pool.get('workflow.workitem')
+    transitionType=self.pool.get('workflow.transition')
+    instIds=instanceType.search(cr, uid, [("res_id", "=", entity.id),("res_type", "=", entity._name)], context=context)
+    for instance in instanceType.browse(cr, uid, instIds, context=context):
+        wkitemFromIds=workitemType.search(cr, uid, [("inst_id", "=", instance.id)], context=context)
+
+        for workitem in workitemType.browse(cr, uid, wkitemFromIds, context=context):
             idFrom=workitem.act_id.id
-            for idTo in activityType.search( [("wkf_id", "=", instance.wkf_id.id),("name", "=", status)] ):
-                for transition in transitionType.search( [("act_to","=", idTo.id)] ):
-                    if transition.act_from.id==idFrom:
-                        signal=transition.signal
-                        break
+            actIdTos=activityType.search(cr, uid, [("wkf_id", "=", instance.wkf_id.id),("name", "=", status)], context=context)
+            if isinstance(actIdTos, list):                        
+                for idTo in actIdTos:
+                    transIds=transitionType.search(cr, uid, [("act_to","=", idTo)], context=context)
+                    for transition in transitionType.browse(cr, uid, transIds, context=context):
+                        if transition.act_from.id==idFrom:
+                            signal=transition.signal
+                            break
     return signal
 
-def move_workflow(entity, ids, signal, status):
+def move_workflow(entity, cr, uid, ids, signal="", status="", context=None):
     """
         Emits workflow signal as requested.
     """
     if signal and status:
-        if signal_workflow(entity, ids, signal):
-            entity.browse(ids).with_context({'internal_writing':True}).write( {'state': status} )
-            entity.logging_workflow(ids, signal, status)
-
-def wf_message_post(entity, ids=[], body=""):
-    """
-        Writing messages to follower, on multiple objects
-    """
-    if not (body==""):
-        for objItem in entity.browse(ids):
-            objItem.message_post(body=_(body))
-
-def isAdministrator(entity):
+        context = context or entity.pool['res.users'].context_get(cr, uid)
+        context['internal_writing']=True
+        if signal_workflow(entity, cr, uid, ids, signal):
+            entity.write(cr, uid, ids, {'state': status}, context=context)
+            entity.logging_workflow(cr, uid, ids, signal, status, context=context)
+  
+def isAdministrator(entity, cr, uid, context=None):
     """
         Checks if this user is in PLM Administrator group
     """
     ret = False
-    groupType=entity.env['res.groups']
-    for gId in groupType.search([('name', '=', 'PLM / Administrators')]):
-        for user in gId.users:
-            if entity._uid == user.id or entity._uid==SUPERUSER_ID:
+    context = context or entity.pool['res.users'].context_get(cr, uid)
+    groupType=entity.pool['res.groups']
+    for gId in groupType.search(cr, uid, [('name', '=', 'PLM / Administrators')], context=context):
+        for user in groupType.browse(cr, uid, gId, context=context).users:
+            if uid == user.id or uid==SUPERUSER_ID:
                 ret = True
                 break
     return ret
 
-def isInStatus(entity, idd, status=[]):
+def isInStatus(entity, cr, uid, idd, status=[], context=None):
     """
-        Check if a document is released
+        Check if a document is in one of a list of statuses. 
     """
     ret=False
-    for document in entity.browse(getListIDs(idd)):
+    context = context or entity.pool['res.users'].context_get(cr, uid)
+    for document in entity.browse(cr, uid, getListIDs(idd), context=context):
         try:
             if (document.state in getListIDs(status)):
                 ret=ret|True
@@ -199,32 +202,32 @@ def isInStatus(entity, idd, status=[]):
             pass
     return ret
 
-def isObsoleted(entity, idd):
+def isObsoleted(entity, cr, uid, idd, context=None):
     """
         Check if a document is released
     """
-    return isInStatus(entity, idd, status=["obsoleted"])
+    return isInStatus(entity, cr, uid, idd, status=["obsoleted"], context=None)
 
-def isUnderModify(entity, idd):
+def isUnderModify(entity, cr, uid, idd, context=None):
     """
         Check if a document is released
     """
-    return isInStatus(entity, idd, status=["undermodify"])
+    return isInStatus(entity, cr, uid, idd, status=["undermodify"], context=None)
 
-def isReleased(entity, idd):
+def isReleased(entity, cr, uid, idd, context=None):
     """
         Check if a document is in 'released' state. 
     """
-    return isInStatus(entity, idd, status=["released"])
+    return isInStatus(entity, cr, uid, idd, status=["released"], context=None)
 
-def isAnyReleased(entity, idd):
+def isAnyReleased(entity, cr, uid, idd, context=None):
     """
         Check if a document is in 'released' state. 
     """
-    return isInStatus(entity, idd, status=["released","undermodify"])
+    return isInStatus(entity, cr, uid, idd, status=["released","undermodify","obsoleted"], context=None)
 
-def isDraft(entity, idd):
+def isDraft(entity, cr, uid, idd, context=None):
     """
         Check if a document is in 'draft' state. 
     """
-    return isInStatus(entity, idd, status=["draft"])
+    return isInStatus(entity, cr, uid, idd, status=["draft"], context=None)

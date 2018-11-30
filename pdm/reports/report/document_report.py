@@ -19,35 +19,26 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-import time
 
 from book_collector     import BookCollector,packDocuments
+import time
 
-from odoo import api, models
-from odoo.report.interface import report_int
+from openerp.report.interface import report_int
+from openerp import pooler
 
-def create_report(entity, ids, datas, context=None):
-    """
-        Used directly from Odoo interface.
-    """
-    docType=entity.env['plm.document']
-    docRepository=docType._get_filestore()
-    documents = docType.browse(ids)
-    userType=entity.env['res.users']
-    user=userType.browse(entity._uid)
-    msg="Printed by "+str(user.name)+" : "+ str(time.strftime("%d/%m/%Y %H:%M:%S"))
-    output=BookCollector(jumpFirst=False, customTest=(False, msg), bottomHeight=10)
-    return packDocuments(docRepository, documents, output)
+def create_report(cr, uid, ids, datas, context=None):
+    pool = pooler.get_pool(cr.dbname)
+    docType=pool.get('plm.document')
+    docRepository=docType._get_filestore(cr)
+    documents = docType.browse(cr, uid, ids, context=context)
+    userType=pool.get('res.users')
+    user=userType.browse(cr, uid, uid, context=context)
+    msg = "Printed by "+str(user.name)+" : "+ str(time.strftime("%d/%m/%Y %H:%M:%S"))
+    output  = BookCollector(jumpFirst=False,customTest=(False,msg),bottomHeight=10)
+    return packDocuments(docRepository,documents,output)
 
 class document_custom_report(report_int):
     def create(self, cr, uid, ids, datas, context=None):
-        env = api.Environment(cr, uid, context or {})
-        docType=env['plm.document']
-        docRepository=docType._get_filestore()
-        documents = docType.browse(ids)
-        user=env['res.users'].browse(uid)
-        msg="Printed by "+str(user.name)+" : "+ str(time.strftime("%d/%m/%Y %H:%M:%S"))
-        output=BookCollector(jumpFirst=False, customTest=(False, msg), bottomHeight=10)
-        return packDocuments(docRepository, documents, output)
+        return create_report(cr, uid, ids, datas, context=context)
     
 document_custom_report('report.plm.document.pdf')

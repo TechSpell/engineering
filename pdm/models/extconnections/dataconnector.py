@@ -24,10 +24,8 @@ import logging
 import pickle
 from datetime import datetime
 
-from odoo  import models, fields, api, _, osv
-from odoo.exceptions import UserError
-
-from common import normalize
+from openerp.osv import fields, orm
+from openerp.tools.translate import _
 
 ###
 # map_name : ['LangName','label Out', 'OE Lang']        '
@@ -45,18 +43,23 @@ _LOCALLANGS = {
 
 ###
 
-class plm_temporary(osv.osv.osv_memory):
+def normalize(value):
+    tmpvalue="{value}".format(value=value)
+    return tmpvalue.replace('"', '\"').replace("'", '\"').replace("%", "%%").strip()
+
+
+class plm_temporary(orm.TransientModel):
     _inherit = "plm.temporary"
 
     ##  Specialized Actions callable interactively
-    def action_transferData(self, ids):
+    def action_transferData(self, cr, uid, ids, context=None):
         """
             Call for Transfer Data method
         """
-        
-        if not 'active_id' in self._context:
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        if not 'active_id' in context:
             return False
-        self.env['product.product'].TransferData()
+        self.pool['product.product'].TransferData(cr, uid)
         return False
 
 
@@ -70,7 +73,7 @@ class plm_temporary(osv.osv.osv_memory):
 #          }
 
 
-class plm_component(models.Model):
+class plm_component(orm.Model):
     _name = 'product.product'
     _inherit = 'product.product'
 
@@ -212,7 +215,7 @@ class plm_component(models.Model):
         fobj.close()
         return lastDate.strftime('%Y-%m-%d %H:%M:%S')
 
-    def _rectify_data(self, tmpDataPack={}, part_data_transfer={}):
+    def _rectify_data(self, cr, uid, tmpDataPack={}, part_data_transfer={}):
 
         if tmpDataPack.get('datas'):
             fieldsNumeric = []
@@ -258,7 +261,7 @@ class plm_component(models.Model):
                         if not dataValue:
                             rectData.append('')
                         else:
-                            rectData.append(self._translate(dataValue, languageName))
+                            rectData.append(self._translate(cr, uid, dataValue, languageName))
 
                 rectifiedData.append(rectData)
 
@@ -266,22 +269,23 @@ class plm_component(models.Model):
 
         return tmpDataPack
 
-    def _translate(self, dataValue="", languageName=""):
+    def _translate(self, cr, uid, dataValue="", languageName="", context=None):
 
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         if languageName in _LOCALLANGS:
             language = _LOCALLANGS[languageName][1]
-            transObj = self.env['ir.translation']
-            for trans in transObj.search([('src', '=', dataValue), ('type', '=', 'code'), ('lang', '=', language)]):
+            transObj = self.pool['ir.translation']
+            resIds = transObj.search(cr, uid, [('src', '=', dataValue), ('type', '=', 'code'), ('lang', '=', language)], context=context)
+            for trans in transObj.browse(cr, uid, resIds, context=context):
                 return trans.value
         return ""
 
-    def TransferData(self, ids=False):
+    def TransferData(self, cr, uid, ids=False, context=None):
         """
             Exposed method to execute data transfer to other systems.
         """
         #         Reset default encoding. to allow to work fine also as service.
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         reload(sys)
         sys.setdefaultencoding('utf-8')
         #         Reset default encoding. to allow to work fine also as service.
@@ -309,17 +313,17 @@ class plm_component(models.Model):
             queueFiles['distinte'] = part_data_transfer['append']
         else:
             fieldsListed = datamap.keys()
-        allIDs = self._query_data(updateDate, part_data_transfer['status'])
-        tmpData = self._exportData(allIDs, fieldsListed, bom_data_transfer['kind'])
+        allIDs = self._query_data(cr, uid, updateDate, part_data_transfer['status'])
+        tmpData = self._exportData(cr, uid, allIDs, fieldsListed, bom_data_transfer['kind'])
         if tmpData.get('datas'):
-            tmpData = self._rectify_data(tmpData, part_data_transfer)
+            tmpData = self._rectify_data(cr, uid, tmpData, part_data_transfer)
             if 'db' in transfer:
                 import dbconnector
                 dataTargetTable = part_data_transfer['table']
                 datatyp = part_data_transfer['types']
                 connection = dbconnector.get_connection(transfer['db'])
 
-                checked = dbconnector.saveParts(self, connection, tmpData.get('datas'), dataTargetTable,
+                checked = dbconnector.saveParts(self, cr, uid, connection, tmpData.get('datas'), dataTargetTable,
                                                 datamap, datatyp)
 
                 if checked:
@@ -329,7 +333,7 @@ class plm_component(models.Model):
                     parentName = bom_data_transfer['PName']
                     childName = bom_data_transfer['CName']
                     kindBomname = bom_data_transfer['kind']
-                    operation = dbconnector.saveBoms(self, connection, checked, allIDs, dataTargetTable,
+                    operation = dbconnector.saveBoms(self, cr, uid, connection, checked, allIDs, dataTargetTable,
                                                      datamap, datatyp, kindBomname, bomTargetTable, parentName,
                                                      childName, bomdatamap, bomdatatyp)
 
@@ -338,7 +342,7 @@ class plm_component(models.Model):
                 if 'lengths' in bom_data_transfer:
                     bomfieldsLength = bom_data_transfer['lengths']
                 kindBomname = bom_data_transfer['kind']
-                operation = self._extract_data(allIDs, queueFiles, fixedformat, kindBomname, tmpData,
+                operation = self._extract_data(cr, uid, allIDs, queueFiles, fixedformat, kindBomname, tmpData,
                                                fieldsListed, bomfieldsListed, transfer['file'],
                                                partLengths=partfieldsLength, bomLengths=bomfieldsLength)
 
@@ -349,33 +353,29 @@ class plm_component(models.Model):
         logging.debug("[TransferData] %s End : %s" % (reportStatus, str(updateDate)))
         return False
 
-    def _query_data(self, updateDate, statuses=[]):
+    def _query_data(self, cr, uid, updateDate, statuses=[], context=None):
         """
             Query to return values based on columns selected.
                 updateDate => '%Y-%m-%d %H:%M:%S'
         """
-        tmplIDs=[]
-        allIDs = []
+        context = context or self.pool['res.users'].context_get(cr, uid)
         if not statuses:
             statusList = ['released']
         else:
             statusList = statuses
-        objTempl = self.env['product.template']
+        objTempl = self.pool['product.template']
+        tmplIDs = objTempl.search(cr, uid, [('write_date', '>', updateDate), ('state', 'in', statusList)],
+                                  order='engineering_revision', context=context)
+        tmplIDs.extend(objTempl.search(cr, uid, [('create_date', '>', updateDate), ('state', 'in', statusList)],
+                                       order='engineering_revision', context=context))
 
-        for tmplID in objTempl.search([('write_date', '>', updateDate), ('state', 'in', statusList)],
-                                  order='engineering_revision'):
-            tmplIDs.append(tmplID.id)
-        for tmplID in objTempl.search([('create_date', '>', updateDate), ('state', 'in', statusList)],
-                                       order='engineering_revision'):
-            tmplIDs.append(tmplID.id)
-
-        objTempl = self.env['product.product']
+        allIDs = []
+        objTempl = self.pool['product.product']
         for tmplID in tmplIDs:
-            tmpId=objTempl.search([('product_tmpl_id', '=', tmplID)])
-            allIDs.append(tmpId.id)
+            allIDs.extend(objTempl.search(cr, uid, [('product_tmpl_id', '=', tmplID)]), context=context)
         return list(set(allIDs))
 
-    def _extract_data(self, allIDs, queueFiles, fixedformat, kindBomname='normal', anag_Data={},
+    def _extract_data(self, cr, uid, allIDs, queueFiles, fixedformat, kindBomname='normal', anag_Data={},
                       anag_fields=False, rel_fields=False, transferdata={}, partLengths={}, bomLengths={}):
         """
             action to be executed for Transmitted state.
@@ -417,24 +417,26 @@ class plm_component(models.Model):
         if outputpath == None:
             return True
         if not os.path.exists(outputpath):
-            raise UserError(_("Export Data Error.\n\nRequested writing path '{}' doesn't exist.".format(outputpath)))
+            raise orm.except_orm(_('Export Data Error'), _("Requested writing path (%s) doesn't exist." % (outputpath)))
             return False
 
         filename = os.path.join(outputpath, fname)
         if fixedformat and (partLengths and bomLengths):
             if not self._export_fixed(filename, anag_Data['labels'], anag_Data, False, partLengths, bomLengths,
                                       queueFiles['anagrafica']):
-                raise UserError(_("Export Data Error.\n\nNo Bom extraction files was generated, about entity '{}'.".format(fname)))
+                raise orm.except_orm(_('Export Data Error'),
+                                     _("No Bom extraction files was generated, about entity (%s)." % (fname)))
                 return False
         else:
             if not self._export_csv(filename, anag_Data['labels'], anag_Data, True, delimiter, textQuoted,
                                     queueFiles['anagrafica']):
-                raise UserError(_("Export Data Error.\n\nWriting operations on file '{}' have failed.".format(filename)))
+                raise orm.except_orm(_('Export Data Error'),
+                                     _("Writing operations on file (%s) have failed." % (filename)))
                 return False
 
         ext_fields = ['parent', 'child']
         ext_fields.extend(rel_fields)
-        for oic in self.browse(allIDs):
+        for oic in self.browse(cr, uid, allIDs, context=None):
             dataSet = []
             if not queueFiles['distinte']:
                 fname = "%s-%s.%s" % (bomname, str(oic.name), exte)
@@ -451,12 +453,14 @@ class plm_component(models.Model):
 
                 if fixedformat and (partLengths and bomLengths):
                     if not self._export_fixed(filename, ext_fields, expData, False, partLengths, bomLengths):
-                        raise UserError(_("Export Data Error.\n\nNo Bom extraction files was generated, about entity '{}'.".format(fname)))
+                        raise orm.except_orm(_('Export Data Error'),
+                                             _("No Bom extraction files was generated, about entity (%s)." % (fname)))
                         return False
                 else:
                     if not self._export_csv(filename, ext_fields, expData, True, delimiter, textQuoted,
                                             queueFiles['distinte']):
-                        raise UserError(_("Export Data Error.\n\nNo Bom extraction files was generated, about entity '{}'.".format(fname)))
+                        raise orm.except_orm(_('Export Data Error'),
+                                             _("No Bom extraction files was generated, about entity (%s)." % (fname)))
                         return False
         return True
 
@@ -559,16 +563,16 @@ class plm_component(models.Model):
             logging.error(u"_export_csv : IOError : {errno} ({strerror}).".format(errno=errno, strerror=strerror))
             return False
 
-    def _exportData(self, ids, fields=[], bomType='normal'):
+    def _exportData(self, cr, uid, ids, fields=[], bomType='normal', context=None):
         """
             Export data about product and BoM
         """
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         listData = []
-        oids = self.browse(ids)
+        oids = self.browse(cr, uid, ids, context=context)
         for oid in oids:
             row_data = {}
-            prod_names = oid._fields.keys()
+            prod_names = oid._all_columns.keys()
             for field in fields:
                 if field in prod_names:
                     row_data[field] = oid[field]

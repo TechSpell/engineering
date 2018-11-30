@@ -20,16 +20,16 @@
 #
 ##############################################################################
 
-from odoo import models, fields, api, _, osv
-from odoo.exceptions import UserError
+from openerp.osv import fields, orm
+from openerp.tools.translate import _
 
 RETDMESSAGE=''
 
-class plm_temporary(osv.osv.osv_memory):
+class plm_temporary(orm.TransientModel):
     _inherit = "plm.temporary"
 
     ##  Specialized Actions callable interactively
-    def action_create_spareBom(self, context):
+    def action_create_spareBom(self, cr, uid, ids, context=None):
         """
             Create a new Spare BoM if doesn't exist (action callable from views)
         """
@@ -38,19 +38,19 @@ class plm_temporary(osv.osv.osv_memory):
         if not 'active_ids' in context:
             return False
         
-        
-        productType=self.env['product.product']
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        productType=self.pool['product.product']
         bomType=self.pool['mrp.bom']
         for idd in context['active_ids']:
-            checkObj=productType.browse(idd)
+            checkObj=productType.browse(cr, uid, idd, context)
             if not checkObj:
                 continue
-            criteria=[('product_tmpl_id','=',idd),('type','=','spbom'),('active','=',True)]
-            objBoms=bomType.search( criteria )
+            criteria=[('product_id','=',idd),('type','=','spbom'),('active','=',True)]
+            objBoms=bomType.search(cr, uid, criteria, context=context)
             if objBoms:
-                raise UserError(_("Creating a new Spare BoM Error.\n\nBoM for Part {} already exists.".format(checkObj.name)))
+                raise orm.except_orm(_('Creating a new Spare BoM Error.'), _("BoM for Part %r already exists." %(checkObj.name)))
 
-        productType.action_create_spareBom_WF(context['active_ids'])
+        productType.action_create_spareBom_WF(cr, uid, context['active_ids'], context=context)
 
         return {
             'name': _('Bill of Materials'),
@@ -62,69 +62,75 @@ class plm_temporary(osv.osv.osv_memory):
         }
 
 
-class plm_component(models.Model):
+class plm_component(orm.Model):
     _inherit = 'product.product'
 
     #  Work Flow Actions
-    def action_create_spareBom_WF(self, ids):
+    def action_create_spareBom_WF(self, cr, uid, ids, context=None):
         """
             Create a new Spare BoM if doesn't exist (action callable from code)
         """
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         for idd in ids:
             self.processedIds=[]
-            self._create_spareBom(idd)
+            self._create_spareBom(cr, uid, idd, context=context)
         return False
 
     #   Internal methods
-    def _create_spareBom(self, idd):
+    def _create_spareBom(self, cr, uid, idd, context=None):
         """
             Create a new Spare BoM (recursive on all EBom children)
         """
         newidBom=False
-        
+        context = context or self.pool['res.users'].context_get(cr, uid)
         if idd in self.processedIds:
             return False
         self.processedIds.append(idd)
-        checkObj=self.browse(idd)
+        checkObj=self.browse(cr, uid, idd, context=context)
         if not checkObj:
             return False
         if '-Spare' in checkObj.name:
             return False
-        sourceBomType = self._context.get('sourceBomType', 'ebom')
-        bomType=self.env['mrp.bom']
-        objBoms=bomType.search([('product_id', '=', idd), ('type', '=', 'spbom'), ('active', '=', True)])
-        idBoms=bomType.search([('product_id', '=', idd), ('type', '=', 'normal'), ('active', '=', True)])
+        sourceBomType = context.get('sourceBomType', 'ebom')
+        bomType=self.pool['mrp.bom']
+        objBoms=bomType.search(cr, uid, [('product_id', '=', idd), ('type', '=', 'spbom'), ('bom_id', '=', False), ('active', '=', True)], context=context)
+        idBoms=bomType.search(cr, uid, [('product_id', '=', idd), ('type', '=', 'normal'), ('bom_id', '=', False), ('active', '=', True)], context=context)
         if not idBoms:
-            idBoms=bomType.search([('product_tmpl_id','=',checkObj.product_tmpl_id.id),('type','=',sourceBomType)])
+            idBoms=bomType.search(cr, uid,
+                                    [('product_id', '=', idd), ('type', '=', sourceBomType), ('bom_id', '=', False), ('active', '=', True)], context=context)
 
-        defaults={'product_tmpl_id': checkObj.product_tmpl_id.id,'product_id': checkObj.id, 'type': 'spbom', 'active': True,}
+        defaults={}
         if not objBoms:
+            context['internal_writing']=True
             if checkObj.std_description.bom_tmpl:
-                newidBom = checkObj.std_description.bom_tmpl.with_context({'internal_writing':True}).copy()
+                newidBom = bomType.copy(cr, uid, checkObj.std_description.bom_tmpl.id, defaults, context=context)
             if (not newidBom) and idBoms:
-                newidBom=idBoms[0].with_context({'internal_writing':True}).copy(defaults)
+                newidBom=bomType.copy(cr, uid, idBoms[0], defaults, context=context)
             if newidBom:
-                newidBom.with_context({'internal_writing':True}).write(defaults)
-                ok_rows=self._summarizeBom(newidBom.bom_line_ids)
-                for bom_line in list(set(newidBom.bom_line_ids) ^ set(ok_rows)):
-                    bom_line.unlink()
+                bomType.write(cr, uid, [newidBom],
+                              {'name': checkObj.name, 'product_id': checkObj.id, 'type': 'spbom', 'active': True,}, context=context)
+                oidBom=bomType.browse(cr, uid, newidBom, context=context)
+
+                ok_rows=self._summarizeBom(cr, uid, oidBom.bom_lines)
+                for bom_line in list(set(oidBom.bom_lines) ^ set(ok_rows)):
+                    bomType.unlink(cr, uid, [bom_line.id], context=context)
                 for bom_line in ok_rows:
-                    bom_line.with_context({'internal_writing':True}).write( 
-                                {'type': 'spbom', 'source_id': False, 
-                                 'product_qty': bom_line.product_qty, } )
-                    self._create_spareBom(bom_line.product_id.id)
+                    bomType.write(cr, uid, [bom_line.id],
+                                  {'type': 'spbom', 'source_id': False, 'name': bom_line.product_id.name,
+                                   'product_qty': bom_line.product_qty, }, context=context)
+                    self._create_spareBom(cr, uid, bom_line.product_id.id, context=context)
         else:
-            for bom_line in objBoms[0].bom_line_ids:
-                self._create_spareBom(bom_line.product_id.id)
+            for bom_line in bomType.browse(cr, uid, objBoms[0], context=context).bom_lines:
+                self._create_spareBom(cr, uid, bom_line.product_id.id, context=context)
         return False
 
 
-class plm_description(models.Model):
+class plm_description(orm.Model):
     _inherit = "plm.description"
-
-    bom_tmpl    =   fields.Many2one('mrp.bom',_('Choose a BoM'), required=False, change_default=True, help=_("Select a  BoM as template to drive building Spare BoM."))
-
+    _columns = {
+        'bom_tmpl': fields.many2one('mrp.bom', 'Choose a BoM', required=False, change_default=True,
+                                    help="Select a  BoM as template to drive building Spare BoM."),
+    }
     _defaults = {
         'bom_tmpl': lambda *a: False,
     }
