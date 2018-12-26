@@ -252,7 +252,7 @@ class plm_component(models.Model):
             description1=False
             description2=False
             description3=False
-            thisDescription=self.pool['plm.description']
+            thisDescription=self.env['plm.description']
             thisObject=thisDescription.browse(std_descriptionID)
             if thisObject.description:
                 description=thisObject.description

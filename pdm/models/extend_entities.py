@@ -154,7 +154,7 @@ class plm_relation(models.Model):
 #
         if product_id:
             if not product_tmpl_id:
-                product_tmpl_id = self.pool['product.product'].browse(cr, uid, product_id, context=context).product_tmpl_id.id
+                product_tmpl_id = self.env['product.product'].browse(cr, uid, product_id, context=context).product_tmpl_id.id
             domain = domain +[
                 '|',
                     ('product_id', '=', product_id),
@@ -176,7 +176,7 @@ class plm_relation(models.Model):
         # Search a BoM which has all properties specified, or if you can not find one, you could
         # pass a BoM without any properties with the smallest sequence
         bom_empty_prop = False
-        for bom in self.pool.get('mrp.bom').browse(cr, uid, ids, context=context):
+        for bom in self.pool['mrp.bom'].browse(cr, uid, ids, context=context):
             if not set(map(int, bom.property_ids or [])) - set(properties or []):
                 if not properties or bom.property_ids:
                     return bom.id

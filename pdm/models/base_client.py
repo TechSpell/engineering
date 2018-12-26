@@ -2,8 +2,10 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    
+#    Created on : 2016-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -30,12 +32,13 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import openerp.tools.config as tools_config
 
 from .common import getIDs, getCleanList, isAdministrator, packDictionary, unpackDictionary, \
-                    getCleanBytesDictionary, getCleanBytesList
+                    getCleanBytesDictionary, getCleanBytesList, streamPDF
                     
 
 
 class plm_config_settings(models.Model):
     _name = 'plm.config.settings'
+    _description = 'Settings'
 
     @api.multi
     def execute(self):
@@ -263,9 +266,9 @@ class plm_config_settings(models.Model):
         """
         ids=request
         if ids:
-            from pdm.reports.report.document_report import create_report
+            from ..reports.report.document_report import create_report
             ret, _ =create_report(self, ids, datas=None)         
-        return ret
+        return streamPDF(ret)
 
     @api.model
     def GetDataConnection(self, request=None, default=None):
@@ -317,6 +320,7 @@ class plm_config_settings(models.Model):
         """
         return packDictionary(self.getDataModel(request, default))
 
+    @api.model
     def getDataModel(self, request=None, default=None):
         """
             Get properties as assigned.
@@ -336,12 +340,26 @@ class plm_config_settings(models.Model):
                                                 ] })
         return retValues
 
+    @api.model
+    def checkViewExistence(self, criteria=None):
+        ret=None
+        if criteria:
+            for viewID in self.env['ir.ui.view'].search( criteria ):
+                ret=viewID.id
+                break
+        return ret
+
+    @api.model
     def getViewArchitecture(self, criteria=None):
         ret=None
         if criteria:
-            
-            #TODO: To be implemented inheritance on views.
-            ret=self.Read(['ir.ui.view', criteria, ["arch_db"]]) 
+            viewID=self.checkViewExistence( criteria )
+            if viewID:
+                readView=self.env['ir.ui.view'].read_combined( viewID, ["arch"] )
+                if 'arch' in readView:
+                    ret=[[readView['arch'],],]
+            else:
+                ret=self.Read(cr, uid, ['ir.ui.view', criteria, ["arch"]], context=context) 
         return ret
 
     @api.model
@@ -349,7 +367,9 @@ class plm_config_settings(models.Model):
         criteria=None
         viewName=request
         if viewName:
-            criteria=[('name','=',viewName),('type','=','form')]
+            criteria=[('name','=','{}.inherit'.format(viewName)),('type','=','form')]
+            if not self.checkViewExistence(criteria):
+                criteria=[('name','=',viewName),('type','=','form')]
         return self.getViewArchitecture(criteria)
 
     @api.model
@@ -357,7 +377,9 @@ class plm_config_settings(models.Model):
         criteria=None
         viewName=request
         if viewName:
-            criteria=[('name','=',viewName),('type','=','tree')]
+            criteria=[('name','=','{}.inherit'.format(viewName)),('type','=','tree')]
+            if not self.checkViewExistence(criteria):
+                criteria=[('name','=',viewName),('type','=','tree')]
         return self.getViewArchitecture(criteria)
 
     @api.model
@@ -460,7 +482,8 @@ class plm_config_settings(models.Model):
                     elif (fieldType in["float","double","decimal"]):
                         tmp_props['type']="float"
                         tmp_props['value']=0.0
-                        tmp_props['decimal']=typeFields[keyName].digits[1]
+                        if typeFields[keyName].digits:
+                            tmp_props['decimal']=typeFields[keyName].digits[1]
                     elif (fieldType=="selection"):    
                         tmp_props['type']="string"
                         tmp_props['value']=""
@@ -991,6 +1014,18 @@ class plm_config_settings(models.Model):
                      )
             """
         )
+
+        dbuser = tools_config.get('plm_db_user', False)
+        dbname = cr.dbname
+        if dbuser and dbname:
+            cr.execute("ALTER ROLE {dbuser} LOGIN".format(dbuser=dbuser))
+            cr.execute("GRANT CONNECT ON DATABASE {dbname}   TO {dbuser}".format(dbname=dbname,dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_document  TO {dbuser}".format(dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_component TO {dbuser}".format(dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_checkout  TO {dbuser}".format(dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_bom       TO {dbuser}".format(dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_docbom    TO {dbuser}".format(dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_linkdoc   TO {dbuser}".format(dbuser=dbuser))
        
 
 class plm_logging(models.Model):

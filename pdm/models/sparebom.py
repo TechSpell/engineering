@@ -2,8 +2,10 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    
+#    Created on : 2016-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -40,7 +42,7 @@ class plm_temporary(models.AbstractModel):
         
         
         productType=self.env['product.product']
-        bomType=self.pool['mrp.bom']
+        bomType=self.env['mrp.bom']
         for idd in context['active_ids']:
             checkObj=productType.browse(idd)
             if not checkObj:

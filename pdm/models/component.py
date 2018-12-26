@@ -2,8 +2,10 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    
+#    Created on : 2016-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -28,7 +30,7 @@ from openerp  import models, fields, api, _, osv
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                     signal_workflow, get_signal_workflow, move_workflow, wf_message_post, \
-                    isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft
+                    isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
 
 
 # USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
@@ -111,16 +113,6 @@ class plm_component(models.Model):
         oid, message = request
         wf_message_post(self, [oid], body=message)
         return False
-
-    def getLastTime(self, oid, default=None):
-        
-        return self.getUpdTime(self.browse(oid))
-
-    def getUpdTime(self, obj):
-        if(obj.write_date!=False):
-            return datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S')
-        else:
-            return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
 
     def getUserName(self):
         """
@@ -415,7 +407,7 @@ class plm_component(models.Model):
                 objPart = self.browse(existingID)
                 part['engineering_revision']=objPart.engineering_revision
                 if ('_lastupdate' in part) and part['_lastupdate']:
-                    if (self.getUpdTime(objPart) < datetime.strptime(part['_lastupdate'], '%Y-%m-%d %H:%M:%S')):
+                    if (getUpdTime(objPart) < datetime.strptime(part['_lastupdate'], '%Y-%m-%d %H:%M:%S')):
                         if self._iswritable(objPart):
                             hasSaved = True
 
@@ -480,7 +472,7 @@ class plm_component(models.Model):
                 if objPart:
                     part['name'] = objPart.name
                     part['engineering_revision']=objPart.engineering_revision
-                    if (self.getUpdTime(objPart) < lastupdate):
+                    if (getUpdTime(objPart) < lastupdate):
                         if self._iswritable(objPart):
                             logging.debug("[SaveOrUpdate] Part {name}/{revi} is updating.".format(name=part['engineering_code'],revi=part['engineering_revision']))
                             hasSaved = True
@@ -1019,7 +1011,9 @@ class plm_component(models.Model):
                         productsignal=get_signal_workflow(product, status)
                         move_workflow(self, [product.id], productsignal, status)
                 self._insertlog(checkObj.id, note=note)
-                ret=ret | super(plm_component, checkObj).unlink()
+                item = super(plm_component, checkObj).unlink()
+                if item:
+                    ret=ret | item
         return ret
 
 
