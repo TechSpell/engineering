@@ -488,7 +488,8 @@ class plm_relation(models.Model):
                     bl_to_delete |= bomLine
                 bl_to_delete.unlink()                           # Cleans mrp.bom.lines
             for bomID in getCleanList(bomIDs):
-                bomID.unlink()                                  # Cleans mrp.bom
+                if not bomID.bom_line_ids:
+                    bomID.unlink()                              # Cleans mrp.bom
                     
 
         def toCleanRelations(relations):
@@ -818,7 +819,9 @@ class plm_relation(models.Model):
              }
         for processId in processIds:
             self._insertlog(processId.id, note=note)
-            ret=ret | super(plm_relation, processId).unlink()
+            item=super(plm_relation, processId).unlink()
+            if item:
+                ret=ret | item
         return ret
 
 plm_relation()
@@ -883,7 +886,7 @@ class plm_temporary(osv.osv.osv_memory):
                 'domain': "[('product_id','in', [" + ','.join(map(str, context['active_ids'])) + "])]",
                 }
         return ret
-    
+
     @api.model
     def action_NewRevision(self, ids):
         """
@@ -914,7 +917,8 @@ class plm_temporary(osv.osv.osv_memory):
                     }
                         
         return ret
-
+    
+    @api.model
     def action_NewDocRevision(self, ids):
         """
             Call for NewRevision method
@@ -944,4 +948,3 @@ class plm_temporary(osv.osv.osv_memory):
                     }
                         
         return ret
-    

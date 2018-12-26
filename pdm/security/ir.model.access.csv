@@ -14,7 +14,6 @@
 "group_plm_admin","access_report_plm_files_partner","report_plm_files_partner","report.plm_files.partner",1,1,1,1
 "group_plm_admin","access_report_plm_document_wall","report_plm_document_wall","report.plm_document.wall",1,1,1,1
 "group_plm_admin","access_report_plm_checkout_board","report_plm_checkout_board","report.plm_checkout.board",1,1,1,1
-"group_plm_admin","access_stock_warehouse_orderpoint","stock_warehouse_orderpoint","Minimum Inventory Rule",1,0,0,0
 "group_plm_admin","access_mrp_bom","mrp_bom","Bill of Material",1,1,1,1
 "group_plm_admin","access_mrp_bom_line","mrp_bom_line","mrp.bom.line",1,1,1,1
 "group_plm_admin","access_plm_descriptions","plm_description","plm.description",1,1,1,1
@@ -40,7 +39,6 @@
 "group_plm_integrationuser","access_iu_report_plm_files_partner","report_plm_files_partner","report.plm_files.partner",1,1,1,1
 "group_plm_integrationuser","access_iu_report_plm_document_wall","report_plm_document_wall","report.plm_document.wall",1,1,1,1
 "group_plm_integrationuser","access_iu_report_plm_checkout_board","report_plm_checkout_board","report.plm_checkout.board",1,1,1,1
-"group_plm_integrationuser","access_iu_stock_warehouse_orderpoint","stock_warehouse_orderpoint","Minimum Inventory Rule",1,0,0,0
 "group_plm_integrationuser","access_iu_mrp_bom","mrp_bom","Bill of Material",1,1,1,1
 "group_plm_integrationuser","access_iu_mrp_bom_line","mrp_bom_line","mrp.bom.line",1,1,1,1
 "group_plm_integrationuser","access_iu_plm_descriptions","plm_description","plm.description",1,0,0,0
@@ -67,9 +65,8 @@
 "group_plm_validationuser","access_vl_report_plm_files_partner","report_plm_files_partner","report.plm_files.partner",1,1,1,1
 "group_plm_validationuser","access_vl_report_plm_document_wall","report_plm_document_wall","report.plm_document.wall",1,1,1,1
 "group_plm_validationuser","access_vl_report_plm_checkout_board","report_plm_checkout_board","report.plm_checkout.board",1,1,1,1
-"group_plm_validationuser","access_vl_stock_warehouse_orderpoint","stock_warehouse_orderpoint","stock.warehouse.orderpoint",1,0,0,0
 "group_plm_validationuser","access_vl_mrp_bom","mrp_bom","mrp.bom",1,1,1,1
-"group_plm_validationuser","access_iu_mrp_bom_line","mrp_bom_line","mrp.bom.line",1,1,1,1
+"group_plm_validationuser","access_vl_mrp_bom_line","mrp_bom_line","mrp.bom.line",1,1,1,1
 "group_plm_validationuser","access_vl_plm_descriptions","plm_description","plm.description",1,0,0,0
 "group_plm_validationuser","access_vl_plm_finishings","plm_finishing","plm.finishing",1,0,0,0
 "group_plm_validationuser","access_vl_plm_materials","plm_material","plm.material",1,0,0,0
@@ -93,7 +90,6 @@
 "group_plm_viewuser","access_vw_report_plm_files_partner","report_plm_files_partner","report.plm_files.partner",1,1,1,1
 "group_plm_viewuser","access_vw_report_plm_document_wall","report_plm_document_wall","report.plm_document.wall",1,1,1,1
 "group_plm_viewuser","access_vw_report_plm_checkout_board","report_plm_checkout_board","report.plm_checkout.board",1,1,1,1
-"group_plm_viewuser","access_vw_stock_warehouse_orderpoint","stock_warehouse_orderpoint","Minimum Inventory Rule",1,0,0,0
 "group_plm_viewuser","access_vw_mrp_bom","mrp_bom","Bill of Material",1,0,0,0
 "group_plm_viewuser","access_vw_mrp_bom_line","mrp_bom_line","mrp.bom.line",1,0,0,0
 "group_plm_viewuser","access_vw_plm_descriptions","plm_description","plm.description",1,0,0,0

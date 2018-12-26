@@ -30,6 +30,7 @@
 #
 ##############################################################################
 import os
+import logging
 from operator import itemgetter
 
 from odoo  import _, models, api
@@ -65,18 +66,23 @@ def _createtemplate():
     listout.append(('bom_structure_leaves','bom_template_leaves','BOM Only Leaves Summarized','bom.structure.leaves'))
     listout.append(('bom_structure_flat','bom_template_flat','BOM All Flat Summarized','bom.structure.flat'))
 
-    fileOut.write(u'<?xml version="1.0"?>\n<openerp>\n    <data>\n\n')
-    fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
-  
-    for label,template,description,name in listout:
-        fileOut.write(u'        <report model="mrp.bom"\n')
-        fileOut.write(u'                id="%s"\n                string="%s"\n                name="%s.%s"\n' %(label,description,openerpModule,name))
-        fileOut.write(u'                file="%s.report.%s"\n' %(openerpModule,template))
-        fileOut.write(u'                report_type="qweb-pdf"\n />\n')
-    
-    fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
-    fileOut.write(u'    </data>\n</openerp>\n')
-    fileOut.close()
+    try:
+        fileOut.write(u'<?xml version="1.0"?>\n<openerp>\n    <data>\n\n')
+        fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
+      
+        for label,template,description,name in listout:
+            fileOut.write(u'        <report model="mrp.bom"\n')
+            fileOut.write(u'                id="%s"\n                string="%s"\n                name="%s.%s"\n' %(label,description,openerpModule,name))
+            fileOut.write(u'                file="%s.report.%s"\n' %(openerpModule,template))
+            fileOut.write(u'                report_type="qweb-pdf"\n />\n')
+        
+        fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
+        fileOut.write(u'    </data>\n</openerp>\n')
+        fileOut.close()
+    except Exception as msg:
+        logging.error("File '{name}' is not writable: it will use default reports.".format(name=fileName))
+        logging.debug("Exception raised was: {msg}.".format(msg=msg))
+
 _createtemplate()
 
 ###############################################################################################################à

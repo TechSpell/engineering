@@ -36,7 +36,7 @@ from odoo.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                         get_signal_workflow, signal_workflow, move_workflow, wf_message_post, \
-                        isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft
+                        isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
@@ -141,7 +141,7 @@ class plm_document(models.Model):
         datefiles, listfiles = listedFiles
         for objDoc in self.browse(ids):
             if objDoc.type == 'binary':
-                timeDoc = self.getLastTime(objDoc.id)
+                timeDoc = getUpdTime(objDoc)
                 timeSaved = time.mktime(timeDoc.timetuple())
                 timeStamp=timeDoc.strftime('%Y-%m-%d %H:%M:%S')
                 try:
@@ -274,7 +274,7 @@ class plm_document(models.Model):
         datefiles, listfiles = listedFiles
         for objDoc in self.browse(getCleanList(ids)):
             if objDoc.type == 'binary':
-                timeDoc = self.getLastTime(objDoc.id)
+                timeDoc = getUpdTime(objDoc)
                 timeSaved = time.mktime(timeDoc.timetuple())
 
                 if not otherFlag:
@@ -681,8 +681,9 @@ class plm_document(models.Model):
                     objDocument = self.browse(existingID)
                     if ('_lastupdate' in document) and document['_lastupdate']:
                         lastupdate=datetime.strptime(str(document['_lastupdate']),'%Y-%m-%d %H:%M:%S')
-                        logging.debug("CheckDocumentsToSave : time db : {timedb} time file : {timefile}".format(timedb=self.getLastTime(existingID).strftime('%Y-%m-%d %H:%M:%S'), timefile=document['_lastupdate']))
-                        if self._iswritable(objDocument) and self.getLastTime(existingID) < lastupdate:
+                        timedb=getUpdTime(objDocument)
+                        logging.debug("CheckDocumentsToSave : time db : {timedb} time file : {timefile}".format(timedb=timedb.strftime('%Y-%m-%d %H:%M:%S'), timefile=document['_lastupdate']))
+                        if self._iswritable(objDocument) and timedb < lastupdate:
                             hasSaved = True
 
             retValues[getFileName(document[fullNamePath])]={
@@ -750,7 +751,7 @@ class plm_document(models.Model):
                     objDocument = self.browse(existingID)
                     if objDocument:
                         document['revisionid']=objDocument.revisionid
-                        if self._iswritable(objDocument) and (self.getLastTime(existingID) < lastupdate):
+                        if self._iswritable(objDocument) and (getUpdTime(objDocument) < lastupdate):
                             logging.debug("[SaveOrUpdate] Document {name}/{revi} is updating.".format(name=document['name'],revi=document['revisionid']))
                             hasSaved = True
                             if not objDocument.with_context({'internal_writing':False}).write(document):
@@ -1151,7 +1152,9 @@ class plm_document(models.Model):
                         docsignal=get_signal_workflow(document, status)
                         move_workflow(self, [document.id], docsignal, status)
                 self._insertlog(checkObj.id, note=note)
-                ret=ret | super(plm_document, checkObj).unlink()
+                item = super(plm_document, checkObj).unlink()
+                if item:
+                    ret=ret | item
         return ret
 
     usedforspare    =   fields.Boolean  (string=_('Used for Spare'),help=_("Drawings marked here will be used printing Spare Part Manual report."), default=False)
@@ -1376,17 +1379,6 @@ class plm_document(models.Model):
         """
         return datetime.now()
 
-    def getLastTime(self, oid, default=None):
-        """
-            get document last modification time 
-        """
-        
-        obj = self.browse(oid)
-        if (obj.write_date != False):
-            return datetime.strptime(obj.write_date, '%Y-%m-%d %H:%M:%S')
-        else:
-            return datetime.strptime(obj.create_date, '%Y-%m-%d %H:%M:%S')
-
     def getUserSign(self, oid, default=None):
         """
             get the user name
@@ -1411,6 +1403,7 @@ class plm_document(models.Model):
 
 class plm_checkout(models.Model):
     _name = 'plm.checkout'
+    _description = 'Checked-Out Documents'
     
     userid      = fields.Many2one ('res.users',    string=_('Related User'),               ondelete='cascade')
     hostname    = fields.Char     (                string=_('Hostname'),     size=64)
@@ -1517,6 +1510,7 @@ class plm_checkout(models.Model):
 
 class plm_document_relation(models.Model):
     _name = 'plm.document.relation'
+    _description = 'Document Relations'
     
     parent_id       =   fields.Many2one ('plm.document', string=_('Related parent document'), ondelete='cascade')
     child_id        =   fields.Many2one ('plm.document', string=_('Related child document'),  ondelete='cascade')
@@ -1636,6 +1630,7 @@ class plm_document_relation(models.Model):
 
 class plm_backupdoc(models.Model):
     _name = 'plm.backupdoc'
+    _description = 'Document Backup'
 
     userid          =   fields.Many2one ('res.users', _('Related User'), ondelete='cascade')
     existingfile    =   fields.Char     (_('Physical Document Location'),size=1024)
