@@ -25,6 +25,7 @@ import base64
 import pickle
 from array import array
 from xmlrpc.client import Binary
+from datetime import datetime
 
 from odoo import  SUPERUSER_ID, _
 
@@ -57,6 +58,20 @@ def getCleanBytesDictionary(myDict={}):
     if list(myDict.keys()):
         for keyName in myDict.keys():
             ret.update({ getCleanValue(keyName): getCleanValue(myDict[keyName]) })
+    return ret
+
+def getUpdTime(obj):
+    if(obj.write_date!=False):
+        return datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S')
+    else:
+        return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
+
+def streamPDF(bytesString=""):
+    ret=""
+    if isinstance(bytesString, Binary):
+        ret=base64.b64encode(bytesString.data)
+    else:
+        ret=base64.b64encode(bytesString)
     return ret
 
 def unpackDictionary(bytesString=""):

@@ -30,6 +30,7 @@
 #
 ##############################################################################
 import os
+import logging
 
 from odoo  import _, models, api
 
@@ -62,19 +63,24 @@ def _createtemplate():
     listout.append(('bom_structure_leaves','bom_template_leaves','BOM Only Leaves Summarized'))
     listout.append(('bom_structure_flat','bom_template_flat','BOM All Flat Summarized'))
 
-    fileOut.write(u'<?xml version="1.0"?>\n<openerp>\n    <data>\n\n')
-    fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
-  
-    for label,template,description in listout:
-        fileOut.write(u'        <report model="mrp.bom" \n')
-        fileOut.write(u'                id="%s" \n' %(label))
-        fileOut.write(u'                string="%s" \n ' %(description))
-        fileOut.write(u'                name="%s.%s" \n' %(thisModuleName,template))
-        fileOut.write(u'                report_type="qweb-pdf"\n /> \n')
-    
-    fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
-    fileOut.write(u'    </data>\n</openerp>\n')
-    fileOut.close()
+    try:
+        fileOut.write(u'<?xml version="1.0"?>\n<openerp>\n    <data>\n\n')
+        fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
+      
+        for label,template,description in listout:
+            fileOut.write(u'        <report model="mrp.bom" \n')
+            fileOut.write(u'                id="%s" \n' %(label))
+            fileOut.write(u'                string="%s" \n ' %(description))
+            fileOut.write(u'                name="%s.%s" \n' %(thisModuleName,template))
+            fileOut.write(u'                report_type="qweb-pdf"\n /> \n')
+        
+        fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
+        fileOut.write(u'    </data>\n</openerp>\n')
+        fileOut.close()
+    except Exception as msg:
+        logging.error("File '{name}' is not writable: it will use default reports.".format(name=fileName))
+        logging.debug("Exception raised was: {msg}.".format(msg=msg))
+
 _createtemplate()
 
 ###############################################################################################################à

@@ -819,7 +819,9 @@ class plm_relation(models.Model):
              }
         for processId in processIds:
             self._insertlog(processId.id, note=note)
-            ret=ret | super(plm_relation, processId).unlink()
+            item=super(plm_relation, processId).unlink()
+            if item:
+                ret=ret | item
         return ret
 
 plm_relation()
@@ -886,15 +888,15 @@ class plm_temporary(osv.osv.osv_memory):
         return ret
     
     @api.model
-    def action_NewRevision(self, context):
+    def action_NewRevision(self, ids):
         """
             Call for NewRevision method
         """
         ret=False
         revised=[]
         
-        active_ids=context.get('active_ids', [])
-        active_model=context.get('active_model', None)
+        active_ids=self._context.get('active_ids', [])
+        active_model=self._context.get('active_model', None)
         if active_ids and active_model:
             objectType=self.env[active_model]
             for thisId in active_ids:
@@ -916,15 +918,15 @@ class plm_temporary(osv.osv.osv_memory):
                         
         return ret
 
-    def action_NewDocRevision(self, context):
+    def action_NewDocRevision(self, ids):
         """
             Call for NewRevision method
         """
         ret=False
         revised=[]
         
-        active_ids=context.get('active_ids', [])
-        active_model=context.get('active_model', None)
+        active_ids=self._context.get('active_ids', [])
+        active_model=self._context.get('active_model', None)
         if active_ids and active_model:
             objectType=self.env[active_model]
             for thisId in active_ids:
