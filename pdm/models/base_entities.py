@@ -861,7 +861,9 @@ class plm_relation(orm.Model):
              }
         if processIds:
             self._insertlog(cr, uid, processIds, note=note, context=context)
-            ret=ret | super(plm_relation, self).unlink(cr, uid, processIds, context=context)
+            item=super(plm_relation, self).unlink(cr, uid, processIds, context=context)
+            if item:
+                ret=ret | item
         return ret
 
     def _check_product(self, cr, uid, ids, context=None):

@@ -28,7 +28,7 @@ from openerp.tools.translate import _
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                     signal_workflow, get_signal_workflow, move_workflow, \
-                    isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft
+                    isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
 
 
 # USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
@@ -107,13 +107,7 @@ class plm_component(orm.Model):
 
     def getLastTime(self, cr, uid, oid, default=None, context=None):
         context = context or self.pool['res.users'].context_get(cr, uid)
-        return self.getUpdTime(self.browse(cr, uid, oid, context=context))
-
-    def getUpdTime(self, obj):
-        if(obj.write_date!=False):
-            return datetime.strptime(obj.write_date,'%Y-%m-%d %H:%M:%S')
-        else:
-            return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
+        return getUpdTime(self.browse(cr, uid, oid, context=context))
 
     def getUserName(self, cr, uid, context=None):
         """
@@ -383,7 +377,7 @@ class plm_component(orm.Model):
                 objPart = self.browse(cr, uid, existingID, context=context)
                 part['engineering_revision']=objPart.engineering_revision
                 if ('_lastupdate' in part) and part['_lastupdate']:
-                    if (self.getUpdTime(objPart) < datetime.strptime(part['_lastupdate'], '%Y-%m-%d %H:%M:%S')):
+                    if (getUpdTime(objPart) < datetime.strptime(part['_lastupdate'], '%Y-%m-%d %H:%M:%S')):
                         if self._iswritable(cr, uid, objPart):
                             hasSaved = True
 
@@ -449,7 +443,7 @@ class plm_component(orm.Model):
                 if objPart:
                     part['name'] = objPart.name
                     part['engineering_revision']=objPart.engineering_revision
-                    if (self.getUpdTime(objPart) < lastupdate):
+                    if (getUpdTime(objPart) < lastupdate):
                         if self._iswritable(cr, uid, objPart):
                             logging.debug("[SaveOrUpdate] Part {name}/{revi} is updating.".format(name=part['engineering_code'],revi=part['engineering_revision']))
                             hasSaved = True
@@ -979,7 +973,9 @@ class plm_component(orm.Model):
                         productsignal=get_signal_workflow(self, cr, uid, product, status, context=context)
                         move_workflow(self, cr, uid, [product.id], productsignal, status, context=context)
                 self._insertlog(cr, uid, checkObj.id, note=note, context=context)
-                ret=ret | super(plm_component, self).unlink(cr, uid, [checkObj.id], context=context)
+                item=super(plm_component, self).unlink(cr, uid, [checkObj.id], context=context)
+                if item:
+                    ret=ret | item
         return ret
 
 

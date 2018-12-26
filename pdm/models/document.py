@@ -34,7 +34,7 @@ from openerp.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                         get_signal_workflow, signal_workflow, move_workflow, \
-                        isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft
+                        isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
@@ -143,7 +143,7 @@ class plm_document(orm.Model):
         datefiles, listfiles = listedFiles
         for objDoc in self.browse(cr, uid, ids, context=context):
             if objDoc.type == 'binary':
-                timeDoc = self.getLastTime(cr, uid, objDoc.id)
+                timeDoc = getUpdTime(objDoc)
                 timeSaved = time.mktime(timeDoc.timetuple())
                 timeStamp=timeDoc.strftime('%Y-%m-%d %H:%M:%S')
                 try:
@@ -276,7 +276,7 @@ class plm_document(orm.Model):
         datefiles, listfiles = listedFiles
         for objDoc in self.browse(cr, uid, getCleanList(ids), context=context):
             if objDoc.type == 'binary':
-                timeDoc = self.getLastTime(cr, uid, objDoc.id)
+                timeDoc = getUpdTime(objDoc)
                 timeSaved = time.mktime(timeDoc.timetuple())
 
                 if not otherFlag:
@@ -678,8 +678,9 @@ class plm_document(orm.Model):
                     objDocument = self.browse(cr, uid, existingID, context=context)
                     if ('_lastupdate' in document) and document['_lastupdate']:
                         lastupdate=datetime.strptime(str(document['_lastupdate']),'%Y-%m-%d %H:%M:%S')
-                        logging.debug("CheckDocumentsToSave : time db : {timedb} time file : {timefile}".format(timedb=self.getLastTime(cr,uid,existingID).strftime('%Y-%m-%d %H:%M:%S'), timefile=document['_lastupdate']))
-                        if self._iswritable(cr, uid, objDocument) and self.getLastTime(cr, uid, existingID) < lastupdate:
+                        timedb=getUpdTime(objDocument)
+                        logging.debug("CheckDocumentsToSave : time db : {timedb} time file : {timefile}".format(timedb=timedb.strftime('%Y-%m-%d %H:%M:%S'), timefile=document['_lastupdate']))
+                        if self._iswritable(cr, uid, objDocument) and timedb < lastupdate:
                             hasSaved = True
 
             retValues[getFileName(document[fullNamePath])]={
@@ -747,7 +748,7 @@ class plm_document(orm.Model):
                     objDocument = self.browse(cr, uid, existingID, context=context)
                     if objDocument:
                         document['revisionid']=objDocument.revisionid
-                        if self._iswritable(cr, uid, objDocument) and (self.getLastTime(cr, uid, existingID) < lastupdate):
+                        if self._iswritable(cr, uid, objDocument) and (getUpdTime(objDocument) < lastupdate):
                             logging.debug("[SaveOrUpdate] Document {name}/{revi} is updating.".format(name=document['name'],revi=document['revisionid']))
                             hasSaved = True
                             if not self.write(cr, uid, [existingID], document, context=context):
@@ -1140,7 +1141,9 @@ class plm_document(orm.Model):
                         docsignal=get_signal_workflow(self, cr, uid, document, status, context=context)
                         move_workflow(self, cr, uid, [document.id], docsignal, status, context=context)
                 self._insertlog(cr, uid, checkObj.id, note=note, context=context)
-                ret=ret | super(plm_document, self).unlink(cr, uid, ids, context=context)
+                item=super(plm_document, self).unlink(cr, uid, ids, context=context)
+                if item:
+                    ret=ret | item
         return ret
 
     def _check_duplication(self, cr, uid, vals, ids=[], op='create'):
@@ -1430,17 +1433,6 @@ class plm_document(orm.Model):
         """
         return datetime.now()
 
-    def getLastTime(self, cr, uid, oid, default=None, context=None):
-        """
-            get document last modification time 
-        """
-        context = context or self.pool['res.users'].context_get(cr, uid)
-        obj = self.browse(cr, uid, oid, context=context)
-        if (obj.write_date != False):
-            return datetime.strptime(obj.write_date, '%Y-%m-%d %H:%M:%S')
-        else:
-            return datetime.strptime(obj.create_date, '%Y-%m-%d %H:%M:%S')
-
     def getUserSign(self, cr, uid, oid, default=None, context=None):
         """
             get the user name
@@ -1691,6 +1683,7 @@ class plm_backupdoc(orm.Model):
         'createdate': fields.datetime('Date Created', readonly=True),
         'existingfile': fields.char('Physical Document Location', size=1024),
         'documentid': fields.many2one('plm.document', 'Related Document', ondelete='cascade'),
+        'name': fields.related('documentid', 'name', type="char", relation="plm.document", string="Name", store=False),
         'revisionid': fields.related('documentid', 'revisionid', type="integer", relation="plm.document",
                                      string="Revision", store=False),
         'minorrevision': fields.related('documentid', 'minorrevision', type="char", relation="plm.document",
@@ -1761,8 +1754,7 @@ class plm_backupdoc(orm.Model):
                     "unlink : Unable to remove the required documents. You aren't authorized in this context.")
                 raise orm.except_orm(_('Backup Error'), _(
                     "Unable to remove the required document.\n You aren't authorized in this context."))
-        checkObjs = self.browse(cr, uid, ids, context=context)
-        for checkObj in checkObjs:
+        for checkObj in self.browse(cr, uid, ids, context=context):
             if not int(checkObj.documentid):
                 return super(plm_backupdoc, self).unlink(cr, uid, ids, context=context)
             currentname = checkObj.documentid.store_fname
