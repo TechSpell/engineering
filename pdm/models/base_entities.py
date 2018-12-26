@@ -839,14 +839,16 @@ class plm_relation(orm.Model):
                         continue            # Apply unlink only if have respected rules.
                     processIds.append(bomID)
         else:
-            processIds=self.browse(getListIDs(ids))
+            processIds=self.browse(cr, uid, getListIDs(ids), context=context)
         note={
                 'type': 'unlink object',
                 'reason': "Removed entity from database.",
              }
         for processId in processIds:
             self._insertlog(cr, uid, processId.id, note=note, context=context)
-            ret=ret | super(plm_relation, processId).unlink()
+            item=super(plm_relation, self).unlink(cr, uid, processId.id, context=context)
+            if item:
+                ret=ret | item
         return ret
 
     def _check_product(self, cr, uid, ids, context=None):

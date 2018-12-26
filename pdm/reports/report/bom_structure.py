@@ -1,8 +1,11 @@
-## -*- coding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    
+#    Created on : 2016-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU Affero General Public License as
@@ -27,6 +30,7 @@
 #
 ##############################################################################
 import os
+import logging
 import time
 from operator import itemgetter
 
@@ -63,18 +67,23 @@ def _createtemplate():
     listout.append(('report_plm_bom_structure_leaves','BOM Only Leaves Summarized','plm.bom.structure.leaves'))
     listout.append(('report_plm_bom_structure_flat','BOM All Flat Summarized','plm.bom.structure.flat'))
 
-    fileOut.write(u'<?xml version="1.0"?>\n<openerp>\n    <data>\n\n')
-    fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
+    try:
+        fileOut.write(u'<?xml version="1.0"?>\n<openerp>\n    <data>\n\n')
+        fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
   
-    for label,description,name in listout:
-        fileOut.write(u'        <report auto="True"\n                header="True"\n                model="mrp.bom"\n')
-        fileOut.write(u'                id="%s"\n                string="%s"\n                name="%s"\n' %(label,description,name))
-        fileOut.write(u'                rml="%s/reports/report/%s.rml"\n' %(openerpModule, thisModule))
-        fileOut.write(u'                report_type="pdf"\n                file=""\n                 />\n')
+        for label,description,name in listout:
+            fileOut.write(u'        <report auto="True"\n                header="True"\n                model="mrp.bom"\n')
+            fileOut.write(u'                id="%s"\n                string="%s"\n                name="%s"\n' %(label,description,name))
+            fileOut.write(u'                rml="%s/reports/report/%s.rml"\n' %(openerpModule, thisModule))
+            fileOut.write(u'                report_type="pdf"\n                file=""\n                 />\n')
     
-    fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
-    fileOut.write(u'    </data>\n</openerp>\n')
-    fileOut.close()
+        fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
+        fileOut.write(u'    </data>\n</openerp>\n')
+        fileOut.close()
+    except Exception as msg:
+        logging.error("File '{name}' is not writable: it will use default reports.".format(name=fileName))
+        logging.debug("Exception raised was: {msg}.".format(msg=msg))
+
 _createtemplate()
 
 ###############################################################################################################à

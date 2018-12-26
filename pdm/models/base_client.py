@@ -32,7 +32,7 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import openerp.tools.config as tools_config
 
 from .common import getIDs, getCleanList, isAdministrator, packDictionary, unpackDictionary, \
-                    getCleanBytesDictionary, getCleanBytesList, getListIDs
+                    getCleanBytesDictionary, getCleanBytesList, getListIDs, streamPDF
                     
 
 class plm_config_settings(orm.Model):
@@ -263,9 +263,9 @@ class plm_config_settings(orm.Model):
         ids=request
         if ids:
             context = context or self.pool['res.users'].context_get(cr, uid)
-            from pdm.reports.report.document_report import create_report
+            from ..reports.report.document_report import create_report
             ret, _ =create_report(cr, uid, ids, datas=None, context=None)         
-        return ret
+        return streamPDF(ret)
 
     def GetDataConnection(self, cr, uid, request=None, default=None, context=None):
         """
@@ -332,26 +332,44 @@ class plm_config_settings(orm.Model):
                                                 ] })
         return retValues
 
+    def checkViewExistence(self, cr, uid, criteria=None, context=None):
+        ret=None
+        if criteria:
+            viewObjType=self.pool['ir.ui.view']
+            viewIDs=viewObjType.search(cr, uid, criteria, context=context)
+            if viewIDs:
+                ret=viewIDs[0]
+        return ret
+
     def getViewArchitecture(self, cr, uid, criteria=None, context=None):
         ret=None
         if criteria:
             context = context or self.pool['res.users'].context_get(cr, uid)
-            #TODO: To be implemented inheritance on views.
-            ret=self.Read(cr, uid, ['ir.ui.view', criteria, ["arch"]], context=context) 
+            viewID=self.checkViewExistence(cr, uid, criteria, context=context)
+            if viewID:
+                readView=self.pool['ir.ui.view'].read_combined(cr, uid, viewID, ["arch"], context=context)
+                if 'arch' in readView:
+                    ret=[[readView['arch'],],]
+            else:
+                ret=self.Read(cr, uid, ['ir.ui.view', criteria, ["arch"]], context=context) 
         return ret
 
     def GetFormView(self, cr, uid, request=None, default=None, context=None):
         criteria=None
         viewName=request
         if viewName:
-            criteria=[('name','=',viewName),('type','=','form')]
+            criteria=[('name','=','{}.inherit'.format(viewName)),('type','=','form')]
+            if not self.checkViewExistence(cr, uid, criteria, context=context):
+                criteria=[('name','=',viewName),('type','=','form')]
         return self.getViewArchitecture(cr, uid, criteria, context=context)
 
     def GetTreeView(self, cr, uid, request=None, default=None, context=None):
         criteria=None
         viewName=request
         if viewName:
-            criteria=[('name','=',viewName),('type','=','tree')]
+            criteria=[('name','=','{}.inherit'.format(viewName)),('type','=','tree')]
+            if not self.checkViewExistence(cr, uid, criteria, context):
+                criteria=[('name','=',viewName),('type','=','tree')]
         return self.getViewArchitecture(cr, uid, criteria, context=context)
 
     def GetFormViewByModel(self, cr, uid, request=None, default=None, context=None):
@@ -417,7 +435,7 @@ class plm_config_settings(orm.Model):
             base_properties = userType.defineProperties(cr, uid)                # In Extend Client
             if base_properties:
                 typeFields=userType._all_columns
-                propList=list(set(base_properties.keys()).intersection(editor_properties.keys()))
+                propList=list(set(editor_properties.keys()).intersection(set(base_properties.keys())))
                 keyList=list(set(typeFields.keys()).intersection(set(base_properties.keys())))
                 for keyName in keyList:
                     tmp_props=dict(zip(base_properties[keyName].keys(), base_properties[keyName].values()))
@@ -445,7 +463,8 @@ class plm_config_settings(orm.Model):
                     elif (fieldType in["float","double","decimal"]):
                         tmp_props['type']="float"
                         tmp_props['value']=0.0
-                        tmp_props['decimal']=typeFields[keyName].column.digits[1]
+                        if typeFields[keyName].column.digits:
+                            tmp_props['decimal']=typeFields[keyName].column.digits[1]
                     elif (fieldType=="selection") and typeFields[keyName].column.selection:    
                         tmp_props['type']="string"
                         tmp_props['value']=""
@@ -576,7 +595,10 @@ class plm_config_settings(orm.Model):
                         entityName=typeFields[keyName].column._obj  
                         rows=[]
                         columns=self.getBaseObject(cr,uid, entityName, context=context)
-                        related=getIDs(objectID[keyName])
+                        if (typeFields[keyName].column._type in ["one2many","many2many"]):
+                            related=objectID[keyName].ids if objectID[keyName] else []
+                        else:
+                            related=getIDs(objectID[keyName]) if objectID[keyName] else []
                         if related:
                             criteria=[('id','in', related),]
                             rows,_=self.getDataObject(cr,uid, entityName, criteria, columns.keys(), context=context)
@@ -584,7 +606,7 @@ class plm_config_settings(orm.Model):
                         tmp_props['object'].update({
                                              "rows": rows,
                                             })
-                        tmp_props['value']=getIDs(objectID[keyName])
+                        tmp_props['value']=related
 
                     properties[keyName]=tmp_props
 
@@ -997,6 +1019,18 @@ class plm_config_settings(orm.Model):
                      )
             """
         )
+
+        dbuser = tools_config.get('plm_db_user', False)
+        dbname = cr.dbname
+        if dbuser and dbname:
+            cr.execute("ALTER ROLE {dbuser} LOGIN".format(dbuser=dbuser))
+            cr.execute("GRANT CONNECT ON DATABASE {dbname}   TO {dbuser}".format(dbname=dbname,dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_document  TO {dbuser}".format(dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_component TO {dbuser}".format(dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_checkout  TO {dbuser}".format(dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_bom       TO {dbuser}".format(dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_docbom    TO {dbuser}".format(dbuser=dbuser))
+            cr.execute("GRANT SELECT  ON TABLE ext_linkdoc   TO {dbuser}".format(dbuser=dbuser))
       
 plm_config_settings()
 
