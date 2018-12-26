@@ -34,13 +34,18 @@ class report_plm_document(models.AbstractModel):
     _description = 'Report PDF Document'
 
     @api.model
-    def render_qweb_pdf(self, documents=None, data=None):
-        content = emptyDocument
+    def get_pdf_content(self, documents=None):
+        ret = emptyDocument
         if len(documents)>0:
             docRepository, bookCollector = usefulInfos(self.env)
             documentContent=packDocuments(docRepository, documents, bookCollector)
             if len(documentContent)>0:
-                content=documentContent[0]
+                ret=documentContent[0]
+        return ret
+
+    @api.model
+    def render_qweb_pdf(self, documents=None, data=None):
+        content = self.get_pdf_content(documents)
         byteString = b"data:application/pdf;base64," + base64.encodebytes(content)
         return byteString.decode('UTF-8')
 

@@ -36,7 +36,7 @@ from odoo.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                         move_workflow, wf_message_post, isAdministrator, \
-                        isObsoleted, isUnderModify, isAnyReleased, isDraft
+                        isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
@@ -141,7 +141,7 @@ class plm_document(models.Model):
         datefiles, listfiles = listedFiles
         for objDoc in self.browse(ids):
             if objDoc.type == 'binary':
-                timeDoc = self.getLastTime(objDoc.id)
+                timeDoc = getUpdTime(objDoc)
                 timeSaved = time.mktime(timeDoc.timetuple())
                 timeStamp=timeDoc.strftime('%Y-%m-%d %H:%M:%S')
                 try:
@@ -274,7 +274,7 @@ class plm_document(models.Model):
         datefiles, listfiles = listedFiles
         for objDoc in self.browse(getCleanList(ids)):
             if objDoc.type == 'binary':
-                timeDoc = self.getLastTime(objDoc.id)
+                timeDoc = getUpdTime(objDoc)
                 timeSaved = time.mktime(timeDoc.timetuple())
 
                 if not otherFlag:
@@ -679,8 +679,9 @@ class plm_document(models.Model):
                     objDocument = self.browse(existingID)
                     if ('_lastupdate' in document) and document['_lastupdate']:
                         lastupdate=datetime.strptime(str(document['_lastupdate']),'%Y-%m-%d %H:%M:%S')
-                        logging.debug("CheckDocumentsToSave : time db : {timedb} time file : {timefile}".format(timedb=self.getLastTime(existingID).strftime('%Y-%m-%d %H:%M:%S'), timefile=document['_lastupdate']))
-                        if self._iswritable(objDocument) and self.getLastTime(existingID) < lastupdate:
+                        timedb=getUpdTime(objDocument)
+                        logging.debug("CheckDocumentsToSave : time db : {timedb} time file : {timefile}".format(timedb=timedb.strftime('%Y-%m-%d %H:%M:%S'), timefile=document['_lastupdate']))
+                        if self._iswritable(objDocument) and timedb < lastupdate:
                             hasSaved = True
 
             retValues[getFileName(document[fullNamePath])]={
@@ -748,7 +749,7 @@ class plm_document(models.Model):
                     objDocument = self.browse(existingID)
                     if objDocument:
                         document['revisionid']=objDocument.revisionid
-                        if self._iswritable(objDocument) and (self.getLastTime(existingID) < lastupdate):
+                        if self._iswritable(objDocument) and (getUpdTime(objDocument) < lastupdate):
                             logging.debug("[SaveOrUpdate] Document {name}/{revi} is updating.".format(name=document['name'],revi=document['revisionid']))
                             hasSaved = True
                             if not objDocument.with_context({'internal_writing':False}).write(document):
@@ -1166,7 +1167,9 @@ class plm_document(models.Model):
                     'reason': "Removed entity from database.",
                  }
                 self._insertlog(checkObj.id, note=note)
-                ret=ret | super(plm_document, checkObj).unlink()
+                item = super(plm_document, checkObj).unlink()
+                if item:
+                    ret=ret | item
         return ret
 
     usedforspare    =   fields.Boolean  (string=_('Used for Spare'),help=_("Drawings marked here will be used printing Spare Part Manual report."), default=False)
@@ -1391,17 +1394,6 @@ class plm_document(models.Model):
             calculate the server db time 
         """
         return datetime.now()
-
-    def getLastTime(self, oid, default=None):
-        """
-            get document last modification time 
-        """
-        
-        obj = self.browse(oid)
-        if (obj.write_date != False):
-            return datetime.strptime(obj.write_date, '%Y-%m-%d %H:%M:%S')
-        else:
-            return datetime.strptime(obj.create_date, '%Y-%m-%d %H:%M:%S')
 
     def getUserSign(self, oid, default=None):
         """

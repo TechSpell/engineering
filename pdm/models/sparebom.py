@@ -44,7 +44,7 @@ class plm_temporary(osv.osv.osv_memory):
         
         
         productType=self.env['product.product']
-        bomType=self.pool['mrp.bom']
+        bomType=self.env['mrp.bom']
         for idd in context['active_ids']:
             checkObj=productType.browse(idd)
             if not checkObj:

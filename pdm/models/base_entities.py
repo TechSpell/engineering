@@ -819,7 +819,9 @@ class plm_relation(models.Model):
              }
         for processId in processIds:
             self._insertlog(processId.id, note=note)
-            ret=ret | super(plm_relation, processId).unlink()
+            item=super(plm_relation, processId).unlink()
+            if item:
+                ret=ret | item
         return ret
 
 plm_relation()
