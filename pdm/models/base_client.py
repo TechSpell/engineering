@@ -736,13 +736,14 @@ class plm_config_settings(models.Model):
                           'name' : {'label':_('Document Name'), 'visible':True, 'pos':2},
                           'revisionid' : {'label':_('Revision'), 'visible':True, 'pos':3},
                           'minorrevision' : {'label':_('Minor Revision'), 'visible':True, 'pos':4},
-                          'created' :  {'label':_('Creator'), 'visible':True, 'pos':5},
-                          'create_date' :  {'label':_('Created'), 'visible':True, 'pos':6},
-                          'changed' :  {'label':_('Modified by'), 'visible':True, 'pos':7},
-                          'write_date' :  {'label':_('Changed'), 'visible':True, 'pos':8},
-                          'checkedout' :  {'label':_('Checked-Out by'), 'visible':True, 'pos':9},
-                          'filename' :  {'label':_('File Name'), 'visible':True, 'pos':10},
-                          'preview' :  {'label':_('Preview'), 'visible':False, 'pos':11},
+                          'state' :  {'label':_('Status'), 'visible':True, 'pos':5},
+                          'created' :  {'label':_('Creator'), 'visible':True, 'pos':6},
+                          'create_date' :  {'label':_('Created'), 'visible':True, 'pos':7},
+                          'changed' :  {'label':_('Modified by'), 'visible':True, 'pos':8},
+                          'write_date' :  {'label':_('Changed'), 'visible':True, 'pos':9},
+                          'checkedout' :  {'label':_('Checked-Out by'), 'visible':True, 'pos':10},
+                          'filename' :  {'label':_('File Name'), 'visible':True, 'pos':11},
+                          'preview' :  {'label':_('Preview'), 'visible':False, 'pos':12},
                           },
                 
                 'component':{
@@ -751,11 +752,12 @@ class plm_config_settings(models.Model):
                           'name' : {'label':_('Product Name'), 'visible':True, 'pos':3},
                           'engineering_code' : {'label':_('Engineering Code'), 'visible':True, 'pos':4},
                           'engineering_revision' : {'label':_('Revision'), 'visible':True, 'pos':5},
-                          'description' : {'label':_('Description'), 'visible':True, 'pos':6},
-                          'created' :  {'label':_('Creator'), 'visible':True, 'pos':7},
-                          'create_date' :  {'label':_('Created'), 'visible':True, 'pos':8},
-                          'changed' :  {'label':_('Modified by'), 'visible':True, 'pos':9},
-                          'write_date' :  {'label':_('Modified'), 'visible':True, 'pos':10},
+                          'state' :  {'label':_('Status'), 'visible':True, 'pos':6},
+                          'description' : {'label':_('Description'), 'visible':True, 'pos':7},
+                          'created' :  {'label':_('Creator'), 'visible':True, 'pos':8},
+                          'create_date' :  {'label':_('Created'), 'visible':True, 'pos':9},
+                          'changed' :  {'label':_('Modified by'), 'visible':True, 'pos':10},
+                          'write_date' :  {'label':_('Modified'), 'visible':True, 'pos':11},
                           },
 
                 'mrpbom':{
@@ -851,7 +853,7 @@ class plm_config_settings(models.Model):
         cr.execute(
             """
             CREATE OR REPLACE VIEW ext_document AS (
-                SELECT a.id, a.name, a.revisionid, a.minorrevision, d.login as created, a.create_date, d.login as changed, a.write_date, c.login as checkedout, a.datas_fname as filename, a.preview 
+                SELECT a.id, a.name, a.revisionid, a.minorrevision, d.login as created, a.state, a.create_date, d.login as changed, a.write_date, c.login as checkedout, a.datas_fname as filename, a.preview 
                     FROM plm_document a LEFT JOIN plm_checkout b on a.id=b.documentid LEFT JOIN res_users c on c.id=b.userid, res_users d, res_users e
                     WHERE
                          a.id IN
@@ -871,7 +873,7 @@ class plm_config_settings(models.Model):
         cr.execute(
             """
             CREATE OR REPLACE VIEW ext_component AS (
-                SELECT a.id, b.id as tmpl_id, b.name,b.engineering_code, b.engineering_revision, b.description, c.login as created, a.create_date, d.login as changed, a.write_date
+                SELECT a.id, b.id as tmpl_id, b.name,b.engineering_code, b.engineering_revision, b.description, c.login as created, b.state, a.create_date, d.login as changed, a.write_date
                     FROM product_product a, product_template b, res_users c, res_users d 
                     WHERE
                          b.id IN
