@@ -26,7 +26,7 @@ from datetime import datetime
 from openerp import models, fields, api, _, osv
 import openerp.addons.decimal_precision as dp
 
-from .common import BOMTYPES, getListIDs, getCleanList, \
+from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, \
                     isAdministrator, isDraft, isAnyReleased, isObsoleted
                     
 

@@ -401,7 +401,8 @@ class plm_component(models.Model):
                     ('engineering_code', '=', part['engineering_code']) ]
                     , order='engineering_revision')
             if existingIDs:
-                existingID = existingIDs[len(existingIDs) - 1].id
+                ids=sorted(existingIDs.ids)
+                existingID = ids[len(ids) - 1]
             if existingID:
                 hasSaved = False
                 objPart = self.browse(existingID)
@@ -453,8 +454,8 @@ class plm_component(models.Model):
                         ('engineering_code', '=', part['engineering_code']) ]
                         , order='engineering_revision')
                 if existingIDs:
-                    existingIDs.sort()
-                    existingID = existingIDs[len(existingIDs) - 1].id
+                    ids=sorted(existingIDs.ids)
+                    existingID = ids[len(ids) - 1]
             else:
                 existingID=part['componentID']
  
