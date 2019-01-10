@@ -91,7 +91,10 @@ class plm_document(orm.Model):
                 op_note="{reason}".format(reason=note['reason'])
             elif changes:
                 op_type='change value'
-                op_note=self.pool['plm.logging'].getchanges(cr, uid, objID, changes, context=context)
+                thischanges=dict(zip(changes.keys(),changes.values()))
+                if 'datas' in thischanges:
+                    thischanges['datas']='omissed'
+                op_note=self.pool['plm.logging'].getchanges(cr, uid, objID, thischanges, context=context)
             if op_note:
                 values={
                         'name': objID.name,
@@ -748,6 +751,7 @@ class plm_document(orm.Model):
                     objDocument = self.browse(cr, uid, existingID, context=context)
                     if objDocument:
                         document['revisionid']=objDocument.revisionid
+                        document['minorrevision']=objDocument.minorrevision
                         if self._iswritable(cr, uid, objDocument) and (getUpdTime(objDocument) < lastupdate):
                             logging.debug("[SaveOrUpdate] Document {name}/{revi} is updating.".format(name=document['name'],revi=document['revisionid']))
                             hasSaved = True
@@ -1437,9 +1441,8 @@ class plm_document(orm.Model):
         """
             get the user name
         """
-        userType = self.pool['res.users']
         context = context or self.pool['res.users'].context_get(cr, uid)
-        uiUser = userType.browse(cr, uid, oid, context=context)
+        uiUser = self.pool['res.users'].browse(cr, uid, oid, context=context)
         return uiUser.name
 
     def _getbyrevision(self, cr, uid, name, revision, context=None):
@@ -1450,9 +1453,8 @@ class plm_document(orm.Model):
         context = context or self.pool['res.users'].context_get(cr, uid)
         checkoutType = self.pool['plm.checkout']
         checkoutIDs = checkoutType.search(cr, uid, [('documentid', '=', oid)], context=context)
-        for checkoutID in checkoutIDs:
-            objDoc = checkoutType.browse(cr, uid, checkoutID, context=context)
-            return (objDoc.documentid.name, objDoc.documentid.revisionid, self.getUserSign(cr, objDoc.userid.id, 1),
+        for objDoc in checkoutType.browse(cr, uid, checkoutIDs, context=context):
+            return (objDoc.documentid.name, objDoc.documentid.revisionid, self.getUserSign(cr, uid, objDoc.userid.id),
                     objDoc.hostname)
         return False
 

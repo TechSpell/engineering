@@ -597,10 +597,7 @@ class plm_config_settings(orm.Model):
                         entityName=typeFields[keyName].column._obj  
                         rows=[]
                         columns=self.getBaseObject(cr,uid, entityName, context=context)
-                        if (typeFields[keyName].column._type in ["one2many","many2many"]):
-                            related=objectID[keyName].ids if objectID[keyName] else []
-                        else:
-                            related=getIDs(objectID[keyName]) if objectID[keyName] else []
+                        related=getIDs(objectID[keyName]) if objectID[keyName] else []
                         if related:
                             criteria=[('id','in', related),]
                             rows,_=self.getDataObject(cr,uid, entityName, criteria, columns.keys(), context=context)
