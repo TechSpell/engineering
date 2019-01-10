@@ -27,7 +27,7 @@ from openerp.osv import fields, orm
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 
-from .common import BOMTYPES, getListIDs, getCleanList, \
+from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, \
                     isAdministrator, isDraft, isAnyReleased, isObsoleted
                     
 
