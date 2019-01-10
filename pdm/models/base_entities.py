@@ -27,7 +27,7 @@ from odoo import models, fields, api, _, osv
 from odoo.exceptions import UserError
 import odoo.addons.decimal_precision as dp
 
-from .common import BOMTYPES, getListIDs, getCleanList, \
+from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, \
                     isAdministrator, isDraft, isAnyReleased, isObsoleted
                     
 
@@ -886,7 +886,7 @@ class plm_temporary(osv.osv.osv_memory):
                 'domain': "[('product_id','in', [" + ','.join(map(str, context['active_ids'])) + "])]",
                 }
         return ret
-    
+
     @api.model
     def action_NewRevision(self, ids):
         """
@@ -917,7 +917,8 @@ class plm_temporary(osv.osv.osv_memory):
                     }
                         
         return ret
-
+    
+    @api.model
     def action_NewDocRevision(self, ids):
         """
             Call for NewRevision method
@@ -947,4 +948,3 @@ class plm_temporary(osv.osv.osv_memory):
                     }
                         
         return ret
-    
