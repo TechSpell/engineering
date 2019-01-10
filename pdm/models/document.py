@@ -93,7 +93,10 @@ class plm_document(models.Model):
                 op_note="{reason}".format(reason=note['reason'])
             elif changes:
                 op_type='change value'
-                op_note=self.env['plm.logging'].getchanges(objID, changes)
+                thischanges=dict(zip(changes.keys(),changes.values()))
+                if 'datas' in thischanges:
+                    thischanges['datas']='omissed'
+                op_note=self.env['plm.logging'].getchanges(objID, thischanges)
             if op_note:
                 values={
                         'name': objID.name,
@@ -643,7 +646,8 @@ class plm_document(models.Model):
             if criteria:
                 existingIDs = self.search(criteria, order=order)
                 if existingIDs:
-                    existingID = existingIDs[len(existingIDs) - 1].id
+                    ids=sorted(existingIDs.ids)
+                    existingID = ids[len(ids) - 1]
             return existingID
         
     @api.model
@@ -751,6 +755,7 @@ class plm_document(models.Model):
                     objDocument = self.browse(existingID)
                     if objDocument:
                         document['revisionid']=objDocument.revisionid
+                        document['minorrevision']=objDocument.minorrevision
                         if self._iswritable(objDocument) and (getUpdTime(objDocument) < lastupdate):
                             logging.debug("[SaveOrUpdate] Document {name}/{revi} is updating.".format(name=document['name'],revi=document['revisionid']))
                             hasSaved = True
@@ -1383,9 +1388,7 @@ class plm_document(models.Model):
         """
             get the user name
         """
-        userType = self.env['res.users']
-        
-        uiUser = userType.browse(oid)
+        uiUser = self.env['res.users'].browse(oid)
         return uiUser.name
 
     def _getbyrevision(self, name, revision):
@@ -1394,9 +1397,8 @@ class plm_document(models.Model):
 
     def getCheckedOut(self, oid, default=None):
         
-        checkoutType = self.env['plm.checkout']
-        for objDoc in checkoutType.search([('documentid', '=', oid)]):
-            return (objDoc.documentid.name, objDoc.documentid.revisionid, self.getUserSign(objDoc.userid.id, 1),
+        for objDoc in self.env['plm.checkout'].search([('documentid', '=', oid)]):
+            return (objDoc.documentid.name, objDoc.documentid.revisionid, self.getUserSign(objDoc.userid.id),
                     objDoc.hostname)
         return False
 
