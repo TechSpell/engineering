@@ -1318,7 +1318,7 @@ class plm_document(orm.Model):
             docArray = self._getlastrev(cr, uid, ids, context=context)
         else:
             docArray = ids
-        return packDictionary(self._data_get_files(cr, uid, docArray, listedFiles, forceFlag, context=context))
+        return self._data_get_files(cr, uid, docArray, listedFiles, forceFlag, context=context)
 
     def GetAllFiles(self, cr, uid, request, default=None, context=None):
         """
@@ -1359,7 +1359,7 @@ class plm_document(orm.Model):
 
         if not oid in docArray:
             docArray.append(oid)  # Add requested document to package
-        return packDictionary(self._data_get_files(cr, uid, docArray, listedFiles, forceFlag, context=context))
+        return self._data_get_files(cr, uid, docArray, listedFiles, forceFlag, context=context)
 
     def getRelatedDocs(self, cr, uid, ids, fthkindList=[], chnkindList=[], context=None):
         """
