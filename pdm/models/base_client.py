@@ -876,7 +876,7 @@ class plm_config_settings(models.Model):
         cr.execute(
             """
             CREATE OR REPLACE VIEW ext_component AS (
-                SELECT a.id, b.id as tmpl_id, b.name,b.engineering_code, b.engineering_revision, b.description, c.login as created, a.state, a.create_date, d.login as changed, a.write_date
+                SELECT a.id, b.id as tmpl_id, b.name,b.engineering_code, b.engineering_revision, b.description, c.login as created, b.state, a.create_date, d.login as changed, a.write_date
                     FROM product_product a, product_template b, res_users c, res_users d 
                     WHERE
                          b.id IN
