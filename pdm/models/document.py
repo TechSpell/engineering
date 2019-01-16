@@ -1308,7 +1308,7 @@ class plm_document(models.Model):
             docArray = self._getlastrev(ids)
         else:
             docArray = ids
-        return packDictionary(self._data_get_files(docArray, listedFiles, forceFlag))
+        return self._data_get_files(docArray, listedFiles, forceFlag)
 
     @api.model
     def GetAllFiles(self, request, default=None):
@@ -1350,7 +1350,7 @@ class plm_document(models.Model):
 
         if not oid in docArray:
             docArray.append(oid)  # Add requested document to package
-        return packDictionary(self._data_get_files(docArray, listedFiles, forceFlag))
+        return self._data_get_files(docArray, listedFiles, forceFlag)
 
     def getRelatedDocs(self, ids, fthkindList=[], chnkindList=[]):
         """
