@@ -594,17 +594,21 @@ class plm_component(models.Model):
         return retd
 
     ##  Work Flow Internal Methods
-    def _get_recursive_parts(self, ids, excludeStatuses, includeStatuses):
+    def _get_recursive_parts(self, ids, excludeStatuses, includeStatuses, release=False):
         """
            Gets all ids related to current one as children
         """
         stopFlag = False
         tobeReleasedIDs = getListIDs(ids)
+        options=self.env['plm.config.settings'].GetOptions()
         children = []
         for oic in self.browse(ids):
             children = self.browse(self._getChildrenBom(oic, 1))
             for child in children:
-                if (not child.state in excludeStatuses) and (not child.state in includeStatuses):
+                if ((not child.state in excludeStatuses) and (not child.state in includeStatuses)) \
+                        and (release and not(options.get('opt_obsoletedinbom', False))):
+                    logging.warning("Part (%r - %d) is in a status '%s' not allowed."
+                                    %(child.engineering_code, child.engineering_revision, child.state))
                     stopFlag = True
                     continue
                 if child.state in includeStatuses:
@@ -636,7 +640,7 @@ class plm_component(models.Model):
                     if documentType.ischecked_in(document.id):
                         docIDs.append(document.id)
         idMoves=move_workflow(documentType, docIDs, action, status)
-        self.logging_workflow(idMoves, action, status)
+        documentType.logging_workflow(idMoves, action, status)
             
         return docIDs
 
@@ -851,7 +855,7 @@ class plm_component(models.Model):
                 'state': status
                 }
         
-        stopFlag, allIDs = self._get_recursive_parts(ids, excludeStatuses, includeStatuses)
+        stopFlag, allIDs = self._get_recursive_parts(ids, excludeStatuses, includeStatuses, release=True)
         if len(allIDs) < 1 or stopFlag:
             raise UserError(_("WorkFlow Error.\n\nOne or more parts cannot be released."))
         allProdObjs = self.browse(allIDs)

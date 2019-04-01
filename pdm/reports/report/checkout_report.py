@@ -57,7 +57,7 @@ class report_plm_checkout(models.AbstractModel):
         return byteString.decode('UTF-8')
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         checkouts = self.env['plm.checkout'].browse(docids)
         return {'docs': checkouts,
                 'get_content': self.render_qweb_pdf}

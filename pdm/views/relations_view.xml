@@ -47,12 +47,9 @@
                     <field name="code" string="Reference"/>
                     <newline/>
                     <group expand="0" string="Group By..." colspan="4" col="8">
-                        <filter name="byname"  string="Product"    domain="[]" context="{'group_by':'product_id'}"/>
-                        <separator orientation="vertical"/>
-                        <filter name="byroute" string="Routing"    domain="[]" context="{'group_by':'routing_id'}"/>
-                        <filter name="bytype"  string="Type"       domain="[]" context="{'group_by' : 'type'}"/>
-                        <separator orientation="vertical"/>
-                        <filter name="bydate"  string="Start Date" domain="[]" context="{'group_by':'date_start'}" help="Starting Date"/>
+ 	                  	<filter name="byname"    string="BoM Name"    	domain="[]" context="{'group_by':'code'}"/>
+                    	<filter name="byproduct" string="Variant Name" 	domain="[]" context="{'group_by':'product_id'}"/>
+                        <filter name="bytype"  	 string="Type"       	domain="[]" context="{'group_by': 'type'}"/>
                    </group>
                 </search>            
             </field>

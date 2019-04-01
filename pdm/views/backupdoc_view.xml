@@ -99,9 +99,10 @@
         <field name="search_view_id" ref="plm_backupdoc_search"/>
     </record>
  
+ 
     <record id="restore_document_button_view" model="ir.ui.view">
         <field name="name">Restore Document</field>
-        <field name="model">plm.backupdoc</field>
+        <field name="model">plm.temporary</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
         <form string="Restore Selected Document">
@@ -116,7 +117,7 @@
     </record>
 
     <act_window name="Restore Document"
-        res_model="plm.backupdoc"
+        res_model="plm.temporary"
         src_model="plm.backupdoc"
         view_mode="form"
         view_id="restore_document_button_view"

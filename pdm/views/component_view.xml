@@ -67,10 +67,10 @@
         <field name="arch" type="xml">
 			<xpath expr="//sheet" position="before">
              	<header name="WFArea" >
-           		 	<button name="checkuploaded" states="uploaded" string="Check Uploaded" icon="gtk-apply" groups="pdm.group_plm_integrationuser" />
-                	<button name="release" states="confirmed" string="Release Component" type="workflow" icon="gtk-apply" class="oe_highlight" groups="pdm.group_plm_admin,pdm.group_plm_validationuser" />
-                	<button name="correct" states="confirmed" string="Correct Component" type="workflow" icon="gtk-cancel" />
-                	<button name="confirm" states="draft" string="Confirm Component" type="workflow" icon="gtk-go-forward" class="oe_highlight"  groups="pdm.group_plm_admin,pdm.group_plm_integrationuser"/>
+           		 	<button name="action_checkuploaded" states="uploaded" string="Check Uploaded" type="object" groups="pdm.group_plm_integrationuser" />
+                	<button name="action_release" states="confirmed" string="Release Component" type="object" icon="gtk-apply" class="oe_highlight" groups="pdm.group_plm_admin,pdm.group_plm_validationuser" />
+                	<button name="action_correct" states="confirmed" string="Correct Component" type="object" icon="gtk-cancel" />
+                	<button name="action_confirm" states="draft" string="Confirm Component" type="object" icon="gtk-go-forward" class="oe_highlight"  groups="pdm.group_plm_admin,pdm.group_plm_integrationuser"/>
                		<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
 	            </header>
             </xpath>

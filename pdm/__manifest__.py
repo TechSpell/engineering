@@ -103,6 +103,7 @@ Supported Editors :
              'reports/report/checkout_report.xml',
              'reports/report/bom_structure_templates.xml',
              'reports/report/bom_structure.xml',
+             'reports/report/document_structure_templates.xml',
        ],
     'demo': [
         ],

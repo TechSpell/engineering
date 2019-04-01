@@ -180,7 +180,7 @@ class BomStructureAllReport(models.AbstractModel):
         return getLevelObjects(myObject,level+1)
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}
@@ -230,7 +230,7 @@ class BomStructureOneReport(models.AbstractModel):
         return getLevelObjects(myObject,level+1)
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}
@@ -300,7 +300,7 @@ class BomStructureAllSumReport(models.AbstractModel):
         return result
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}
@@ -362,7 +362,7 @@ class BomStructureOneSumReport(models.AbstractModel):
         return result
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}
@@ -437,7 +437,7 @@ class BomStructureLeavesReport(models.AbstractModel):
         return result
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}
@@ -510,7 +510,7 @@ class BomStructureFlatReport(models.AbstractModel):
         return result
         
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}

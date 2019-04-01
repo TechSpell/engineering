@@ -46,7 +46,7 @@ class report_spare_parts_header(models.AbstractModel):
     _name = 'report.pdm.spare_bom_header'
     _description = "Report Spare Bom Header"
 
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         products = self.env['product.product'].browse(docids)
         return {'docs': products,
                 'time': time,
@@ -123,7 +123,7 @@ class report_spare_parts_document(models.AbstractModel):
         return strbuffer
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         documents = self.env['product.product'].browse(docids)
         return {'docs': documents,
                 'get_content': self.create}

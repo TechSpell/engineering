@@ -60,6 +60,12 @@ def getCleanBytesDictionary(myDict={}):
             ret.update({ getCleanValue(keyName): getCleanValue(myDict[keyName]) })
     return ret
 
+def getUpdStrTime(obj, timefmt='%Y-%m-%d %H:%M:%S'):
+    if(obj.write_date!=False):
+        return obj.write_date.strftime(timefmt)
+    else:
+        return obj.create_date.strftime(timefmt)
+
 def getUpdTime(obj):
     if(obj.write_date!=False):
         return obj.write_date
@@ -122,7 +128,7 @@ def getIDs(item):
             for singleItem in item:
                 results.append(singleItem.id)
         else:
-            results=getListIDs(item.id)
+            results=getListIDs(item.ids)
     return results
 
 def getCleanList(item):
