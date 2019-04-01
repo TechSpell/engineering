@@ -64,6 +64,7 @@ class plm_config_settings(models.Model):
 #   Option fields managed for each Service ID
     opt_editbom             =   fields.Boolean(_("Edit BoM not in 'draft'"),                    help=_("Allows to edit BoM if product is not in 'Draft' status. Default = False."))
     opt_editreleasedbom     =   fields.Boolean(_("Edit BoM in 'released'"),                     help=_("Allows to edit BoM if product is in 'Released' status. Default = False."))
+    opt_obsoletedinbom      =   fields.Boolean(_("Allow Obsoleted in BoM"),                     help=_("Allow Obsoleted products releasing a BoM. Default = False."))
     opt_duplicatedrowsinbom =   fields.Boolean(_("Allow rows duplicated in BoM"),               help=_("Allows to duplicate product rows editing a BoM. Default = True."),                          default = True)
     opt_autonumbersinbom    =   fields.Boolean(_("Allow to assign automatic positions in BoM"), help=_("Allows to assign automatically item positions editing a BoM. Default = False."))
     opt_autostepinbom       =   fields.Integer(_("Assign step to automatic positions in BoM"),  help=_("Allows to use this step assigning item positions, editing a BoM. Default = 5."),            default = 5)
@@ -276,7 +277,7 @@ class plm_config_settings(models.Model):
             Gets data for external connection to DB.
         """
         
-        tableViews,columnViews=self.getColumnViews()
+        tableViews, quickTables, columnViews=self.getColumnViews()
         criteria=self.getCriteriaNames()
         user = tools_config.get('plm_db_user', False) or tools_config.get('db_user', False) or ''
         pwd = tools_config.get('plm_db_password', False) or tools_config.get('db_password', False) or ''
@@ -285,7 +286,7 @@ class plm_config_settings(models.Model):
         dbname = self._cr.dbname
         if (host=="127.0.0.1") or (host=="localhost") or (host==""):
             host=socket.gethostname()
-        return ([user,pwd,host,port,dbname],tableViews,columnViews,criteria)
+        return ([user,pwd,host,port,dbname],tableViews, quickTables, columnViews, criteria)
 
     @api.model
     def GetServerTime(self):
@@ -320,6 +321,7 @@ class plm_config_settings(models.Model):
         """
         return packDictionary(self.getDataModel(request, default))
 
+    @api.model
     def getDataModel(self, request=None, default=None):
         """
             Get properties as assigned.
@@ -339,6 +341,7 @@ class plm_config_settings(models.Model):
                                                 ] })
         return retValues
 
+    @api.model
     def checkViewExistence(self, criteria=None):
         ret=None
         if criteria:
@@ -347,6 +350,7 @@ class plm_config_settings(models.Model):
                 break
         return ret
 
+    @api.model
     def getViewArchitecture(self, criteria=None):
         ret=None
         if criteria:
@@ -614,7 +618,7 @@ class plm_config_settings(models.Model):
                         entityName=typeFields[keyName]._related_comodel_name  
                         rows=[]
                         columns=self.getBaseObject(entityName)
-                        related=getIDs(objectID[keyName])
+                        related=objectID[keyName].ids if objectID[keyName] else []
                         if related:
                             criteria=[('id','in', related),]
                             rows,_=self.getDataObject(entityName, criteria, columns.keys())
@@ -727,6 +731,7 @@ class plm_config_settings(models.Model):
         """
         tables=[['ext_document','document'],['ext_component','component'],['ext_docbom','docbom'],
                     ['ext_bom','mrpbom'],['ext_checkout','checkout'],['ext_linkdoc','linkdoc']]
+        quick_tables=[['ext_document','document'],['ext_checkout','checkout']]
         columns = {
                 'document':{
                           'id' : {'label':_('ID'), 'visible':True, 'pos':1},
@@ -819,7 +824,7 @@ class plm_config_settings(models.Model):
                            },
                 }
                    
-        return tables, columns
+        return tables, quick_tables, columns
 
     @api.model_cr
     def Refresh(self):
@@ -930,11 +935,13 @@ class plm_config_settings(models.Model):
         cr.execute("CREATE INDEX IF NOT EXISTS idx_parent_id_plm_document_relation ON plm_document_relation (parent_id)")
         cr.execute("CREATE INDEX IF NOT EXISTS idx_child_id_plm_document_relation ON plm_document_relation (child_id)")
         cr.execute("CREATE INDEX IF NOT EXISTS idx_create_uid_plm_document_relation ON plm_document_relation (create_uid)")
+        cr.execute("CREATE INDEX IF NOT EXISTS idx_create_date_plm_document_relation ON plm_document_relation (create_date)")
+
         cr.execute(
             """
             CREATE OR REPLACE VIEW ext_docbom AS (
-                SELECT c.id, c.create_date, d.login as created, a.changed, a.id as father_id, a.name as father,a.revisionid as father_rv,a.minorrevision as father_min,a.filename as father_file,c.link_kind as kind,b.id as child_id, b.name as child,b.revisionid as child_rv,b.minorrevision as child_min,b.filename as child_file
-                    FROM ext_document a, ext_document b, plm_document_relation c, res_users d
+                SELECT c.id, c.create_date, d.login as created, e.login as changed, a.id as father_id, a.name as father,a.revisionid as father_rv,a.minorrevision as father_min,a.datas_fname as father_file,c.link_kind as kind,b.id as child_id, b.name as child,b.revisionid as child_rv,b.minorrevision as child_min,b.datas_fname as child_file
+                    FROM plm_document a, plm_document b, plm_document_relation c, res_users d, res_users e
                     WHERE
                         b.id IN
                         (
@@ -943,7 +950,8 @@ class plm_config_settings(models.Model):
                         AND c.child_id = b.id
                         AND a.id = c.parent_id
                         AND d.id = c.create_uid
-                        order by c.id
+                        AND e.id = c.write_uid
+                        ORDER BY c.id
                    )
             """
         )
@@ -1070,7 +1078,7 @@ class plm_logging(models.Model):
         if objectID and values:
             just2check=objectID._proper_fields
             for keyName in values.keys():
-                if keyName in just2check:
+                if keyName in just2check and not(keyName in ['datas','printout','preview']):
                     changes+="'{key}' was '{old}' now is '{new}', ".format(key=keyName, old=objectID[keyName], new=values[keyName])
             if changes:
                 changes="Changed values: "+changes

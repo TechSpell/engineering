@@ -115,6 +115,116 @@
         id="menu_document_relations"
         sequence="20"
         parent="plm_document_menu"/>
+        
+<!-- Tree Structure Down -->
+
+         <record id="plm_docbom_tree_structure" model="ir.ui.view">
+            <field name="name">plm.docbom.tree</field>
+            <field name="model">plm.document.relation</field>
+            <field name="field_parent">child_line_ids</field>
+            <field name="arch" type="xml">
+                <tree string="Documents Structure">
+                    <field name="parent_id" string="Father"/>
+                    <field name="parent_revision" string="Revision"/>
+                    <field name="parent_state" string="Status"/>
+                    <field name="parent_checkedout"/>
+                    <field name="child_id" string="Child"/>
+                    <field name="child_revision"/>
+                    <field name="child_state"/>
+                    <field name="child_checkedout"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_docbom_structure" model="ir.actions.act_window">
+            <field name="name">Document Structure</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">plm.document.relation</field>
+            <field name="domain">[('id', 'in', active_ids)]</field>
+            <field name="view_type">tree</field>
+            <field name="view_id" ref="plm_docbom_tree_structure"/>
+        </record>
+        
+        <record id="ir_docbom_structure" model="ir.values">
+            <field eval="'client_action_multi'" name="key2"/>
+            <field eval="'plm.document.relation'" name="model"/>
+            <field name="name">Bill of Materials Structure</field>
+            <field eval="'ir.actions.act_window,'+str(action_docbom_structure)" name="value"/>
+        </record>
+
+
+<!-- Tree Structure Up -->
+
+        <record id="plm_docbom_tree_view_where" model="ir.ui.view">
+            <field name="name">plm.docbom.tree.where</field>
+            <field name="model">plm.document.relation</field>
+            <field name="field_parent">father_line_ids</field>
+            <field name="arch" type="xml">
+                <tree string="Where Used Documents Structure">
+                    <field name="parent_id" string="Father"/>
+                    <field name="parent_revision" string="Revision"/>
+                    <field name="parent_state" string="Status"/>
+                    <field name="parent_checkedout"/>
+                    <field name="child_id" string="Child"/>
+                    <field name="child_revision"/>
+                    <field name="child_state"/>
+                    <field name="child_checkedout"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="docbom_structureWhere" model="ir.actions.act_window">
+            <field name="name">Where Used Documents Structure</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">plm.document.relation</field>
+            <field name="domain">[('id', 'in', active_ids)]</field>
+            <field name="view_type">tree</field>
+            <field name="view_id" ref="plm_docbom_tree_view_where"/>
+        </record>
+        
+        <record id="ir_docbom_structureWhere" model="ir.values">
+            <field eval="'client_action_multi'" name="key2"/>
+            <field eval="'plm.document.relation'" name="model"/>
+            <field name="name">Where Used Documents Structure</field>
+            <field eval="'ir.actions.act_window,'+str(docbom_structureWhere)" name="value"/>
+        </record>
+        
+
+ <!-- Documents Tree Structure Down -->
+        <record id="action_documentbom_structure" model="ir.actions.act_window">
+            <field name="name">Document Structure</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">plm.document.relation</field>
+            <field name="domain">[('parent_id', 'in', active_ids)]</field>
+            <field name="view_type">tree</field>
+            <field name="view_id" ref="plm_docbom_tree_structure"/>
+        </record>
+        
+        <record id="ir_documentbom_structure" model="ir.values">
+            <field eval="'client_action_multi'" name="key2"/>
+            <field eval="'plm.document'" name="model"/>
+            <field name="name">Bill of Materials Structure</field>
+            <field eval="'ir.actions.act_window,'+str(action_documentbom_structure)" name="value"/>
+        </record>
+ 
+ <!-- Documents Tree Structure Up -->
+ 
+        <record id="documentbom_structureWhere" model="ir.actions.act_window">
+            <field name="name">Where Used Documents Structure</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">plm.document.relation</field>
+            <field name="domain">[('child_id', 'in', active_ids)]</field>
+            <field name="view_type">tree</field>
+            <field name="view_id" ref="plm_docbom_tree_view_where"/>
+        </record>
+        
+        <record id="ir_documentbom_structureWhere" model="ir.values">
+            <field eval="'client_action_multi'" name="key2"/>
+            <field eval="'plm.document'" name="model"/>
+            <field name="name">Where Used Documents Structure</field>
+            <field eval="'ir.actions.act_window,'+str(documentbom_structureWhere)" name="value"/>
+        </record>
+        
 
 </data>
 </openerp>
