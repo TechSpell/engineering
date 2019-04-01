@@ -3,7 +3,9 @@
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
 #    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
-#    $Id$
+#    
+#    Created on : 2016-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -25,6 +27,8 @@ import time
 from openerp.osv import orm, fields
 from openerp.tools.translate import _
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT
+
+from common import getListIDs
 
 class plm_document(orm.Model):
     _name = 'plm.document'
@@ -296,6 +300,54 @@ class plm_document_relation(orm.Model):
     _name = 'plm.document.relation'
     _inherit = 'plm.document.relation'
 
+    def _get_parents(self, cr, uid, line_id=None, context=None):
+        """
+            If the BOM line refers to a BOM, return the ids of the child BOM lines
+        """
+        ids=[]
+        if line_id:
+            criteria=[('parent_id', '=', line_id.parent_id.id)]
+            ids=self.search(cr, uid, criteria, context=context)
+        return self.browse(cr, uid, list(set(ids)), context=context)
+
+
+    def _get_children(self, cr, uid, line_ids=None, context=None):
+        """
+            If the BOM line refers to a BOM, return the ids of the child BOM lines
+        """
+        ids=[]
+        context=context or self.pool['res.users'].context_get(cr, uid)
+        for line_id in line_ids:
+            ids.append(line_id.child_id.id)
+        criteria=[('parent_id', 'in', list(set(ids)))]
+        resIDs=self.search(cr, uid, criteria, context=context)
+        return list(set(resIDs))
+    
+    def _get_children_lines(self, cr, uid, ids, name, arg, context=None):
+        res = {}
+        context=context or self.pool['res.users'].context_get(cr, uid)
+        for line_id in self.browse(cr, uid, getListIDs(ids), context=context):
+            parents=self._get_parents(cr, uid, line_id, context=context)
+            res[line_id.id]=self._get_children(cr, uid, parents, context=context)
+        return res
+
+
+    def _get_fathers(self, cr, uid, line_id=None, context=None):
+        ids=[]
+        context=context or self.pool['res.users'].context_get(cr, uid)
+        if line_id:
+            criteria=[('child_id', '=', line_id.parent_id.id),('link_kind', 'in', ['HiTree'])]
+            ids=self.search(cr, uid, criteria, context=context)
+        return list(set(ids))
+        
+    def _get_fathers_lines(self, cr, uid, ids, name, arg, context=None):
+        res={}
+        context=context or self.pool['res.users'].context_get(cr, uid)
+        for line_id in self.browse(cr, uid, getListIDs(ids), context=context):
+            res[line_id.id]=self._get_fathers(cr, uid, line_id, context=context)
+        return res
+
+
     _columns = {
         'name':             fields.related('parent_id', 'name', type="char", relation="plm.document",
                                          string="Document", store=False),
@@ -315,6 +367,8 @@ class plm_document_relation(orm.Model):
                                          string="Revision", store=False),
         'child_checkedout': fields.related('child_id', 'checkout_user', type="char", relation="plm.document",
                                            string="Checked-Out To", store=False),
+        'child_line_ids':   fields.function(_get_children_lines, relation='plm.document.relation', method=True, string="Documents related as children", type='one2many', store =False),
+        'father_line_ids':  fields.function(_get_fathers_lines, relation='plm.document.relation',  method=True, string="Documents related as fathers",  type='one2many', store =False),
     }
 
 plm_document_relation()
