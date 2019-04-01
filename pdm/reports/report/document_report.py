@@ -27,10 +27,13 @@ import base64
 from odoo import api, models
 
 from .book_collector import packDocuments
-from .common import usefulInfos, emptyDocument
+from .common import usefulInfos, emptyDocument, moduleName
+
+thisModuleName=moduleName()
+
 
 class report_plm_document(models.AbstractModel):
-    _name = 'report.pdm.document_pdf'
+    _name = 'report.%s.document_pdf' %(thisModuleName)
     _description = 'Report PDF Document'
 
     @api.model
@@ -54,3 +57,109 @@ class report_plm_document(models.AbstractModel):
         documents = self.env['plm.document'].browse(docids)
         return {'docs': documents,
                 'get_content': self.render_qweb_pdf}
+
+
+class report_document_structure(models.AbstractModel):
+    _template='%s.document_structure' %(thisModuleName)
+    _name='report.%s.document_structure' %(thisModuleName)
+    _description = "Document Structure PDF Report"
+
+    @api.model
+    def get_structure(self, docids):
+        children=[]
+        docRels=self.env['plm.document.relation'].search([('parent_id', 'in', docids._ids),('link_kind', '=', 'HiTree')])
+        for docRel in docRels:
+            children.append(docRel.child_id)
+        return list(set(children))
+
+    @api.multi
+    def get_children(self, myObject, level=0):
+        result=[]
+
+        def getLevelObjects(docobject, level):
+            for l in docobject:
+                for docId in self.get_structure(l):
+                    res={}
+                    res['name']=docId.name
+                    res['revi']=docId.revisionid
+                    res['minor']=docId.minorrevision
+                    res['state']=docId.state
+                    res['checkedout']=docId.checkout_user
+                    res['preview']=docId.preview
+                    res['level']=level
+                    result.append(res)
+                    getLevelObjects(docId, level+1)
+            return result
+
+        return getLevelObjects(myObject, level+1)
+
+    @api.model
+    def get_report_values(self, docids, data=None):
+        return {'docs': self.env['plm.document'].browse(docids),
+                'get_children': self.get_children}
+
+    @api.model
+    def render_html(self, docids, data=None):
+        report_obj = self.env['report']
+        report_obj._get_report_from_name(self._template)
+        docargs = {
+            'doc_ids': docids,
+            'doc_model': 'plm.document',
+            'docs': self,
+            'data': data,
+            'get_children': self.get_children,
+        }
+        return self.env['report'].render(self._template, docargs)
+
+
+class report_document_where_used(models.AbstractModel):
+    _template='%s.document_where_used' %(thisModuleName)
+    _name='report.%s.document_where_used' %(thisModuleName)
+    _description = "Document Structure PDF Report"
+
+    @api.model
+    def get_where_used(self, docids):
+        fathers=[]
+        docRels=self.env['plm.document.relation'].search([('child_id', 'in', docids._ids),('link_kind', '=', 'HiTree')])
+        for docRel in docRels:
+            fathers.append(docRel.parent_id)
+        return list(set(fathers))
+
+    @api.multi
+    def get_fathers(self, myObject, level=0):
+        result=[]
+
+        def getLevelObjects(docobject, level):
+            for l in docobject:
+                for docId in self.get_where_used(l):
+                    res={}
+                    res['name']=docId.name
+                    res['revi']=docId.revisionid
+                    res['minor']=docId.minorrevision
+                    res['state']=docId.state
+                    res['checkedout']=docId.checkout_user
+                    res['preview']=docId.preview
+                    res['level']=level
+                    result.append(res)
+                    getLevelObjects(docId, level+1)
+            return result
+
+        return getLevelObjects(myObject, level+1)
+
+    @api.model
+    def get_report_values(self, docids, data=None):
+        return {'docs': self.env['plm.document'].browse(docids),
+                'get_children': self.get_fathers}
+
+    @api.model
+    def render_html(self, docids, data=None):
+        report_obj = self.env['report']
+        report_obj._get_report_from_name(self._template)
+        docargs = {
+            'doc_ids': docids,
+            'doc_model': 'plm.document',
+            'docs': self,
+            'data': data,
+            'get_children': self.get_fathers,
+        }
+        return self.env['report'].render(self._template, docargs)
