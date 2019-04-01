@@ -92,8 +92,6 @@ class plm_document(orm.Model):
             elif changes:
                 op_type='change value'
                 thischanges=dict(zip(changes.keys(),changes.values()))
-                if 'datas' in thischanges:
-                    thischanges['datas']='omissed'
                 op_note=self.pool['plm.logging'].getchanges(cr, uid, objID, thischanges, context=context)
             if op_note:
                 values={
@@ -372,6 +370,20 @@ class plm_document(orm.Model):
             return False
         return True
 
+    def GetCheckDocumentName(self, cr, uid, request, context=None):
+        """
+            Gets new document name from a an initial part name
+        """
+        ret= ""
+        docName, partName, length=request
+        if docName and partName and length:
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            if self._getDocumentID(cr, uid, {'name': docName}, context=context):
+                ret=self.GetNextDocumentName(cr, uid, (partName, length), context=None)
+            else:
+                ret=docName
+        return ret
+
     def GetNextDocumentName(self, cr, uid, request, context=None):
         """
             Gets new document name from a an initial part name
@@ -620,11 +632,19 @@ class plm_document(orm.Model):
                 execution=True
 
         if execution:
+            existingID = self._getDocumentID(cr, uid, document, context=context)
+                    
+        return existingID
+ 
+    def _getDocumentID(self, cr, uid, document={}, context=None):
+
+        existingID=False
+        if document:
             order=None
             criteria=[]
             if not ('name' in document):
 #               These statements can cover document already saved without document data
-                filename=getFileName(document[fullNamePath])
+                filename=getFileName(document['full_file_name'])
                 if filename:
                     document['name']=filename
                     criteria.append( ('datas_fname', '=', filename) )
@@ -647,7 +667,7 @@ class plm_document(orm.Model):
                 if existingIDs:
                     existingIDs.sort()
                     existingID = existingIDs[len(existingIDs) - 1]
-            return existingID
+        return existingID
         
     def CheckDocumentsToSave(self, cr, uid, documents, default=None, context=None):
         """
@@ -1732,9 +1752,15 @@ class plm_backupdoc(orm.Model):
         else:
             return False
 
+class plm_temporary(orm.TransientModel):
+    _name = "plm.temporary"
+    _inherit = "plm.temporary"
+
+    ##  Specialized Actions callable interactively
     def action_restore_document(self, cr, uid, ids, context=None):
         committed = False
         documentType = self.pool['plm.document']
+        backupdocType = self.pool['plm.backupdoc']
         context = context or self.pool['res.users'].context_get(cr, uid)
         check=context.get('internal_writing', False)
         if not check:
@@ -1743,20 +1769,20 @@ class plm_backupdoc(orm.Model):
                     "unlink : Unable to remove the required documents.\n You aren't authorized in this context.")
                 raise orm.except_orm(_('Backup Error'), _(
                     "Unable to remove the required document.\n You aren't authorized in this context."))
-        checkObj=self.browse(cr, uid, context['active_id'], context=context)
-        objDoc=documentType.browse(cr, uid, checkObj.documentid.id, context=context)
-        if objDoc.state == 'draft' and documentType.ischecked_in(cr, uid, ids, context=context):
-            if checkObj.existingfile != objDoc.store_fname:
-                context.update({'internal_writing':True})
-                committed=documentType.write(cr, uid, [objDoc.id],
-                                               {'store_fname': checkObj.existingfile, 'printout': checkObj.printout,
-                                                'preview': checkObj.preview, }, context=context)
-                if not committed:
-                    logging.warning("action_restore_document : Unable to restore the document (" + str(
-                        checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set.")
-                    raise orm.except_orm(_('Check-In Error'), _(
-                        "Unable to restore the document (" + str(checkObj.documentid.name) + "-" + str(
-                            checkObj.documentid.revisionid) + ") from backup set.\n Check if it's checked-in, before to proceed."))
-        self.unlink(cr, uid, ids, context=context)
+        backObj=backupdocType.browse(cr, uid, context['active_id'], context=context)
+        if backObj and backObj.documentid:
+            objDoc=backObj.documentid
+            if objDoc.state == 'draft' and documentType.ischecked_in(cr, uid, objDoc.id, context=context):
+                if backObj.existingfile != objDoc.store_fname:
+                    context.update({'internal_writing':True})
+                    committed=documentType.write(cr, uid, [objDoc.id],
+                                                   {'store_fname': backObj.existingfile, 'printout': backObj.printout,
+                                                    'preview': backObj.preview, }, context=context)
+                    if not committed:
+                        logging.warning("action_restore_document : Unable to restore the document (" + str(
+                            backObj.documentid.name) + "-" + str(backObj.documentid.revisionid) + ") from backup set.")
+                        raise orm.except_orm(_('Check-In Error'), _(
+                            "Unable to restore the document (" + str(backObj.documentid.name) + "-" + str(
+                                backObj.documentid.revisionid) + ") from backup set.\n Check if it's checked-in, before to proceed."))
         return committed
 

@@ -58,6 +58,7 @@ class plm_config_settings(orm.Model):
                                    help="Kind of license code ('node-locked' = Local individual license, 'domain-assigned' = Domain level license)."),
         'opt_editbom': fields.boolean("Edit BoM not in 'draft'", help="Allows to edit BoM if product is not in 'Draft' status. Default = False."),
         'opt_editreleasedbom': fields.boolean("Edit BoM in 'released'", help="Allows to edit BoM if product is in 'Released' status. Default = False."),
+        'opt_obsoletedinbom': fields.boolean("Allow Obsoleted in BoM", help="Allow Obsoleted products releasing a BoM. Default = False."),
         'opt_duplicatedrowsinbom': fields.boolean("Allow rows duplicated in BoM", help="Allows to duplicate product rows editing a BoM. Default = True."),
         'opt_autonumbersinbom': fields.boolean("Allow to assign automatic positions in BoM", help="Allows to assign automatically item positions editing a BoM. Default = False."),
         'opt_autostepinbom': fields.integer("Assign step to automatic positions in BoM", help="Allows to use this step assigning item positions, editing a BoM. Default = 5."),
@@ -272,7 +273,7 @@ class plm_config_settings(orm.Model):
             Gets data for external connection to DB.
         """
         context = context or self.pool['res.users'].context_get(cr, uid)
-        tableViews,columnViews=self.getColumnViews(cr, uid)
+        tableViews, quickTables, columnViews=self.getColumnViews(cr, uid)
         criteria=self.getCriteriaNames(cr, uid)
         user = tools_config.get('plm_db_user', False) or tools_config.get('db_user', False) or ''
         pwd = tools_config.get('plm_db_password', False) or tools_config.get('db_password', False) or ''
@@ -281,7 +282,7 @@ class plm_config_settings(orm.Model):
         dbname = cr.dbname
         if (host=="127.0.0.1") or (host=="localhost") or (host==""):
             host=socket.gethostname()
-        return ([user,pwd,host,port,dbname],tableViews,columnViews,criteria)
+        return ([user,pwd,host,port,dbname],tableViews,quickTables,columnViews,criteria)
 
     def GetServerTime(self, cr, uid, request=None, default=None, context=None):
         """
@@ -708,6 +709,7 @@ class plm_config_settings(orm.Model):
         """
         tables=[['ext_document','document'],['ext_component','component'],['ext_docbom','docbom'],
                     ['ext_bom','mrpbom'],['ext_checkout','checkout'],['ext_linkdoc','linkdoc']]
+        quick_tables=[['ext_document','document'],['ext_checkout','checkout']]
         columns = {
                 'document':{
                           'id' : {'label':_('ID'), 'visible':True, 'pos':1},
@@ -800,7 +802,7 @@ class plm_config_settings(orm.Model):
                            },
                 }
                    
-        return tables, columns
+        return tables, quick_tables, columns
 
     def execute(self, cr, uid, ids, context=None):
         """ Method called when the user clicks on the ``Next`` button.
@@ -933,11 +935,13 @@ class plm_config_settings(orm.Model):
         cr.execute("CREATE INDEX IF NOT EXISTS idx_parent_id_plm_document_relation ON plm_document_relation (parent_id)")
         cr.execute("CREATE INDEX IF NOT EXISTS idx_child_id_plm_document_relation ON plm_document_relation (child_id)")
         cr.execute("CREATE INDEX IF NOT EXISTS idx_create_uid_plm_document_relation ON plm_document_relation (create_uid)")
+        cr.execute("CREATE INDEX IF NOT EXISTS idx_create_date_plm_document_relation ON plm_document_relation (create_date)")
+
         cr.execute(
             """
             CREATE OR REPLACE VIEW ext_docbom AS (
-                SELECT c.id, c.create_date, d.login as created, a.changed, a.id as father_id, a.name as father,a.revisionid as father_rv,a.minorrevision as father_min,a.filename as father_file,c.link_kind as kind,b.id as child_id, b.name as child,b.revisionid as child_rv,b.minorrevision as child_min,b.filename as child_file
-                    FROM ext_document a, ext_document b, plm_document_relation c, res_users d
+                SELECT c.id, c.create_date, d.login as created, e.login as changed, a.id as father_id, a.name as father,a.revisionid as father_rv,a.minorrevision as father_min,a.datas_fname as father_file,c.link_kind as kind,b.id as child_id, b.name as child,b.revisionid as child_rv,b.minorrevision as child_min,b.datas_fname as child_file
+                    FROM plm_document a, plm_document b, plm_document_relation c, res_users d, res_users e
                     WHERE
                         b.id IN
                         (
@@ -946,7 +950,8 @@ class plm_config_settings(orm.Model):
                         AND c.child_id = b.id
                         AND a.id = c.parent_id
                         AND d.id = c.create_uid
-                        order by c.id
+                        AND e.id = c.write_uid
+                        ORDER BY c.id
                    )
             """
         )
@@ -1077,7 +1082,7 @@ class plm_logging(orm.Model):
             just2check=objectID._all_columns.keys()
             changes="Changed values: "
             for keyName in values.keys():
-                if keyName in just2check:
+                if keyName in just2check and not(keyName in ['datas','printout','preview']):
                     changes+="'{key}' was '{old}' now is '{new}', ".format(key=keyName, old=objectID[keyName], new=values[keyName])
         return changes
 

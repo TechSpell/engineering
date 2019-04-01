@@ -846,7 +846,7 @@ class plm_relation(orm.Model):
              }
         for processId in processIds:
             self._insertlog(cr, uid, processId.id, note=note, context=context)
-            item=super(plm_relation, self).unlink(cr, uid, processId.id, context=context)
+            item=super(plm_relation, self).unlink(cr, uid, [processId.id], context=context)
             if item:
                 ret=ret | item
         return ret

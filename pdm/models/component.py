@@ -595,18 +595,22 @@ class plm_component(orm.Model):
         return retd
 
     ##  Work Flow Internal Methods
-    def _get_recursive_parts(self, cr, uid, ids, excludeStatuses, includeStatuses, context=None):
+    def _get_recursive_parts(self, cr, uid, ids, excludeStatuses, includeStatuses, release=False, context=None):
         """
            Gets all ids related to current one as children
         """
         stopFlag = False
         tobeReleasedIDs = getListIDs(ids)
         context = context or self.pool['res.users'].context_get(cr, uid)
+        options=self.pool['plm.config.settings'].GetOptions(cr,uid)
         children = []
         for oic in self.browse(cr, uid, ids, context=context):
             children = self.browse(cr, uid, self._getChildrenBom(cr, uid, oic, 1, context=context), context=context)
             for child in children:
-                if (not child.state in excludeStatuses) and (not child.state in includeStatuses):
+                if ((not child.state in excludeStatuses) and (not child.state in includeStatuses)) \
+                        and (release and not(options.get('opt_obsoletedinbom', False))):
+                    logging.warning("Part (%r - %d) is in a status '%s' not allowed."
+                                    %(child.engineering_code, child.engineering_revision, child.state))
                     stopFlag = True
                     continue
                 if child.state in includeStatuses:
@@ -843,7 +847,7 @@ class plm_component(orm.Model):
                 }
         context = context or self.pool['res.users'].context_get(cr, uid)
         context.update({'internal_writing':True})
-        stopFlag, allIDs = self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses, context=context)
+        stopFlag, allIDs = self._get_recursive_parts(cr, uid, ids, excludeStatuses, includeStatuses, release=True, context=context)
         if len(allIDs) < 1 or stopFlag:
             raise orm.except_orm(_('WorkFlow Error'), _("Part cannot be released."))
         allProdObjs = self.browse(cr, uid, allIDs, context=context)
