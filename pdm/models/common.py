@@ -123,7 +123,7 @@ def getIDs(item):
             for singleItem in item:
                 results.append(singleItem.id)
         else:
-            results=getListIDs(item.id)
+            results=getListIDs(item.ids)
     return results
 
 def getCleanList(item):

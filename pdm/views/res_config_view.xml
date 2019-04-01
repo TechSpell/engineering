@@ -107,6 +107,7 @@
 									<field name="active_kind" attrs="{'invisible':[('activated_id','=',False)]}" />
 									<field name="opt_editbom" attrs="{'invisible':[('activated_id','!=',False)]}" />
 									<field name="opt_editreleasedbom" attrs="{'invisible':[('activated_id','!=',False)]}" />
+									<field name="opt_obsoletedinbom" attrs="{'invisible':[('activated_id','!=',False)]}" />
 									<field name="opt_duplicatedrowsinbom" attrs="{'invisible':[('activated_id','!=',False)]}" />
 									<field name="opt_autonumbersinbom" attrs="{'invisible':[('activated_id','!=',False)]}" />
 									<field name="opt_autostepinbom" attrs="{'invisible':[('activated_id','!=',False)]}" />

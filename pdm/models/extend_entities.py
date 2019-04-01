@@ -3,7 +3,9 @@
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
 #    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
-#    $Id$
+#    
+#    Created on : 2016-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -29,7 +31,7 @@ from openerp.tools import DEFAULT_SERVER_DATE_FORMAT
 class plm_document(models.Model):
     _inherit = 'plm.document'
 
-    linkedcomponents = fields.Many2many('product.product', 'plm_component_document_rel','document_id','component_id', string=_('Linked Parts'))
+    linkedcomponents    =   fields.Many2many('product.product', 'plm_component_document_rel','document_id','component_id', string=_('Linked Parts'))
 
     _defaults = {
                  'state': lambda *a: 'draft',
@@ -266,6 +268,54 @@ class plm_backupdoc(models.Model):
 class plm_document_relation(models.Model):
     _inherit = 'plm.document.relation'
 
+    def _get_parents(self, lines=None):
+        """
+            If the BOM line refers to a BOM, return the ids of the child BOM lines
+        """
+        ids=[]
+        for line_id in lines:
+            criteria=[('parent_id', '=', line_id.parent_id.id)]
+            for father_id in self.search( criteria ):
+                ids.append(father_id.id)
+        return self.browse(list(set(ids)))
+
+
+    def _get_children(self, line_ids=None):
+        """
+            If the BOM line refers to a BOM, return the ids of the child BOM lines
+        """
+        ids=[]
+        for line_id in line_ids:
+            ids.append(line_id.child_id.id)
+        criteria=[('parent_id', 'in', list(set(ids)))]
+        return self.search( criteria )
+
+    @api.one
+    def _get_children_lines(self, lines=None):
+        res = []
+        for line_id in self.browse(self._ids):
+            parents=self._get_parents(line_id)
+            children=self._get_children(parents)
+            res.extend(children._ids)
+        self.child_line_ids = list(set(res))
+
+
+    def _get_fathers(self, lines=None):
+        ids=[]
+        for line_id in lines:
+            criteria=[('child_id', '=', line_id.parent_id.id),('link_kind', 'in', ['HiTree'])]
+            for child_id in self.search( criteria ):
+                ids.append(child_id.id)
+        return self.browse(list(set(ids)))
+        
+    @api.one
+    def _get_fathers_lines(self):
+        res = []
+        for line_id in self.browse(self._ids):
+            parents=self._get_fathers(line_id)
+            res.extend(parents._ids)
+        self.father_line_ids = list(set(res))
+ 
     name                =   fields.Char     (related="parent_id.name",          string=_("Document"),       store=False)
     parent_preview      =   fields.Binary   (related="parent_id.preview",       string=_("Preview"),        store=False)
     parent_state        =   fields.Selection(related="parent_id.state",         string=_("Status"),         store=False)
@@ -275,4 +325,6 @@ class plm_document_relation(models.Model):
     child_state         =   fields.Selection(related="child_id.state",          string=_("Status"),         store=False)
     child_revision      =   fields.Integer  (related="child_id.revisionid",     string=_("Revision"),       store=False)
     child_checkedout    =   fields.Char     (related="child_id.checkout_user",  string=_("Checked-Out To"), store=False)
+    child_line_ids      =   fields.One2many ("plm.document.relation", compute=_get_children_lines,   string=_("Documents related as children"), store=False)
+    father_line_ids     =   fields.One2many ('plm.document.relation', compute=_get_fathers_lines,    string=_("Documents related as fathers"),  store=False)
 

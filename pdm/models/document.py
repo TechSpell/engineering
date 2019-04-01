@@ -93,8 +93,6 @@ class plm_document(models.Model):
             elif changes:
                 op_type='change value'
                 thischanges=dict(zip(changes.keys(),changes.values()))
-                if 'datas' in thischanges:
-                    thischanges['datas']='omissed'
                 op_note=self.env['plm.logging'].getchanges(objID, thischanges)
             if op_note:
                 values={
@@ -371,6 +369,20 @@ class plm_document(models.Model):
         return True
 
     @api.model
+    def GetCheckDocumentName(self, request):
+        """
+            Gets current document name or a newer one from part name
+        """
+        ret= ""
+        docName, partName, length=request
+        if docName and partName and length:
+            if self._getDocumentID({'name': docName}):  # Check existence,
+                ret=self.GetNextDocumentName((partName, length))
+            else:
+                ret=docName
+            return ret
+
+    @api.model
     def GetNextDocumentName(self, request):
         """
             Gets new document name from a an initial part name
@@ -623,11 +635,21 @@ class plm_document(models.Model):
                 execution=True
 
         if execution:
+            existingID = self._getDocumentID(document)
+                    
+        return existingID
+ 
+    def _getDocumentID(self, document={}):
+        """
+            Gets ExistingID from document values.
+        """
+        existingID=False
+        if document:
             order=None
             criteria=[]
             if not ('name' in document):
 #               These statements can cover document already saved without document data
-                filename=getFileName(document[fullNamePath])
+                filename=getFileName(document['full_file_name'])
                 if filename:
                     document['name']=filename
                     criteria.append( ('datas_fname', '=', filename) )
@@ -650,8 +672,8 @@ class plm_document(models.Model):
                 if existingIDs:
                     ids=sorted(existingIDs.ids)
                     existingID = ids[len(ids) - 1]
-            return existingID
-        
+        return existingID
+            
     @api.model
     def CheckDocumentsToSave(self, documents, default=None):
         """
@@ -1732,31 +1754,64 @@ class plm_backupdoc(models.Model):
         else:
             return False
 
-    def action_restore_document(self, ids):
+#     def action_restore_document(self, ids):
+#         committed = False
+#         documentType = self.env['plm.document']
+#         
+#         check=self._context.get('internal_writing', False)
+#         if not check:
+#             if not isAdministrator(self):
+#                 logging.warning(
+#                     "unlink : Unable to remove the required documents.\n You aren't authorized in this context.")
+#                 raise osv.except_osv(_('Backup Error'), _(
+#                     "Unable to remove the required document.\n You aren't authorized in this context."))
+#         checkObj=self.browse(self._context['active_id'])
+#         objDoc=documentType.browse(checkObj.documentid.id)
+#         if objDoc.state == 'draft' and documentType.ischecked_in(ids):
+#             if checkObj.existingfile != objDoc.store_fname:
+#                 committed=objDoc.with_context({'internal_writing':True}).write(
+#                                                {'store_fname': checkObj.existingfile, 
+#                                                 'printout': checkObj.printout,
+#                                                 'preview': checkObj.preview, } )
+#                 if not committed:
+#                     logging.warning("action_restore_document : Unable to restore the document (" + str(
+#                         checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set.")
+#                     raise osv.except_osv(_('Check-In Error'), _(
+#                         "Unable to restore the document (" + str(checkObj.documentid.name) + "-" + str(
+#                             checkObj.documentid.revisionid) + ") from backup set.\n Check if it's checked-in, before to proceed."))
+#         self.browse(ids).with_context({'internal_writing':True}).unlink()
+#         return committed
+
+
+class plm_temporary(osv.osv.osv_memory):
+    _name = "plm.temporary"
+    _inherit = "plm.temporary"
+
+    ##  Specialized Actions callable interactively
+    def action_restore_document(self, context):
         committed = False
         documentType = self.env['plm.document']
+        backupdocType = self.env['plm.backupdoc']
         
-        check=self._context.get('internal_writing', False)
+        
+        check=context.get('internal_writing', False)
         if not check:
             if not isAdministrator(self):
                 logging.warning(
                     "unlink : Unable to remove the required documents.\n You aren't authorized in this context.")
-                raise osv.except_osv(_('Backup Error'), _(
-                    "Unable to remove the required document.\n You aren't authorized in this context."))
-        checkObj=self.browse(self._context['active_id'])
-        objDoc=documentType.browse(checkObj.documentid.id)
-        if objDoc.state == 'draft' and documentType.ischecked_in(ids):
-            if checkObj.existingfile != objDoc.store_fname:
-                committed=objDoc.with_context({'internal_writing':True}).write(
-                                               {'store_fname': checkObj.existingfile, 
-                                                'printout': checkObj.printout,
-                                                'preview': checkObj.preview, } )
-                if not committed:
-                    logging.warning("action_restore_document : Unable to restore the document (" + str(
-                        checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set.")
-                    raise osv.except_osv(_('Check-In Error'), _(
-                        "Unable to restore the document (" + str(checkObj.documentid.name) + "-" + str(
-                            checkObj.documentid.revisionid) + ") from backup set.\n Check if it's checked-in, before to proceed."))
-        self.browse(ids).with_context({'internal_writing':True}).unlink()
+                raise  osv.except_osv(_('Backup Error'),_("Unable to remove the required document.\n You aren't authorized in this context."))
+        backObj=backupdocType.browse(context['active_id'])
+        if backObj and backObj.documentid:
+            objDoc=backObj.documentid
+            if objDoc.state == 'draft' and documentType.ischecked_in(objDoc.id):
+                if backObj.existingfile != objDoc.store_fname:
+                    committed=objDoc.with_context({'internal_writing':True}).write(
+                                                   {'store_fname': backObj.existingfile, 
+                                                    'printout': backObj.printout,
+                                                    'preview': backObj.preview, } )
+                    if not committed:
+                        logging.warning("action_restore_document : Unable to restore the document (" + str(
+                            backObj.documentid.name) + "-" + str(backObj.documentid.revisionid) + ") from backup set.")
+                        raise  osv.except_osv(_('Backup Error'), _("Unable to restore the document '{}-{}' from backup set.\nCheck if it's checked-in, before to retry.".format(backObj.documentid.name,backObj.documentid.revisionid)))
         return committed
 
