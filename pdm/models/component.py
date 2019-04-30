@@ -318,7 +318,7 @@ class plm_component(models.Model):
         ret=False
         
         for tmpObject in self.browse(getListIDs(ids)):
-            if tmpObject.state in ['released','undermodify','obsoleted']:
+            if isAnyReleased(self, tmpObject.id):
                 ret=True
                 break
         return ret
@@ -335,43 +335,44 @@ class plm_component(models.Model):
         for tmpObject in self.browse(getListIDs(ids)):
             latestIDs = self.GetLatestIds( [(tmpObject.engineering_code, tmpObject.engineering_revision, False)] )
             for oldObject in self.browse(latestIDs):
-                note={
-                        'type': 'revision process',
-                        'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
-                     }
-                self._insertlog(oldObject.id, note=note)
-                newIndex = int(oldObject.engineering_revision) + 1
-                default = {
-                            'engineering_writable': False,
-                            'state': 'undermodify',
-                            }
-                oldObject.with_context(thisContext).write(default)
-                default={
-                         'name': oldObject.name,
-                         'engineering_revision': newIndex,
-                         'engineering_writable': True,
-                         'state': 'draft',
-                         'linkeddocuments': [(5)],  # Clean attached documents for new revision object
-                         }
-
-                # Creates a new "old revision" object
-                tmpID = oldObject.with_context(thisContext).copy(default)
-                if tmpID:
-                    wf_message_post(self, [oldObject.id], body='Created : New Revision.')
-                    newID = tmpID.id
-                    tmpID.write({'name': oldObject.name, })
+                if isAnyReleased(self, oldObject.id):
                     note={
                             'type': 'revision process',
-                            'reason': "Created new revision '{index}' for product '{name}'.".format(index=newIndex,name=oldObject.name),
+                            'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
                          }
-                    self._insertlog(newID, note=note)
-                    oldObject.with_context(thisContext)._copy_productBom(newID, ["normal","spbom"])
-                    tmpID.with_context(thisContext).write( {'name': oldObject.name, } )
-                    note={
-                            'type': 'revision process',
-                            'reason': "Copied BoM to new revision '{index}' for product '{name}'.".format(index=newIndex,name=oldObject.name),
-                         }
-                    self._insertlog(newID, note=note)
+                    self._insertlog(oldObject.id, note=note)
+                    newIndex = int(oldObject.engineering_revision) + 1
+                    default = {
+                                'engineering_writable': False,
+                                'state': 'undermodify',
+                                }
+                    oldObject.with_context(thisContext).write(default)
+                    default={
+                             'name': oldObject.name,
+                             'engineering_revision': newIndex,
+                             'engineering_writable': True,
+                             'state': 'draft',
+                             'linkeddocuments': [(5)],  # Clean attached documents for new revision object
+                             }
+    
+                    # Creates a new "old revision" object
+                    tmpID = oldObject.with_context(thisContext).copy(default)
+                    if tmpID:
+                        wf_message_post(self, [oldObject.id], body='Created : New Revision.')
+                        newID = tmpID.id
+                        tmpID.write({'name': oldObject.name, })
+                        note={
+                                'type': 'revision process',
+                                'reason': "Created new revision '{index}' for product '{name}'.".format(index=newIndex,name=oldObject.name),
+                             }
+                        self._insertlog(newID, note=note)
+                        oldObject.with_context(thisContext)._copy_productBom(newID, ["normal","spbom"])
+                        tmpID.with_context(thisContext).write( {'name': oldObject.name, } )
+                        note={
+                                'type': 'revision process',
+                                'reason': "Copied BoM to new revision '{index}' for product '{name}'.".format(index=newIndex,name=oldObject.name),
+                             }
+                        self._insertlog(newID, note=note)
             break
         return (newID, newIndex)
 
@@ -855,7 +856,7 @@ class plm_component(models.Model):
                 'state': status
                 }
         
-        stopFlag, allIDs = self._get_recursive_parts(ids, excludeStatuses, includeStatuses,release=True)
+        stopFlag, allIDs = self._get_recursive_parts(ids, excludeStatuses, includeStatuses, release=True)
         if len(allIDs) < 1 or stopFlag:
             raise UserError(_("WorkFlow Error.\n\nOne or more parts cannot be released."))
         allProdObjs = self.browse(allIDs)
