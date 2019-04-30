@@ -405,7 +405,16 @@ class plm_config_settings(orm.Model):
         propNames=getCleanBytesList(propNames)
         context = context or self.pool['res.users'].context_get(cr, uid)
         userType=self.pool[objectName] if objectName in self.pool.models else None
-        return packDictionary(self.getValueProperties(cr, uid, userType, editor, codeProperties, propNames))
+        return packDictionary(self.getValueProperties(cr, uid, userType, editor, codeProperties, propNames, context=context))
+
+    def GetValuesByID(self, cr, uid, request=None, context=None):
+        """
+            Get property values passing object to query, editor, property names as dictionary.
+        """
+        objectID, editor, propNames=request
+        propNames=getCleanBytesList(propNames)
+        
+        return packDictionary(self.getValuePropertiesbyObject(cr, uid, objectID, editor, propNames, context=context))
 
     def IsAdministrator(self, cr, uid, request=None, default=None, context=None):
         """
@@ -576,45 +585,54 @@ class plm_config_settings(orm.Model):
                 dictvalues.update({ "{}".format(objectID.id): dict_data })
         return values,dictvalues
 
-    
     def getValueProperties(self, cr, uid, userType=None, editor="", codeProperties={}, propNames=[], context=None):
         """
             Get Properties (as dictionary) to be managed in editor.
         """
-        properties={}
+        ret={}
         if userType!=None and codeProperties:
             context = context or self.pool['res.users'].context_get(cr, uid)
             objectID=self.getCodedObject(cr, uid, userType, codeProperties)
             if objectID:
-                typeFields=userType._all_columns
-                base_properties = self.getEditProperties(cr, uid, userType, editor, context=context)               # In Extend Client
-                for keyName in base_properties.keys():
-                    tmp_props=dict(zip(base_properties[keyName].keys(), base_properties[keyName].values()))
-                    tmp_props['value']=objectID[keyName]
+                ret=self.getValuePropertiesbyObject(cr, uid, objectID, editor, propNames, context=context)
+        return ret
 
-                    if (typeFields[keyName].column._type in ["many2one","one2many","many2many"]) and typeFields[keyName].column._obj:
-                        entityName=typeFields[keyName].column._obj  
-                        rows=[]
-                        columns=self.getBaseObject(cr,uid, entityName, context=context)
-                        if (typeFields[keyName].column._type in ["one2many","many2many"]):
-                            related=objectID[keyName].ids if objectID[keyName] else []
-                        else:
-                            related=getIDs(objectID[keyName]) if objectID[keyName] else []
-                        if related:
-                            criteria=[('id','in', related),]
-                            rows,_=self.getDataObject(cr,uid, entityName, criteria, columns.keys(), context=context)
+    def getValuePropertiesbyObject(self, cr, uid, objectID=None, editor="", propNames=[], context=None):
+        """
+            Get Properties (as dictionary) to be managed in editor.
+        """
+        properties={}
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        if objectID:
+            typeFields=objectID._all_columns
+            base_properties = self.getEditProperties(cr, uid, objectID._model, editor, context=context)               # In Extend Client
+            for keyName in base_properties.keys():
+                tmp_props=dict(zip(base_properties[keyName].keys(), base_properties[keyName].values()))
+                tmp_props['value']=objectID[keyName]
 
-                        tmp_props['object'].update({
-                                             "rows": rows,
-                                            })
-                        tmp_props['value']=related
+                if (typeFields[keyName].column._type in ["many2one","one2many","many2many"]) and typeFields[keyName].column._obj:
+                    entityName=typeFields[keyName].column._obj  
+                    rows=[]
+                    columns=self.getBaseObject(cr,uid, entityName, context=context)
+                    if (typeFields[keyName].column._type in ["one2many","many2many"]):
+                        related=objectID[keyName].ids if objectID[keyName] else []
+                    else:
+                        related=getIDs(objectID[keyName]) if objectID[keyName] else []
+                    if related:
+                        criteria=[('id','in', related),]
+                        rows,_=self.getDataObject(cr,uid, entityName, criteria, columns.keys(), context=context)
 
-                    properties[keyName]=tmp_props
+                    tmp_props['object'].update({
+                                         "rows": rows,
+                                        })
+                    tmp_props['value']=related
 
-                properties['_serverupdate']={
-                                         "_lastupdate": objectID.write_date or objectID.create_date,
-                                         "_showdate": DEFAULT_SERVER_DATETIME_FORMAT,
-                                        }
+                properties[keyName]=tmp_props
+
+            properties['_serverupdate']={
+                                     "_lastupdate": objectID.write_date or objectID.create_date,
+                                     "_showdate": DEFAULT_SERVER_DATETIME_FORMAT,
+                                    }
         return properties
 
     def GetServiceNodes(self, cr, uid, oids=[], default=None, context=None):
@@ -638,6 +656,7 @@ class plm_config_settings(orm.Model):
             'CheckOut':         _('Check-Out current document'),
             'Save':             _('Upload current document'),
             'EditParts':        _('Edit Part Data'),
+            'EditDocuments':    _('Edit Document Data'),
             'AssignDocName':    _('Assign Document Data'),
             'DocumentOpen':     _('Open a Document'),
             'DocumentImport':   _('Import a Document'),
@@ -667,6 +686,7 @@ class plm_config_settings(orm.Model):
             'CheckOut01':           _('Check-Out current document'),
             'Save01':               _('Upload current document'),
             'EditParts01':          _('Edit Part Data'),
+            'EditDocuments01':      _('Edit Document Data'),
             'AssignDocName01':      _('Assign Document Data'),
             'DocOpen01':            _('Open a Document'),
             'DocImport01':          _('Import a Document'),

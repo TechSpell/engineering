@@ -90,6 +90,7 @@ Supported Editors :
              'views/material_view.xml',
              'views/finishing_view.xml',
              'views/codelist_view.xml',
+             'views/doculist_view.xml',
              'views/logging.xml',
              'reports/report/component_report.xml',
              'reports/report/document_report.xml',
