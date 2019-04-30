@@ -2,8 +2,10 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    
+#    Created on : 2016-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -70,12 +72,14 @@ class BookCollector(object):
         self.pageCount=1
         self.bottomHeight=bottomHeight
         
-    def getNextPageNumber(self,mediaBox):
+    def getNextPageNumber(self,mediaBox, status=""):
         pagetNumberBuffer = StringIO.StringIO()
         c = canvas.Canvas(pagetNumberBuffer)
         x,y,x1,y1 = mediaBox
         if isinstance(self.customTest,tuple):
             page,message=self.customTest
+            if status:
+                message+=" Status: {} ".format(status)
             if page:
                 msg="Page: "+str(self.pageCount) +str(message)
                 cha=len(msg)
@@ -88,7 +92,7 @@ class BookCollector(object):
         self.pageCount+=1
         return pagetNumberBuffer
     
-    def addPage(self,streamBuffer):
+    def addPage(self,streamBuffer, status=""):
         if streamBuffer.len<1:
             return False
         mainPage=PdfFileReader(streamBuffer)
@@ -97,7 +101,7 @@ class BookCollector(object):
                 self.collector.addPage(mainPage.getPage(i))
                 self.jumpFirst=False
             else:
-                numberPagerBuffer=self.getNextPageNumber(mainPage.getPage(i).mediaBox)
+                numberPagerBuffer=self.getNextPageNumber(mainPage.getPage(i).mediaBox, status)
                 numberPageReader=PdfFileReader(numberPagerBuffer)  
                 mainPage.getPage(i).mergePage(numberPageReader.getPage(0))
                 self.collector.addPage(mainPage.getPage(i))
@@ -132,6 +136,7 @@ def packDocuments(docRepository,documents,bookCollector):
     for document in documents:
         if document.type=='binary':
             if not document.id in packed:
+                status=_(document.state)
                 Flag=False 
                 if document.printout:
                     input1 = StringIO.StringIO(base64.decodestring(document.printout))
@@ -145,20 +150,20 @@ def packDocuments(docRepository,documents,bookCollector):
                     page=PdfFileReader(input1)
                     orientation,paper=paperFormat(page.getPage(0).mediaBox)
                     if(paper==0)  :
-                        output0.append(input1)
+                        output0.append((input1,status))
                     elif(paper==1):
-                        output1.append(input1)
+                        output1.append((input1,status))
                     elif(paper==2):
-                        output2.append(input1)
+                        output2.append((input1,status))
                     elif(paper==3):
-                        output3.append(input1)
+                        output3.append((input1,status))
                     elif(paper==4):
-                        output4.append(input1)
+                        output4.append((input1,status))
                     else: 
-                        output0.append(input1)
+                        output0.append((input1,status))
                     packed.append(document.id)
-    for pag in output0+output1+output2+output3+output4:
-        bookCollector.addPage(pag)
+    for pag, status in output0+output1+output2+output3+output4:
+        bookCollector.addPage(pag, status)
     if bookCollector != None:
         pdf_string = StringIO.StringIO()
         bookCollector.collector.write(pdf_string)

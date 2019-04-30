@@ -209,6 +209,19 @@ def isAdministrator(entity):
                 break
     return ret
 
+def isIntegratorUser(entity):
+    """
+        Checks if this user is in PLM Administrator group
+    """
+    ret = False
+    groupType=entity.env['res.groups']
+    for gId in groupType.search([('name', '=', 'PLM / Integration Users')]):
+        for user in gId.users:
+            if entity._uid == user.id:
+                ret = True
+                break
+    return ret
+
 def isInStatus(entity, idd, status=[]):
     """
         Check if a document is released
@@ -245,7 +258,7 @@ def isAnyReleased(entity, idd):
     """
         Check if a document is in 'released' state. 
     """
-    return isInStatus(entity, idd, status=["released","undermodify"])
+    return isInStatus(entity, idd, status=["released","obsoleted"])
 
 def isDraft(entity, idd):
     """
