@@ -290,7 +290,7 @@ class plm_component(orm.Model):
         ret=False
         context = context or self.pool['res.users'].context_get(cr, uid)
         for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
-            if tmpObject.state in ['released','undermodify','obsoleted']:
+            if isAnyReleased(self, cr, uid, tmpObject.id, context=context):
                 ret=True
                 break
         return ret
@@ -763,7 +763,7 @@ class plm_component(orm.Model):
 
         for oldObject in self.browse(cr, uid, ids, context=context):
             move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
-        self._action_ondocuments(cr, uid, ids, action, status, context=context)
+#        self._action_ondocuments(cr, uid, ids, action, status, context=context)
         return True
 
     def logging_workflow(self, cr, uid, ids, action, status, context=None):

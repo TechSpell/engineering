@@ -87,6 +87,7 @@ Supported Editors :
         'views/finishing_sequence.xml',
         'views/finishing_view.xml',
         'views/codelist_view.xml',
+        'views/doculist_view.xml',
         'views/material_sequence.xml',
         'views/material_view.xml',
         'views/relations_view.xml',

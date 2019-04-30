@@ -372,7 +372,7 @@ class plm_component(orm.Model):
         allIDs = []
         objTempl = self.pool['product.product']
         for tmplID in tmplIDs:
-            allIDs.extend(objTempl.search(cr, uid, [('product_tmpl_id', '=', tmplID)]), context=context)
+            allIDs.extend(objTempl.search(cr, uid, [('product_tmpl_id', '=', tmplID)], context=context))
         return list(set(allIDs))
 
     def _extract_data(self, cr, uid, allIDs, queueFiles, fixedformat, kindBomname='normal', anag_Data={},

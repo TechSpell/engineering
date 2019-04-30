@@ -42,7 +42,6 @@ class plm_document(orm.Model):
                  'state': lambda *a: 'draft',
                  'res_id': lambda *a: False,
     }    
-     
 plm_document()
 
 class plm_component(orm.Model):
@@ -57,7 +56,7 @@ class plm_component(orm.Model):
         'tmp_surface': fields.many2one('plm.finishing', 'Surface Finishing', required=False, change_default=True,
                                        help="Select surface finishing for current product"),
     }
- 
+
     def on_change_tmpmater(self, cr, uid, ids, tmp_material=False, context=None):
         values={'engineering_material':''}
         context=context or self.pool['res.users'].context_get(cr, uid)
@@ -87,7 +86,7 @@ class plm_component(orm.Model):
             if thisObject.name:
                 values['engineering_surface']="{name}".format(name=thisObject.name)
         return {'value': {'engineering_surface':values['engineering_surface']}}
- 
+
     def _father_compute(self, cr, uid, ids, context=None):
         """ 
             Gets father BoM.
@@ -101,7 +100,7 @@ class plm_component(orm.Model):
                 prodIDs.append(bom_line_obj.bom_id.product_id.id)
             prod_ids[prod_obj.id]=list(set(prodIDs))
         return prod_ids
- 
+
     def recurse_father_part_compute(self, cr, uid, ids=[], context=None):
         """ Gets all fathers of a product (extended to top level, flat list).
         @param self: The object pointer
@@ -126,7 +125,7 @@ class plm_component(orm.Model):
                         prod_ids.extend(bufIDs[prodObject.id])
             result[prod_obj.id]=list(set(prod_ids))
         return result
- 
+
 plm_component()
 
 class plm_relation(orm.Model):
@@ -354,7 +353,7 @@ class plm_document_relation(orm.Model):
         'parent_preview':   fields.related('parent_id', 'preview', type="binary", relation="plm.document",
                                          string="Preview", store=False),
         'parent_state':     fields.related('parent_id', 'state', type="char", relation="plm.document", string="Status",
-                                       store=False),
+                                       store=False, index=True),
         'parent_revision':  fields.related('parent_id', 'revisionid', type="integer", relation="plm.document",
                                           string="Revision", store=False),
         'parent_checkedout':fields.related('parent_id', 'checkout_user', type="char", relation="plm.document",
@@ -362,7 +361,7 @@ class plm_document_relation(orm.Model):
         'child_preview':    fields.related('child_id', 'preview', type="binary", relation="plm.document", string="Preview",
                                         store=False),
         'child_state':      fields.related('child_id', 'state', type="char", relation="plm.document", string="Status",
-                                      store=False),
+                                      store=False, index=True),
         'child_revision':   fields.related('child_id', 'revisionid', type="integer", relation="plm.document",
                                          string="Revision", store=False),
         'child_checkedout': fields.related('child_id', 'checkout_user', type="char", relation="plm.document",

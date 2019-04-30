@@ -452,29 +452,28 @@ class plm_relation(orm.Model):
         context.update({'internal_process':True, 'internal_writing':True})
         modelFields=self.pool['plm.config.settings'].GetFieldsModel(cr, uid,self._name)
 
-        def cleanStructure(sourceID=None):
+        def cleanStructure(parentID=None, sourceID=None):
             """
                 Cleans relations having sourceID
             """
-            bomIDs=[]
-            if not sourceID == None:
-                ids=self.search(cr,uid,[('source_id', '=', sourceID),('bom_id','!=',False)], context=context)
-                for bomLine in self.browse(cr,uid, getListIDs(ids), context=context):
-                    bomIDs.append(bomLine.bom_id.id)
-                self.unlink(cr, uid, ids, context=context)                                 # Cleans mrp.bom.line
-            for bomID in self.browse(cr, uid, getCleanList(bomIDs), context=context):
-                if not bomID.bom_lines:
-                    self.unlink(cr, uid, [bomID.id], context=context)                                     # Cleans mrp.bom
+            if not parentID==None:
+                bomIDs= self.search([('type','=','ebom'),('product_id','=',parentID)])
+                for bomID in self.browse(cr,uid, getListIDs(bomIDs), context=context):
+                    if not sourceID == None:
+                        ids=self.search(cr,uid,[('source_id', '=', sourceID),('bom_id','=',bomID.id)], context=context)
+                        self.unlink(cr, uid, ids, context=context)                                 # Cleans mrp.bom.line
+                        if not bomID.bom_lines:
+                            self.unlink(cr, uid, [bomID.id], context=context)                                     # Cleans mrp.bom
 
         def toCleanRelations(relations):
             """
                 Processes relations  
             """
             listedSource = []
-            for _, _, _, _, sourceID, _ in relations:
+            for _, parentID, _, _, sourceID, _ in relations:
                 if not(sourceID in listedSource):
                     cleanStructure(sourceID)
-                    listedSource.append(sourceID)
+                    listedSource.append(parentID,sourceID)
             return False
 
         def toCompute(parentName, relations):
@@ -923,7 +922,20 @@ class plm_codelist(orm.Model):
                                      help='This is the sequence object related to this P/N rule.'),
     }
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
+        ('name_uniq', 'unique(name)', _('Part Number Rule has to be unique !')),
+    ]
+
+class plm_doculist(orm.Model):
+    _name = "plm.doculist"
+    _description = "Document Code List"
+    _columns = {
+        'name': fields.char('Document Number', size=128, required=True),
+        'description': fields.char('Description', size=128),
+        'sequence_id': fields.many2one('ir.sequence', 'name', ondelete='no action', 
+                                     help='This is the sequence object related to this P/N rule.'),
+    }
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)', _('Document Number Rule has to be unique !')),
     ]
 
 class plm_temporary(orm.TransientModel):

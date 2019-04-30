@@ -34,7 +34,8 @@ from openerp.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                         get_signal_workflow, signal_workflow, move_workflow, \
-                        isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
+                        isAdministrator, isIntegratorUser, isObsoleted, isUnderModify, \
+                        isAnyReleased, isDraft, getUpdTime
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
@@ -72,6 +73,23 @@ def getnewminor(minorString):
                 minorString="A{value}".format(value=minorString)
             else:
                 minorString=minorString[:(maxlen-count)]+chr(thisChar+1)
+            index=-1
+    return minorString
+
+def getprevminor(minorString):
+    if not minorString:
+        minorString="A"
+    else:
+        count=0
+        maxlen=index=len(minorString)-1
+        while index >= 0:
+            count=maxlen-index
+            thisChar=ord(minorString[index])
+            if thisChar>65:
+                minorString=minorString[:(maxlen-count)]+chr(thisChar-1)
+            else:
+                if ((maxlen-count)-1)>=0:
+                    minorString=minorString[:(maxlen-count)-1]+chr(90)
             index=-1
     return minorString
 
@@ -478,9 +496,35 @@ class plm_document(orm.Model):
         ret=False
         context = context or self.pool['res.users'].context_get(cr, uid)
         for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
-            if tmpObject.state in ['released','undermodify','obsoleted']:
+            if isAnyReleased(self, cr, uid, tmpObject.id, context=context):
                 ret=True
                 break
+        return ret
+
+    def GetProductRelated(self, cr, uid, request, context=None):
+        """
+            Get Product related to this document
+        """
+        product_id=None
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        ids, latest, editor, propNames=request
+        prodType=self.pool['product.product']
+        for oldObject in self.browse(cr, uid, getListIDs(ids), context=context):
+            for linked_product_id in oldObject.linkedcomponents:
+                if latest:
+                    productId=prodType.GetLatestIds(cr, uid, [(linked_product_id.name, False, False)] , context=context)
+                    product_id=prodType.browse(cr, uid, productId[0], context=context)
+                else:
+                    product_id=linked_product_id
+                break
+        if product_id:
+            newID=product_id.id
+            newIndex=product_id.engineering_revision
+            properties=self.pool['plm.config.settings'].GetValuesByID(cr, uid, (product_id, editor, propNames), context=context)
+            ret=((newID, newIndex), properties)
+        else:
+            ret=[(False, False),packDictionary({})]
+
         return ret
 
     def NewRevision(self, cr, uid, request, context=None):
@@ -521,7 +565,6 @@ class plm_document(orm.Model):
                              }
                         self._insertlog(cr, uid, newID, note=note, context=context)
                         self.CheckOut(cr, uid, [[newID], hostName, pwsPath], context=context)            # Take in Check-Out the new Document revision.
-                        
                         self._copy_DocumentBom(cr, uid, oldObject.id, newID, context=context)
                         self._cleanComponentLinks(cr, uid, [(newID,False)], context=context)
                         self.write(cr, uid, newID, default, context=context)
@@ -544,31 +587,36 @@ class plm_document(orm.Model):
         for tmpObject in self.browse(cr, uid, ids, context=context):
             latestIDs=self.GetLatestIds(cr, uid,[(tmpObject.name,tmpObject.revisionid,False)], context=context)
             for oldObject in self.browse(cr, uid, latestIDs, context=context):
-                note={
-                        'type': 'minor revision process',
-                        'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
-                     }
-                self._insertlog(cr, uid, oldObject.id, note=note, context=context)
-                newminor=getnewminor(oldObject.minorrevision)
-                default={
-                        'name':oldObject.name,
-                        'revisionid':int(oldObject.revisionid),
-                        'minorrevision':newminor,
-                        'datas':oldObject.datas,
-                        'res_id':oldObject.id,
-                        'writable':True,
-                        'state':'draft',
-                }
-                tmpID=super(plm_document,self).copy(cr, uid, oldObject.id, default, context=context)
-                if tmpID!=None:
-                    newID = tmpID
+                if isAnyReleased(self, cr, uid, oldObject.id, context=context):
                     note={
                             'type': 'minor revision process',
-                            'reason': "Created new minor revision '{index}' for '{old}'.".format(index=newminor,old=oldObject.name),
+                            'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
                          }
-                    self._insertlog(cr, uid, tmpID, note=note, context=context)
-                    self.CheckOut(cr, uid, [[newID], hostName, pwsPath], context=context)             # Take in Check-Out the new Document revision.
-                    self.write(cr, uid, newID, {'writable':True, 'state':'draft' }, context=context)
+                    self._insertlog(cr, uid, oldObject.id, note=note, context=context)
+                    docsignal=get_signal_workflow(self, cr, uid, oldObject, 'undermodify', context=context)
+                    move_workflow(self, cr, uid, [oldObject.id], docsignal, 'undermodify', context=context)
+                    newminor=getnewminor(oldObject.minorrevision)
+                    default={
+                            'name':oldObject.name,
+                            'revisionid':int(oldObject.revisionid),
+                            'minorrevision':newminor,
+                            'datas':oldObject.datas,
+                            'res_id':oldObject.id,
+                            'writable':True,
+                            'state':'draft',
+                    }
+                    tmpID=super(plm_document,self).copy(cr, uid, oldObject.id, default, context=context)
+                    if tmpID!=None:
+                        newID = tmpID
+                        note={
+                                'type': 'minor revision process',
+                                'reason': "Created new minor revision '{index}' for '{old}'.".format(index=newminor,old=oldObject.name),
+                             }
+                        self._insertlog(cr, uid, tmpID, note=note, context=context)
+                        self.CheckOut(cr, uid, [[newID], hostName, pwsPath], context=context)             # Take in Check-Out the new Document revision.
+                        self._copy_DocumentBom(cr, uid, oldObject.id, newID, context=context)
+                        self._cleanComponentLinks(cr, uid, [(newID,False)], context=context)
+                        self.write(cr, uid, newID, {'writable':True, 'state':'draft' }, context=context)
             break
         return (newID, default['revisionid'], default['minorrevision']) 
 
@@ -969,6 +1017,8 @@ class plm_document(orm.Model):
         context = context or self.pool['res.users'].context_get(cr, uid)
         context.update({'internal_writing': True})
         for oldObject in self.browse(cr, uid, ids, context=context):
+            for last_id in self._getbyaltminorevision(cr, uid, oldObject, context=context):
+                move_workflow(self, cr, uid, last_id, 'obsolete', 'obsoleted', context=context)
             last_ids = self._getbyrevision(cr, uid, oldObject.name, oldObject.revisionid - 1, context=context)
             if last_ids:
                 move_workflow(self, cr, uid, last_ids, 'obsolete', 'obsoleted', context=context)
@@ -1138,7 +1188,7 @@ class plm_document(orm.Model):
         context = context or self.pool['res.users'].context_get(cr, uid)
         isAdmin = isAdministrator(self, cr, uid, context=context)
 
-        if not self.pool['plm.document.relation'].IsChild(cr, uid, ids, context=context):
+        if not self.pool['plm.document.relation'].IsFather(cr, uid, ids, context=context):
             note={
                 'type': 'unlink object',
                 'reason': "Removed entity from database.",
@@ -1154,10 +1204,12 @@ class plm_document(orm.Model):
                 if not checkApply:
                     continue            # Apply unlink only if have respected rules.
     
-                existingIDs = self.search(cr, uid, [
-                                        ('name', '=', checkObj.name), 
-                                        ('revisionid', '=', checkObj.revisionid - 1)
-                                        ])
+                existingIDs = []
+                for last_id in self._getprevminorevision(cr, uid, checkObj, context=context):
+                    existingIDs.append(last_id)
+                for last_id in self._getbyrevision(cr, uid, checkObj.name, checkObj.revisionid - 1, context=context):
+                    existingIDs.append(last_id)
+
                 if len(existingIDs) > 0:
                     status='released'
                     context.update({'internal_writing': True})
@@ -1283,6 +1335,42 @@ class plm_document(orm.Model):
         context = context or self.pool['res.users'].context_get(cr, uid)
         ids = self.GetLatestIds(cr, uid, docData, context=context)
         return packDictionary(self.read(cr, uid, getCleanList(ids), attribNames))
+
+    def GetStdDocuName(self, cr, uid, vals, context=None):
+        """
+            Gets new P/N reading from entity chosen (taking it from new index on sequence).
+        """
+        ret=""
+        entID, entityName = vals
+        if entID and entityName:
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            userType=self.pool.get(entityName)
+            if not(userType==None):
+                for objID in userType.browse(cr,uid, getListIDs(entID), context=context):
+                    ret=self.GetNewDNfromSeq(cr, uid, objID.sequence_id, context=context)
+                    break
+        return ret
+
+    def GetNewDNfromSeq(self, cr, uid, seqID=None, context=None):
+        """
+            Gets new Document Number from sequence (checks for D/N existence).
+        """
+        ret=""
+        if seqID:
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            count=0
+            while ret=="":
+                chkname=self.pool['ir.sequence']._next(cr, uid, [seqID.id], context=context)
+                count+=1
+                criteria=[('name', '=', chkname)]
+                partIds = self.search(cr, uid, criteria, context=context)
+                if (partIds==None) or (len(partIds)==0):
+                    ret=chkname
+                if count>1000:
+                    logging.error("GetNewDNfromSeq : Unable to get a new document Number from sequence '{name}'."\
+                                  .format(name=seqID.name))
+                    break
+        return ret
 
     def GetLatestIds(self, cr, uid, vals, context=None):
         """
@@ -1469,6 +1557,15 @@ class plm_document(orm.Model):
         context = context or self.pool['res.users'].context_get(cr, uid)
         return self.search(cr, uid, [('name', '=', name), ('revisionid', '=', revision)], context=context)
 
+    def _getbyaltminorevision(self, cr, uid, docObject, context=None):
+        
+        return self.search(cr, uid, [('name', '=', docObject.name), ('revisionid', '=', docObject.revisionid), ('minorrevision', '!=', docObject.minorrevision)], context=context)
+
+    def _getprevminorevision(self, cr, uid, docObject, context=None):
+        
+        return self.search(cr, uid, [('name', '=', docObject.name), ('revisionid', '=', docObject.revisionid), ('minorrevision', '=', getprevminor(docObject.minorrevision))], context=context)
+
+
     def getCheckedOut(self, cr, uid, oid, default=None, context=None):
         context = context or self.pool['res.users'].context_get(cr, uid)
         checkoutType = self.pool['plm.checkout']
@@ -1559,11 +1656,15 @@ class plm_checkout(orm.Model):
         return ret
 
     def unlink(self, cr, uid, ids, context=None):
+        ret=False
+        chkIDs = []
+        docIDs = []
         documentType = self.pool['plm.document']
         context = context or self.pool['res.users'].context_get(cr, uid)
         check=context.get('internal_writing', False)
+        isAdmin=isAdministrator(self, cr, uid, context=context)
         if not check:
-            if not isAdministrator(self, cr, uid, context=context):
+            if not isAdmin and not isIntegratorUser(self, cr, uid, context=context):
                 logging.error(
                     "unlink : Unable to Check-In the required document.\n You aren't authorized in this context.")
                 raise orm.except_orm(_('Check-In Error'), _(
@@ -1571,18 +1672,21 @@ class plm_checkout(orm.Model):
             else:
                 context.update({'internal_writing':True})
         checkObjs = self.browse(cr, uid, getListIDs(ids), context=context)
-        docIDs = []
         values = {'writable': False, }
         for checkObj in checkObjs:
-            docIDs.append(checkObj.documentid.id)
-            if not documentType.write(cr, uid, [checkObj.documentid.id], values, context=context):
-                logging.error(
-                    "unlink : Unable to check-in the document (" + str(checkObj.documentid.name) + "-" + str(
-                        checkObj.documentid.revisionid) + ").\n You can't change writable flag.")
-                return False
+            if isAdmin or checkObj.userid.id==uid:
+                chkIDs.append(checkObj.id)
+                docIDs.append(checkObj.documentid.id)
+                if not documentType.write(cr, uid, [checkObj.documentid.id], values, context=context):
+                    logging.error(
+                        "unlink : Unable to check-in the document (" + str(checkObj.documentid.name) + "-" + str(
+                            checkObj.documentid.revisionid) + ").\n You can't change writable flag.")
+                    return False
         self._adjustRelations(cr, uid, docIDs, False, context=context)
-        ret=super(plm_checkout, self).unlink(cr, uid, getListIDs(ids), context=context)
-        self.logging_operation(cr, uid, docIDs, 'Check-In', context=context)
+        if chkIDs:
+            ret=super(plm_checkout, self).unlink(cr, uid, getListIDs(chkIDs), context=context)
+        if ret:
+            self.logging_operation(cr, uid, docIDs, 'Check-In', context=context)
         return ret
 
 class plm_document_relation(orm.Model):
@@ -1659,6 +1763,24 @@ class plm_document_relation(orm.Model):
             cleanStructure(relations)
             for relation in relations:
                 ret=saveChild(relation)
+        return ret
+
+    def IsFather(self, cr, uid, ids, context=None):
+        """
+            Check if a Document is child in a docBoM relation.
+        """
+        ret=False
+        
+        for idd in getListIDs(ids):
+            feed=False
+            fth_ids=self.search(cr, uid, [('parent_id', '=', idd),('link_kind', '=', 'HiTree')], context=context)
+            for fth_id in self.browse(cr, uid, getListIDs(fth_ids), context=context):
+                feed=True
+                for line_id in self.search(cr, uid, [('child_id', '=', idd),('parent_id', '=', fth_id.child_id.id),('link_kind', '=', 'LyTree')], context=context):
+                    feed=False
+                ret=ret|feed
+                if ret:
+                    break
         return ret
 
     def IsChild(self, cr, uid, ids, context=None):
