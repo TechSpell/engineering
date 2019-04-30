@@ -173,7 +173,6 @@ class plm_relation_line(models.Model):
         product_id=False
         if self._context and 'product_id' in self._context and 'father_id' in self._context and 'father_tmpl_id' in self._context:
             options=self.env['plm.config.settings'].GetOptions()
-
             prodTypeObj=self.env['product.product']
             father_id=self._context['father_id']
             if not father_id:
@@ -476,20 +475,19 @@ class plm_relation(models.Model):
         bomLType=self.env['mrp.bom.line']
         modelFields=self.env['plm.config.settings'].GetFieldsModel(bomLType._name)
 
-        def cleanStructure(sourceID=None):
+        def cleanStructure(parentID=None, sourceID=None):
             """
                 Cleans relations having sourceID (in mrp.bom.line)
             """
-            bomIDs=[]
             bl_to_delete = bomLType
-            if not sourceID==None:
-                for bomLine in bomLType.search([('source_id','=',sourceID)]):
-                    bomIDs.append(bomLine.bom_id)
-                    bl_to_delete |= bomLine
-                bl_to_delete.unlink()                           # Cleans mrp.bom.lines
-            for bomID in getCleanList(bomIDs):
-                if not bomID.bom_line_ids:
-                    bomID.unlink()                              # Cleans mrp.bom
+            if not parentID==None:
+                for bom_id in self.search([('type','=','ebom'),('product_id','=',parentID)]):
+                    if not sourceID==None:
+                        for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
+                            bl_to_delete |= bomLine
+                        bl_to_delete.unlink()                        # Cleans mrp.bom.lines
+                    if not bom_id.bom_line_ids:
+                        bom_id.unlink()                              # Cleans void mrp.bom
                     
 
         def toCleanRelations(relations):
@@ -497,9 +495,9 @@ class plm_relation(models.Model):
                 Processes relations  
             """
             listedSource = []
-            for _, _, _, _, sourceID, _ in relations:
+            for _, parentID, _, _, sourceID, _ in relations:
                 if not(sourceID in listedSource):
-                    cleanStructure(sourceID)
+                    cleanStructure(parentID,sourceID)
                     listedSource.append(sourceID)
             return False
 
@@ -859,6 +857,15 @@ class plm_codelist(models.Model):
     
     name        = fields.Char      (                string=_('Part Number'),   size=128,   help=_("Choose the Part Number rule."))
     description = fields.Char      (                string=_('Description'),   size=128,   help=_("Description of Part Number Rule."))
+    sequence_id = fields.Many2one  ('ir.sequence',  string=_('Sequence'),                  help=_("This is the sequence object related to this P/N rule."))
+
+
+class plm_doculist(models.Model):
+    _name = "plm.doculist"
+    _description = "Document Code List"
+    
+    name        = fields.Char      (                string=_('Document Number'),   size=128,   help=_("Choose the Document Number rule."))
+    description = fields.Char      (                string=_('Description'),   size=128,   help=_("Description of Document Number Rule."))
     sequence_id = fields.Many2one  ('ir.sequence',  string=_('Sequence'),                  help=_("This is the sequence object related to this P/N rule."))
 
 

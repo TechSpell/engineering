@@ -2,8 +2,10 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
-#    $Id$
+#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    
+#    Created on : 2016-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -27,7 +29,7 @@ import time
 from operator import itemgetter
 from book_collector import BookCollector
 
-from odoo import api
+from odoo import _, api
 from odoo.report.render import render
 from odoo.report.interface import report_int
 from odoo.report import report_sxw
@@ -210,8 +212,8 @@ class component_spare_parts_report(report_int):
                         packedObjs.append(bom_line.product_id)
                         packedIds.append(bom_line.id)
                     if len(packedIds)>0:
-                        for pageStream in self.getPdfComponentLayout(cr, uid, product, context=context):
-                            output.addPage(pageStream)
+                        for pageStream,status in self.getPdfComponentLayout(cr, uid, product, context=context):
+                            output.addPage(pageStream, status)
                         stream,typerep=BODY.create(cr, uid, [BomObject.id], data={'report_type': u'pdf'}, context=context) 
                         pageStream=StringIO.StringIO()
                         pageStream.write(stream)
@@ -228,11 +230,11 @@ class component_spare_parts_report(report_int):
         for document in component.linkeddocuments:
             if (document.usedforspare) and (document.type=='binary'):
                 if document.printout:
-                    ret.append(StringIO.StringIO(base64.decodestring(document.printout)))
+                    ret.append((StringIO.StringIO(base64.decodestring(document.printout)), _(document.state)))
                 elif isPdf(document.datas_fname):
                     value=getDocumentStream(docRepository,document)
                     if value:
-                        ret.append(StringIO.StringIO(value))
+                        ret.append((StringIO.StringIO(value), _(document.state)))
         return ret 
     
     def getFirstPage(self, cr, uid, ids, context=None):

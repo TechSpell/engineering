@@ -93,6 +93,7 @@ Supported Editors :
              'views/finishing_sequence.xml',
              'views/finishing_view.xml',
              'views/codelist_view.xml',
+             'views/doculist_view.xml',
              'views/logging.xml',
              'reports/report/component_report.xml',
              'reports/report/component_kanban.xml',            

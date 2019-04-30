@@ -318,7 +318,7 @@ class plm_component(models.Model):
         ret=False
         
         for tmpObject in self.browse(getListIDs(ids)):
-            if tmpObject.state in ['released','undermodify','obsoleted']:
+            if isAnyReleased(self, tmpObject.id):
                 ret=True
                 break
         return ret
@@ -795,7 +795,7 @@ class plm_component(models.Model):
         action = 'modify'
         for oldObject in self.browse(ids):
             move_workflow(self, oldObject.id, action, status)
-        self._action_ondocuments(ids, action, status)
+#         self._action_ondocuments(ids, action, status)
         wf_message_post(self, ids, body='Status moved to: {status}.'.format(status=status))
         return True
 
