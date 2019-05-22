@@ -29,6 +29,8 @@ from reportlab.pdfgen import canvas
 
 from PyPDF2 import PdfFileWriter, PdfFileReader
 
+from odoo  import _
+
 
 def isPdf(fileName):
     if (os.path.splitext(fileName)[1].lower()=='.pdf'):
@@ -62,6 +64,7 @@ def packDocuments(docRepository,documents,bookCollector):
     for document in documents:
         if document.type=='binary':
             if not document.id in packed:
+                status=_(document.state)
                 Flag=False 
                 if document.printout:
                     input1=BytesIO(base64.decodebytes(document.printout))
@@ -75,20 +78,20 @@ def packDocuments(docRepository,documents,bookCollector):
                     page=PdfFileReader(input1)
                     orientation,paper=paperFormat(page.getPage(0).mediaBox)
                     if(paper==0)  :
-                        output0.append(input1)
+                        output0.append((input1,status))
                     elif(paper==1):
-                        output1.append(input1)
+                        output1.append((input1,status))
                     elif(paper==2):
-                        output2.append(input1)
+                        output2.append((input1,status))
                     elif(paper==3):
-                        output3.append(input1)
+                        output3.append((input1,status))
                     elif(paper==4):
-                        output4.append(input1)
+                        output4.append((input1,status))
                     else: 
-                        output0.append(input1)
+                        output0.append((input1,status))
                     packed.append(document.id)
-    for pag in output0+output1+output2+output3+output4:
-        bookCollector.addPage(pag)
+    for pag, status in output0+output1+output2+output3+output4:
+        bookCollector.addPage(pag, status)
     if bookCollector != None:
         pdf_string = BytesIO()
         bookCollector.collector.write(pdf_string)
@@ -155,12 +158,14 @@ class BookCollector(object):
         self.pageCount=1
         self.bottomHeight=bottomHeight
         
-    def getNextPageNumber(self,mediaBox):
+    def getNextPageNumber(self,mediaBox, status=""):
         pagetNumberBuffer = BytesIO()
         c = canvas.Canvas(pagetNumberBuffer)
         x,y,x1,y1 = mediaBox
         if isinstance(self.customTest,tuple):
             page,message=self.customTest
+            if status:
+                message+=" Status: {} ".format(status)
             if page:
                 msg="Page: "+str(self.pageCount) +str(message)
                 cha=len(msg)
@@ -173,7 +178,7 @@ class BookCollector(object):
         self.pageCount+=1
         return pagetNumberBuffer
     
-    def addPage(self,streamBuffer):
+    def addPage(self, streamBuffer, status=""):
         if streamBuffer.getbuffer().nbytes>1:
             mainPage=PdfFileReader(streamBuffer)
             for i in range(0,mainPage.getNumPages()):
@@ -181,7 +186,7 @@ class BookCollector(object):
                     self.collector.addPage(mainPage.getPage(i))
                     self.jumpFirst=False
                 else:
-                    numberPagerBuffer=self.getNextPageNumber(mainPage.getPage(i).mediaBox)
+                    numberPagerBuffer=self.getNextPageNumber(mainPage.getPage(i).mediaBox, status)
                     numberPageReader=PdfFileReader(numberPagerBuffer)  
                     mainPage.getPage(i).mergePage(numberPageReader.getPage(0))
                     self.collector.addPage(mainPage.getPage(i))

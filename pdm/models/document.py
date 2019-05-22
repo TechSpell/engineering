@@ -35,7 +35,7 @@ from odoo.exceptions import UserError
 from odoo.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                        move_workflow, wf_message_post, isAdministrator, \
+                        move_workflow, wf_message_post, isAdministrator, isIntegratorUser, \
                         isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
 
 # To be adequated to plm.component class states
@@ -74,6 +74,23 @@ def getnewminor(minorString):
                 minorString="A{value}".format(value=minorString)
             else:
                 minorString=minorString[:(maxlen-count)]+chr(thisChar+1)
+            index=-1
+    return minorString
+
+def getprevminor(minorString):
+    if not minorString:
+        minorString="A"
+    else:
+        count=0
+        maxlen=index=len(minorString)-1
+        while index >= 0:
+            count=maxlen-index
+            thisChar=ord(minorString[index])
+            if thisChar>65:
+                minorString=minorString[:(maxlen-count)]+chr(thisChar-1)
+            else:
+                if ((maxlen-count)-1)>=0:
+                    minorString=minorString[:(maxlen-count)-1]+chr(90)
             index=-1
     return minorString
 
@@ -473,9 +490,35 @@ class plm_document(models.Model):
         ret=False
         
         for tmpObject in self.browse(getListIDs(ids)):
-            if tmpObject.state in ['released','undermodify','obsoleted']:
+            if isAnyReleased(self, tmpObject.id):
                 ret=True
                 break
+        return ret
+
+    @api.model
+    def GetProductRelated(self, request):
+        """
+            Get Product related to this document
+        """
+        product_id=None
+        ids, latest, editor, propNames=request
+        prodType=self.env['product.product']
+        for oldObject in self.browse(getListIDs(ids)):
+            for linked_product_id in oldObject.linkedcomponents:
+                if latest:
+                    productId=prodType.GetLatestIds( [(linked_product_id.name, False, False)] )
+                    product_id=prodType.browse(productId[0])
+                else:
+                    product_id=linked_product_id
+                break
+        if product_id:
+            newID=product_id.id
+            newIndex=product_id.engineering_revision
+            properties=self.env['plm.config.settings'].GetValuesByID((product_id, editor, propNames))
+            ret=((newID, newIndex), properties)
+        else:
+            ret=[(False, False),packDictionary({})]
+
         return ret
 
     @api.model
@@ -490,40 +533,41 @@ class plm_document(models.Model):
         for tmpObject in self.browse(getListIDs(ids)):
             latestIDs = self.GetLatestIds([(tmpObject.name, tmpObject.revisionid, False)] )
             for oldObject in self.browse(latestIDs):
-                note={
-                        'type': 'revision process',
-                        'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
-                     }
-                self._insertlog(oldObject.id, note=note)
-                oldObject.with_context(thisContext).write({'state': 'undermodify', } )
-                newIndex=int(oldObject.revisionid) + 1
-                default = {
-                            'name': oldObject.name,
-                            'revisionid': newIndex,
-                            'minorrevision':"A",
-                            'writable': True,
-                            'state': 'draft',
-                            'linkedcomponents': [(5)],  # Clean attached products for new revision object
-                           }
-                tmpID = oldObject.with_context(thisContext).copy(default)
-                if tmpID!=None:
-                    wf_message_post(self, [oldObject.id], body='Created : New Revision.')
-                    newID = tmpID.id
+                if isAnyReleased(self, oldObject.id):
                     note={
                             'type': 'revision process',
-                            'reason': "Created new revision '{index}' for document '{name}'.".format(index=newIndex,name=oldObject.name),
+                            'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
                          }
-                    self._insertlog(newID, note=note)
-                    self.CheckOut([[newID], hostName, pwsPath])             # Take in Check-Out the new Document revision.
-
-                    self._copy_DocumentBom(oldObject.id, newID)
-                    self._cleanComponentLinks([(newID,False)])
-                    tmpID.with_context(thisContext).write(default)
-                    note={
-                            'type': 'revision process',
-                            'reason': "Copied Document Relations to new revision '{index}' for document '{name}'.".format(index=newIndex,name=oldObject.name),
-                         }
-                    self._insertlog(newID, note=note)
+                    self._insertlog(oldObject.id, note=note)
+#                     docsignal=get_signal_workflow(oldObject, 'undermodify')
+                    move_workflow(self, [oldObject.id], 'modify', 'undermodify')
+                    newIndex=int(oldObject.revisionid) + 1
+                    default = {
+                                'name': oldObject.name,
+                                'revisionid': newIndex,
+                                'minorrevision':"A",
+                                'writable': True,
+                                'state': 'draft',
+                                'linkedcomponents': [(5)],  # Clean attached products for new revision object
+                               }
+                    tmpID = oldObject.with_context(thisContext).copy(default)
+                    if tmpID!=None:
+                        wf_message_post(self, [oldObject.id], body='Created : New Revision.')
+                        newID = tmpID.id
+                        note={
+                                'type': 'revision process',
+                                'reason': "Created new revision '{index}' for document '{name}'.".format(index=newIndex,name=oldObject.name),
+                             }
+                        self._insertlog(newID, note=note)
+                        self.CheckOut([[newID], hostName, pwsPath])             # Take in Check-Out the new Document revision.
+                        self._copy_DocumentBom(oldObject.id, newID)
+                        self._cleanComponentLinks([(newID,False)])
+                        tmpID.with_context(thisContext).write(default)
+                        note={
+                                'type': 'revision process',
+                                'reason': "Copied Document Relations to new revision '{index}' for document '{name}'.".format(index=newIndex,name=oldObject.name),
+                             }
+                        self._insertlog(newID, note=note)
             break
         return (newID, newIndex)
 
@@ -538,32 +582,37 @@ class plm_document(models.Model):
         for tmpObject in self.browse(ids):
             latestIDs=self.GetLatestIds([(tmpObject.name,tmpObject.revisionid,False)] )
             for oldObject in self.browse(latestIDs):
-                note={
-                        'type': 'minor revision process',
-                        'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
-                     }
-                self._insertlog(oldObject.id, note=note)
-                newminor=getnewminor(oldObject.minorrevision)
-                default={
-                        'name':oldObject.name,
-                        'revisionid':int(oldObject.revisionid),
-                        'minorrevision':newminor,
-                        'datas':oldObject.datas,
-                        'res_id':oldObject.id,
-                        'writable':True,
-                        'state':'draft',
-                }
-                tmpID=oldObject.with_context(thisContext).copy(default)
-                if tmpID!=None:
-                    wf_message_post(self, [oldObject.id], body='Created : New Minor Revision.')
-                    newID = tmpID.id
+                if isAnyReleased(self, oldObject.id):
                     note={
                             'type': 'minor revision process',
-                            'reason': "Created new minor revision '{index}' for '{old}'.".format(index=newminor,old=oldObject.name),
+                            'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
                          }
-                    self._insertlog(newID, note=note)
-                    self.CheckOut([[newID], hostName, pwsPath])             # Take in Check-Out the new Document revision.
-                    tmpID.with_context(thisContext).write(default)
+                    self._insertlog(oldObject.id, note=note)
+#                     docsignal=get_signal_workflow(oldObject, 'undermodify')
+                    move_workflow(self, [oldObject.id], 'modify', 'undermodify')
+                    newminor=getnewminor(oldObject.minorrevision)
+                    default={
+                            'name':oldObject.name,
+                            'revisionid':int(oldObject.revisionid),
+                            'minorrevision':newminor,
+                            'datas':oldObject.datas,
+                            'res_id':oldObject.id,
+                            'writable':True,
+                            'state':'draft',
+                    }
+                    tmpID=oldObject.with_context(thisContext).copy(default)
+                    if tmpID!=None:
+                        wf_message_post(self, [oldObject.id], body='Created : New Minor Revision.')
+                        newID = tmpID.id
+                        note={
+                                'type': 'minor revision process',
+                                'reason': "Created new minor revision '{index}' for '{old}'.".format(index=newminor,old=oldObject.name),
+                             }
+                        self._insertlog(newID, note=note)
+                        self.CheckOut([[newID], hostName, pwsPath])             # Take in Check-Out the new Document revision.
+                        self._copy_DocumentBom(oldObject.id, newID)
+                        self._cleanComponentLinks([(newID,False)])
+                        tmpID.with_context(thisContext).write(default)
             break
         return (newID, default['revisionid'], default['minorrevision']) 
 
@@ -659,7 +708,7 @@ class plm_document(models.Model):
                     if ('revisionid' in document) and int(document['revisionid'])>=0:
                         criteria.append( ('revisionid', '=', document['revisionid']) )
                         order='minorrevision'
-     
+
                     if ('minorrevision' in document) and document['minorrevision']:
                         criteria.append( ('minorrevision', '=', document['minorrevision']) )
                         order=None
@@ -669,7 +718,7 @@ class plm_document(models.Model):
                     ids=sorted(existingIDs.ids)
                     existingID = ids[len(ids) - 1]
         return existingID
-                
+
     @api.model
     def CheckDocumentsToSave(self, documents, default=None):
         """
@@ -979,7 +1028,6 @@ class plm_document(models.Model):
         """
             release the object
         """
-        last_ids=[]
         status='released'
         action = 'release'
         ids=self._ids
@@ -989,10 +1037,10 @@ class plm_document(models.Model):
                     }
         
         for oldObject in self.browse(ids):
-            objObsolete=self._getbyrevision(oldObject.name, oldObject.revisionid - 1)
-            if objObsolete and objObsolete.id:
-                last_ids.append(objObsolete.id)
-        move_workflow(self, last_ids, 'obsolete', 'obsoleted')
+            for last_id in self._getbyaltminorevision(oldObject):
+                move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
+            for last_id in self._getbyrevision(oldObject.name, oldObject.revisionid - 1):
+                move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
         return self._action_onrelateddocuments(ids, default, action, status)
 
     @api.multi
@@ -1159,7 +1207,11 @@ class plm_document(models.Model):
         ids=self._ids
         isAdmin = isAdministrator(self)
 
-        if not self.env['plm.document.relation'].IsChild(ids):
+        if not self.env['plm.document.relation'].IsFather(ids):
+            note={
+                'type': 'unlink object',
+                'reason': "Removed entity from database.",
+             }
             for checkObj in self.browse(ids):
                 checkApply=False
                 if isAnyReleased(self, checkObj.id):
@@ -1170,11 +1222,13 @@ class plm_document(models.Model):
 
                 if not checkApply:
                     continue            # Apply unlink only if have respected rules.
-                criteria=[
-                            ('name', '=', checkObj.name), 
-                            ('revisionid', '=', checkObj.revisionid - 1)
-                        ]
-                existingIDs = self.search(criteria)
+
+                existingIDs = []
+                for last_id in self._getprevminorevision(checkObj):
+                    existingIDs.append(last_id)
+                for last_id in self._getbyrevision(checkObj.name, checkObj.revisionid - 1):
+                    existingIDs.append(last_id)
+
                 if len(existingIDs) > 0:
                     obsoletedIds=[]
                     undermodifyIds=[]
@@ -1189,10 +1243,6 @@ class plm_document(models.Model):
                     if undermodifyIds:
                         move_workflow(self, undermodifyIds, 'reactivate', 'released')
                         wf_message_post(self, undermodifyIds, body='Removed : Latest Revision.')
-                note={
-                    'type': 'unlink object',
-                    'reason': "Removed entity from database.",
-                 }
                 self._insertlog(checkObj.id, note=note)
                 item = super(plm_document, checkObj).unlink()
                 if item:
@@ -1227,8 +1277,7 @@ class plm_document(models.Model):
         def getcheckedfiles(files):
             res = []
             for fileName in files:
-                criteria=[('datas_fname', '=', fileName)]
-                ids = self.search(criteria, order='revisionid')
+                ids = self.search([('datas_fname', '=', fileName)], order='revisionid')
                 if len(ids) > 0:
                     res.append([fileName, not (self._is_checkedout_for_me(ids[len(ids) - 1].id))])
             return res
@@ -1246,6 +1295,42 @@ class plm_document(models.Model):
                 
         ids = self.GetLatestIds(docData)
         return packDictionary(self.read(getCleanList(ids), attribNames))
+
+    @api.model
+    def GetStdDocuName(self, vals):
+        """
+            Gets new P/N reading from entity chosen (taking it from new index on sequence).
+        """
+        ret=""
+        entID, objectName = vals
+        if entID and objectName:
+            userType=self.env[objectName] if (objectName in self.env) else None
+            if not(userType==None):
+                for objID in userType.browse(getListIDs(entID)):
+                    ret=self.GetNewDNfromSeq(objID.sequence_id)
+                    break
+        return ret
+
+    @api.model
+    def GetNewDNfromSeq(self, seqID=None):
+        """
+            Gets new Document Number from sequence (checks for D/N existence).
+        """
+        ret=""
+        if seqID:
+            count=0
+            while ret=="":
+                chkname=self.pool['ir.sequence']._next([seqID.id])
+                count+=1
+                criteria=[('name', '=', chkname)]
+                partIds = self.search(criteria)
+                if (partIds==None) or (len(partIds)==0):
+                    ret=chkname
+                if count>1000:
+                    logging.error("GetNewDNfromSeq : Unable to get a new document Number from sequence '{name}'."\
+                                  .format(name=seqID.name))
+                    break
+        return ret
 
     @api.model
     def GetLatestIds(self, vals):
@@ -1433,6 +1518,14 @@ class plm_document(models.Model):
         
         return self.search([('name', '=', name), ('revisionid', '=', revision)])
 
+    def _getbyaltminorevision(self, docObject):
+        
+        return self.search([('name', '=', docObject.name), ('revisionid', '=', docObject.revisionid), ('minorrevision', '!=', docObject.minorrevision)])
+
+    def _getprevminorevision(self, docObject):
+        
+        return self.search([('name', '=', docObject.name), ('revisionid', '=', docObject.revisionid), ('minorrevision', '=', getprevminor(docObject.minorrevision))])
+
     def getCheckedOut(self, oid, default=None):
         
         for objDoc in self.env['plm.checkout'].search([('documentid', '=', oid)]):
@@ -1523,28 +1616,36 @@ class plm_checkout(models.Model):
 
     @api.multi
     def unlink(self):
+        ret=False
         documentType = self.env['plm.document']
         ids=self._ids
+        isAdmin=isAdministrator(self)
+        chkIDs = []
+        docIDs = []
         
         check=self._context.get('internal_writing', False)
         if not check:
-            if not isAdministrator(self):
+            if not isAdmin and not isIntegratorUser(self):
                 logging.error(
                     "[unlink] : Unable to Check-In the required document.\n You aren't authorized in this context.")
                 raise UserError(_("Unable to Check-In the required document.\n\nYou aren't authorized in this context."))
-        docIDs = []
         values = {'writable': False, }
         for checkObj in self.browse(getListIDs(ids)):
-            docIDs.append(checkObj.documentid.id)
-            if not checkObj.documentid.with_context({'internal_writing':True}).write(values):
-                logging.error(
-                    "[unlink] : Unable to check-in the document (" + str(checkObj.documentid.name) + "-" + str(
-                        checkObj.documentid.revisionid) + ").\n You can't change writable flag.")
-                return False
+            if isAdmin or checkObj.userid.id==self._uid:
+                chkIDs.append(checkObj.id)
+                docIDs.append(checkObj.documentid.id)
+                if not checkObj.documentid.with_context({'internal_writing':True}).write(values):
+                    logging.error(
+                        "[unlink] : Unable to check-in the document (" + str(checkObj.documentid.name) + "-" + str(
+                            checkObj.documentid.revisionid) + ").\n You can't change writable flag.")
+                    return False
         self._adjustRelations(docIDs, False)
-        ret=super(plm_checkout, self).unlink()
-        wf_message_post(documentType,  docIDs, body='Checked-In')
-        self.logging_operation(docIDs, 'Check-In')
+        item_ids=self.browse(getListIDs(chkIDs))
+        if item_ids:
+            ret=super(plm_checkout, item_ids).unlink()
+        if ret:
+            wf_message_post(documentType,  docIDs, body='Checked-In')
+            self.logging_operation(docIDs, 'Check-In')
         return ret
 
 
@@ -1629,16 +1730,21 @@ class plm_document_relation(models.Model):
         return ret
 
     @api.model
-    def IsChild(self, ids):
+    def IsFather(self, ids):
         """
             Check if a Document is child in a docBoM relation.
         """
         ret=False
         
         for idd in getListIDs(ids):
-            if self.search([('child_id', '=', idd)]):
-                ret=ret|True
-                break
+            feed=False
+            for fth_id in self.search([('parent_id', '=', idd),('link_kind', '=', 'HiTree')]):
+                feed=True
+                for line_id in self.search([('child_id', '=', idd),('parent_id', '=', fth_id.child_id.id),('link_kind', '=', 'LyTree')]):
+                    feed=False
+                ret=ret|feed
+                if ret:
+                    break
         return ret
 
     @api.model
@@ -1761,31 +1867,6 @@ class plm_backupdoc(models.Model):
             return super(plm_backupdoc, self).unlink(ids)
         else:
             return False
-
-#     def action_restore_document(self, ids):
-#         committed = False
-#         documentType = self.env['plm.document']
-#         
-#         check=self._context.get('internal_writing', False)
-#         if not check:
-#             if not isAdministrator(self):
-#                 logging.warning(
-#                     "unlink : Unable to remove the required documents.\n You aren't authorized in this context.")
-#                 raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
-#         checkObj=self.browse(self._context['active_id'])
-#         objDoc=documentType.browse(checkObj.documentid.id)
-#         if objDoc.state == 'draft' and documentType.ischecked_in(ids):
-#             if checkObj.existingfile != objDoc.store_fname:
-#                 committed=objDoc.with_context({'internal_writing':True}).write(
-#                                                {'store_fname': checkObj.existingfile, 
-#                                                 'printout': checkObj.printout,
-#                                                 'preview': checkObj.preview, } )
-#                 if not committed:
-#                     logging.warning("action_restore_document : Unable to restore the document (" + str(
-#                         checkObj.documentid.name) + "-" + str(checkObj.documentid.revisionid) + ") from backup set.")
-#                     raise UserError(_("Unable to restore the document '{}-{}' from backup set.\nCheck if it's checked-in, before to retry.".format(checkObj.documentid.name,checkObj.documentid.revisionid)))
-#         self.browse(ids).with_context({'internal_writing':True}).unlink()
-#         return committed
 
 
 class plm_temporary(osv.osv.osv_memory):

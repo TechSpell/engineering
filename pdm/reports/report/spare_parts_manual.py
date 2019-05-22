@@ -28,7 +28,7 @@ import time
 from io import BytesIO
 
 
-from odoo import api, models
+from odoo import _, api, models
 
 from .common import getLinkedDocument, getPDFStream, moduleName, usefulInfos
 
@@ -99,8 +99,8 @@ class report_spare_parts_document(models.AbstractModel):
                     pageStream = BytesIO()
                     pageStream.write(pdf)
                     bookCollector.addPage(pageStream)
-                    for pageStream in self.getSparePdfbyProduct(bomObjs.product_id):
-                        bookCollector.addPage(pageStream)
+                    for pageStream, status in self.getSparePdfbyProduct(bomObjs.product_id):
+                        bookCollector.addPage(pageStream, status)
                         
                 for bom_line in bomObjs.bom_line_ids:
                     packedObjs.append(bom_line.product_id)
@@ -113,7 +113,7 @@ class report_spare_parts_document(models.AbstractModel):
         for objDocument in getLinkedDocument(product, checkStatus=False, used4Spare=True):
             value=getPDFStream(docRepository, objDocument)
             if value:
-                ret.append(value)
+                ret.append((value, _(objDocument.state)))
         return ret
 
     def getFirstPage(self, ids):
