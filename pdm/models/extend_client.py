@@ -230,7 +230,7 @@ class plm_document(models.Model):
                "revisionid":       [ "revisionid",         "DOCPROG",    "int" ,     ],
                "minorrevision":    [ "minorrevision",      "DOCMINPROG", "char",     ],
                "usedforspare":     [ "usedforspare",       "SPAREFLAG",  "bool",     ],
-#                "description":      [ "description",        "DOCDES",     "char",     ],
+#                "docudescription":  [ "docudescription",    "DOCDES",     "char",     ],               "create_date":      [ "created",            "DOCCDATE",   "date",     ],
                "create_date":      [ "created",            "DOCCDATE",   "date",     ],
                "create_uid":       [ "creator",            "DOCOPEC",    "char",     ],
                "write_uid":        [ "modified",           "DOCOPEM",    "char",     ],
@@ -242,7 +242,7 @@ class plm_document(models.Model):
                "revisionid":       [ "revisionid",         "DOCPROG",    "int" ,     ],
                "minorrevision":    [ "minorrevision",      "DOCMINPROG", "char",     ],
                "usedforspare":     [ "usedforspare",       "SPAREFLAG",  "bool",     ],
-#                "description":      [ "description",        "DOCDES",     "char",     ],
+#                "docudescription":  [ "docudescription",    "DOCDES",     "char",     ],
                "create_date":      [ "created",            "DOCCDATE",   "date",     ],
                "create_uid":       [ "creator",            "DOCOPEC",    "char",     ],
                "write_uid":        [ "modified",           "DOCOPEM",    "char",     ],
@@ -260,20 +260,20 @@ class plm_document(models.Model):
                     "minorrevision"         :{"changed":"",  "enabled":False, "mandatory":True,   "limit":40, "default":"A",                                                   },   
                     "usedforspare"          :{"changed":"",  "enabled":True,  "mandatory":False,              "default":False,                                                 },   
                     "state"                 :{"changed":"",  "enabled":False, "mandatory":False,  "limit":40, "default":"draft",                                               },   
-#                     "description"           :{"changed":"",  "enabled":True,  "mandatory":False,  "limit":40, "default":"",      "multiline":True,                             },   
+#                     "docudescription"       :{"changed":"",  "enabled":True,  "mandatory":False,  "limit":40, "default":"",      "multiline":True,                             },   
                     "create_date"           :{"changed":"",  "enabled":False, "mandatory":True,   "limit":40, "default":"now()", "show":"date",                                },   
                     "write_date"            :{"changed":"",  "enabled":False, "mandatory":True,   "limit":40, "default":"now()", "show":"date", "format": "%Y-%m-%d %H:%M:%S", },   
                     "linkedcomponents"      :{"changed":"",  "enabled":False, "mandatory":False,              "default":0,       "viewonly":True,                              },   
                    }                       # =========================================================== User Setup ========================================================== #
         #   Defines code rules when needed:
-#         properties['name'].update(
-#             {"code": {
-#                 "entity"        : "product.product", 
-#                 "field"         : "name",
-#                 "alter"         : "engineering_code",                       # Other field where reading value
-#                 "columns"       : ["name", "engineering_revision", "description"],  
-#                             } 
-#             })
+        properties['name'].update(                                          # Entity field to consider as P/N
+            {"code": {
+                "entity"        : "plm.doculist",                           # Entity where list values to choose
+                "field"         : "name",                                   # Field to use evaluating P/N
+#                 "alias"         : "alter_code",                             # Other field which writing value
+#                 "showcolumns"   : ["name", "description", "sequence"],      # Entity fields to show on ListCtrl
+                    } 
+            })
         #   Defines automation when needed:
 #         properties['name'].update(
 #             {"automation": {
