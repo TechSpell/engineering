@@ -654,7 +654,7 @@ class plm_config_settings(models.Model):
                 properties[keyName]=tmp_props
 
             properties['_serverupdate']={
-                                     "_lastupdate": objectID.write_date or objectID.create_date,
+                                     "_lastupdate": getUpdStrTime(objectID, DEFAULT_SERVER_DATETIME_FORMAT),
                                      "_showdate": DEFAULT_SERVER_DATETIME_FORMAT,
                                     }
         return properties
