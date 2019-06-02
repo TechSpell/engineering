@@ -1592,21 +1592,22 @@ class plm_checkout(orm.Model):
         context = context or self.pool['res.users'].context_get(cr, uid)
         check=context.get('internal_writing', False)
         if check:
-            documentType = self.pool['plm.document']
-            docObj = documentType.browse(cr, uid, vals['documentid'], context=context)
-            if docObj.state=='draft':
-                values = {'writable': True, }
-                if not documentType.write(cr, uid, [docObj.id], values, context=context):
-                    logging.error("create : Unable to check-out the required document (" + str(docObj.name) + "-" + str(
-                        docObj.revisionid) + ").")
-                    return ret
-                self._adjustRelations(cr, uid, getListIDs(docObj.id), uid, context=context)
-                docIDs.append(docObj.id)
-                objectItem=super(plm_checkout, self).create(cr, uid, vals, context=context)
-                if objectItem:
-                    ret=objectItem
-                    self.logging_operation(cr, uid, docIDs, 'Check-Out', context=context)
-                    wf_message_post(documentType, cr, uid, docIDs, body='Checked-Out')
+            if not self.search(cr, uid, [('documentid', '=', vals['documentid'])], context=context):
+                documentType = self.pool['plm.document']
+                docObj = documentType.browse(cr, uid, vals['documentid'], context=context)
+                if docObj.state=='draft':
+                    values = {'writable': True, }
+                    if not documentType.write(cr, uid, [docObj.id], values, context=context):
+                        logging.error("create : Unable to check-out the required document (" + str(docObj.name) + "-" + str(
+                            docObj.revisionid) + ").")
+                        return ret
+                    self._adjustRelations(cr, uid, getListIDs(docObj.id), uid, context=context)
+                    docIDs.append(docObj.id)
+                    objectItem=super(plm_checkout, self).create(cr, uid, vals, context=context)
+                    if objectItem:
+                        ret=objectItem
+                        self.logging_operation(cr, uid, docIDs, 'Check-Out', context=context)
+                        wf_message_post(documentType, cr, uid, docIDs, body='Checked-Out')
         return ret
 
     def unlink(self, cr, uid, ids, context=None):
