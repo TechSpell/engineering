@@ -1584,21 +1584,22 @@ class plm_checkout(models.Model):
         
         check=self._context.get('internal_writing', False)
         if check:
-            documentType = self.env['plm.document']
-            docObj = documentType.browse(vals['documentid'])
-            if docObj.state=='draft':
-                values = {'writable': True, }
-                if not docObj.with_context({'internal_writing':True}).write(values):
-                    logging.error("create : Unable to check-out the required document (" + str(docObj.name) + "-" + str(
-                        docObj.revisionid) + ").")
-                    return ret
-                self._adjustRelations(getListIDs(docObj.id), self._uid)
-                docIDs.append(docObj.id)
-                objectItem=super(plm_checkout, self).create(vals)
-                if objectItem:
-                    ret=objectItem
-                    self.logging_operation(docIDs, 'Check-Out')
-                    wf_message_post(documentType, docIDs, body='Checked-Out')
+            if not self.search([('documentid', '=', vals['documentid'])]):
+                documentType = self.env['plm.document']
+                docObj = documentType.browse(vals['documentid'])
+                if docObj.state=='draft':
+                    values = {'writable': True, }
+                    if not docObj.with_context({'internal_writing':True}).write(values):
+                        logging.error("create : Unable to check-out the required document (" + str(docObj.name) + "-" + str(
+                            docObj.revisionid) + ").")
+                        return ret
+                    self._adjustRelations(getListIDs(docObj.id), self._uid)
+                    docIDs.append(docObj.id)
+                    objectItem=super(plm_checkout, self).create(vals)
+                    if objectItem:
+                        ret=objectItem
+                        self.logging_operation(docIDs, 'Check-Out')
+                        wf_message_post(documentType, docIDs, body='Checked-Out')
         return ret
 
     @api.multi
