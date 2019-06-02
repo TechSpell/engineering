@@ -78,20 +78,14 @@ def streamPDF(bytesString=""):
 def unpackDictionary(bytesString=""):
     ret={}
     if isinstance(bytesString, Binary):
-        streamOne=pickle.loads(base64.b64decode(bytesString.data))
+        ret=pickle.loads(base64.b64decode(bytesString.data))
     else:
-        streamOne=pickle.loads(base64.b64decode(bytesString))
-       
-    if isinstance(streamOne, list):
-        arrayByte=array('B', b'')
-        arrayByte.fromlist(streamOne)
-        ret=pickle.loads(arrayByte.tostring())
+        ret=pickle.loads(base64.b64decode(bytesString))
     return ret
 
 def packDictionary(thisDict={}):
     # Serialization and encryption of dictionaries readable from Python 2.3 and above.
-    arrayByte=array('B', pickle.dumps(thisDict,2))
-    return base64.b64encode(pickle.dumps(arrayByte.tolist(),2))
+    return base64.b64encode(pickle.dumps(thisDict,2))
 
 def getListedDatas(item):
     results=[]
