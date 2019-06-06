@@ -194,6 +194,7 @@
             </field>
         </record>
 
+<!--
         <act_window
             id="action_product_bom_structure_where"
             name="Product BoM Where Used Structure"
@@ -203,6 +204,7 @@
             view_id="mrp_part_tree_view_where"
             res_model="product.product"
             src_model="product.product"/>
+-->
   
  <!-- Tree Structure Views on MRP -->
  
