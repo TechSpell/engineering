@@ -8,47 +8,51 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
              <form string="Description"  version="7.0">
-                <group colspan="4" col="4">
-                    <separator colspan="4" string="Note to help selection"/>
-                	<field name="name" select="1" colspan="1"/>
-                    <field name="sequence"/>
-                    <newline/>
-                    <field name="description" select="1" />
-                    <field name="description_en" select="1" />
-                    <separator/>
-  	               	<group colspan="4" col="4" string="Technical Features">
-	 	                <sheet>
-	 	                	<group colspan="4" col="4">
-		                    	<separator colspan="4" string="Technical feature label and formatting"/>
-		                    	<field name="umc1"/>
-		                    	<field name="fmt1"/>
-		                    	<newline/>
-		                    	<separator colspan="4" />
-		                    	<field name="umc2"/>
-		                    	<field name="fmt2"/>
-		                    	<newline/>
-		                    	<separator colspan="4" />
-		                    	<field name="umc3"/>
-		                    	<field name="fmt3"/>
-		                    	<newline/>
-		                	</group>
-		               		<separator colspan="4" string="Normalization Section"/>
- 	 	                	<group colspan="4" col="4">
-	 	                		<sheet>
-			                    	<separator colspan="4" string="Normalized features formatting"/>
-			                    	<field name="fmtend"/>
+             	<sheet>
+	                <group colspan="4" col="4">
+	                    <separator colspan="4" string="Note to help selection"/>
+	                	<field name="name" select="1" colspan="1"/>
+	                    <field name="sequence"/>
+	                    <newline/>
+	                    <field name="description" select="1" />
+	                    <field name="description_en" select="1" />
+	                    <separator/>
+	  	               	<group colspan="4" col="4" string="Technical Features">
+		 	                <sheet>
+		 	                	<group colspan="4" col="4">
+			                    	<separator colspan="4" string="Technical feature label and formatting"/>
+			                    	<field name="umc1"/>
+			                    	<field name="fmt1"/>
 			                    	<newline/>
-			                    	<separator colspan="4" string="Normative reference"/>
-			                    	<field name="unitab"/>
-		                    	</sheet>
-		                    	<newline/>
-   	               			</group>
-		 	            	<group colspan="4" col="4" string="Template BOM">
-			        			<field name="bom_tmpl"/>
-			   				</group>
- 	                    </sheet>
-  	                </group>
-               </group>
+			                    	<separator colspan="4" />
+			                    	<field name="umc2"/>
+			                    	<field name="fmt2"/>
+			                    	<newline/>
+			                    	<separator colspan="4" />
+			                    	<field name="umc3"/>
+			                    	<field name="fmt3"/>
+			                    	<newline/>
+			                	</group>
+			               		<separator colspan="4" string="Normalization Section"/>
+	 	 	                	<group colspan="4" col="4">
+		 	                		<sheet>
+				                    	<separator colspan="4" string="Normalized features formatting"/>
+				                    	<field name="fmtend"/>
+				                    	<newline/>
+				                    	<separator colspan="4" string="Normative reference"/>
+				                    	<field name="unitab"/>
+			                    	</sheet>
+			                    	<newline/>
+	   	               			</group>
+			 	            	<group colspan="4" col="4" string="Template BOM">
+				        			<field name="bom_tmpl"/>
+				   				</group>
+	 	                    </sheet>
+	  	                </group>
+	                </group>
+                </sheet>
+				<div class="oe_chatter">
+				</div>
             </form>
         </field>
     </record>
