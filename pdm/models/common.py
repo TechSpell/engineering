@@ -82,10 +82,15 @@ def streamPDF(bytesString=""):
 
 def unpackDictionary(bytesString=""):
     ret={}
+    tmp=None
     if isinstance(bytesString, Binary):
-        ret=pickle.loads(base64.b64decode(bytesString.data))
+        tmp=base64.b64decode(bytesString.data)
     else:
-        ret=pickle.loads(base64.b64decode(bytesString))
+        tmp=base64.b64decode(bytesString)
+    if isinstance(tmp, bytes):
+        ret=pickle.loads(tmp, encoding="bytes")
+    elif isinstance(tmp, str):
+        ret=pickle.loads(tmp)
     return ret
 
 def packDictionary(thisDict={}):
