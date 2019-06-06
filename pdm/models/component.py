@@ -1028,10 +1028,10 @@ class plm_component(models.Model):
                     obsoletedIds=[]
                     undermodifyIds=[]
                     for existID in getListIDs(existingIDs):
-                        if isObsoleted(self, existID):
-                            obsoletedIds.append(existID)
-                        elif isUnderModify(self, existID):
-                            undermodifyIds.append(existID)
+                        if isObsoleted(self, existID.id):
+                            obsoletedIds.append(existID.id)
+                        elif isUnderModify(self, existID.id):
+                            undermodifyIds.append(existID.id)
                     move_workflow (self, obsoletedIds, 'reactivate', 'released')
                     if undermodifyIds:
                         move_workflow (self, undermodifyIds, 'reactivate', 'released')
@@ -1045,6 +1045,5 @@ class plm_component(models.Model):
                 if item:
                     ret=ret | item
         return ret
-
 
 # Overridden methods for this entity

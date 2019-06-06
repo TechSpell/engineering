@@ -1225,18 +1225,18 @@ class plm_document(models.Model):
 
                 existingIDs = []
                 for last_id in self._getprevminorevision(checkObj):
-                    existingIDs.append(last_id)
+                    existingIDs.append(last_id.id)
                 for last_id in self._getbyrevision(checkObj.name, checkObj.revisionid - 1):
-                    existingIDs.append(last_id)
+                    existingIDs.append(last_id.id)
 
                 if len(existingIDs) > 0:
                     obsoletedIds=[]
                     undermodifyIds=[]
                     for idd in existingIDs:
-                        if isObsoleted(self, idd.id):
-                            obsoletedIds.append(idd.id)
-                        elif isUnderModify(self, idd.id):
-                            undermodifyIds.append(idd.id)
+                        if isObsoleted(self, idd):
+                            obsoletedIds.append(idd)
+                        elif isUnderModify(self, idd):
+                            undermodifyIds.append(idd)
                     if obsoletedIds:
                         move_workflow(self, obsoletedIds, 'reactivate', 'released')
                         wf_message_post(self, obsoletedIds, body='Removed : Latest Revision.')
