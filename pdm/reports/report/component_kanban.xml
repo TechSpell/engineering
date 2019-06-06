@@ -163,11 +163,6 @@
 	                            <div class="o_kanban_card_manage_title">
 	                                <span>Action</span>
 	                            </div>
-	                            <div>
-	                                <a type="action" title="Product BoM Where Used Structure" name="%(action_product_bom_structure_where)d">
-	                                    <t>Product BoM Where Used Structure</t>
-	                                </a>
-	                            </div>
 	                        </div>
                         </div>
                     </t>
