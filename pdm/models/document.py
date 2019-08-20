@@ -36,7 +36,7 @@ from openerp.tools import config as tools_config
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                         get_signal_workflow, signal_workflow, move_workflow, wf_message_post, \
                         isAdministrator, isIntegratorUser,isObsoleted, isUnderModify, isAnyReleased, isDraft, \
-                        getUpdTime
+                        isReleased, getUpdTime
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
@@ -323,16 +323,18 @@ class plm_document(models.Model):
 
                 objDatas = False
                 file_size = 0
-                try:
-                    objDatas = objDoc.datas
-                except Exception as msg:
-                    logging.error('[_data_check_files] Document with "id":{idd}  and "name":{name} may contains no data!!'.format(idd=objDoc.id, name=objDoc.name))
-                    logging.error('Exception: {msg}'.format(msg=msg))
-                if (objDoc.file_size < 1) and (objDatas):
-                    file_size = len(objDoc.datas)
+                localName=os.path.join(self._get_filestore(), objDoc.store_fname)
+                if os.path.exists(localName):
+                    statinfo = os.stat(localName)
+                    file_size = objDoc.file_size if objDoc.file_size else statinfo.st_size
                 else:
-                    if objDoc.store_fname and os.path.exists(os.path.join(self._get_filestore(), objDoc.store_fname)):
-                        file_size = objDoc.file_size
+                    try:
+                        objDatas = objDoc.datas
+                        if (objDoc.file_size < 1) and (objDatas):
+                            file_size = len(objDoc.datas)
+                    except Exception as msg:
+                        logging.warning('[_data_check_files] Document with "id":{idd}  and "name":{name} may contains no data!!'.format(idd=objDoc.id, name=objDoc.name))
+
                 if file_size < 1:
                     collectable = False
                 result.append((objDoc.id, objDoc.datas_fname, file_size, collectable * multiplyFactor, isCheckedOutToMe, timeDoc.strftime('%Y-%m-%d %H:%M:%S')))
@@ -493,7 +495,7 @@ class plm_document(models.Model):
         ret=False
         
         for tmpObject in self.browse(getListIDs(ids)):
-            if isAnyReleased(self, tmpObject.id):
+            if isReleased(self, tmpObject.id):
                 ret=True
                 break
         return ret
@@ -563,7 +565,6 @@ class plm_document(models.Model):
                              }
                         self._insertlog(newID, note=note)
                         self.CheckOut([[newID], hostName, pwsPath])             # Take in Check-Out the new Document revision.
-    
                         self._copy_DocumentBom(oldObject.id, newID)
                         self._cleanComponentLinks([(newID,False)])
                         tmpID.with_context(thisContext).write(default)
@@ -712,7 +713,7 @@ class plm_document(models.Model):
                     if ('revisionid' in document) and int(document['revisionid'])>=0:
                         criteria.append( ('revisionid', '=', document['revisionid']) )
                         order='minorrevision'
-    
+
                     if ('minorrevision' in document) and document['minorrevision']:
                         criteria.append( ('minorrevision', '=', document['minorrevision']) )
                         order=None
@@ -722,7 +723,7 @@ class plm_document(models.Model):
                     ids=sorted(existingIDs.ids)
                     existingID = ids[len(ids) - 1]
         return existingID
-            
+
     @api.model
     def CheckDocumentsToSave(self, documents, default=None):
         """
@@ -762,6 +763,11 @@ class plm_document(models.Model):
                         logging.debug("CheckDocumentsToSave : time db : {timedb} time file : {timefile}".format(timedb=timedb.strftime('%Y-%m-%d %H:%M:%S'), timefile=document['_lastupdate']))
                         if self._iswritable(objDocument) and timedb < lastupdate:
                             hasSaved = True
+                if ('CADComponentID' in document):
+                    #TODO: To be inserted other references to manage the file as attached and no more.
+                    if(document['CADComponentID'] in ['ROOTCFG',]):
+                        hasSaved = True
+                        hasCheckedOut = True                        # Managed as SolidEdge cfg files.
 
             retValues[getFileName(document[fullNamePath])]={
                         'hasCheckedOut':hasCheckedOut,
@@ -935,7 +941,7 @@ class plm_document(models.Model):
              }
         self._insertlog(ids, note=note)
 
-    def _action_onrelateddocuments(self, ids, default={}, action="", status=""):
+    def _action_onrelateddocuments(self, ids, default={}, action="", status="", checkact=False):
         """
             Move workflow on documents related to given ones.
         """
@@ -948,6 +954,8 @@ class plm_document(models.Model):
         allIDs.extend(relIDs)                   # Force to obtain involved documents
         docIDs=list(set(allIDs)-set(ids))       # Force to obtain only related documents
         for currObj in self.browse(docIDs):
+            if checkact and not self.ischecked_in(currObj.id):
+                continue
             docsignal=get_signal_workflow(currObj, action)
             move_workflow(self,[currObj.id], action, docsignal)
         ret=self.browse(ids).with_context({'internal_writing':True}).write(default)
@@ -1025,7 +1033,7 @@ class plm_document(models.Model):
                    }
         
         if self.ischecked_in(ids):
-            ret=self._action_onrelateddocuments(ids, default, action, status)
+            ret=self._action_onrelateddocuments(ids, default, action, status, checkact=True)
         else:
             signal_workflow(self, ids, 'correct')
         return ret
@@ -1048,7 +1056,7 @@ class plm_document(models.Model):
                 move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
             for last_id in self._getbyrevision(oldObject.name, oldObject.revisionid - 1):
                 move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
-        return self._action_onrelateddocuments(ids, default, action, status)
+        return self._action_onrelateddocuments(ids, default, action, status, checkact=True)
 
     @api.multi
     def action_obsolete(self):
@@ -1215,7 +1223,7 @@ class plm_document(models.Model):
              }
             for checkObj in self.browse(ids):
                 checkApply=False
-                if isAnyReleased(self, checkObj.id):
+                if isReleased(self, checkObj.id):
                     if isAdmin:
                         checkApply=True
                 elif isDraft(self, checkObj.id):

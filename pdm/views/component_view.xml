@@ -330,7 +330,11 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
         <form string="Creation of Normal Bom">
-            <label string="Are you sure you want to create a new Normal Bom?" colspan="2"/>
+        	<group>
+				<field name="revflag" />
+        	</group>
+            <separator string="" colspan="4" />
+            <label string="Are you sure you want to create a new Normal Bom?" colspan="4" />
             <separator string="" colspan="4" />
             <footer>
                 <button class="btn-default" special="cancel" string="Cancel" />

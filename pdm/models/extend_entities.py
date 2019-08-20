@@ -103,7 +103,9 @@ class plm_component(models.Model):
             prodIDs=[]
             for bom_line_obj in self.env['mrp.bom.line'].search([('product_id','=',prod_obj.id)]): 
                 if not bom_line_obj.bom_id.product_id:
-                    prodIDs.append(self.getFromTemplateID(bom_line_obj.bom_id.product_tmpl_id.id).id)
+                    product=self.getFromTemplateID(bom_line_obj.bom_id.product_tmpl_id.id)
+                    if product:
+                        prodIDs.append(product.id)
                 else:            
                     prodIDs.append(bom_line_obj.bom_id.product_id.id)
             prod_ids[prod_obj.id]=list(set(prodIDs))

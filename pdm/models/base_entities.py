@@ -27,7 +27,7 @@ from openerp import models, fields, api, _, osv
 import openerp.addons.decimal_precision as dp
 
 from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, \
-                    isAdministrator, isDraft, isAnyReleased, isObsoleted
+                    isAdministrator, isDraft, isAnyReleased, isReleased, isObsoleted
                     
 
 # To be adequate to plm.document class states
@@ -73,6 +73,28 @@ class plm_component(models.Model):
               (engineering_code, engineering_revision);
             """)
 
+    @api.multi
+    def write(self, vals):
+        ret=False
+        if vals:
+            for prodItem in self:
+                if not (prodItem.engineering_code):
+                    if not vals.get('engineering_code', ''):
+                        vals.update({'engineering_code': prodItem.name})
+                elif not vals.get('engineering_code', ''):
+                        vals.update({'engineering_code': prodItem.name})
+                break
+            ret=super(plm_component, self).write(vals)
+        return ret
+
+    @api.model
+    def create(self, vals):
+        ret=False
+        if vals:
+            if not vals.get('engineering_code', ''):
+                vals['engineering_code'] = vals['name']
+            ret=super(plm_component, self).create(vals)
+        return ret
 
 class plm_component_document_rel(models.Model):
     _name = 'plm.component.document.rel'
@@ -649,9 +671,6 @@ class plm_relation(models.Model):
                     if isAnyReleased(productType, prodItem.id):
                         ret=True
                         break
-                if isObsoleted(productType, prodItem.id):
-                    ret=True
-                    break
         return ret
     
     def checkcreation(self, vals, fatherIDs=[]):
@@ -769,7 +788,7 @@ class plm_relation(models.Model):
         """
         oid=self.id
         compType = self.env['product.product']
-        
+        update_flag=self._context.get('update_latest_revision', False)        
         note={
                 'type': 'copy object',
                 'reason': "Copied a new BoM for the product.",
@@ -777,9 +796,10 @@ class plm_relation(models.Model):
         self._insertlog( oid, note=note)
         newOid = super(plm_relation, self).copy(default)
         if newOid:
-            for bom_line in newOid.bom_line_ids:
-                lateRevIdC=compType.GetLatestIds( [(bom_line.product_id.engineering_code, False, False)] )  # Get Latest revision of each Part
-                bom_line.write( { 'product_id': lateRevIdC[0],} )
+            if update_flag:
+                for bom_line in newOid.bom_line_ids:
+                    lateRevIdC=compType.GetLatestIds( [(bom_line.product_id.engineering_code, False, False)] )  # Get Latest revision of each Part
+                    bom_line.write( { 'product_id': lateRevIdC[0],} )
         return newOid
 
     @api.multi
@@ -794,7 +814,7 @@ class plm_relation(models.Model):
             for bomID in self.browse(getListIDs(ids)):
                 if not self.IsChild(bomID.product_id.id, bomID.type):
                     checkApply=False
-                    if isAnyReleased(self.env['product.product'],  bomID.product_id.id):
+                    if isReleased(self.env['product.product'],  bomID.product_id.id):
                         if isAdmin:
                             checkApply=True
                     elif isDraft(self.env['product.product'],  bomID.product_id.id):
@@ -868,6 +888,7 @@ class plm_temporary(models.AbstractModel):
     _description = "Temporary Class"
 
     name    =   fields.Char(_('Temp'), size=128)
+    revflag =   fields.Boolean('Update revisions', help='Use latest product revisions evaluating new BoM.', default=False)
 
     @api.multi
     def action_create_normalBom(self, context={}):
@@ -877,6 +898,7 @@ class plm_temporary(models.AbstractModel):
         ret=False
         
         if 'active_ids' in context:
+            context.update({ "update_latest_revision": self.revflag })
             self.env['product.product'].action_create_normalBom_WF(context['active_ids'])
             ret={
                 'name': _('Bill of Materials'),
