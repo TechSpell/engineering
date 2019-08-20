@@ -28,7 +28,7 @@ from openerp.tools.translate import _
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                     signal_workflow, get_signal_workflow, move_workflow, \
-                    isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
+                    isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isReleased, isDraft, getUpdTime
 
 
 # USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
@@ -574,7 +574,7 @@ class plm_component(orm.Model):
         for oic in self.browse(cr, uid, ids, context=context):
             children = self.browse(cr, uid, self._getChildrenBom(cr, uid, oic, 1, context=context), context=context)
             for child in children:
-                if (not child.state in excludeStatuses) and (not child.state in includeStatuses) \
+                if ((not child.state in excludeStatuses) and (not child.state in includeStatuses)) \
                         and (release and not(options.get('opt_obsoletedinbom', False))):
                     logging.warning("Part (%r - %d) is in a status '%s' not allowed."
                                     %(child.engineering_code, child.engineering_revision, child.state))
@@ -959,7 +959,7 @@ class plm_component(orm.Model):
                  }
             for checkObj in self.browse(cr, uid, ids, context=context):
                 checkApply=False
-                if isAnyReleased(self, cr, uid, checkObj.id, context=context):
+                if isReleased(self, cr, uid, checkObj.id, context=context):
                     if isAdmin:
                         checkApply=True
                 elif isDraft(self, cr, uid, checkObj.id, context=context):

@@ -41,6 +41,7 @@ class plm_temporary(orm.TransientModel):
         context = context or self.pool['res.users'].context_get(cr, uid)
         productType=self.pool['product.product']
         bomType=self.pool['mrp.bom']
+        context.update({ "update_latest_revision": self.browse(cr,uid,ids[0]).revflag })
         for idd in context['active_ids']:
             checkObj=productType.browse(cr, uid, idd, context)
             if not checkObj:

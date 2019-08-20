@@ -11,7 +11,7 @@
         <field name="type">tree</field>
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
-            <tree string="Parts">
+            <tree string="Products">
                 <field name="name" select="True"/>
                 <field name="engineering_code" select="True" />
                 <field name="engineering_revision"/>
@@ -35,7 +35,7 @@
         <field name="type">search</field>
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
-			<search string="Product">
+			<search string="Products">
 				<filter icon="terp-go-month" string="Last Month" separator="1"
 				        domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d'))]"
 				        help="Created last month"/>
@@ -122,7 +122,7 @@
         <field name="type">tree</field>
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
-            <tree string="Engineering Parts">
+            <tree string="Engineering Products">
                 <field name="name" select="True"/>
                 <field name="engineering_code" select="True"/>
                 <field name="engineering_revision"/>
@@ -142,7 +142,7 @@
         <field name="type">search</field>
         <field name="priority" eval="15"/>
         <field name="arch" type="xml">
-		 	<search string="Parts">
+		 	<search string="Engineering Products">
 				<filter icon="terp-go-month" string="Last Month" separator="1"
 				        domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
 				        help="Created last month"/>
@@ -326,7 +326,9 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
         <form string="Creation of Normal Bom">
-            <label string="Are you sure you want to create a new Normal Bom?" colspan="2"/>
+        	<group>
+				<field name="revflag" />
+        	</group>
             <separator string="" colspan="4" />
             <group colspan="2" col="2">
             	<button icon="gtk-cancel" special="cancel" string="Cancel"/>

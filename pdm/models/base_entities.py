@@ -28,7 +28,7 @@ from openerp.tools.translate import _
 from decimal_precision import decimal_precision as dp
 
 from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, \
-                    isAdministrator, isDraft, isAnyReleased, isObsoleted
+                    isAdministrator, isDraft, isAnyReleased, isReleased, isObsoleted
                     
 
 # To be adequate to plm.document class states
@@ -100,6 +100,28 @@ class plm_component(orm.Model):
               USING btree
               (engineering_code, engineering_revision);
             """)
+
+    def write(self, cr, uid, ids, vals, context=None):
+        ret=False
+        if vals:
+            context = context or self.pool['res.users'].context_get(cr, uid)
+            for prodItem in self.browse(cr, uid, ids, context=context):
+                if not (prodItem.engineering_code):
+                    if not vals.get('engineering_code', ''):
+                        vals.update({'engineering_code': prodItem.name})
+                elif not vals.get('engineering_code', ''):
+                        vals.update({'engineering_code': prodItem.name})
+                break
+            ret=super(plm_component, self).write(cr, uid, ids, vals, context=context)
+        return ret
+
+    def create(self, cr, uid, vals, context=None):
+        ret=False
+        if vals:
+            if not vals.get('engineering_code', ''):
+                vals['engineering_code'] = vals['name']
+            ret=super(plm_component, self).create(cr, uid, vals, context=context)
+        return ret
 
 
 class plm_component_document_rel(orm.Model):
@@ -404,7 +426,7 @@ class plm_relation(orm.Model):
             innerids=self.implodebom(cr, uid, self._inbomid(cr, uid, bomObject.product_id.id, context=context))
             parentIDs.append(bomObject.product_id.id)
             parentIDs.extend(innerids)
-        return (parentIDs)
+        return (getListIDs(parentIDs))
 
     def GetWhereUsedSum(self, cr, uid, ids, context=None):
         """
@@ -472,8 +494,8 @@ class plm_relation(orm.Model):
             listedSource = []
             for _, parentID, _, _, sourceID, _ in relations:
                 if not(sourceID in listedSource):
-                    cleanStructure(sourceID)
-                    listedSource.append(parentID,sourceID)
+                    cleanStructure(parentID,sourceID)
+                    listedSource.append(sourceID)
             return False
 
         def toCompute(parentName, relations):
@@ -814,6 +836,7 @@ class plm_relation(orm.Model):
         compType = self.pool['product.product']
         context = context or self.pool['res.users'].context_get(cr, uid)
         context.update({'internal_writing':True})
+        update_flag=context.get('update_latest_revision', False)
         note={
                 'type': 'copy object',
                 'reason': "Copied a new BoM for the product.",
@@ -822,14 +845,20 @@ class plm_relation(orm.Model):
         newId = super(plm_relation, self).copy(cr, uid, oid, default, context=context)
         if newId:
             newOid = self.browse(cr, uid, newId, context=context)
-            for bom_line in newOid.bom_lines:
-                lateRevIdC = compType.GetLatestIds(cr, uid, [(bom_line.product_id.engineering_code, False, False)],
-                                                   context=context)  # Get Latest revision of each Part
-                self.write(cr, uid, [bom_line.id],
+            self.write(cr, uid, [newId], 
                         {
-                            'product_id': lateRevIdC[0],
-                            'name': bom_line.product_id.name
+                            'name': newOid.product_tmpl_id.name
                         }, context=context)
+ 
+            if update_flag:
+                for bom_line in newOid.bom_lines:
+                    lateRevIdC = compType.GetLatestIds(cr, uid, [(bom_line.product_id.engineering_code, False, False)],
+                                                       context=context)  # Get Latest revision of each Part
+                    self.write(cr, uid, [bom_line.id],
+                            {
+                                'product_id': lateRevIdC[0],
+                                'name': bom_line.product_id.name
+                            }, context=context)
         return newId
 
     def unlink(self, cr, uid, ids, context=None):
@@ -841,9 +870,9 @@ class plm_relation(orm.Model):
             isAdmin = isAdministrator(self, cr, uid, context=context)
     
             for bomID in self.browse(cr, uid, getListIDs(ids), context=context):
-                if not self.IsChild(cr, uid, bomID.product_id.id, context=context):
+                if not self.IsChild(cr, uid, bomID.product_id.id, typebom=bomID.type, context=context):
                     checkApply=False
-                    if isAnyReleased(self.pool['product.product'], cr, uid, bomID.product_id.id, context=context):
+                    if isReleased(self.pool['product.product'], cr, uid, bomID.product_id.id, context=context):
                         if isAdmin:
                             checkApply=True
                     elif isDraft(self.pool['product.product'], cr, uid, bomID.product_id.id, context=context):
@@ -944,6 +973,11 @@ class plm_temporary(orm.TransientModel):
 
     _columns = {
         'name': fields.char('Temp', size=128),
+        'revflag': fields.boolean('Update revisions', help='Use latest product revisions evaluating new BoM.', default=False),
+    }
+
+    _defaults = {
+                 'revflag': False,
     }
 
     def action_create_normalBom(self, cr, uid, ids, context=None):
@@ -953,6 +987,7 @@ class plm_temporary(orm.TransientModel):
         ret=False
         context = context or self.pool['res.users'].context_get(cr, uid)
         if 'active_ids' in context:
+            context.update({ "update_latest_revision": self.browse(cr,uid,ids[0]).revflag })
             self.pool['product.product'].action_create_normalBom_WF(cr, uid, context['active_ids'], context=context)
             ret={
                 'name': _('Bill of Materials'),
