@@ -30,7 +30,7 @@ from odoo.exceptions import UserError
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                     signal_workflow, get_signal_workflow, move_workflow, wf_message_post, \
-                    isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
+                    isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isReleased, isDraft, getUpdTime
 
 
 # USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
@@ -995,7 +995,7 @@ class plm_component(models.Model):
                  }
             for checkObj in self.browse(ids):
                 checkApply=False
-                if isAnyReleased(self, checkObj.id):
+                if isReleased(self, checkObj.id):
                     if isAdmin:
                         checkApply=True
                 elif isDraft(self, checkObj.id):
