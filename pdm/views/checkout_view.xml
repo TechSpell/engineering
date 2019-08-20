@@ -8,7 +8,7 @@
         <field name="priority" eval="1"/>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <form string="Checked-Out Document" create="false" edit=="false">
+            <form string="Checked-Out Document" create="false" edit="false">
  	            <field name="name" invisible="True"/>
                 <group colspan="4" col="6">
                     <field name="userid" select="1" />

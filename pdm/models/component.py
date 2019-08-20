@@ -29,7 +29,7 @@ from odoo  import models, fields, api, _, osv
 from odoo.exceptions import UserError
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                    move_workflow, wf_message_post, isAdministrator, \
+                    move_workflow, wf_message_post, isAdministrator, isReleased, \
                     isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
 
 
@@ -318,7 +318,7 @@ class plm_component(models.Model):
         ret=False
         
         for tmpObject in self.browse(getListIDs(ids)):
-            if isAnyReleased(self, tmpObject.id):
+            if isReleased(self, tmpObject.id):
                 ret=True
                 break
         return ret
@@ -1013,7 +1013,7 @@ class plm_component(models.Model):
         if not self.env['mrp.bom'].IsChild(ids):
             for checkObj in self.browse(ids):
                 checkApply=False
-                if isAnyReleased(self, checkObj.id):
+                if isReleased(self, checkObj.id):
                     if isAdmin:
                         checkApply=True
                 elif isDraft(self, checkObj.id):

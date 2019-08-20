@@ -30,7 +30,7 @@ RETDMESSAGE=''
 class plm_temporary(osv.osv.osv_memory):
     _inherit = "plm.temporary"
 
-    name          = fields.Char       (                                         string=_('Part Number'),           size=64)
+    name          = fields.Char       (  string=_('Part Number'), size=64)
 
     ##  Specialized Actions callable interactively
     def action_create_spareBom(self, context):
@@ -43,6 +43,7 @@ class plm_temporary(osv.osv.osv_memory):
             return False
         
         
+        context.update({ "update_latest_revision": self.revflag })
         productType=self.env['product.product']
         bomType=self.env['mrp.bom']
         for idd in context['active_ids']:
