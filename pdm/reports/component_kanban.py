@@ -48,7 +48,7 @@ class ComponentDashboard(models.Model):
 
     @api.multi
     def get_related_boms(self):
-        return self.pool['mrp.bom'].search([('product_tmpl_id', '=', self.product_tmpl_id.id)])
+        return self.pool['mrp.bom'].search(self._cr, self._uid,[('product_tmpl_id', '=', self.product_tmpl_id.id)])
 
     @api.multi
     def get_related_docs(self):

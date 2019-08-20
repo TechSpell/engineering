@@ -121,7 +121,9 @@ class plm_component(orm.Model):
             tmp_ids = bom_line_objType.search(cr, uid, [('product_id','=',prod_obj.id)])
             for bom_line_obj in bom_line_objType.browse(cr, uid, tmp_ids, context=context): 
                 if not bom_line_obj.bom_id.product_id:
-                    prodIDs.append(self.getFromTemplateID(cr, uid, bom_line_obj.bom_id.product_tmpl_id.id, context=context).id)
+                    product=self.getFromTemplateID(cr, uid, bom_line_obj.bom_id.product_tmpl_id.id, context=context)
+                    if product:
+                        prodIDs.append(product.id)
                 else:            
                     prodIDs.append(bom_line_obj.bom_id.product_id.id)
             prod_ids[prod_obj.id]=list(set(prodIDs))

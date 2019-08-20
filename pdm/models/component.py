@@ -28,7 +28,7 @@ from openerp.tools.translate import _
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                     signal_workflow, get_signal_workflow, move_workflow, wf_message_post, \
-                    isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
+                    isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isReleased, isDraft, getUpdTime
 
 
 # USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
@@ -531,12 +531,13 @@ class plm_component(orm.Model):
                 context.update({'internal_writing':True})
                 default={'product_tmpl_id': oldBomID.product_tmpl_id.id,
                          'type': 'normal', 'active': True,
-                         'name': oldBomID.name}
+                         'name': oldBomID.product_tmpl_id.name}
                 if oldBomID.product_id:
                     default.update({'product_id': oldBomID.product_id.id})
                 self.processedIds.append(idd)
                 newidBom = bomType.copy(cr, uid, idBoms[0], default, context=context)
                 if newidBom:
+                    default.update({'name':oldBomID.product_tmpl_id.name})
                     bomType.write(cr, uid, [newidBom], default, context=context)
                     oidBom = bomType.browse(cr, uid, newidBom, context=context)
                     ok_rows = self._summarizeBom(cr, uid, oidBom.bom_line_ids)
@@ -793,13 +794,12 @@ class plm_component(orm.Model):
         """
         status = 'undermodify'
         action = 'modify'
-#         context = context or self.pool['res.users'].context_get(cr, uid)
-#         context.update({'internal_writing':True})
-# 
-#         for oldObject in self.browse(cr, uid, ids, context=context):
-#             move_workflow(self, cr, uid, oldObject.id, action, status)
-        wf_message_post(self, cr, uid, ids, body='Status moved to: {status}.'.format(status=status), context=context)
-#       self._action_ondocuments(cr, uid, ids, action, status, context=context)
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        context.update({'internal_writing':True})
+
+        for oldObject in self.browse(cr, uid, ids, context=context):
+            move_workflow(self, cr, uid, oldObject.id, action, status, context=context)
+#        self._action_ondocuments(cr, uid, ids, action, status, context=context)
         return True
 
     def logging_workflow(self, cr, uid, ids, action, status, context=None):
@@ -1001,7 +1001,7 @@ class plm_component(orm.Model):
                  }
             for checkObj in self.browse(cr, uid, ids, context=context):
                 checkApply=False
-                if isAnyReleased(self, cr, uid, checkObj.id, context=context):
+                if isReleased(self, cr, uid, checkObj.id, context=context):
                     if isAdmin:
                         checkApply=True
                 elif isDraft(self, cr, uid, checkObj.id, context=context):
