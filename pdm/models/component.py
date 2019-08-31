@@ -638,18 +638,20 @@ class plm_component(orm.Model):
         docIDs = []
         documents=[]
         context = context or self.pool['res.users'].context_get(cr, uid)
-        documentType = self.pool['plm.document']
-        for oldObject in self.browse(cr, uid, ids, context=context):
-            for document in oldObject.linkeddocuments:
-                if (document.id not in docIDs):
-                    if documentType.ischecked_in(cr, uid, document.id, context=context):
-                        docIDs.append(document.id)
-                        documents.append(document)
-        for document in documents:
-            docsignal=get_signal_workflow(self, cr, uid, document, status, context=context)
-            if docsignal:
-                move_workflow(documentType, cr, uid, [document.id], docsignal, status)
-                ret.append(document.id)
+        check=context.get('no_move_documents', False)
+        if not check:
+            documentType = self.pool['plm.document']
+            for oldObject in self.browse(cr, uid, ids, context=context):
+                for document in oldObject.linkeddocuments:
+                    if (document.id not in docIDs):
+                        if documentType.ischecked_in(cr, uid, document.id, context=context):
+                            docIDs.append(document.id)
+                            documents.append(document)
+            for document in documents:
+                docsignal=get_signal_workflow(self, cr, uid, document, status, context=context)
+                if docsignal:
+                    move_workflow(documentType, cr, uid, [document.id], docsignal, status)
+                    ret.append(document.id)
         return ret
 
     def _iswritable(self, cr, user, oid):
@@ -1014,7 +1016,7 @@ class plm_component(orm.Model):
                                                        ('engineering_revision', '=', checkObj.engineering_revision - 1)], context=context)
                 if len(existingIDs) > 0:
                     status='released'
-                    context.update({'internal_writing':True})
+                    context.update({'internal_writing':True},{'no_move_documents':True})
                     for product in self.browse(cr, uid, getListIDs(existingIDs), context=context):
                         productsignal=get_signal_workflow(self, cr, uid, product, status, context=context)
                         move_workflow(self, cr, uid, [product.id], productsignal, status)
@@ -1022,6 +1024,7 @@ class plm_component(orm.Model):
                 item=super(plm_component, self).unlink(cr, uid, [checkObj.id], context=context)
                 if item:
                     ret=ret | item
+        context.update({'no_move_documents':False})
         return ret
 
 
