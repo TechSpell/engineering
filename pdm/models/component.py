@@ -634,17 +634,19 @@ class plm_component(models.Model):
         docIDs = []
         documents=[]
         documentType = self.env['plm.document']
-        for oldObject in self.browse(ids):
-            for document in oldObject.linkeddocuments:
-                if (document.id not in docIDs):
-                    if documentType.ischecked_in(document.id):
-                        docIDs.append(document.id)
-                        documents.append(document)
-        for document in documents:
-            docsignal=get_signal_workflow(document, status)
-            if docsignal:
-                move_workflow(document, [document.id], docsignal, status)
-                ret.append(document.id)
+        check=self._context.get('no_move_documents', False)
+        if not check:
+            for oldObject in self.browse(ids):
+                for document in oldObject.linkeddocuments:
+                    if (document.id not in docIDs):
+                        if documentType.ischecked_in(document.id):
+                            docIDs.append(document.id)
+                            documents.append(document)
+            for document in documents:
+                docsignal=get_signal_workflow(document, status)
+                if docsignal:
+                    move_workflow(document, [document.id], docsignal, status)
+                    ret.append(document.id)
         return ret
 
     def _iswritable(self, oid):
@@ -811,8 +813,6 @@ class plm_component(models.Model):
         """
             Executes on cascade to children products the required workflow operations.
         """
-        ret=False
-        full_ids=[]
         status=operationParams['status'] 
         action=operationParams['action']
         docaction=operationParams['docaction']
@@ -1007,15 +1007,16 @@ class plm_component(models.Model):
                 if not checkApply:
                     continue            # Apply unlink only if have respected rules.
     
-                existingIDs = self.search([('engineering_code', '=', checkObj.engineering_code),
-                                                       ('engineering_revision', '=', checkObj.engineering_revision - 1)])
+                existingIDs = self.with_context({'no_move_documents':True}).search([
+                                    ('engineering_code', '=', checkObj.engineering_code),
+                                    ('engineering_revision', '=', checkObj.engineering_revision - 1)])
                 if len(existingIDs) > 0:
                     status='released'
                     for product in getListIDs(existingIDs):
                         productsignal=get_signal_workflow(product, status)
                         move_workflow(self, [product.id], productsignal, status)
                 self._insertlog(checkObj.id, note=note)
-                item = super(plm_component, checkObj).unlink()
+                item = super(plm_component, checkObj.with_context({'no_move_documents':False})).unlink()
                 if item:
                     ret=ret | item
         return ret
