@@ -498,25 +498,27 @@ class plm_relation(orm.Model):
                     listedSource.append(sourceID)
             return False
 
-        def toCompute(parentName, relations):
+        def toCompute(parentName, relations, yetSaved=[]):
             """
                 Processes relations  
             """
             bomID=False
             subRelations=[(a, b, c, d, e, f) for a, b, c, d, e, f in relations if a == parentName]
             if len(subRelations)>0: # no relation to save 
-                parentName, parentID, tmpChildName, tmpChildID, sourceID, tempRelArgs=subRelations[0]
+                parentName, parentID, _, _, sourceID, _=subRelations[0]
                 if not parentID in listedParent:
                     listedParent.append(parentID)
+                    thislist=list(set(yetSaved))            # Save listed parents to check under different branches
+                    thislist.append(parentID)
                     bomID=getParent(parentName, parentID, kindBom='ebom')
-                    if bomID:
-                        for rel in subRelations:
-                            parentName, parentID, childName, childID, sourceID, relArgs=rel
-                            if parentName == childName:
-                                logging.error('toCompute : Father (%s) refers to himself' %(str(parentName)))
+
+                    if bomID:                               # Save children only if parent make sense as BoM.
+                        for parentName, parentID, childName, childID, sourceID, relArgs in subRelations:
+                            if childID in thislist:             # Avoids to create circular loops.
+                                logging.error("toCompute : In '{}' child '{}' is generating a circular loop.".format(parentName,childName))
                             else:
-                                if saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs):
-                                    tmpBomId=toCompute(childName, relations)
+                                saveChild(childName, childID, sourceID, bomID, kindBom='ebom', args=relArgs)
+                            toCompute(childName, relations, thislist) # Try to evaluate & save ANY children BoM on following levels.
                         self.RebaseProductWeight(cr, uid, bomID, self.RebaseBomWeight(cr, uid, bomID, context=context), context=context)
             return bomID
 
