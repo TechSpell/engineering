@@ -493,7 +493,7 @@ class plm_document(models.Model):
         ret=False
         
         for tmpObject in self.browse(getListIDs(ids)):
-            if isReleased(self, tmpObject.id):
+            if isAnyReleased(self, tmpObject.id):
                 ret=True
                 break
         return ret
