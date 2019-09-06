@@ -509,7 +509,7 @@ class plm_document(orm.Model):
         ret=False
         context = context or self.pool['res.users'].context_get(cr, uid)
         for tmpObject in self.browse(cr, uid, getListIDs(ids), context=context):
-            if isReleased(self, cr, uid, tmpObject.id, context=context):
+            if isAnyReleased(self, cr, uid, tmpObject.id, context=context):
                 ret=True
                 break
         return ret

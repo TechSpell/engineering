@@ -1016,7 +1016,7 @@ class plm_component(orm.Model):
                                                        ('engineering_revision', '=', checkObj.engineering_revision - 1)], context=context)
                 if len(existingIDs) > 0:
                     status='released'
-                    context.update({'internal_writing':True},{'no_move_documents':True})
+                    context.update({'internal_writing':True, 'no_move_documents':True})
                     for product in self.browse(cr, uid, getListIDs(existingIDs), context=context):
                         productsignal=get_signal_workflow(self, cr, uid, product, status, context=context)
                         move_workflow(self, cr, uid, [product.id], productsignal, status)
