@@ -84,8 +84,8 @@ class plm_component(models.Model):
                 if not (prodItem.engineering_code):
                     if not vals.get('engineering_code', ''):
                         vals.update({'engineering_code': prodItem.name})
-                elif not vals.get('engineering_code', ''):
-                        vals.update({'engineering_code': prodItem.name})
+#                 elif not vals.get('engineering_code', ''):
+#                         vals.update({'engineering_code': prodItem.name})
                 break
             ret=super(plm_component, self).write(vals)
         return ret
