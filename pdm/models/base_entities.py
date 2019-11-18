@@ -35,6 +35,14 @@ from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, \
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
                ('obsoleted', 'Obsoleted')]
 
+HELP ="Use a phantom bill of material in raw materials lines that have to be "                                            
+HELP+="automatically computed on a production order and not one per level."             
+HELP+="If you put \"Phantom/Set\" at the root level of a bill of material "              
+HELP+="it is considered as a set or pack: the products are replaced by the components " 
+HELP+="between the sale order to the picking without going through the production order." 
+HELP+="The normal BoM will generate one production order per BoM level."                   
+
+
 
 class plm_component(models.Model):
     _inherit = 'product.template'
@@ -161,22 +169,15 @@ class plm_component_document_rel(models.Model):
                 ret=saveChild(relation)
         return ret
 
-HELP ="Use a phantom bill of material in raw materials lines that have to be "                                            
-HELP+="automatically computed on a production order and not one per level."             
-HELP+="If you put \"Phantom/Set\" at the root level of a bill of material "              
-HELP+="it is considered as a set or pack: the products are replaced by the components " 
-HELP+="between the sale order to the picking without going through the production order." 
-HELP+="The normal BoM will generate one production order per BoM level."                   
-
          
 class plm_relation_line(models.Model):
     _inherit = 'mrp.bom.line'
     
-    create_date = fields.Datetime   (             string=_('Creation Date'),     readonly=True)
-    source_id   = fields.Many2one   ('plm.document','name',ondelete='no action', readonly=True, help=_("This is the document object that declares this BoM."))
-    type        = fields.Selection  (BOMTYPES, string=_('BoM Type'),             required=True, help=_(HELP))
-    itemnum     = fields.Integer    (          string=_('CAD Item Position'),                   help=_("This is the item reference position into the CAD document that declares this BoM."))
-    itemlbl     = fields.Char       (          string=_('Cad Item Position Label'), size=64,    help=_("This is the item reference position into the CAD document that declares this BoM (As literal)."))
+    create_date = fields.Datetime   (                string='Creation Date',    readonly=True)
+    source_id   = fields.Many2one   ('plm.document', string='Source Document',  readonly=True, index=True, ondelete='no action', help=_("This is the document object that declares this BoM."))
+    type        = fields.Selection  (BOMTYPES,       string='BoM Type',         required=True,  help=_(HELP))
+    itemnum     = fields.Integer    (                string='CAD Item Position',                help=_("This is the item reference position into the CAD document that declares this BoM."))
+    itemlbl     = fields.Char       (                string='Cad Item Position Label', size=64, help=_("This is the item reference position into the CAD document that declares this BoM (As literal)."))
 
     _defaults = {
         'product_uom' : 1,
