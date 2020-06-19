@@ -32,7 +32,7 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import odoo.tools.config as tools_config
 
 from .common import getIDs, getCleanList, isAdministrator, packDictionary, unpackDictionary, \
-                    getCleanBytesDictionary, getCleanBytesList, streamPDF
+                    getCleanBytesDictionary, getCleanBytesList, getUser, streamPDF
                     
 
 
@@ -302,9 +302,9 @@ class plm_config_settings(models.Model):
         """
         ret=["","",""]
         
-        for uiUser in self.env['res.users'].browse([self._uid]):
+        uiUser = getUser(self, self._uid)
+        if uiUser:
             ret=[uiUser.login, uiUser.name, uiUser.signature]
-            break
         return ret
 
     @api.model
@@ -1074,7 +1074,7 @@ class plm_logging(models.Model):
     op_type     = fields.Char     (             string=_('Operation Type'), size=64, help=_("Operation Type."))
     op_note     = fields.Char     (             string=_('Operation Note'), size=64, help=_("Description of Operation."))
     op_date     = fields.Datetime (             string=_('Operation Date'),          help=_("Operation Date."))
-    userid      = fields.Many2one ('res.users', string=_('Related User'),            help=_("Related User."))
+    userid      = fields.Many2one ('res.users', string=_('Related User'), index=True,help=_("Related User."))
 
     #######################################################################################################################################33
 
