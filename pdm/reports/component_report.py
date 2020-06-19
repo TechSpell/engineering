@@ -33,7 +33,6 @@ class report_plm_component(models.Model):
     count_component_modified    =   fields.Integer('Under Modify', readonly=True)
     count_component_obsoleted   =   fields.Integer('Obsoleted', readonly=True)
 
-
     
     def init(self):
         cr = self.env.cr
@@ -59,7 +58,6 @@ class report_plm_component_year(models.Model):
     year        =   fields.Char('Year', size=64,readonly=True)
     state       =   fields.Char('Status', size=24,readonly=True)
     nbr         =   fields.Integer('# of Products', readonly=True)
-
 
     
     def init(self):

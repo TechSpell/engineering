@@ -33,7 +33,6 @@ class report_plm_document_file(models.Model):
     file_size   =   fields.Integer('File Size [kB]', readonly=True)
 
     _order = "month"
-
     
     def init(self):
         cr = self.env.cr        
@@ -73,7 +72,6 @@ class report_plm_document_user(models.Model):
     file_size       =   fields.Integer('File Size [kB]', readonly=True)
     nbr             =   fields.Integer('# of Files', readonly=True)
     preview         =   fields.Binary('Preview Content', readonly=True, attachment=True)
-
     
     def init(self):
         cr = self.env.cr        
@@ -141,11 +139,10 @@ class report_plm_document_wall(models.Model):
     _auto = False
 
     name        =   fields.Date('Month', readonly=True)
-    user_id     =   fields.Many2one('res.users', 'Owner',readonly=True)
+    user_id     =   fields.Many2one('res.users', 'Owner', index=True, readonly=True)
     user        =   fields.Char('User',size=64,readonly=True)
     month       =   fields.Char('Month', size=24,readonly=True)
     last        =   fields.Datetime('Last Posted Time', readonly=True)
-
 
     
     def init(self):
@@ -188,7 +185,6 @@ class report_plm_checkout_board(models.Model):
     change_date     =   fields.Datetime('Modified Date', readonly=True)
     change_user     =   fields.Char('Modified by',size=64,readonly=True)
     nbr             =   fields.Integer('# of Files', readonly=True)
-
     
     def init(self):
         cr = self.env.cr        

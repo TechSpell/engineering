@@ -27,7 +27,7 @@ from odoo import models, fields, api, _, osv
 class plm_document(models.Model):
     _inherit = 'plm.document'
 
-    linkedcomponents    =   fields.Many2many('product.product', 'plm_component_document_rel','document_id','component_id', string=_('Linked Parts'))
+    linkedcomponents    =   fields.Many2many('product.product', 'plm_component_document_rel','document_id','component_id', string='Linked Parts', index=True)
 
     _defaults = {
                  'state': lambda *a: 'draft',
@@ -37,7 +37,6 @@ class plm_document(models.Model):
 
 class plm_component(models.Model):
     _inherit = 'product.product'
-
     
     def _father_part_compute(self):
         """ 
@@ -50,11 +49,11 @@ class plm_component(models.Model):
                 prod_ids.extend([bom_line_obj.bom_id.product_id.id])
             prod_obj.father_part_ids=list(set(prod_ids))
 
-    linkeddocuments = fields.Many2many  ('plm.document', 'plm_component_document_rel','component_id','document_id', _('Linked Docs'))  
-    tmp_material    = fields.Many2one   ('plm.material',_('Raw Material'), required=False, change_default=True, help=_("Select raw material for current product"))
-#     tmp_treatment   = fields.Many2one   ('plm.treatment',_('Thermal Treatment'), required=False, change_default=True, help=_("Select thermal treatment for current product"))
-    tmp_surface     = fields.Many2one   ('plm.finishing',_('Surface Finishing'), required=False, change_default=True, help=_("Select surface finishing for current product"))
-    father_part_ids = fields.Many2many  ('product.product', compute = _father_part_compute, string=_("BoM Hierarchy"), store =False)
+    linkeddocuments = fields.Many2many  ('plm.document', 'plm_component_document_rel','component_id','document_id', 'Linked Docs', index=True)  
+    tmp_material    = fields.Many2one   ('plm.material','Raw Material', index=True, required=False, change_default=True, help="Select raw material for current product")
+#     tmp_treatment   = fields.Many2one   ('plm.treatment','Thermal Treatment', index=True, required=False, change_default=True, help="Select thermal treatment for current product")
+    tmp_surface     = fields.Many2one   ('plm.finishing','Surface Finishing', index=True, required=False, change_default=True, help="Select surface finishing for current product")
+    father_part_ids = fields.Many2many  ('product.product', compute = _father_part_compute, string="BoM Hierarchy", store =False)
 
     @api.onchange('tmp_material')
     def on_change_tmpmater(self, tmp_material=False):
@@ -85,7 +84,6 @@ class plm_component(models.Model):
             if thisObject.name:
                 values['engineering_surface']="{name}".format(name=thisObject.name)
         return {'value': {'engineering_surface':values['engineering_surface']}}
-
     
     def _father_compute(self):
         """ 
@@ -188,10 +186,10 @@ class plm_relation(models.Model):
                         result.append(bom_child.bom_id.id)
         self.father_complete_ids=result
  
-    state                   = fields.Selection  (related="product_id.state",                string=_("Status"),     help=_("The status of the product in its LifeCycle."),  store=False)
-    engineering_revision    = fields.Integer    (related="product_id.engineering_revision", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
-    description             = fields.Text       (related="product_id.description",          string=_("Description"),                                                        store=False)
-    father_complete_ids     = fields.Many2many  ('mrp.bom.line', compute=_father_compute,   string=_("BoM Hierarchy"),                                                      store=False)
+    state                   = fields.Selection  (related="product_id.state",                string="Status",     help="The status of the product in its LifeCycle.",  store=False)
+    engineering_revision    = fields.Integer    (related="product_id.engineering_revision", string="Revision",   help="The revision of the product.",                 store=False)
+    description             = fields.Text       (related="product_id.description",          string="Description",                                                        store=False)
+    father_complete_ids     = fields.Many2many  ('mrp.bom.line', compute=_father_compute,   string="BoM Hierarchy",                                                      store=False)
 
 
 class plm_relation_line(models.Model):
@@ -216,22 +214,21 @@ class plm_relation_line(models.Model):
 #                 res[bom_line.id] = False
 #         return res
 
-    state                   =   fields.Selection    (related="product_id.state",                string=_("Status"),     help=_("The status of the product in its LifeCycle."),  store=False)
-    engineering_revision    =   fields.Integer      (related="product_id.engineering_revision", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
-    description             =   fields.Text         (related="product_id.description",          string=_("Description"),                                                        store=False)
-    weight                  =   fields.Float        (related="product_id.weight",               string=_("Weight Net"),                                                         store=False)
-#     child_line_ids          =   fields.One2many     ("mrp.bom.line",compute=_get_child_bom_lines,string=_("BOM lines of the referred bom"))
+    state                   =   fields.Selection    (related="product_id.state",                string="Status",     help="The status of the product in its LifeCycle.",  store=False)
+    engineering_revision    =   fields.Integer      (related="product_id.engineering_revision", string="Revision",   help="The revision of the product.",                 store=False)
+    description             =   fields.Text         (related="product_id.description",          string="Description",                                                        store=False)
+    weight                  =   fields.Float        (related="product_id.weight",               string="Weight Net",                                                         store=False)
 
 
 class plm_checkout(models.Model):
     _inherit = 'plm.checkout'
 
-    name                =   fields.Char     (related="documentid.name",         string=_("Document"),       store=False)
+    name                =   fields.Char     (related="documentid.name",         string="Document",       store=False)
 
 class plm_backupdoc(models.Model):
     _inherit = 'plm.backupdoc'
 
-    name                =   fields.Char     (related="documentid.name",         string=_("Document"),       store=False)
+    name                =   fields.Char     (related="documentid.name",         string="Document",       store=False)
 
 
 class plm_document_relation(models.Model):
@@ -258,7 +255,6 @@ class plm_document_relation(models.Model):
             ids.append(line_id.child_id.id)
         criteria=[('parent_id', 'in', list(set(ids)))]
         return self.search( criteria )
-
     
     def _get_children_lines(self, lines=None):
         res = []
@@ -276,8 +272,7 @@ class plm_document_relation(models.Model):
             for child_id in self.search( criteria ):
                 ids.append(child_id.id)
         return self.browse(list(set(ids)))
-        
-    
+            
     def _get_fathers_lines(self):
         res = []
         for line_id in self.browse(self._ids):
@@ -285,15 +280,17 @@ class plm_document_relation(models.Model):
             res.extend(parents._ids)
         self.father_line_ids = list(set(res))
  
-    name                =   fields.Char     (related="parent_id.name",          string=_("Document"),       store=False)
-    parent_preview      =   fields.Binary   (related="parent_id.preview",       string=_("Preview"),        store=False)
-    parent_state        =   fields.Selection(related="parent_id.state",         string=_("Status"),         store=False)
-    parent_revision     =   fields.Integer  (related="parent_id.revisionid",    string=_("Revision"),       store=False)
-    parent_checkedout   =   fields.Char     (related="parent_id.checkout_user", string=_("Checked-Out To"), store=False)
-    child_preview       =   fields.Binary   (related="child_id.preview",        string=_("Preview"),        store=False)
-    child_state         =   fields.Selection(related="child_id.state",          string=_("Status"),         store=False)
-    child_revision      =   fields.Integer  (related="child_id.revisionid",     string=_("Revision"),       store=False)
-    child_checkedout    =   fields.Char     (related="child_id.checkout_user",  string=_("Checked-Out To"), store=False)
-    child_line_ids      =   fields.One2many ("plm.document.relation", compute=_get_children_lines,   string=_("Documents related as children"), store=False)
-    father_line_ids     =   fields.Many2many('plm.document.relation', compute=_get_fathers_lines,    string=_("Documents related as fathers"),  store=False)
+    name                =   fields.Char     (related="parent_id.name",          string="Document",       store=False)
+    parent_preview      =   fields.Binary   (related="parent_id.preview",       string="Preview",        store=False)
+    parent_state        =   fields.Selection(related="parent_id.state",         string="Status",         store=False)
+    parent_revision     =   fields.Integer  (related="parent_id.revisionid",    string="Revision",       store=False)
+    parent_minor        =   fields.Char     (related="parent_id.minorrevision", string="Minor Revision", store=False)
+    parent_checkedout   =   fields.Char     (related="parent_id.checkout_user", string="Checked-Out To", store=False)
+    child_preview       =   fields.Binary   (related="child_id.preview",        string="Preview",        store=False)
+    child_state         =   fields.Selection(related="child_id.state",          string="Status",         store=False)
+    child_revision      =   fields.Integer  (related="child_id.revisionid",     string="Revision",       store=False)
+    child_minor         =   fields.Char     (related="child_id.minorrevision",  string="Minor Revision", store=False)
+    child_checkedout    =   fields.Char     (related="child_id.checkout_user",  string="Checked-Out To", store=False)
+    child_line_ids      =   fields.One2many ("plm.document.relation", compute=_get_children_lines,   string="Documents related as children", store=False)
+    father_line_ids     =   fields.Many2many('plm.document.relation', compute=_get_fathers_lines,    string="Documents related as fathers",  store=False)
 

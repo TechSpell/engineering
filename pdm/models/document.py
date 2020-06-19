@@ -36,7 +36,7 @@ from odoo.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                         move_workflow, wf_message_post, isAdministrator, isIntegratorUser, isReleased, \
-                        isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
+                        isObsoleted, isUnderModify, isAnyReleased, isDraft, isWritable, getUpdTime
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
@@ -98,7 +98,7 @@ def getprevminor(minorString):
 class plm_document(models.Model):
     _name = 'plm.document'
     _table = 'plm_document'
-    _inherit = ['mail.thread','ir.attachment']
+    _inherit = ['mail.thread']
 
     def _insertlog(self, ids, changes={}, note={}):
         ret=False
@@ -237,15 +237,18 @@ class plm_document(models.Model):
                     preview = oiDocument.preview
                 db_datas = b''  # Clean storage field.
                 fname, filesize = self._manageFile(oid, binvalue=value)
-                self.env.cr.execute('update plm_document set store_fname=%s,file_size=%s,db_datas=%s where id=%s',
-                           (fname, filesize, db_datas, oid))
+                oiDocument.with_context({'internal_writing':True}).write({
+                    'store_fname':fname, 
+                    'file_size':filesize,
+                    'db_datas':False
+                    })
                 self.env['plm.backupdoc'].with_context({'internal_writing':True}).create({
                     'userid': self._uid,
                     'existingfile': fname,
                     'documentid': oid,
                     'printout': printout,
                     'preview': preview
-                })
+                    })
 
                 return True
             except Exception as ex:
@@ -368,20 +371,22 @@ class plm_document(models.Model):
         fobj.close()
         return (os.path.join(flag, filename), len(value))
 
-    def _iswritable(self, oid):
-        checkState = ('draft')
-        if not oid.type == 'binary':
-            logging.warning("_iswritable : Document (" + str(oid.name) + "-" + str(
-                oid.revisionid) + ") not writable as hyperlink.")
-            return False
-        if not oid.writable:
-            logging.warning("_iswritable : Document (" + str(oid.name) + "-" + str(
-                oid.revisionid) + ") not writable.")
-            return False
-        if not oid.state in checkState:
-            logging.warning("_iswritable : Document (" + str(oid.name) + "-" + str(
-                oid.revisionid) + ") in status ; " + str(oid.state) + ".")
-            return False
+    @api.model
+    def _iswritable(self):
+        if self:
+            checkState = ('draft')
+            if not self.type == 'binary':
+                logging.warning("_iswritable : Document (" + str(self.name) + "-" + str(
+                    self.revisionid) + ") not writable as hyperlink.")
+                return False
+            if not self.writable:
+                logging.warning("_iswritable : Document (" + str(self.name) + "-" + str(
+                    self.revisionid) + ") not writable.")
+                return False
+            if not self.state in checkState:
+                logging.warning("_iswritable : Document (" + str(self.name) + "-" + str(
+                    self.revisionid) + ") in status ; " + str(self.state) + ".")
+                return False
         return True
 
     @api.model
@@ -480,7 +485,7 @@ class plm_document(models.Model):
         ret=True
         
         for tmpObject in self.browse(getListIDs(ids)):
-            ret=ret and self._iswritable(tmpObject.id)
+            ret=ret and tmpObject._iswritable()
         return ret
 
     @api.model
@@ -507,8 +512,9 @@ class plm_document(models.Model):
         for oldObject in self.browse(getListIDs(ids)):
             for linked_product_id in oldObject.linkedcomponents:
                 if latest:
-                    productId=prodType.GetLatestIds( [(linked_product_id.name, False, False)] )
-                    product_id=prodType.browse(productId[0])
+                    product_ids=prodType.GetLatestIds( [(linked_product_id.name, False, False)] )
+                    if product_ids and len(product_ids)>0:
+                        product_id=prodType.browse(product_ids[0])
                 else:
                     product_id=linked_product_id
                 break
@@ -757,7 +763,7 @@ class plm_document(models.Model):
                         lastupdate=datetime.strptime(str(document['_lastupdate']),'%Y-%m-%d %H:%M:%S')
                         timedb=getUpdTime(objDocument)
                         logging.debug("CheckDocumentsToSave : time db : {timedb} time file : {timefile}".format(timedb=timedb.strftime('%Y-%m-%d %H:%M:%S'), timefile=document['_lastupdate']))
-                        if self._iswritable(objDocument) and timedb < lastupdate:
+                        if objDocument._iswritable() and timedb < lastupdate:
                             hasSaved = True
                 if ('CADComponentID' in document):
                     #TODO: To be inserted other references to manage the file as attached and no more.
@@ -814,6 +820,8 @@ class plm_document(models.Model):
             lastupdate=datetime.strptime(str(document['_lastupdate']),'%Y-%m-%d %H:%M:%S') if ('_lastupdate' in document) else datetime.now()
             for fieldName in list(set(document.keys()).difference(set(modelFields))):
                 del (document[fieldName])
+            document['is_integration']=True
+            document['public']=True
             if not existingID:
                 logging.debug("[SaveOrUpdate] Document {name} is creating.".format(name=document['name']))
                 objectItem=self.with_context({'internal_writing':True}).create(document)
@@ -832,7 +840,7 @@ class plm_document(models.Model):
                     if objDocument:
                         document['revisionid']=objDocument.revisionid
                         document['minorrevision']=objDocument.minorrevision
-                        if self._iswritable(objDocument) and (getUpdTime(objDocument) < lastupdate):
+                        if objDocument._iswritable() and (getUpdTime(objDocument) < lastupdate):
                             logging.debug("[SaveOrUpdate] Document {name}/{revi} is updating.".format(name=document['name'],revi=document['revisionid']))
                             hasSaved = True
                             if not objDocument.with_context({'internal_writing':False}).write(document):
@@ -891,7 +899,7 @@ class plm_document(models.Model):
             Clean document component relations..
         """
         objType = self.env['plm.component.document.rel']
-        objType.CleanStructure(relations)
+        objType.CleanStructure(parent_ids=relations)
 
     def _copy_DocumentBom(self, idStart, idDest=None):
         """
@@ -969,7 +977,6 @@ class plm_document(models.Model):
         move_workflow(self, ids, signal)
         return False
 
-    
     def action_upload(self):
         """
             action to be executed after automatic upload
@@ -985,7 +992,6 @@ class plm_document(models.Model):
         self.logging_workflow(ids, default, action, status)
         return self.browse(ids).with_context({'internal_writing':True}).write(default)
 
-    
     def action_draft(self):
         """
             release the object
@@ -1000,7 +1006,6 @@ class plm_document(models.Model):
         
         return self._action_onrelateddocuments(ids, default, action, status)
 
-    
     def action_correct(self):
         """
             release the object
@@ -1015,7 +1020,6 @@ class plm_document(models.Model):
         
         return self._action_onrelateddocuments(ids, default, action, status)
 
-    
     def action_confirm(self):
         """
             action to be executed for Draft state
@@ -1035,7 +1039,6 @@ class plm_document(models.Model):
             move_workflow(self, ids, 'correct')
         return ret
 
-    
     def action_release(self):
         """
             release the object
@@ -1055,7 +1058,6 @@ class plm_document(models.Model):
                 move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
         return self._action_onrelateddocuments(ids, default, action, status, checkact=True)
 
-    
     def action_obsolete(self):
         """
             obsolete the object
@@ -1072,7 +1074,6 @@ class plm_document(models.Model):
         wf_message_post(self, ids, body='Status moved to: {status}.'.format(status=status))
         return self.browse(ids).with_context({'internal_writing':True}).write(default)
 
-    
     def action_reactivate(self):
         """
             reactivate the object
@@ -1088,7 +1089,6 @@ class plm_document(models.Model):
         self.logging_workflow(ids, action, status)
         return self.browse(ids).with_context({'internal_writing':True}).write(default)
 
-    
     def _get_checkout_state(self):
         for doc_id in self:
             chechRes = self.getCheckedOut(doc_id.id, None)
@@ -1097,7 +1097,6 @@ class plm_document(models.Model):
             else:
                 self.checkout_user = ''
         
-    
     def _is_checkout(self):
         for doc_id in self:
             chechRes = self.getCheckedOut(doc_id.id, None)
@@ -1112,7 +1111,6 @@ class plm_document(models.Model):
         dms_Root_Path = tools_config.get('document_path', os.path.join(tools_config['root_path'], 'filestore'))
         return os.path.join(dms_Root_Path, self.env.cr.dbname)
 
-    
     def copy(self, default={}):
         newID = False
         previous_name=False
@@ -1194,7 +1192,6 @@ class plm_document(models.Model):
                     logging.error("Exception {msg}. It has tried to create with values : {vals}.".format(msg=ex, vals=vals))
         return ret
 
-    
     def write(self, vals):
         ret=True
         if vals:
@@ -1214,7 +1211,6 @@ class plm_document(models.Model):
                 ret=super(plm_document, self).write(vals)
         return ret
 
-    
     def unlink(self):
         ret=False
         values = {'state': 'released', }
@@ -1263,18 +1259,45 @@ class plm_document(models.Model):
                     ret=ret | item
         return ret
 
-    usedforspare    =   fields.Boolean  (string=_('Used for Spare'),help=_("Drawings marked here will be used printing Spare Part Manual report."), default=False)
-    usedformftg     =   fields.Boolean  (string=_('Used for Manufacturing'),help=_("Drawings marked here will be used as skecthes for manufacturing on worksheets."), default=False)
-    revisionid      =   fields.Integer  (string=_('Revision Index'), required=True, default=0)
-    minorrevision   =   fields.Char     (string=_('Minor Revision'), required=True, default='A')
-    writable        =   fields.Boolean  (string=_('Writable'), default=True)
-    datas           =   fields.Binary   (string=_('File Content'), inverse='_data_set', compute='_data_get', attachment=True)
-    printout        =   fields.Binary   (string=_('Printout Content'), help=_("Print PDF content."), attachment=True)
-    preview         =   fields.Binary   (string=_('Preview Content'), help=_("Static preview."), attachment=True)
-    state           =   fields.Selection(USED_STATES,string=_('Status'), help=_("The status of the product."), readonly="True", required=True, default='draft')
-    checkout_user   =   fields.Char(string=_("Checked-Out to"), compute=_get_checkout_state)
-    is_checkout     =   fields.Boolean(string=_('Is Checked-Out'), compute=_is_checkout, store=False)
-    datas_fname     =   fields.Char('Filename', help=_("Stored filename."))
+    name = fields.Char('Name', required=True)
+    description = fields.Text('Description')
+    res_name = fields.Char('Resource Name')
+    res_model = fields.Char('Resource Model', readonly=True, help="The database object this attachment will be attached to.")
+    res_field = fields.Char('Resource Field', readonly=True)
+    res_id = fields.Many2oneReference('Resource ID', model_field='res_model',
+                                      readonly=True, help="The record id this is attached to.")
+    company_id = fields.Many2one('res.company', string='Company', change_default=True,
+                                 default=lambda self: self.env.company)
+    type = fields.Selection([('url', 'URL'), ('binary', 'File')],
+                            string='Type', required=True, default='binary', change_default=True,
+                            help="You can either upload a file from your computer or copy/paste an internet link to your file.")
+    url = fields.Char('Url', index=True, size=1024)
+    public = fields.Boolean('Is public document')
+ 
+    # for external access
+    access_token = fields.Char('Access Token', groups="pdm.group_plm_viewuser")
+ 
+    # the field 'datas' is computed and may use the other fields below
+    db_datas = fields.Binary('Database Data', attachment=True)
+    store_fname = fields.Char('Stored Filename')
+    file_size = fields.Integer('File Size', readonly=True)
+    checksum = fields.Char("Checksum/SHA1", size=40, index=True, readonly=True)
+    mimetype = fields.Char('Mime Type', readonly=True)
+    index_content = fields.Text('Indexed Content', readonly=True, prefetch=False)
+
+    usedforspare    =   fields.Boolean  (string='Used for Spare',help="Drawings marked here will be used printing Spare Part Manual report.", default=False)
+    usedformftg     =   fields.Boolean  (string='Used for Manufacturing',help="Drawings marked here will be used as skecthes for manufacturing on worksheets.", default=False)
+    revisionid      =   fields.Integer  (string='Revision Index', required=True, default=0)
+    minorrevision   =   fields.Char     (string='Minor Revision', required=True, default='A')
+    writable        =   fields.Boolean  (string='Writable', default=True)
+    datas           =   fields.Binary   (string='File Content', inverse='_data_set', compute='_data_get', attachment=True)
+    printout        =   fields.Binary   (string='Printout Content', help="Print PDF content.", attachment=True)
+    preview         =   fields.Binary   (string='Preview Content', help="Static preview.", attachment=True)
+    state           =   fields.Selection(USED_STATES,string='Status', help="The status of the document.", readonly="True", required=True, default='draft')
+    checkout_user   =   fields.Char(string="Checked-Out to", compute=_get_checkout_state)
+    is_checkout     =   fields.Boolean(string='Is Checked-Out', compute=_is_checkout, store=False)
+    is_integration  =   fields.Boolean(string="Is from integration", default=False)
+    datas_fname     =   fields.Char('Filename', help="Stored filename.")
 
     _sql_constraints = [
         ('name_unique', 'unique (name,revisionid,minorrevision)', 'File name has to be unique!')
@@ -1335,7 +1358,7 @@ class plm_document(models.Model):
         if seqID:
             count=0
             while ret=="":
-                chkname=self.pool['ir.sequence']._next([seqID.id])
+                chkname=self.env['ir.sequence'].browse(seqID.id)._next()
                 count+=1
                 criteria=[('name', '=', chkname)]
                 partIds = self.search(criteria)
@@ -1553,10 +1576,10 @@ class plm_checkout(models.Model):
     _name = 'plm.checkout'
     _description = 'Checked-Out Documents'
     
-    userid      = fields.Many2one ('res.users',    string=_('Related User'),               ondelete='cascade')
-    hostname    = fields.Char     (                string=_('Hostname'),     size=64)
-    hostpws     = fields.Char     (                string=_('PWS Directory'),size=1024)
-    documentid  = fields.Many2one ('plm.document', string=_('Related Document'),           ondelete='cascade')
+    userid      = fields.Many2one ('res.users',    string='Related User',     index=True, ondelete='cascade')
+    hostname    = fields.Char     (                string='Hostname',         size=64)
+    hostpws     = fields.Char     (                string='PWS Directory',    size=1024)
+    documentid  = fields.Many2one ('plm.document', string='Related Document', index=True, ondelete='cascade')
 
     _sql_constraints = [
         ('documentid', 'unique (documentid)', 'The documentid must be unique !')
@@ -1605,7 +1628,6 @@ class plm_checkout(models.Model):
 
     #   Overridden methods for this entity
 
-    
     def create(self, vals):
         ret=False
         docIDs=[]
@@ -1630,7 +1652,6 @@ class plm_checkout(models.Model):
                         wf_message_post(documentType, docIDs, body='Checked-Out')
         return ret
 
-    
     def unlink(self):
         ret=False
         documentType = self.env['plm.document']
@@ -1669,12 +1690,12 @@ class plm_document_relation(models.Model):
     _name = 'plm.document.relation'
     _description = 'Document Relations'
     
-    parent_id       =   fields.Many2one ('plm.document', string=_('Related parent document'), ondelete='cascade')
-    child_id        =   fields.Many2one ('plm.document', string=_('Related child document'),  ondelete='cascade')
-    configuration   =   fields.Char     (                string=_('Configuration Name'),    size=1024)
-    link_kind       =   fields.Char     (                string=_('Kind of Link'),          size=64, required=True)
-    create_date     =   fields.Datetime (                string=_('Date Created'),                   readonly=True)
-    userid          =   fields.Many2one ('res.users',    string=_('CheckOut User'),                  readonly="True")
+    parent_id       =   fields.Many2one ('plm.document', string='Related parent document', index=True,   ondelete='cascade')
+    child_id        =   fields.Many2one ('plm.document', string='Related child document',  index=True,   ondelete='cascade')
+    configuration   =   fields.Char     (                string='Configuration Name',                    size=1024)
+    link_kind       =   fields.Char     (                string='Kind of Link',                          size=64, required=True)
+    create_date     =   fields.Datetime (                string='Date Created',                          readonly=True)
+    userid          =   fields.Many2one ('res.users',    string='CheckOut User',           index=True,   readonly="True")
     
     _defaults = {
         'link_kind': lambda *a: 'HiTree',
@@ -1687,12 +1708,14 @@ class plm_document_relation(models.Model):
     @api.model
     def CleanStructure(self, parent_ids=[], default=None):
         executed=[]
+        oIds=self
         for parent_id in parent_ids:
-            criteria = [('parent_id', '=', parent_id)]
-            if not(criteria in executed):
-                executed.append(criteria)
-                oIds=self.search(criteria)
-                oIds.unlink()
+            if isWritable(self.env['plm.document'], parent_id):
+                criteria = [('parent_id', '=', parent_id)]
+                if not(criteria in executed):
+                    executed.append(criteria)
+                    oIds|=self.search(criteria)
+        oIds.unlink()
         return False
 
     @api.model
@@ -1708,11 +1731,12 @@ class plm_document_relation(models.Model):
             oIds=self
             for relation in relations:
                 res['parent_id'], res['child_id'], res['configuration'], res['link_kind'] = relation
-                if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
-                    criteria = [('child_id', '=', res['child_id'])]
-                else:
-                    criteria = [('parent_id', '=', res['parent_id'])]
-                oIds |= self.search(criteria)
+                if isWritable(self.env['plm.document'], res['parent_id']):
+                    if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
+                        criteria = [('child_id', '=', res['child_id'])]
+                    else:
+                        criteria = [('parent_id', '=', res['parent_id'])]
+                    oIds |= self.search(criteria)
             oIds.unlink()
 
         def saveChild(relation):
@@ -1726,8 +1750,9 @@ class plm_document_relation(models.Model):
                 if (res['parent_id'] != None) and (res['child_id'] != None):
                     if (len(str(res['parent_id'])) > 0) and (len(str(res['child_id'])) > 0):
                         if not ((res['parent_id'], res['child_id']) in savedItems):
-                            savedItems.append((res['parent_id'], res['child_id']))
-                            self.create(res)
+                            if isWritable(self.env['plm.document'], res['parent_id']):
+                                savedItems.append((res['parent_id'], res['child_id']))
+                                self.create(res)
                 else:
                     logging.error(
                         "saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(
@@ -1794,14 +1819,14 @@ class plm_backupdoc(models.Model):
     _name = 'plm.backupdoc'
     _description = 'Document Backup'
 
-    userid          =   fields.Many2one ('res.users', _('Related User'), ondelete='cascade')
-    existingfile    =   fields.Char     (_('Physical Document Location'),size=1024)
-    documentid      =   fields.Many2one ('plm.document', _('Related Document'), ondelete='cascade')
-    revisionid      =   fields.Integer  (related="documentid.revisionid",string=_("Revision"),store=False)
-    minorrevision   =   fields.Char     (_('Minor Revision'),store=False)
-    state           =   fields.Selection(related="documentid.state",string=_("Status"),store=False)
-    printout        =   fields.Binary   (_('Printout Content'), attachment=True)
-    preview         =   fields.Binary   (_('Preview Content'), attachment=True)
+    userid          =   fields.Many2one ('res.users', 'Related User', index=True, ondelete='cascade')
+    existingfile    =   fields.Char     ('Physical Document Location',size=1024)
+    documentid      =   fields.Many2one ('plm.document', 'Related Document', index=True, ondelete='cascade')
+    revisionid      =   fields.Integer  (related="documentid.revisionid",string="Revision",store=False)
+    minorrevision   =   fields.Char     ('Minor Revision',store=False)
+    state           =   fields.Selection(related="documentid.state",string="Status",store=False)
+    printout        =   fields.Binary   ('Printout Content', attachment=True)
+    preview         =   fields.Binary   ('Preview Content', attachment=True)
 
     def _insertlog(self, ids, changes={}, note={}):
         ret=False       
@@ -1836,7 +1861,6 @@ class plm_backupdoc(models.Model):
              }
         self._insertlog(ids, note=note)
 
-    
     def create(self, vals):
         ret=False
         
@@ -1849,7 +1873,6 @@ class plm_backupdoc(models.Model):
                     self.logging_operation(vals['documentid'], 'Stored Copy')
         return ret
 
-    
     def unlink(self):
         committed = False
         documentType = self.env['plm.document']
@@ -1896,13 +1919,13 @@ class plm_temporary(osv.osv.osv_memory):
         backupdocType = self.env['plm.backupdoc']
         
         
-        check=context.get('internal_writing', False)
+        check=self._context.get('internal_writing', False)
         if not check:
             if not isAdministrator(self):
                 logging.warning(
                     "unlink : Unable to remove the required documents.\n You aren't authorized in this context.")
                 raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
-        backObj=backupdocType.browse(context['active_id'])
+        backObj=backupdocType.browse(self._context['active_id'])
         if backObj and backObj.documentid:
             objDoc=backObj.documentid
             if objDoc.state == 'draft' and documentType.ischecked_in(objDoc.id):

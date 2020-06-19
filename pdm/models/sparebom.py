@@ -33,20 +33,19 @@ class plm_temporary(osv.osv.osv_memory):
     name          = fields.Char       (  string=_('Part Number'), size=64)
 
     ##  Specialized Actions callable interactively
-    def action_create_spareBom(self, context):
+    def action_create_spareBom(self, context={}):
         """
             Create a new Spare BoM if doesn't exist (action callable from views)
         """
-        if not 'active_id' in context:
+        if not 'active_id' in self._context:
             return False
-        if not 'active_ids' in context:
+        if not 'active_ids' in self._context:
             return False
         
         
-        context.update({ "update_latest_revision": self.revflag })
         productType=self.env['product.product']
         bomType=self.env['mrp.bom']
-        for idd in context['active_ids']:
+        for idd in self._context['active_ids']:
             checkObj=productType.browse(idd)
             if not checkObj:
                 continue
@@ -55,7 +54,9 @@ class plm_temporary(osv.osv.osv_memory):
             if objBoms:
                 raise UserError(_("Creating a new Spare BoM Error.\n\nBoM for Part {} already exists.".format(checkObj.name)))
 
-        productType.action_create_spareBom_WF(context['active_ids'])
+        productType.with_context(
+                {"update_latest_revision": self.revflag}
+                ).action_create_spareBom_WF(self._context['active_ids'])
 
         return {
             'name': _('Bill of Materials'),
@@ -63,7 +64,7 @@ class plm_temporary(osv.osv.osv_memory):
             "view_mode": 'tree,form',
             'res_model': 'mrp.bom',
             'type': 'ir.actions.act_window',
-            'domain': "[('product_id','in', [" + ','.join(map(str, context['active_ids'])) + "])]",
+            'domain': "[('product_id','in', [" + ','.join(map(str, self._context['active_ids'])) + "])]",
         }
 
 
@@ -71,7 +72,7 @@ class plm_component(models.Model):
     _inherit = 'product.product'
 
     #  Work Flow Actions
-    def action_create_spareBom_WF(self, ids):
+    def action_create_spareBom_WF(self, ids=[]):
         """
             Create a new Spare BoM if doesn't exist (action callable from code)
         """
@@ -82,7 +83,7 @@ class plm_component(models.Model):
         return False
 
     #   Internal methods
-    def _create_spareBom(self, idd):
+    def _create_spareBom(self, idd=False):
         """
             Create a new Spare BoM (recursive on all EBom children)
         """
@@ -128,7 +129,7 @@ class plm_component(models.Model):
 class plm_description(models.Model):
     _inherit = "plm.description"
 
-    bom_tmpl    =   fields.Many2one('mrp.bom',_('Choose a BoM'), required=False, change_default=True, help=_("Select a  BoM as template to drive building Spare BoM."))
+    bom_tmpl    =   fields.Many2one('mrp.bom',_('Choose a BoM'), index=True, required=False, change_default=True, help=_("Select a  BoM as template to drive building Spare BoM."))
 
     _defaults = {
         'bom_tmpl': lambda *a: False,

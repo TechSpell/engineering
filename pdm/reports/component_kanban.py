@@ -28,13 +28,11 @@ import json
 
 class ComponentDashboard(models.Model):
     _inherit = "product.product"
-
     
     def _kanban_dashboard(self):
         self.kanban_dashboard = json.dumps(self.get_bom_dashboard_datas())
 
     kanban_dashboard = fields.Text(compute='_kanban_dashboard')
-
     
     def get_bom_dashboard_datas(self):
         number_documents = 0
@@ -48,15 +46,12 @@ class ComponentDashboard(models.Model):
             'number_boms': number_boms,
             'number_documents': number_documents,
         }
-
     
     def get_related_boms(self):
         return self.env['mrp.bom'].search([('product_tmpl_id', '=', self.product_tmpl_id.id)])
-
     
     def get_related_docs(self):
         return self.browse(self._ids).linkeddocuments
-
     
     def common_open(self, name, model, view_mode='form', view_type='form', res_id=False, ctx={}, domain=[]):
         # <field name="domain">[('account_id','=', active_id)]</field>
@@ -70,30 +65,25 @@ class ComponentDashboard(models.Model):
             'context': ctx,
             'domain': domain
         }
-
     
     def toggle_favorite(self):
         self.write( {'show_on_dashboard': False if self.show_on_dashboard else True} )
         return False
-
     
     def open_action(self):
 #         print 'Pressed open action'
 #         return self.common_open(_('New Component'), 'product.product', 'form', 'form', self.ids[0], self.env.context)
         return self.common_open(_('New Component'), 'product.product', 'form', 'form', self.ids, self.env.context)
-
     
     def create_component(self):
 #         print 'New Component'
         return self.common_open(_('New Component'), 'product.product', 'form', 'form', False, self.env.context)
-
     
     def open_normal_bom(self):
 #         print 'Open Normal Boms'
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids), ('type', '=', 'normal')]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
-
     
     def open_engin_bom(self):
 #         print 'Open Engineering BoMs'
@@ -102,7 +92,6 @@ class ComponentDashboard(models.Model):
             boms.append(bomId.id)
         domain = [('id', 'in', boms), ('type', '=', 'ebom')]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms, self.env.context, domain)
-
     
     def open_spare_bom(self):
 #         print 'Open Spare Boms'
@@ -111,25 +100,21 @@ class ComponentDashboard(models.Model):
             boms.append(bomId.id)
         domain = [('id', 'in', boms), ('type', '=', 'spbom')]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms, self.env.context, domain)
-
     
     def open_new_component(self):
 #         print 'Open New Component'
         return self.common_open(_('New Component'), 'product.product', 'form', 'form', False, self.env.context)
-
     
     def open_related_docs_action(self):
         docs = self.get_related_docs()
         domain = [('id', 'in', docs.ids)]
         return self.common_open(_('Related Documents'), 'plm.document', 'tree,form', 'form', docs.ids, self.env.context, domain)
-
     
     def open_related_boms_action(self):
 #         print 'Open Related Boms'
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids)]
         return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
-
     
     def create_normal_bom(self):
 #         print 'Open Normal Boms'
@@ -139,7 +124,6 @@ class ComponentDashboard(models.Model):
         if docIds:
             context.update({'default_product_tmpl_id': self.product_tmpl_id.id})
         return self.common_open(_('Related Boms'), 'mrp.bom', 'form', 'form', False, context)
-
     
     def create_spare_bom(self):
         context = self.env.context.copy()
@@ -148,16 +132,13 @@ class ComponentDashboard(models.Model):
         if docIds:
             context.update({'default_product_tmpl_id': self.product_tmpl_id.id})
         return self.common_open(_('Related Boms'), 'mrp.bom', 'form', 'form', False, context)
-
     
     def openDocument(self, vals=False):
 #         print 'Open document'
         pass
-
     
     def report_components(self):
         pass
-
     
     def computePrevious(self, linkeddocs):
 #         print 'here'

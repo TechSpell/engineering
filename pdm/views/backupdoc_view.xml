@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-	<data>
+<data>
+
     <record model="ir.ui.view" id="view_plm_backupdoc">
         <field name="name">plm.backupdoc.form</field>
         <field name="model">plm.backupdoc</field>
@@ -123,6 +124,6 @@
         target="new"
         groups="pdm.group_plm_admin"
         id="act_restore_document"/>
-
-	</data>
+        
+</data>
 </odoo>

@@ -849,7 +849,6 @@ class plm_config_settings(models.Model):
                 }
                    
         return tables, quick_tables, columns
-
     
     def Refresh(self, request=None, default=None):
         """
@@ -861,8 +860,7 @@ class plm_config_settings(models.Model):
 #         cr.execute("REFRESH MATERIALIZED VIEW ext_document")
 #         logging.debug("Refreshing Materialized Views: End.")
         return False
-
-    
+   
     def init(self):
         """
             Creates views for external Clients.
@@ -1079,12 +1077,11 @@ class plm_logging(models.Model):
     op_type     = fields.Char     (             string=_('Operation Type'), size=64, help=_("Operation Type."))
     op_note     = fields.Char     (             string=_('Operation Note'), size=64, help=_("Description of Operation."))
     op_date     = fields.Datetime (             string=_('Operation Date'),          help=_("Operation Date."))
-    userid      = fields.Many2one ('res.users', string=_('Related User'),            help=_("Related User."))
+    userid      = fields.Many2one ('res.users', string=_('Related User'), index=True,help=_("Related User."))
 
     #######################################################################################################################################33
 
     #   Overridden methods for this entity
-
     
     def unlink(self):
         return False

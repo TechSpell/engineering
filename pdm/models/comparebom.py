@@ -25,7 +25,7 @@
 import os
 from odoo import models, fields, api, _, osv
 
-from .common import BOMTYPES
+from .common import ORIBOMTYPES, BOMTYPES
 
 def _moduleName():
     path = os.path.dirname(__file__)
@@ -54,19 +54,19 @@ class plm_compare_bom(osv.osv.osv_memory):
     _name = "plm.compare.bom"
     _description = "BoM Comparison"
     
-    name          = fields.Char       (                                         string=_('Part Number'),           size=64)
-    bom_id1       = fields.Many2one   ('mrp.bom',                               string=_('BoM 1'), required=True, ondelete='cascade')
-    type_id1      = fields.Selection  (BOMTYPES,                                string=_('BoM Type'))
-    part_id1      = fields.Many2one   ('product.product', 'Part',                                                 ondelete='cascade')
+    name          = fields.Char       (                                         string=_('Part Number'),          size=64)
+    bom_id1       = fields.Many2one   ('mrp.bom',                   index=True, string=_('BoM 1'), required=True, ondelete='cascade')
+    type_id1      = fields.Selection  (ORIBOMTYPES+BOMTYPES,                  string=_('BoM Type'))
+    part_id1      = fields.Many2one   ('product.product', 'Part',   index=True,                                   ondelete='cascade')
     revision1     = fields.Integer    (related="part_id1.engineering_revision", string=_("Revision"),             store=False)
     description1  = fields.Text       (related="part_id1.description",          string=_("Description"),          store=False)
-    bom_id2       = fields.Many2one   ('mrp.bom',                               string=_('BoM 2'), required=True, ondelete='cascade')
-    type_id2      = fields.Selection  (BOMTYPES,                                string=_('BoM Type'))
-    part_id2      = fields.Many2one   ('product.product', 'Part', ondelete='cascade')
+    bom_id2       = fields.Many2one   ('mrp.bom',                   index=True, string=_('BoM 2'), required=True, ondelete='cascade')
+    type_id2      = fields.Selection  (ORIBOMTYPES+BOMTYPES,                  string=_('BoM Type'))
+    part_id2      = fields.Many2one   ('product.product', 'Part',   index=True,                                   ondelete='cascade')
     revision2     = fields.Integer    (related="part_id2.engineering_revision", string=_("Revision"),             store=False)
     description2  = fields.Text       (related="part_id2.description",          string=_("Description"),          store=False)
-    anotinb       = fields.One2many   ('plm.adding.bom',  'bom_id',             string=_('BoM Adding'))
-    bnotina       = fields.One2many   ('plm.missing.bom', 'bom_id',             string=_('BoM Missing'))
+    anotinb       = fields.One2many   ('plm.adding.bom',  'bom_id', index=True, string=_('BoM Adding'))
+    bnotina       = fields.One2many   ('plm.missing.bom', 'bom_id', index=True, string=_('BoM Missing'))
 
     _defaults = {
                  'name': 'x',
@@ -86,7 +86,6 @@ class plm_compare_bom(osv.osv.osv_memory):
             res['bom_id2'] = record_ids[1]
 
         return res
-
     
     def action_compare_Bom(self, context={}):
         """
@@ -285,9 +284,9 @@ class plm_missing_bom(osv.osv.osv_memory):
     _name = "plm.missing.bom"
     _description = "BoM Missing Objects"
     
-    bom_id      =   fields.Many2one ('plm.compare.bom', _('BoM'),           ondelete='cascade')
-    bom_idrow   =   fields.Many2one ('mrp.bom.line',    _('BoM Line'),      ondelete='cascade')
-    part_id     =   fields.Many2one ('product.product', _('Part'),          ondelete='cascade')
+    bom_id      =   fields.Many2one ('plm.compare.bom', _('BoM'),      index=True,  ondelete='cascade')
+    bom_idrow   =   fields.Many2one ('mrp.bom.line',    _('BoM Line'), index=True,  ondelete='cascade')
+    part_id     =   fields.Many2one ('product.product', _('Part'),     index=True,  ondelete='cascade')
     revision    =   fields.Integer  (related="part_id.engineering_revision",string=_("Revision"),           store=False)
     description =   fields.Text     (related="part_id.description",         string=_("Description"),        store=False)
     itemnum     =   fields.Integer  (related="bom_idrow.itemnum",           string=_("CAD Item Position"),  store=False)
@@ -302,9 +301,9 @@ class plm_adding_bom(osv.osv.osv_memory):
     _name = "plm.adding.bom"
     _description = "BoM Adding Objects"
     
-    bom_id          =   fields.Many2one ('plm.compare.bom', _('BoM'),      ondelete='cascade')
-    bom_idrow       =   fields.Many2one ('mrp.bom.line',    _('BoM Line'), ondelete='cascade')
-    part_id         =   fields.Many2one ('product.product', _('Part'),     ondelete='cascade')
+    bom_id          =   fields.Many2one ('plm.compare.bom', _('BoM'),      index=True, ondelete='cascade')
+    bom_idrow       =   fields.Many2one ('mrp.bom.line',    _('BoM Line'), index=True, ondelete='cascade')
+    part_id         =   fields.Many2one ('product.product', _('Part'),     index=True, ondelete='cascade')
     revision        =   fields.Integer  (related="part_id.engineering_revision",    string=_("Revision"),          store=False)
     description     =   fields.Text     (related="part_id.description",             string=_("Description"),       store=False)
     itemnum         =   fields.Integer  (related="bom_idrow.itemnum",               string=_("CAD Item Position"), store=False)

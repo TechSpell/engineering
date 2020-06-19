@@ -60,7 +60,6 @@ Supported Editors :
    
     * Category : CAD / Mechanical CAD
     
-        * ThinkDesign 2016.1 (and above)
         * SolidWorks 2011 (and above)
         * Inventor 2011 (and above)
         * SolidEdge ST3 (and above)
@@ -104,6 +103,7 @@ Supported Editors :
              'reports/report/bom_structure_templates.xml',
              'reports/report/bom_structure.xml',
              'reports/report/document_structure_templates.xml',
+             'reports/mrp_report_structure.xml',
        ],
     'demo': [
         ],

@@ -29,7 +29,7 @@ from odoo  import models, fields, api, _, osv
 from odoo.exceptions import UserError
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                    move_workflow, wf_message_post, isAdministrator, isReleased, \
+                    move_workflow, wf_message_post, isAdministrator, isWritable, isReleased, \
                     isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
 
 
@@ -153,6 +153,29 @@ class plm_component(models.Model):
 
     ##  External methods
     @api.model
+    def CleanStructure(self, request=[], default=None):
+        """
+            Cleans relations having sourceID (in mrp.bom.line)
+        """
+        ret=False
+        type = "ebom"
+        bomLType = self.env['mrp.bom.line']
+        bomType = self.env['mrp.bom']
+        bl_to_delete = bomLType
+        for parentID, sourceID in request:
+            if not parentID==None:
+                if isWritable(self, parentID):
+                    for bom_id in bomType.search([('type','=',type),('product_id','=',parentID)]):
+                        if not sourceID==None:
+                            for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
+                                bl_to_delete |= bomLine
+                            bl_to_delete.unlink()                       # Cleans mrp.bom.lines
+                        if not bom_id.bom_line_ids:
+                            bom_id.unlink()                             # Cleans void mrp.bom
+                    ret = True
+        return ret                          
+
+    @api.model
     def Clone(self, ids=[], default=None):
         """
             Creates a new copy of the component
@@ -235,7 +258,6 @@ class plm_component(models.Model):
         """
         ret=""
         if seqID:
-            
             count=0
             while ret=="":
                 chkname=self.env['ir.sequence'].browse(seqID.id)._next()
@@ -307,7 +329,7 @@ class plm_component(models.Model):
         ret=True
         
         for tmpObject in self.browse(getListIDs(ids)):
-            ret=ret and self._iswritable(tmpObject)
+            ret=ret and tmpObject._iswritable()
         return ret
 
     @api.model
@@ -410,7 +432,7 @@ class plm_component(models.Model):
                 part['engineering_revision']=objPart.engineering_revision
                 if ('_lastupdate' in part) and part['_lastupdate']:
                     if (getUpdTime(objPart) < datetime.strptime(part['_lastupdate'], '%Y-%m-%d %H:%M:%S')):
-                        if self._iswritable(objPart):
+                        if objPart._iswritable():
                             hasSaved = True
 
             retValues[part['engineering_code']]={
@@ -475,7 +497,7 @@ class plm_component(models.Model):
                     part['name'] = objPart.name
                     part['engineering_revision']=objPart.engineering_revision
                     if (getUpdTime(objPart) < lastupdate):
-                        if self._iswritable(objPart):
+                        if objPart._iswritable():
                             logging.debug("[SaveOrUpdate] Part {name}/{revi} is updating.".format(name=part['engineering_code'],revi=part['engineering_revision']))
                             hasSaved = True
                             if not objPart.with_context({'internal_writing':False}).write(part):
@@ -646,19 +668,21 @@ class plm_component(models.Model):
             documentType.logging_workflow(idMoves, action, status)
         return docIDs
 
-    def _iswritable(self, oid):
-        checkState = ('draft')
-        if not oid.engineering_writable:
-            logging.warning(
-                "_iswritable : Part (%r - %d) is not writable." % (oid.engineering_code, oid.engineering_revision))
-            return False
-        if not oid.state in checkState:
-            logging.warning("_iswritable : Part (%r - %d) is in status %r." % (oid.engineering_code, oid.engineering_revision, oid.state))
-            return False
-        if oid.engineering_code == False:
-            logging.warning(
-                "_iswritable : Part (%r - %d) is without Engineering P/N." % (oid.name, oid.engineering_revision))
-            return False
+    @api.model
+    def _iswritable(self):
+        if self:
+            checkState = ('draft')
+            if not self.engineering_writable:
+                logging.warning(
+                    "_iswritable : Part (%r - %d) is not writable." % (self.engineering_code, self.engineering_revision))
+                return False
+            if not self.state in checkState:
+                logging.warning("_iswritable : Part (%r - %d) is in status %r." % (self.engineering_code, self.engineering_revision, self.state))
+                return False
+            if self.engineering_code == False:
+                logging.warning(
+                    "_iswritable : Part (%r - %d) is without Engineering P/N." % (self.name, self.engineering_revision))
+                return False
         return True
 
     @api.model
@@ -670,7 +694,6 @@ class plm_component(models.Model):
         move_workflow(self, self._ids, signal)
         return False
 
-    
     def action_upload(self):
         """
             Action to be executed for Uploaded state
@@ -694,7 +717,6 @@ class plm_component(models.Model):
         self.logging_workflow(ids, action, status)
         return self._action_to_perform(ids, operationParams, default)
 
-    
     def action_draft(self):
         """
             Action to be executed for Draft state
@@ -717,7 +739,6 @@ class plm_component(models.Model):
         self.logging_workflow(ids, action, status)
         return self._action_to_perform(ids, operationParams, default)
 
-    
     def action_confirm(self):
         """
             Action to be executed for Confirmed state
@@ -741,7 +762,6 @@ class plm_component(models.Model):
         self.logging_workflow(ids, action, status)
         return self._action_to_perform(ids, operationParams, default)
 
-    
     def action_correct(self):
         """
             Action to be executed for Draft state (signal "correct")
@@ -765,13 +785,11 @@ class plm_component(models.Model):
         self.logging_workflow(ids, action, status)
         return self._action_to_perform(ids, operationParams, default)
 
-    
     def action_release(self):
         excludeStatuses = ['released', 'undermodify', 'obsoleted']
         includeStatuses = ['confirmed']
         return self._action_to_release(self._ids, excludeStatuses, includeStatuses)
 
-    
     def action_obsolete(self):
         """
             Action to be executed for Obsoleted state
@@ -793,7 +811,6 @@ class plm_component(models.Model):
                 }
         return self._action_to_perform(ids, operationParams, default)
 
-    
     def action_reactivate(self):
         """
             action to be executed for Released state (signal "reactivate")
@@ -927,30 +944,29 @@ class plm_component(models.Model):
                 raise Exception(" (%r). It has tried to create with values : (%r)." % (ex, vals))
         return ret
 
-    
     def write(self, vals):
         ret=True
         if vals:
-            check=self._context.get('internal_writing', False)
-            thisprocess=self._context.get('internal_process', False)    # Avoids messages during internal processes.
-            if not check:
-                for prodItem in self.browse(self._ids):
-                    if not isDraft(self,prodItem.id):
-                        if not thisprocess:
-                            logging.error("The entity '{name}-{rev}' is in a status that does not allow you to make save action".format(name=prodItem.name,rev=prodItem.engineering_revision))
-                        ret=False
-                        break
-                    if not prodItem.engineering_writable:
-                        if not thisprocess:
-                            logging.error("The entity '{name}-{rev}' cannot be written.".format(name=prodItem.name,rev=prodItem.engineering_revision))
-                        ret=False
-                        break
+            if not isAdministrator(self):
+                check=self._context.get('internal_writing', False)
+                thisprocess=self._context.get('internal_process', False)    # Avoids messages during internal processes.
+                if not check:
+                    for prodItem in self.browse(self._ids):
+                        if not isDraft(self,prodItem.id):
+                            if not thisprocess:
+                                logging.error("The entity '{name}-{rev}' is in a status that does not allow you to make save action".format(name=prodItem.name,rev=prodItem.engineering_revision))
+                            ret=False
+                            break
+                        if not prodItem.engineering_writable:
+                            if not thisprocess:
+                                logging.error("The entity '{name}-{rev}' cannot be written.".format(name=prodItem.name,rev=prodItem.engineering_revision))
+                            ret=False
+                            break
             if ret:
                 self._insertlog(self._ids, changes=vals)
                 ret=super(plm_component, self).write(vals)
         return ret
      
-    
     def copy(self, default={}):
         newID=False
         override=False
@@ -1003,7 +1019,6 @@ class plm_component(models.Model):
             wf_message_post(self, getListIDs(newID), body='Copied starting from : {value}.'.format(value=previous_name))
         return newID
 
-    
     def unlink(self):
         ret=False
         ids=self._ids
