@@ -1,33 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
-<data>
+<odoo>
+	<data>
 
   
 <!-- View customization on MRP -->
-
-        <record id="plm_bom_component_tree_view" model="ir.ui.view">
-            <field name="name">plm.bom.component.tree</field>
-            <field name="model">mrp.bom.line</field>
-            <field name="inherit_id" ref="mrp.mrp_bom_component_tree_view"/>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-        		<field name="product_id" position="before">
-                    <field name="itemnum"/>
-        		</field>
-                 <field name="product_id" position="after">
-	            	<field name="engineering_revision" readonly="True"/>
-	                <field name="state" readonly="True"/>
-	            	<field name="description" select="True"/>
-	                <field name="source_id" string="Source Relation Document"/>
- 	            	<field name="type" />
-                </field>
-        		<field name="product_qty" position="after">
-	               	<field name="weight" readonly="True"/>
-	    			<field name="create_date" select="True" readonly="True"/>
-           		</field>
-            </field>
-        </record>
-
 
         <record id="plm_bom_tree_view" model="ir.ui.view">
             <field name="name">plm.mrp.bom.tree</field>
@@ -53,26 +29,26 @@
         	<field name="priority" eval="10"/>
             <field name="arch" type="xml">
 				<search string="Search on Bill Of Material">
-                   	<filter icon="terp-go-month" string="Latest 7 Days" separator="1"
-                           	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                          	help="Created latest 7 Days"/>
-                 	<filter icon="terp-go-month" string="Yesterday" separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                    		help="Created yesterday"/>
-                	<filter icon="terp-go-month" string="Today" separator="1"
-                         	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                         	help="Created today"/>
+					<filter name="lastmonth" string="Last Month" separator="1"
+					        domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+					        help="Created last month"/>
+	               	<filter name="latestweek" string="Latest 7 Days" separator="1"
+	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+	                      	help="Created latest 7 Days"/>
+	             	<filter name="yesterday" string="Yesterday" separator="1"
+	                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+	                		help="Created yesterday"/>
+	            	<filter name="today" string="Today" separator="1"
+	                     	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
+	                     	help="Created today"/>
                    	<separator orientation="vertical"/>
                     <field name="product_id"/>
                     <field name="description"/>
                     <field name="code" string="Reference"/>
                     <newline/>
-                    <group expand="0" string="Group By..." colspan="4" col="8" groups="base.group_extended">
-                        <filter string="Product" icon="terp-accessories-archiver" domain="[]" context="{'group_by':'product_id'}"/>
-                        <separator orientation="vertical"/>
-                        <filter string="Routing" icon="terp-stock_align_left_24" domain="[]" context="{'group_by':'routing_id'}"/>
-                        <filter string="Type" icon="terp-stock_symbol-selection" domain="[]" context="{'group_by' : 'type'}"/>
-                        <separator orientation="vertical"/>
+                    <group expand="0" string="Group By..." colspan="4" col="8">
+ 	                  	<filter name="byname"    string="Reference"    	domain="[]" context="{'group_by':'code'}"/>
+                    	<filter name="byproduct" string="Product" 	domain="[]" context="{'group_by':'product_id'}"/>
                    </group>
                 </search>            
             </field>
@@ -172,38 +148,42 @@
 
 
 <!-- Overrides standard Search -->
-
         <record id="view_mrp_bom_filter_inherit" model="ir.ui.view">
             <field name="name">plm.bom.select</field>
             <field name="model">mrp.bom</field>
          	<field name="inherit_id" ref="mrp.view_mrp_bom_filter"/>
-            <field name="type">search</field>
             <field name="arch" type="xml">
-                <field name="code" position="before">
-					<filter name="lastmonth" string="Last Month" separator="1"
-					        domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
-					        help="Created last month"/>
-	               	<filter name="latestweek" string="Latest 7 Days" separator="1"
-	                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-	                      	help="Created latest 7 Days"/>
-	             	<filter name="yesterday" string="Yesterday" separator="1"
-	                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-	                		help="Created yesterday"/>
-	            	<filter name="today" string="Today" separator="1"
-	                     	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
-	                     	help="Created today"/>
-	               	<separator orientation="vertical"/>
-        		</field>
-				<xpath expr="//group" position="after">
-                    <filter name="byname"    string="BoM Name"            domain="[]" context="{'group_by':'code'}"/>
-                    <filter name="byproduct" string="Variant Name"        domain="[]" context="{'group_by':'product_id'}"/>
-                    <filter name="bysource"  string="Source Relationship" domain="[]" context="{'group_by':'source_id'}"/>
-	            </xpath>
+                <data>
+	                <xpath expr="//field[@name='code']" position="before">
+						<filter name="lastmonth" string="Last Month" separator="1"
+						        domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+						        help="Created last month"/>
+		               	<filter name="latestweek" string="Latest 7 Days" separator="1"
+		                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+		                      	help="Created latest 7 Days"/>
+		             	<filter name="yesterday" string="Yesterday" separator="1"
+		                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+		                		help="Created yesterday"/>
+		            	<filter name="today" string="Today" separator="1"
+		                     	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
+		                     	help="Created today"/>
+		               	<separator orientation="vertical"/>
+					</xpath>
+					<xpath expr="//filter[@name='normal']" position="after">
+						<filter name="latest"    string="Engineering" 	domain="[('type', '=', 'ebom')]"/>
+						<filter name="released"  string="Spare"       	domain="[('type', '=', 'spbom')]"/>
+					</xpath>
+					<xpath expr="//group" position="after">
+	                    <filter name="byname"	 string="Reference"		context="{'group_by':'code'}"/>
+	                    <filter name="byproduct" string="Variant Name"	context="{'group_by':'product_id'}"/>
+		            </xpath>
+                </data>
 	        </field>
         </record>
 
 <!-- Tree Structure Where Used on Product -->
 
+<!--
         <record id="mrp_part_tree_view_where" model="ir.ui.view">
             <field name="name">mrp.part.tree.where</field>
             <field name="model">product.product</field>
@@ -227,7 +207,7 @@
             view_id="mrp_part_tree_view_where"
             res_model="product.product"
             src_model="product.product"/>
-  
+-->  
  <!-- Tree Structure Views on MRP -->
  
         <record id="mrp_bom_tree_view_where" model="ir.ui.view">
@@ -339,6 +319,6 @@
         
 <!-- Redefines action opening views on MRP -->
         
-</data>
-</openerp>
+	</data>
+</odoo>
 

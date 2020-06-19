@@ -29,7 +29,8 @@ from datetime import datetime
 
 from odoo import  SUPERUSER_ID, _
 
-BOMTYPES=[('normal',_('Normal BoM')),('phantom',_('Sets / Phantom')),('ebom',_('Engineering BoM')),('spbom',_('Spare BoM'))]
+BOMTYPES=[('ebom','Engineering BoM'),('spbom','Spare BoM')]
+ORIBOMTYPES=[('normal','Manufacture this product'),('phantom','Kit')]
 
 def normalize(value):
     tmpvalue="{value}".format(value=value)
@@ -170,8 +171,7 @@ def isinstalled_module(entity, module_name):
             ret=True
             break
     return ret
-    
-    
+
 #   WorkFlow common internal method to apply changes
 
 def move_workflow(entity, idEntities, transition_name="", final_status=""):
@@ -240,6 +240,20 @@ def isInStatus(entity, idd, status=[]):
             pass
     return ret
 
+def isWritable(entity, idd):
+    """
+        Check if a document is released
+    """
+    ret=True
+    for item_id in entity.browse(getListIDs(idd)):
+        try:
+            if not item_id._iswritable():
+                ret=False
+                break
+        except:
+            pass
+    return ret
+
 def isObsoleted(entity, idd):
     """
         Check if a document is released
@@ -251,6 +265,12 @@ def isUnderModify(entity, idd):
         Check if a document is released
     """
     return isInStatus(entity, idd, status=["undermodify"])
+
+def isOldReleased(entity, idd):
+    """
+        Check if a document is in 'released' state. 
+    """
+    return isInStatus(entity, idd, status=["undermodify","obsoleted"])
 
 def isReleased(entity, idd):
     """

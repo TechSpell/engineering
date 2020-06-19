@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
- <openerp>
+ <odoo>
      <data>
  
     <record model="ir.ui.view" id="view_component_status">
@@ -243,7 +243,7 @@
         <menuitem id="plm_menu" name="Engineering" icon="terp-stock" 
             web_icon="pdm,images/module.png"
             web_icon_hover="images/module-hover.png"
-   			groups="group_plm_admin,group_plm_integrationuser,group_plm_viewuser"/>
+   			groups="group_plm_admin,group_plm_integrationuser,group_plm_validationuser,group_plm_viewuser"/>
 
 <!--
         <menuitem
@@ -252,7 +252,7 @@
             id="plm_dashboard_menu" 
             parent="pdm.plm_menu" 
             sequence="1"
-   			groups="pdm.group_plm_admin"/>
+   			groups="pdm.group_plm_admin,group_plm_validationuser"/>
 -->
 
     	<menuitem 
@@ -261,23 +261,23 @@
     		action="action_plm_component_base"
     		parent="plm_menu"
     		sequence="10"
-    		groups="group_plm_admin,group_plm_integrationuser,group_plm_viewuser"/>
+    		groups="group_plm_admin,group_plm_integrationuser,group_plm_validationuser,group_plm_viewuser"/>
             
 		<menuitem
 			name="Documents" 
 			id="plm_document_menu" 
 			parent="pdm.plm_menu" 
-			sequence="20"/>
-			    
+			sequence="20"
+   			groups="group_plm_admin,group_plm_integrationuser,group_plm_validationuser"/>			    
    		<menuitem 
    			name="Part Relations"
    			id="plm_menu_relation"
    			parent="plm_menu"
    			sequence="30"
-            groups="group_plm_admin,group_plm_integrationuser,group_plm_viewuser"/>
+            groups="group_plm_admin,group_plm_integrationuser,group_plm_validationuser,group_plm_viewuser"/>
 
 		<menuitem
-			name="Checked-Out Documents" 
+			name="Collaboration tools" 
 			id="plm_collaboration_menu"
 			action="pdm.action_plm_checkout"
 			parent="pdm.plm_menu" 
@@ -315,4 +315,4 @@
     		groups="pdm.group_plm_admin"/>
 
      </data>
- </openerp>
+ </odoo>

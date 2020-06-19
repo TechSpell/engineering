@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
 <!--
      <record model="ir.ui.view" id="view_plm_checkout">
@@ -8,7 +8,7 @@
         <field name="priority" eval="1"/>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <form string="Checked-Out Document" create="false" edit=="false">
+            <form string="Checked-Out Document" create="false" edit="false">
  	            <field name="name" invisible="True"/>
                 <group colspan="4" col="6">
                     <field name="userid" select="1" />
@@ -90,30 +90,30 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Checked-Out Document">
-                <filter icon="terp-go-month" string="Last Month" separator="1"
-                         domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(days=31,months=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out last month"/>
-                <filter icon="terp-go-month" string="Last Week" separator="1"
-                         domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out last week"/>
-                <filter icon="terp-go-month" string="Yesterday" separator="1"
-                         domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out yesterday"/>
-                 <filter icon="terp-go-month" string="Today" separator="1"
-                         domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out today"/>
+				<filter name="lastmonth" string="Last Month" separator="1"
+				        domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+				        help="Checked-Out last month"/>
+               	<filter name="latestweek" string="Latest 7 Days" separator="1"
+                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                      	help="Checked-Out latest 7 Days"/>
+             	<filter name="yesterday" string="Yesterday" separator="1"
+                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                		help="Checked-Out yesterday"/>
+            	<filter name="today" string="Today" separator="1"
+                     	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
+                     	help="Checked-Out today"/>
                 <newline/>
                	<separator orientation="vertical"/>
             	<field name="documentid"/>
             	<field name="hostname"/>
                	<separator orientation="vertical"/>
                 <field name="userid" nolabel="1">
- 					<filter string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]"/>
+ 					<filter name="userid" string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]"/>
                 </field>
                 <group expand="0" string="Group By...">
-                    <filter string="Hostname" icon="terp-personal" domain="[]" context="{'group_by':'hostname'}"/>
-                    <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'create_date'}"/>
-                    <filter string="Creator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}"/>
+                    <filter name="byhost"  string="Hostname" domain="[]" context="{'group_by':'hostname'}"/>
+                    <filter name="bymonth" string="Date" 	 domain="[]" context="{'group_by':'create_date'}"/>
+                    <filter name="byuser"  string="Creator"  domain="[]" context="{'group_by':'userid'}"/>
                 </group>
             </search>
      	</field>
@@ -146,5 +146,5 @@
     </record>
 
 </data>
-</openerp>
+</odoo>
 

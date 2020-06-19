@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<openerp>
+<odoo>
 <data>
 
     <record model="ir.ui.view" id="view_plm_backupdoc">
@@ -45,28 +45,28 @@
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Backup Document Set">
-				<filter icon="terp-go-month" string="Last Month" separator="1"
-				        domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(day=31,months=1)).strftime('%%Y-%%m-%%d'))]"
+				<filter name="lastmonth" string="Last Month" separator="1"
+				        domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
 				        help="Created last month"/>
-               	<filter icon="terp-go-month" string="Last Week" separator="1"
-                     	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-relativedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                      	help="Created last week"/>
-             	<filter icon="terp-go-month" string="Yesterday" separator="1"
-                       	domain="[('create_date','&lt;', datetime.date.today().strftime('%%Y-%%m-%%d 00:00:00')),('create_date','&gt;=',(datetime.date.today()-relativedelta(days=1)).strftime('%%Y-%%m-%%d 00:00:00'))]"
+               	<filter name="latestweek" string="Latest 7 Days" separator="1"
+                       	domain="[('create_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                      	help="Created latest 7 Days"/>
+             	<filter name="yesterday" string="Yesterday" separator="1"
+                     	domain="[('create_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('create_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                 		help="Created yesterday"/>
-            	<filter icon="terp-go-month" string="Today" separator="1"
-                      	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d 23:59:59')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d 00:00:00'))]"
+            	<filter name="today" string="Today" separator="1"
+                     	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
                      	help="Created today"/>
                	<separator orientation="vertical"/>
             	<field name="documentid"/>
                	<separator orientation="vertical"/>
                 <field name="userid" nolabel="1">
-					<filter string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]"/>
+					<filter name="userid"  string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]"/>
                 </field>
                 <group expand="0" string="Group By...">
-                    <filter string="Document Name" icon="terp-personal" domain="[]" context="{'group_by':'documentid'}"/>
-                    <filter string="Create by Month" icon="terp-personal" domain="[]" context="{'group_by':'create_date'}"/>
-                    <filter string="Creator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}"/>
+                    <filter name="bydocu" string="Document Name" domain="[]" context="{'group_by':'documentid'}"/>
+                    <filter name="bydate" string="Date"          domain="[]" context="{'group_by':'create_date'}"/>
+                    <filter name="byuser" string="Creator"       domain="[]" context="{'group_by':'userid'}"/>
                 </group>
             </search>
      	</field>
@@ -99,6 +99,7 @@
         <field name="search_view_id" ref="plm_backupdoc_search"/>
     </record>
  
+ 
     <record id="restore_document_button_view" model="ir.ui.view">
         <field name="name">Restore Document</field>
         <field name="model">plm.temporary</field>
@@ -127,4 +128,4 @@
  
         
 </data>
-</openerp>
+</odoo>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
  
     <record model="ir.ui.view" id="plm_logging_search">
@@ -8,34 +8,34 @@
         <field name="type">search</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <search string="Checked-Out Document">
-                <filter icon="terp-go-month" string="Last Month" separator="1"
-                         domain="[('op_date','&lt;=', (datetime.date.today() - relativedelta(days=31,months=1)).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today() - relativedelta(days=1,months=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out in last month"/>
-                <filter icon="terp-go-month" string="Last Week" separator="1"
-                         domain="[('op_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out in last week"/>
-                <filter icon="terp-go-month" string="Latest 7 Days" separator="1"
-                         domain="[('op_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out in latest 7 days"/>
-                 <filter icon="terp-go-month" string="Yesterday" separator="1"
-                         domain="[('op_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out yesterday"/>
-                 <filter icon="terp-go-month" string="Today" separator="1"
-                         domain="[('op_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()).strftime('%%Y-%%m-%%d'))]"
-                         help="Checked-Out today"/>
+            <search string="Log Registrations">
+				<filter name="lastmonth" string="Last Month" separator="1"
+				        domain="[('op_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
+				        help="Created last month"/>
+               	<filter name="latestweek" string="Last Week" separator="1"
+                        domain="[('op_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                     	help="Created last week"/>
+               	<filter name="latest7days" string="Latest 7 Days" separator="1"
+                       	domain="[('op_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                      	help="Created latest 7 Days"/>
+             	<filter name="yesterday" string="Yesterday" separator="1"
+                     	domain="[('op_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                		help="Created yesterday"/>
+            	<filter name="today" string="Today" separator="1"
+                     	domain="[('op_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('op_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
+                     	help="Created today"/>
                 <newline/>
                	<separator orientation="vertical"/>
             	<field name="name"/>
             	<field name="file"/>
             	<field name="userid"/>
                	<separator orientation="vertical"/>
-                 <group expand="0" string="Group By...">
-                    <filter string="Name" icon="terp-personal" domain="[]" context="{'group_by':'name'}"/>
-                    <filter string="Operation Date" icon="terp-personal" domain="[]" context="{'group_by':'op_date'}"/>
-                    <filter string="Operation Type" icon="terp-personal" domain="[]" context="{'group_by':'op_type'}"/>
-                    <filter string="Operator" icon="terp-personal" domain="[]" context="{'group_by':'userid'}"/>
-                    <filter string="Entity Type" icon="terp-personal" domain="[]" context="{'group_by':'type'}"/>
+                 <group expand="0" string="Group Operations By...">
+                    <filter name="byname" string="Name"   domain="[]" context="{'group_by':'name'}"/>
+                    <filter name="bydate" string="Date"   domain="[]" context="{'group_by':'op_date'}"/>
+                    <filter name="bytype" string="Type"   domain="[]" context="{'group_by':'op_type'}"/>
+                    <filter name="byuser" string="User"   domain="[]" context="{'group_by':'userid'}"/>
+                    <filter name="byents" string="Entity" domain="[]" context="{'group_by':'type'}"/>
                 </group>
             </search>
      	</field>
@@ -71,5 +71,5 @@
     </record>
 
 </data>
-</openerp>
+</odoo>
 

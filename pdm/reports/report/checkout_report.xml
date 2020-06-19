@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<openerp>
+<odoo>
     <data>
 
         <report id="report_pdm_checkout_pdf"
@@ -11,4 +11,4 @@
                 />
 
     </data>
-</openerp>
+</odoo>

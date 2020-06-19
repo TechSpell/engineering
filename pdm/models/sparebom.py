@@ -128,7 +128,7 @@ class plm_component(models.Model):
 class plm_description(models.Model):
     _inherit = "plm.description"
 
-    bom_tmpl    =   fields.Many2one('mrp.bom',_('Choose a BoM'), required=False, change_default=True, help=_("Select a  BoM as template to drive building Spare BoM."))
+    bom_tmpl    =   fields.Many2one('mrp.bom',_('Choose a BoM'), index=True, required=False, change_default=True, help=_("Select a  BoM as template to drive building Spare BoM."))
 
     _defaults = {
         'bom_tmpl': lambda *a: False,

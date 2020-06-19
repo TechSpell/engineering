@@ -53,7 +53,7 @@ def _createtemplate():
         Automatic XML menu creation
     """
     filepath=os.path.dirname(__file__)
-    fileName=thisModule+'.xml'
+    fileName=os.path.join(filepath, thisModule+'.xml')
     fileOut = open(os.path.join(filepath,fileName), 'w')
     
     listout=[('bom_structure_all','bom_template_all','BOM All Levels')]
@@ -64,7 +64,7 @@ def _createtemplate():
     listout.append(('bom_structure_flat','bom_template_flat','BOM All Flat Summarized'))
 
     try:
-        fileOut.write(u'<?xml version="1.0"?>\n<openerp>\n    <data>\n\n')
+        fileOut.write(u'<?xml version="1.0"?>\n<odoo>\n    <data>\n\n')
         fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
       
         for label,template,description in listout:
@@ -75,7 +75,7 @@ def _createtemplate():
             fileOut.write(u'                report_type="qweb-pdf"\n /> \n')
         
         fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
-        fileOut.write(u'    </data>\n</openerp>\n')
+        fileOut.write(u'    </data>\n</odoo>\n')
         fileOut.close()
     except Exception as msg:
         logging.error("File '{name}' is not writable: it will use default reports.".format(name=fileName))
