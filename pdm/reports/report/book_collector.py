@@ -137,6 +137,7 @@ def packDocuments(docRepository,documents,bookCollector):
     output4 = []
     for document in documents:
         if not document.id in packed:
+            status=_(document.state)
             Flag=False 
             if document.printout:
                 input1 = StringIO.StringIO(base64.decodestring(document.printout))

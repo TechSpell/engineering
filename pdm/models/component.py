@@ -27,7 +27,7 @@ from openerp.osv import fields, orm
 from openerp.tools.translate import _
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                    signal_workflow, get_signal_workflow, move_workflow, \
+                    signal_workflow, get_signal_workflow, move_workflow, isWritable, \
                     isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isReleased, isDraft, getUpdTime
 
 
@@ -131,6 +131,29 @@ class plm_component(orm.Model):
         return {}
 
     ##  External methods
+    def CleanStructure(self, cr, uid, request=[], context=None):
+        """
+            Cleans relations having sourceID (in mrp.bom.line)
+        """
+        ret=False
+        typeBom = "ebom"
+        bomType = self.pool['mrp.bom']
+        for parentID, sourceID in request:
+            if not parentID==None:
+                if isWritable(self, cr, uid, parentID, context=context):
+                    ids = bomType.search(cr, uid, [('type','=',typeBom),('product_id','=',parentID)], context=context)
+                    for bom_id in bomType.browse(cr, uid, getListIDs(ids), context=context):
+                        if not sourceID==None:
+                            bl_to_delete = []
+                            bl_ids = bomType.search(cr, uid, [('source_id','=',sourceID),('bom_id','=',bom_id.id)], context=context)
+                            for bomLine in bomLType.browse(cr, uid, getListIDs(bl_ids), context=context):
+                                bl_to_delete.append(bomLine.id)
+                            bomLType.unlink(cr, uid, bl_to_delete, context=context)                       # Cleans mrp.bom.lines
+                        if not bom_id.bom_line_ids:
+                            bomType.unlink(cr, uid, bom_id.id, context=context)                             # Cleans void mrp.bom
+                    ret = True
+        return ret                          
+
     def Clone(self, cr, uid, ids, default=None, context=None):
         """
             Creates a new copy of the component
@@ -878,22 +901,23 @@ class plm_component(orm.Model):
         ret=True
         if vals:
             context = context or self.pool['res.users'].context_get(cr, uid)
-            check=context.get('internal_writing', False)
-            thisprocess=context.get('internal_process', False)
-            if not check:
-                for prodItem in self.browse(cr, uid, ids, context=context):
-                    if not isDraft(self,cr, uid, prodItem.id, context=context):
-                        if not thisprocess:
-                            raise orm.except_orm(_('Edit Entity Error'),
-                                             _("The entity '{name}-{rev}' is in a status that does not allow you to make save action".format(name=prodItem.name,rev=prodItem.engineering_revision)))
-                        ret=False
-                        break
-                    if not prodItem.engineering_writable:
-                        if not thisprocess:
-                            raise orm.except_orm(_('Edit Entity Error'),
-                                             _("The entity '{name}-{rev}' cannot be written.".format(name=prodItem.name,rev=prodItem.engineering_revision)))
-                        ret=False
-                        break
+            if not isAdministrator(self, cr, uid, context=context):
+                check=context.get('internal_writing', False)
+                thisprocess=context.get('internal_process', False)
+                if not check:
+                    for prodItem in self.browse(cr, uid, ids, context=context):
+                        if not isDraft(self,cr, uid, prodItem.id, context=context):
+                            if not thisprocess:
+                                raise orm.except_orm(_('Edit Entity Error'),
+                                                 _("The entity '{name}-{rev}' is in a status that does not allow you to make save action".format(name=prodItem.name,rev=prodItem.engineering_revision)))
+                            ret=False
+                            break
+                        if not prodItem.engineering_writable:
+                            if not thisprocess:
+                                raise orm.except_orm(_('Edit Entity Error'),
+                                                 _("The entity '{name}-{rev}' cannot be written.".format(name=prodItem.name,rev=prodItem.engineering_revision)))
+                            ret=False
+                            break
             if ret:
                 self._insertlog(cr, uid, ids, changes=vals, context=context)
                 ret=super(plm_component, self).write(cr, uid, ids, vals, context=context)

@@ -225,32 +225,52 @@ def isInStatus(entity, cr, uid, idd, status=[], context=None):
             pass
     return ret
 
+def isWritable(entity, cr, uid, idd, context=None):
+    """
+        Check if a document is released
+    """
+    ret=True
+    for item_id in entity.browse(cr, uid, getListIDs(idd), context=context):
+        try:
+            if not entity._iswritable(cr, uid, item_id, context=context):
+                ret=False
+                break
+        except:
+            pass
+    return ret
+
 def isObsoleted(entity, cr, uid, idd, context=None):
     """
         Check if a document is released
     """
-    return isInStatus(entity, cr, uid, idd, status=["obsoleted"], context=None)
+    return isInStatus(entity, cr, uid, idd, status=["obsoleted"], context=context)
 
 def isUnderModify(entity, cr, uid, idd, context=None):
     """
         Check if a document is released
     """
-    return isInStatus(entity, cr, uid, idd, status=["undermodify"], context=None)
+    return isInStatus(entity, cr, uid, idd, status=["undermodify"], context=context)
+
+def isOldReleased(entity, cr, uid, idd, context=None):
+    """
+        Check if a document is in 'released' state. 
+    """
+    return isInStatus(entity, cr, uid, idd, status=["undermodify","obsoleted"], context=context)
 
 def isReleased(entity, cr, uid, idd, context=None):
     """
         Check if a document is in 'released' state. 
     """
-    return isInStatus(entity, cr, uid, idd, status=["released"], context=None)
+    return isInStatus(entity, cr, uid, idd, status=["released"], context=context)
 
 def isAnyReleased(entity, cr, uid, idd, context=None):
     """
         Check if a document is in 'released' state. 
     """
-    return isInStatus(entity, cr, uid, idd, status=["released","obsoleted"], context=None)
+    return isInStatus(entity, cr, uid, idd, status=["released","obsoleted"], context=context)
 
 def isDraft(entity, cr, uid, idd, context=None):
     """
         Check if a document is in 'draft' state. 
     """
-    return isInStatus(entity, cr, uid, idd, status=["draft"], context=None)
+    return isInStatus(entity, cr, uid, idd, status=["draft"], context=context)

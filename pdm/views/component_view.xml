@@ -383,6 +383,22 @@
 
 <!-- New Revision configuration -->
 
+        <record id="product_product_tree_view_plm_inherit" model="ir.ui.view">
+            <field name="name">product.product.tree.plm.inherit</field>
+            <field name="model">product.product</field>
+         	<field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="type">tree</field>
+            <field eval="7" name="priority"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                	<field name="engineering_revision"/>
+                	<field name="state" select="True"/>
+                	<field name="description" select="True" />
+            	</field>
+            </field>
+        </record>
+
+
 </data>
 </openerp>
 

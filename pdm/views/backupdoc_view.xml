@@ -2,7 +2,7 @@
 <openerp>
 <data>
     <menuitem name="Backup Documents View" id="plm_menu_backup" parent="plm_menu" sequence="15"
-    		groups="pdm.group_plm_admin"/>
+    		groups="group_plm_admin"/>
 
     <record model="ir.ui.view" id="view_plm_backupdoc">
         <field name="name">plm.backupdoc</field>
@@ -104,7 +104,7 @@
         action="action_plm_backupdoc"
         id="menu_backupdoc"
         parent="plm_menu_backup"
-		groups="pdm.group_plm_admin"/>
+		groups="group_plm_admin"/>
  
  
     <record id="restore_document_button_view" model="ir.ui.view">
@@ -130,7 +130,7 @@
         view_id="restore_document_button_view"
         target="new"
         key2="client_action_multi"
-        groups="pdm.group_plm_admin"
+        groups="group_plm_admin"
         id="act_restore_document"/>
  
         
