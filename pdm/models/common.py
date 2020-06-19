@@ -135,6 +135,38 @@ def getInteger(value=''):
         numvalue=int(tmpnum)
     return numvalue
 
+def getUser(entity=None, uid=False):
+    """
+        Gets the user login, name and signature
+    """
+    ret=None
+    if not(entity==None) and uid:
+        for uiUser in entity.env['res.users'].browse([uid]):
+            ret=uiUser
+            break
+    return ret
+
+def getUserName(entity=None, uid=False):
+    """
+        Gets the user login, name and signature
+    """
+    ret=""
+    uiUser=getUser(entity, uid)
+    if uiUser:
+        ret=uiUser.name
+    return ret
+
+def isinstalled_module(entity, module_name):
+    ret=False
+    entyModule=entity.env['ir.module.module'].sudo()
+    criteria=[('name', '=', module_name.replace("module_", ''))]
+    modules = entyModule.search( criteria )
+    for module in  modules:
+        if module.state.lower()=='installed':
+            ret=True
+            break
+    return ret
+
 #   WorkFlow common internal method to apply changes
 def signal_workflow(entity, ids, signal):
     """
@@ -230,6 +262,20 @@ def isInStatus(entity, idd, status=[]):
             pass
     return ret
 
+def isWritable(entity, idd):
+    """
+        Check if a document is released
+    """
+    ret=True
+    for item_id in entity.browse(getListIDs(idd)):
+        try:
+            if not item_id._iswritable():
+                ret=False
+                break
+        except:
+            pass
+    return ret
+
 def isObsoleted(entity, idd):
     """
         Check if a document is released
@@ -241,6 +287,12 @@ def isUnderModify(entity, idd):
         Check if a document is released
     """
     return isInStatus(entity, idd, status=["undermodify"])
+
+def isOldReleased(entity, idd):
+    """
+        Check if a document is in 'released' state. 
+    """
+    return isInStatus(entity, idd, status=["undermodify","obsoleted"])
 
 def isReleased(entity, idd):
     """
