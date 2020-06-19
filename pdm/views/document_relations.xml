@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
         <record id="plm_docbom_form_view" model="ir.ui.view">
             <field name="name">plm.doc.relation.form</field>
@@ -14,6 +14,7 @@
 	                <group colspan="2" col="2">
 	                    <field name="parent_id" readonly="True"/>
 	                    <field name="parent_revision" readonly="True"/>
+	                    <field name="parent_minor" readonly="True"/>
 	                    <field name="parent_state" readonly="True"/>
 	                </group>
 	                <group colspan="2" col="2">
@@ -29,6 +30,7 @@
 	                <group colspan="2" col="2">
 	                    <field name="child_id" readonly="True"/>
 	                    <field name="child_revision" readonly="True"/>
+	                    <field name="child_minor" readonly="True"/>
 	                    <field name="child_state" readonly="True"/>
 	                </group>
 	                <group colspan="2" col="2">
@@ -54,10 +56,12 @@
                 <tree string="Document Relations">
                     <field name="parent_id" select="True"/>
                     <field name="parent_revision" select="True"/>
+                    <field name="parent_minor" select="True"/>
                     <field name="parent_state" select="True"/>
                     <field name="parent_checkedout"/>
                     <field name="child_id" select="True"/>
                     <field name="child_revision" select="True"/>
+                    <field name="child_minor" select="True"/>
                     <field name="child_state" select="True"/>
                     <field name="child_checkedout"/>
                     <field name="configuration"/>
@@ -94,8 +98,8 @@
                     <newline/>
                     <group expand="0" string="Group By...">
                         <filter name="parent" string="Parent" domain="[]" context="{'group_by':'parent_id'}"/>
-                        <filter name="child" string="Child"   domain="[]" context="{'group_by' : 'child_id'}"/>
-                        <filter name="kind" string="Kind"     domain="[]" context="{'group_by':'link_kind'}"/>
+                        <filter name="child"  string="Child"  domain="[]" context="{'group_by':'child_id' }"/>
+                        <filter name="kind"   string="Kind"   domain="[]" context="{'group_by':'link_kind'}"/>
                    </group>
                 </search>
             </field>
@@ -117,4 +121,4 @@
         parent="plm_document_menu"/>
 
 </data>
-</openerp>
+</odoo>

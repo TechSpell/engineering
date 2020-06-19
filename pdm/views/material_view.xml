@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
     <record model="ir.ui.view" id="view_plm_material">
         <field name="name">plm.material.view</field>
@@ -51,5 +51,5 @@
         parent="plm_menu_dictionaries"/>
     
 </data>
-</openerp>
+</odoo>
 

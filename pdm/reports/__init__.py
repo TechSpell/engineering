@@ -26,3 +26,4 @@ from . import report
 from . import component_report
 from . import component_kanban
 from . import document_report
+from . import mrp_report_bom_structure

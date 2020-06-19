@@ -1,4 +1,4 @@
-<openerp>
+<odoo>
     <data>
 
         <record id="view_add_service_id" model="ir.ui.view">
@@ -195,4 +195,4 @@
 <!-- Menu Items -->
 
     </data>
-</openerp>
+</odoo>

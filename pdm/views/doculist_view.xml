@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
     <record model="ir.ui.view" id="view_plm_doculist">
         <field name="name">plm.doculist.view</field>
@@ -48,5 +48,5 @@
         parent="plm_menu_settings"/>
     
 </data>
-</openerp>
+</odoo>
 

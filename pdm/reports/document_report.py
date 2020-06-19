@@ -141,7 +141,7 @@ class report_plm_document_wall(models.Model):
     _auto = False
 
     name        =   fields.Date('Month', readonly=True)
-    user_id     =   fields.Many2one('res.users', 'Owner',readonly=True)
+    user_id     =   fields.Many2one('res.users', 'Owner', index=True, readonly=True)
     user        =   fields.Char('User',size=64,readonly=True)
     month       =   fields.Char('Month', size=24,readonly=True)
     last        =   fields.Datetime('Last Posted Time', readonly=True)

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<openerp>
+<odoo>
     <data>
         <report id="report_pdm_all_product_product_pdf"
                 string="Print Bom All Levels PDF Drawings"
@@ -45,4 +45,4 @@
 		        groups="pdm.group_plm_admin"
 		        />
     </data>
-</openerp>
+</odoo>

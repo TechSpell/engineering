@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
     <record model="workflow" id="plm_component_flow">
         <field name="name">plm.component.flow</field>
@@ -114,4 +114,4 @@
         <field name="signal">obsolete</field>
     </record>
 </data>
-</openerp>
+</odoo>

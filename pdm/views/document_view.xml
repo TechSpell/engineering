@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<openerp>
+<odoo>
 <data>
     <record model="ir.ui.view" id="plm_document_form">
         <field name="name">plm.document</field>
@@ -9,14 +9,19 @@
         <field name="arch" type="xml">
             <form string="Document"  version="7.0">
                <header name="WFArea">
-					<button name="action_checkuploadeddoc" states="uploaded" string="Check Upload Document" type="object"  groups="pdm.group_plm_integrationuser"/>
-                 	<button name="action_release" states="confirmed" string="Release Document" type="object" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}"/>
-                	<button name="action_correct" states="confirmed" string="Correct Document" type="object" />
-                	<button name="action_confirm" states="draft" string="Confirm Document" type="object" class="oe_highlight"  attrs="{'invisible': ['|',('is_checkout','=',True)]}" groups="pdm.group_plm_admin,pdm.group_plm_integrationuser"/>
+					<button name="action_checkuploadeddoc" states="uploaded" string="Check Upload Document" type="object"  
+						groups="pdm.group_plm_integrationuser"/>
+                 	<button name="action_release" states="confirmed" string="Release Document" type="object" class="oe_highlight"  
+                 		attrs="{'invisible': ['|',('is_checkout','=',True)]}" 
+                 		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser,pdm.group_plm_validationuser" />
+                	<button name="action_correct" states="confirmed" string="Correct Document" type="object" 
+                		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser,pdm.group_plm_validationuser" />
+                	<button name="action_confirm" states="draft" string="Confirm Document" type="object" class="oe_highlight"  
+                		attrs="{'invisible': ['|',('is_checkout','=',True)]}" 
+                		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser,pdm.group_plm_validationuser" />
                 	<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
                </header>
                <sheet>
-	               <label for="name" class="oe_edit_only"/>
 	               <group colspan="4" col="4" name="DocData">
 	 					<group colspan="4" col="4">
 		 					<group colspan="2" col="2">
@@ -27,7 +32,8 @@
 		                    <group col="2" colspan="2" string="Spare Part" >
 			                    <field name="usedforspare" colspan="2"/>
                    				<field name="is_checkout" invisible="True"/>
- 		                    </group>
+                    			<field name="is_integration" invisible="True"/>
+  		                    </group>
 	                    </group>
 	               	</group>
 	                <notebook col="4" colspan="4">
@@ -37,14 +43,14 @@
 		                		<group col="2" colspan="2" name="FileData">
 			                        <group colspan="2" attrs="{'invisible':[('type','=','url')]}">
 			                            <field name="datas" filename="datas_fname" 
-        	                                attrs="{'invisible':[('datas_fname','not in',[False,''])]}"
+        	                                attrs="{'invisible':['|',('datas_fname','not in',[False,'']),('is_integration','in',[True,1])]}"
 			                            	groups="pdm.group_plm_admin,pdm.group_plm_integrationuser" />
 			                            <field name="datas_fname" select="1"/>
 			                        </group>
 			                        <group colspan="2" attrs="{'invisible':[('type','=','binary')]}">
 			                            <field name="url" widget="url"/>
 			                        </group>
-			                        <field name="type"/>
+			                        <field name="type" invisible="True"/>
 		                        </group>
 		                        <group col="2" colspan="2" name="DocUser">
 			                        <group string="Created" colspan="2">
@@ -280,14 +286,14 @@
         <field name="model">plm.temporary</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
-        <form string="Creating a Document New Revision">
-            <label for="name" string="Are you sure you want to create New Revision of selected items?" colspan="4"/>
-            <separator string=""/>
-            <footer>
-                <button class="btn-default" special="cancel" string="Cancel"/>
-                <button class="btn-primary" string="New Revision" name="action_NewDocRevision" type="object"/>
-            </footer>
-        </form>
+	        <form string="Creating a Document New Revision">
+	            <label for="name" string="Are you sure you want to create New Revision of selected items?" colspan="4"/>
+	            <separator string=""/>
+	            <footer>
+	                <button class="btn-default" special="cancel" string="Cancel"/>
+	                <button class="btn-primary" string="New Revision" name="action_NewDocRevision" type="object"/>
+	            </footer>
+	        </form>
         </field>
     </record>
 
@@ -303,6 +309,62 @@
 
 <!-- New Revision configuration -->
 
+<!-- Check-In / Out configuration -->
+
+   <record id="plm_document_checkin" model="ir.ui.view">
+        <field name="name">plm.document.checkin</field>
+        <field name="model">plm.temporary</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+	        <form string="Moving to Check-In">
+	            <label for="name" string="Are you sure you want to move to Check-In of selected items?" colspan="4"/>
+	            <separator string=""/>
+	            <footer>
+	                <button class="btn-default" special="cancel" string="Cancel"/>
+	                <button class="btn-primary" string="Check-In" name="action_checkin" type="object"/>
+	            </footer>
+	        </form>
+        </field>
+    </record>
+
+    <act_window name="Check-In"
+        res_model="plm.temporary"
+        src_model="plm.document"
+        view_mode="form"
+        view_id="plm_document_checkin"
+        target="new"
+        key2="client_action_multi"
+        groups="group_plm_admin,group_plm_integrationuser"
+        id="act_document_checkin"/>
+
+
+     <record id="plm_document_checkout" model="ir.ui.view">
+        <field name="name">plm.document.checkout</field>
+        <field name="model">plm.temporary</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+	        <form string="Moving to Check-Out">
+	            <label for="name" string="Are you sure you want to move to Check-Out of selected items?" colspan="4"/>
+	            <separator string=""/>
+	            <footer>
+	                <button class="btn-default" special="cancel" string="Cancel"/>
+	                <button class="btn-primary" string="Check-Out" name="action_checkout" type="object"/>
+	            </footer>
+	        </form>
+        </field>
+    </record>
+
+    <act_window name="Check-Out"
+        res_model="plm.temporary"
+        src_model="plm.document"
+        view_mode="form"
+        view_id="plm_document_checkout"
+        target="new"
+        key2="client_action_multi"
+        groups="group_plm_admin,group_plm_integrationuser"
+        id="act_document_checkout"/>
+
+<!-- Check-In / Out configuration -->
 
 </data>
-</openerp>
+</odoo>

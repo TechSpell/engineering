@@ -77,7 +77,9 @@ class plm_description(models.Model):
 class plm_component(models.Model):
     _inherit = 'product.product'
 
-    std_description     =   fields.Many2one('plm.description',_('Standard Description'), required=False, change_default=True, help=_("Select standard description for current product."))
+    std_description     =   fields.Many2one('plm.description',_('Standard Description'), index=True, 
+                                            required=False, change_default=True, 
+                                            help=_("Select standard description for current product."))
     std_umc1            =   fields.Char(_('UM / Feature 1'), size=32, help=_("Allow to specifiy a unit measure for the first feature."))
     std_value1          =   fields.Float(_('Value 1'), help=_("Assign value to the first characteristic."))
     std_umc2            =   fields.Char(_('UM / Feature 2'), size=32, help=_("Allow to specifiy a unit measure for the second feature."))
