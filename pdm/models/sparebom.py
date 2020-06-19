@@ -28,6 +28,10 @@ RETDMESSAGE=''
 class plm_temporary(orm.TransientModel):
     _inherit = "plm.temporary"
 
+    _columns = {
+        'name': fields.char('Part Number', size=64),
+    }
+    
     ##  Specialized Actions callable interactively
     def action_create_spareBom(self, cr, uid, ids, context=None):
         """

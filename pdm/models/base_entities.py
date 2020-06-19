@@ -27,8 +27,8 @@ from openerp.osv import fields, orm
 from openerp.tools.translate import _
 import openerp.addons.decimal_precision as dp
 
-from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, \
-                    isAdministrator, isDraft, isAnyReleased, isReleased, isObsoleted
+from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, isOldReleased, \
+                    isObsoleted, isAdministrator, isDraft, isAnyReleased, isReleased, isWritable
                     
 
 # To be adequate to plm.document class states
@@ -103,8 +103,8 @@ class plm_component(orm.Model):
                 if not (prodItem.engineering_code):
                     if not vals.get('engineering_code', ''):
                         vals.update({'engineering_code': prodItem.name})
-                elif not vals.get('engineering_code', ''):
-                        vals.update({'engineering_code': prodItem.name})
+#                 elif not vals.get('engineering_code', ''):
+#                         vals.update({'engineering_code': prodItem.name})
                 break
             ret=super(plm_component, self).write(cr, uid, ids, vals, context=context)
         return ret
@@ -112,7 +112,7 @@ class plm_component(orm.Model):
     def create(self, cr, uid, vals, context=None):
         ret=False
         if vals:
-            if not vals.get('engineering_code', ''):
+            if not vals.get('engineering_code', '') and vals.get('name', ''):
                 vals['engineering_code'] = vals['name']
             ret=super(plm_component, self).create(cr, uid, vals, context=context)
         return ret
@@ -533,16 +533,15 @@ class plm_relation(orm.Model):
             """
                 Cleans relations having sourceID (in mrp.bom.line)
             """
-            bomIDs=[]
             if not parentID==None:
-                for bom_id in self.search(cr, uid, [('type','=','ebom'),('product_id','=',parentID)], context=context):
-                    if not sourceID==None:
-                        for bomLine in bomLType.search(cr, uid, [('source_id','=',sourceID),('bom_id','=',bom_id)], context=context):
-                            bomIDs.append(bomLine)
-                        bomLType.unlink(cr, uid, getListIDs(bomIDs), context=context)                              # Cleans mrp.bom.line
-                    for objBom in self.browse(cr, uid, getListIDs(bom_id), context=context):
-                        if not objBom.bom_line_ids:
-                            self.unlink(cr, uid, [objBom.id], context=context)                                     # Cleans mrp.bom
+                if isWritable(self.pool['product.product'], cr, uid, parentID, context=context):
+                    bomIDs= self.search(cr, uid, [('type','=','ebom'),('product_id','=',parentID)], context=context)
+                    for bom_id in self.browse(cr, uid, getListIDs(bomIDs), context=context):
+                        if not sourceID == None:
+                            ids=bomLType.search(cr, uid, [('source_id', '=', sourceID),('bom_id','=',bom_id.id)], context=context)
+                            bomLType.unlink(cr, uid, ids, context=context)                                 # Cleans mrp.bom.line
+                        if not bom_id.bom_line_ids:
+                            self.unlink(cr, uid, [bom_id.id], context=context)                                     # Cleans mrp.bom
 
         def toCleanRelations(relations):
             """
@@ -590,9 +589,10 @@ class plm_relation(orm.Model):
                 Gets the father of relation ( parent side in mrp.bom )
             """
             ret=False
-            if partID:
+            productType = self.pool['product.product']
+            if partID and isWritable(productType, cr, uid, partID, context=context):
                 try:
-                    objTempl=self.pool['product.product'].getTemplateItem(cr, uid, partID, context=context)
+                    objTempl=productType.getTemplateItem(cr, uid, partID, context=context)
                     res={
                          'type': kindBom,
                          'product_id': partID,
@@ -647,6 +647,20 @@ class plm_relation(orm.Model):
                 ret=True
         return ret
 
+    def IsChildBom(self, cr, uid, bom_id, typebom=None, context=None):
+        """
+            Checks if a Bom is contained (as Product) as child in another BoM relation.
+        """
+        ret=False
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        if not bom_id.bom_id:
+            criteria=[('product_id', '=', bom_id.product_id.id),('bom_id', '!=', False)]
+            if typebom:
+                criteria.append(('type', '=', typebom))
+            if self.search(cr, uid, criteria, context=context):
+                ret=ret|True
+        return ret
+
     def IsChild(self, cr, uid, ids, typebom=None, context=None):
         """
             Checks if a Product is child in a BoM relation.
@@ -654,7 +668,7 @@ class plm_relation(orm.Model):
         ret=False
         context = context or self.pool['res.users'].context_get(cr, uid)
         for idd in getListIDs(ids):
-            criteria=[('product_id', '=', idd)]
+            criteria=[('product_id', '=', idd),('bom_id', '!=', False)]
             if typebom:
                 criteria.append(('type', '=', typebom))
             if self.pool['mrp.bom.line'].search(cr, uid, criteria, context=context):
@@ -675,7 +689,7 @@ class plm_relation(orm.Model):
             Evaluates net weight for assembly, based on product ID
         """
         context = context or self.pool['res.users'].context_get(cr, uid)
-        for bomObj in self.browse(cr, uid, getListIDs(parentBomID), context=None):
+        for bomObj in self.browse(cr, uid, getListIDs(parentBomID), context=context):
             if bomObj.product_id.engineering_writable:
                 self.pool['product.product'].write(cr, uid, [bomObj.product_id.id], {'weight_net': weight}, context=context)
 
@@ -711,6 +725,9 @@ class plm_relation(orm.Model):
                     if isAnyReleased(productType,cr, uid, prodItem.id, context=context):
                         ret=True
                         break
+                if  isObsoleted(productType,cr, uid, prodItem.id, context=context):
+                    ret=True
+                    break
         return ret
     
     def checkcreation(self, cr, uid, vals, fatherIDs=[], context=None):
@@ -857,17 +874,21 @@ class plm_relation(orm.Model):
         processIds=[]
         context = context or self.pool['res.users'].context_get(cr, uid)
         check=context.get('internal_writing', False)
+        options=self.pool['plm.config.settings'].GetOptions(cr,uid, context=context)
         if not check:
             isAdmin = isAdministrator(self, cr, uid, context=context)
     
             for bomID in self.browse(cr, uid, getListIDs(ids), context=context):
-                if not self.IsChild(cr, uid, bomID.product_id.id, typebom=bomID.type, context=context):
+                if not self.IsChildBom(cr, uid, bomID, typebom=bomID.type, context=context):
                     checkApply=False
                     if isReleased(self.pool['product.product'], cr, uid, bomID.product_id.id, context=context):
-                        if isAdmin:
+                        if isAdmin and options.get('opt_editreleasedbom', False):
                             checkApply=True
                     elif isDraft(self.pool['product.product'], cr, uid, bomID.product_id.id, context=context):
                         checkApply=True
+                    else:
+                        if options.get('opt_editbom', False) and not isOldReleased(self.pool['product.product'], cr, uid, bomID.product_id.id, context=context):
+                            checkApply=True
 
                     if not checkApply:
                         continue            # Apply unlink only if have respected rules.
@@ -1049,4 +1070,58 @@ class plm_temporary(orm.TransientModel):
                     }
                         
         return ret
-    
+
+    def action_checkin(self, cr, uid, ids, context=None):
+        """
+            Call for CheckIn method
+        """
+        ret=False
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        active_ids=context.get('active_ids', [])
+        active_model=context.get('active_model', None)
+        if active_ids and active_model:
+            objectType=self.pool[active_model]
+            doc_ids=[]
+            for thisId in active_ids:
+                if isDraft(objectType, cr, uid, thisId, context=context):
+                    if objectType._is_checkedout_for_me(cr, uid, thisId, context=context):
+                        doc_ids.append(thisId)
+            if doc_ids:
+                ret=objectType.CheckIn(cr, uid, doc_ids, context=context)
+        ret={
+            'name': _('Checked In'),
+            'view_type': 'form',
+            "view_mode": 'tree,form',
+            'res_model': active_model,
+            'type': 'ir.actions.act_window',
+            'domain': "[]",
+            }
+                      
+        return ret
+ 
+    def action_checkout(self, cr, uid, ids, context=None):
+        """
+            Call for CheckOut method
+        """
+        ret=False
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        active_ids=context.get('active_ids', [])
+        active_model=context.get('active_model', None)
+        if active_ids and active_model:
+            objectType=self.pool[active_model]
+            doc_ids=[]
+            for thisId in active_ids:
+                if isDraft(objectType, cr, uid, thisId, context=context):
+                    if objectType.ischecked_in(cr, uid, thisId, context=context):
+                        doc_ids.append(thisId)
+            if doc_ids:
+                ret=objectType.CheckOut(cr, uid, [doc_ids,"",""], context=context)                        
+        ret={
+            'name': _('Checked Out'),
+            'view_type': 'form',
+            "view_mode": 'tree,form',
+            'res_model': active_model,
+            'type': 'ir.actions.act_window',
+            'domain': "[]",
+            }
+        return ret
