@@ -28,7 +28,7 @@ from odoo.exceptions import UserError
 import odoo.addons.decimal_precision as dp
 
 from .common import ORIBOMTYPES, BOMTYPES, getListIDs, getCleanList, getListedDatas, isOldReleased, \
-                    isAdministrator, isDraft, isAnyReleased, isReleased, isObsoleted, isWritable
+                    isAdministrator, isDraft, isAnyReleased, isReleased, isWritable
                     
 
 # To be adequate to plm.document class states
@@ -101,7 +101,7 @@ class plm_component(models.Model):
         if vals:
             if not vals.get('engineering_code', '') and vals.get('name', ''):
                 vals['engineering_code'] = vals['name']
-            ret=super(plm_component, self).create(vals)
+            ret=super(plm_component, self.with_context(create_product_product=False)).create(vals)
         return ret
 
 class plm_component_document_rel(models.Model):
