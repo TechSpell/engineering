@@ -101,7 +101,7 @@ class plm_component(models.Model):
         if vals:
             if not vals.get('engineering_code', '') and vals.get('name', ''):
                 vals['engineering_code'] = vals['name']
-            ret=super(plm_component, self.with_context(create_product_product=False)).create(vals)
+            ret=super(plm_component, self).create(vals)
         return ret
 
 class plm_component_document_rel(models.Model):
