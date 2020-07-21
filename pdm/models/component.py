@@ -174,7 +174,7 @@ class plm_component(models.Model):
                             bom_id.unlink()                             # Cleans void mrp.bom
                     ret = True
         return ret                          
-    
+
     @api.model
     def Clone(self, ids, default=None):
         """
@@ -938,8 +938,8 @@ class plm_component(models.Model):
                 if objectItem:
                     ret=objectItem                  # Returns the objectItem instead the id to be coherent
                     values={
-                            'name': vals['name'],
-                            'revision': vals['engineering_revision'],
+                            'name': objectItem.name,
+                            'revision': objectItem.engineering_revision,
                             'type': self._name,
                             'op_type': 'creation',
                             'op_note': 'Create new entity on database',
@@ -949,6 +949,20 @@ class plm_component(models.Model):
                     self.env['plm.logging'].create(values)
             except Exception as ex:
                 raise Exception(" (%r). It has tried to create with values : (%r)." % (ex, vals))
+        elif self.env.context.get('create_from_tmpl'):
+            objectItem=super(plm_component, self).create(vals)
+            if objectItem:
+                ret=objectItem                  # Returns the objectItem instead the id to be coherent
+                values={
+                        'name': objectItem.name,
+                        'revision': objectItem.engineering_revision,
+                        'type': self._name,
+                        'op_type': 'creation',
+                        'op_note': 'Create new entity on database',
+                        'op_date': datetime.now(),
+                        'userid': self._uid,
+                        }
+                self.env['plm.logging'].create(values)
         return ret
 
     @api.multi
