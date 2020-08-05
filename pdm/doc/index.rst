@@ -31,9 +31,12 @@ Standard Description and Material or Finishing allow to standardize data, insert
         * Inventor 2011 (and above except 2014)
         * SolidEdge ST3 (and above)
         * AutoCAD 2013 (and above except 2014)
-        * UG Nx 10  (and above)
+        * UG NX 10  (and above)
         * Catia V.5
         
+* Server Requirements :
+	* PostgreSQL 9.6 or above
+	
 * Client Requirements :
     * Windows 10
 
@@ -62,6 +65,7 @@ From a terminal let's type:
 * Configure your /etc/odoo-server.conf
     * # sudo vi /etc/odoo-server.conf
         document_path = /srv/filestore
+        data_dir = /srv/filestore/dirdata
         
         addons_path = /opt/server/addons,/opt/server/odoo/addons,/opt/addons
         

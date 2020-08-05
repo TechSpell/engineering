@@ -62,12 +62,11 @@ Supported Editors :
     
         * ThinkDesign 2016.1 (and above)
         * SolidWorks 2011 (and above)
-        * Inventor 2011 (and above)
+        * Inventor 2011 (and above except 2014)
         * SolidEdge ST3 (and above)
-        * AutoCAD 2013 (and above)
-        * UG Nx 10  (and above)
+        * AutoCAD 2013 (and above except 2014)
+        * UG NX 10  (and above)
         * Catia V.5
-        * UG NX 11
        
     """,
     'data': [
