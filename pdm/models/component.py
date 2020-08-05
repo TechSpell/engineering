@@ -942,7 +942,7 @@ class plm_component(models.Model):
                     self.env['plm.logging'].create(values)
             except Exception as ex:
                 raise Exception(" (%r). It has tried to create with values : (%r)." % (ex, vals))
-        elif self.env.context.get('create_from_tmpl'):
+        elif not(self.env.context.get('create_from_tmpl') == None):
             objectItem=super(plm_component, self).create(vals)
             if objectItem:
                 ret=objectItem                  # Returns the objectItem instead the id to be coherent
