@@ -69,13 +69,13 @@ def _createtemplate():
     try:
         fileOut.write(u'<?xml version="1.0"?>\n<openerp>\n    <data>\n\n')
         fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
-
+      
         for label,template,description,name in listout:
             fileOut.write(u'        <report model="mrp.bom"\n')
             fileOut.write(u'                id="%s"\n                string="%s"\n                name="%s.%s"\n' %(label,description,openerpModule,name))
             fileOut.write(u'                file="%s.report.%s"\n' %(openerpModule,template))
             fileOut.write(u'                report_type="qweb-pdf"\n />\n')
-
+        
         fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
         fileOut.write(u'    </data>\n</openerp>\n')
         fileOut.close()
@@ -164,7 +164,6 @@ def QuantityInBom(listedBoM={}, productName=""):
 def bom_type(myObject):
     result = dict(myObject.fields_get()['type']['selection']).get(myObject.type, '')
     return _(result)
-
 
 class BomStructureAllReport(models.AbstractModel):
     _name = 'report.%s.bom.structure.all' %(openerpModule)

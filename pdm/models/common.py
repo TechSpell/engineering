@@ -135,38 +135,6 @@ def getInteger(value=''):
         numvalue=int(tmpnum)
     return numvalue
 
-def getUser(entity=None, uid=False):
-    """
-        Gets the user login, name and signature
-    """
-    ret=None
-    if not(entity==None) and uid:
-        for uiUser in entity.env['res.users'].browse([uid]):
-            ret=uiUser
-            break
-    return ret
-
-def getUserName(entity=None, uid=False):
-    """
-        Gets the user login, name and signature
-    """
-    ret=""
-    uiUser=getUser(entity, uid)
-    if uiUser:
-        ret=uiUser.name
-    return ret
-
-def isinstalled_module(entity, module_name):
-    ret=False
-    entyModule=entity.env['ir.module.module'].sudo()
-    criteria=[('name', '=', module_name.replace("module_", ''))]
-    modules = entyModule.search( criteria )
-    for module in  modules:
-        if module.state.lower()=='installed':
-            ret=True
-            break
-    return ret
-
 #   WorkFlow common internal method to apply changes
 def signal_workflow(entity, ids, signal):
     """
@@ -180,21 +148,19 @@ def signal_workflow(entity, ids, signal):
             wf_service.trg_validate(entity._uid, entity._name, idd, signal, entity._cr)
     return ret
 
-def get_signal_workflow(entity, status="", context=None):
+def get_signal_workflow(entity, status=""):
     signal=""
-    cr=entity._cr
-    uid=entity._uid
     instanceType=entity.env['workflow.instance']
     activityType=entity.env['workflow.activity']
     workitemType=entity.env['workflow.workitem']
     transitionType=entity.env['workflow.transition']
-    for instance_id in instanceType.search([("res_id", "=", entity.id),("res_type", "=", entity._name)]):
-        for workitem in workitemType.search([("inst_id", "=", instance_id.id)]):
+    for instance in instanceType.search( [("res_id", "=", entity.id),("res_type", "=", entity._name)] ):
+        for workitem in workitemType.search( [("inst_id", "=", instance.id)] ):
             idFrom=workitem.act_id.id
-            for idTo in activityType.search( [("wkf_id", "=", instance_id.wkf_id.id),("name", "=", status)] ):
-                for transition_id in transitionType.search( [("act_to","=", idTo.id)] ):
-                    if transition_id.act_from.id==idFrom:
-                        signal=transition_id.signal
+            for idTo in activityType.search( [("wkf_id", "=", instance.wkf_id.id),("name", "=", status)] ):
+                for transition in transitionType.search( [("act_to","=", idTo.id)] ):
+                    if transition.act_from.id==idFrom:
+                        signal=transition.signal
                         break
     return signal
 
@@ -255,20 +221,6 @@ def isInStatus(entity, idd, status=[]):
             pass
     return ret
 
-def isWritable(entity, idd):
-    """
-        Check if a document is released
-    """
-    ret=True
-    for item_id in entity.browse(getListIDs(idd)):
-        try:
-            if not item_id._iswritable():
-                ret=False
-                break
-        except:
-            pass
-    return ret
-
 def isObsoleted(entity, idd):
     """
         Check if a document is released
@@ -280,12 +232,6 @@ def isUnderModify(entity, idd):
         Check if a document is released
     """
     return isInStatus(entity, idd, status=["undermodify"])
-
-def isOldReleased(entity, idd):
-    """
-        Check if a document is in 'released' state. 
-    """
-    return isInStatus(entity, idd, status=["undermodify","obsoleted"])
 
 def isReleased(entity, idd):
     """

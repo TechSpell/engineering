@@ -30,7 +30,7 @@ RETDMESSAGE=''
 class plm_temporary(osv.osv.osv_memory):
     _inherit = "plm.temporary"
 
-    name          = fields.Char       (  string='Part Number', size=64)
+    name          = fields.Char       (  string=_('Part Number'), size=64)
 
     ##  Specialized Actions callable interactively
     def action_create_spareBom(self, context):
@@ -128,7 +128,7 @@ class plm_component(models.Model):
 class plm_description(models.Model):
     _inherit = "plm.description"
 
-    bom_tmpl    =   fields.Many2one('mrp.bom','Choose a BoM', index=True, required=False, change_default=True, help="Select a  BoM as template to drive building Spare BoM.")
+    bom_tmpl    =   fields.Many2one('mrp.bom',_('Choose a BoM'), required=False, change_default=True, help=_("Select a  BoM as template to drive building Spare BoM."))
 
     _defaults = {
         'bom_tmpl': lambda *a: False,

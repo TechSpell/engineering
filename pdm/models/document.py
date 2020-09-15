@@ -37,7 +37,7 @@ from odoo.tools import config as tools_config
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                         get_signal_workflow, signal_workflow, move_workflow, wf_message_post, \
                         isAdministrator, isIntegratorUser,isObsoleted, isUnderModify, isAnyReleased, isDraft, \
-                        isReleased, isWritable, getUpdTime
+                        isReleased, getUpdTime
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
@@ -370,22 +370,20 @@ class plm_document(models.Model):
         fobj.close()
         return (os.path.join(flag, filename), len(value))
 
-    @api.model
-    def _iswritable(self):
-        if self:
-            checkState = ('draft')
-            if not self.type == 'binary':
-                logging.warning("_iswritable : Document (" + str(self.name) + "-" + str(
-                    self.revisionid) + ") not writable as hyperlink.")
-                return False
-            if not self.writable:
-                logging.warning("_iswritable : Document (" + str(self.name) + "-" + str(
-                    self.revisionid) + ") not writable.")
-                return False
-            if not self.state in checkState:
-                logging.warning("_iswritable : Document (" + str(self.name) + "-" + str(
-                    self.revisionid) + ") in status ; " + str(self.state) + ".")
-                return False
+    def _iswritable(self, oid):
+        checkState = ('draft')
+        if not oid.type == 'binary':
+            logging.warning("_iswritable : Document (" + str(oid.name) + "-" + str(
+                oid.revisionid) + ") not writable as hyperlink.")
+            return False
+        if not oid.writable:
+            logging.warning("_iswritable : Document (" + str(oid.name) + "-" + str(
+                oid.revisionid) + ") not writable.")
+            return False
+        if not oid.state in checkState:
+            logging.warning("_iswritable : Document (" + str(oid.name) + "-" + str(
+                oid.revisionid) + ") in status ; " + str(oid.state) + ".")
+            return False
         return True
 
     @api.model
@@ -484,7 +482,7 @@ class plm_document(models.Model):
         ret=True
         
         for tmpObject in self.browse(getListIDs(ids)):
-            ret=ret and tmpObject._iswritable()
+            ret=ret and self._iswritable(tmpObject.id)
         return ret
 
     @api.model
@@ -511,9 +509,8 @@ class plm_document(models.Model):
         for oldObject in self.browse(getListIDs(ids)):
             for linked_product_id in oldObject.linkedcomponents:
                 if latest:
-                    product_ids=prodType.GetLatestIds( [(linked_product_id.name, False, False)] )
-                    if product_ids and len(product_ids)>0:
-                        product_id=prodType.browse(product_ids[0])
+                    productId=prodType.GetLatestIds( [(linked_product_id.name, False, False)] )
+                    product_id=prodType.browse(productId[0])
                 else:
                     product_id=linked_product_id
                 break
@@ -762,13 +759,14 @@ class plm_document(models.Model):
                         lastupdate=datetime.strptime(str(document['_lastupdate']),'%Y-%m-%d %H:%M:%S')
                         timedb=getUpdTime(objDocument)
                         logging.debug("CheckDocumentsToSave : time db : {timedb} time file : {timefile}".format(timedb=timedb.strftime('%Y-%m-%d %H:%M:%S'), timefile=document['_lastupdate']))
-                        if objDocument._iswritable() and timedb < lastupdate:
+                        if self._iswritable(objDocument) and timedb < lastupdate:
                             hasSaved = True
                 if ('CADComponentID' in document):
                     #TODO: To be inserted other references to manage the file as attached and no more.
                     if(document['CADComponentID'] in ['ROOTCFG',]):
                         hasSaved = True
                         hasCheckedOut = True                        # Managed as SolidEdge cfg files.
+
 
             retValues[getFileName(document[fullNamePath])]={
                         'hasCheckedOut':hasCheckedOut,
@@ -818,7 +816,6 @@ class plm_document(models.Model):
             lastupdate=datetime.strptime(str(document['_lastupdate']),'%Y-%m-%d %H:%M:%S') if ('_lastupdate' in document) else datetime.now()
             for fieldName in list(set(document.keys()).difference(set(modelFields))):
                 del (document[fieldName])
-            document['is_integration']=True
             if not existingID:
                 logging.debug("[SaveOrUpdate] Document {name} is creating.".format(name=document['name']))
                 objectItem=self.with_context({'internal_writing':True}).create(document)
@@ -837,7 +834,7 @@ class plm_document(models.Model):
                     if objDocument:
                         document['revisionid']=objDocument.revisionid
                         document['minorrevision']=objDocument.minorrevision
-                        if objDocument._iswritable() and (getUpdTime(objDocument) < lastupdate):
+                        if self._iswritable(objDocument) and (getUpdTime(objDocument) < lastupdate):
                             logging.debug("[SaveOrUpdate] Document {name}/{revi} is updating.".format(name=document['name'],revi=document['revisionid']))
                             hasSaved = True
                             if not objDocument.with_context({'internal_writing':False}).write(document):
@@ -1249,18 +1246,17 @@ class plm_document(models.Model):
                     ret=ret | item
         return ret
 
-    usedforspare    =   fields.Boolean  (string='Used for Spare',help="Drawings marked here will be used printing Spare Part Manual report.", default=False)
-    usedformftg     =   fields.Boolean  (string='Used for Manufacturing',help="Drawings marked here will be used as skecthes for manufacturing on worksheets.", default=False)
-    revisionid      =   fields.Integer  (string='Revision Index', required=True, default=0)
-    minorrevision   =   fields.Char     (string='Minor Revision', required=True, default='A')
-    writable        =   fields.Boolean  (string='Writable', default=True)
-    datas           =   fields.Binary   (string='File Content', inverse='_data_set', compute='_data_get')
-    printout        =   fields.Binary   (string='Printout Content', help="Print PDF content.")
-    preview         =   fields.Binary   (string='Preview Content', help="Static preview.")
-    state           =   fields.Selection(USED_STATES,string='Status', help="The status of the document.", readonly="True", required=True, default='draft')
-    checkout_user   =   fields.Char(string="Checked-Out to", compute=_get_checkout_state)
-    is_checkout     =   fields.Boolean(string='Is Checked-Out', compute=_is_checkout, store=False)
-    is_integration  =   fields.Boolean(string="Is from integration", default=False)
+    usedforspare    =   fields.Boolean  (string=_('Used for Spare'),help=_("Drawings marked here will be used printing Spare Part Manual report."), default=False)
+    usedformftg     =   fields.Boolean  (string=_('Used for Manufacturing'),help=_("Drawings marked here will be used as skecthes for manufacturing on worksheets."), default=False)
+    revisionid      =   fields.Integer  (string=_('Revision Index'), required=True, default=0)
+    minorrevision   =   fields.Char     (string=_('Minor Revision'), required=True, default='A')
+    writable        =   fields.Boolean  (string=_('Writable'), default=True)
+    datas           =   fields.Binary   (string=_('File Content'), inverse='_data_set', compute='_data_get')
+    printout        =   fields.Binary   (string=_('Printout Content'), help=_("Print PDF content."))
+    preview         =   fields.Binary   (string=_('Preview Content'), help=_("Static preview."))
+    state           =   fields.Selection(USED_STATES,string=_('Status'), help=_("The status of the product."), readonly="True", required=True, default='draft')
+    checkout_user   =   fields.Char(string=_("Checked-Out to"), compute=_get_checkout_state)
+    is_checkout     =   fields.Boolean(string=_('Is Checked-Out'), compute=_is_checkout, store=False)
 
     _sql_constraints = [
         ('name_unique', 'unique (name,revisionid,minorrevision)', 'File name has to be unique!')
@@ -1321,7 +1317,7 @@ class plm_document(models.Model):
         if seqID:
             count=0
             while ret=="":
-                chkname=self.env['ir.sequence']._next([seqID.id])
+                chkname=self.pool['ir.sequence']._next([seqID.id])
                 count+=1
                 criteria=[('name', '=', chkname)]
                 partIds = self.search(criteria)
@@ -1539,10 +1535,10 @@ class plm_checkout(models.Model):
     _name = 'plm.checkout'
     _description = 'Checked-Out Documents'
     
-    userid      = fields.Many2one ('res.users',    string='Related User',     index=True, ondelete='cascade')
-    hostname    = fields.Char     (                string='Hostname',         size=64)
-    hostpws     = fields.Char     (                string='PWS Directory',    size=1024)
-    documentid  = fields.Many2one ('plm.document', string='Related Document', index=True, ondelete='cascade')
+    userid      = fields.Many2one ('res.users',    string=_('Related User'),               ondelete='cascade')
+    hostname    = fields.Char     (                string=_('Hostname'),     size=64)
+    hostpws     = fields.Char     (                string=_('PWS Directory'),size=1024)
+    documentid  = fields.Many2one ('plm.document', string=_('Related Document'),           ondelete='cascade')
 
     _sql_constraints = [
         ('documentid', 'unique (documentid)', 'The documentid must be unique !')
@@ -1655,12 +1651,12 @@ class plm_document_relation(models.Model):
     _name = 'plm.document.relation'
     _description = 'Document Relations'
     
-    parent_id       =   fields.Many2one ('plm.document', string='Related parent document', index=True,   ondelete='cascade')
-    child_id        =   fields.Many2one ('plm.document', string='Related child document',  index=True,   ondelete='cascade')
-    configuration   =   fields.Char     (                string='Configuration Name',                    size=1024)
-    link_kind       =   fields.Char     (                string='Kind of Link',                          size=64, required=True)
-    create_date     =   fields.Datetime (                string='Date Created',                          readonly=True)
-    userid          =   fields.Many2one ('res.users',    string='CheckOut User',           index=True,   readonly="True")
+    parent_id       =   fields.Many2one ('plm.document', string=_('Related parent document'), ondelete='cascade')
+    child_id        =   fields.Many2one ('plm.document', string=_('Related child document'),  ondelete='cascade')
+    configuration   =   fields.Char     (                string=_('Configuration Name'),    size=1024)
+    link_kind       =   fields.Char     (                string=_('Kind of Link'),          size=64, required=True)
+    create_date     =   fields.Datetime (                string=_('Date Created'),                   readonly=True)
+    userid          =   fields.Many2one ('res.users',    string=_('CheckOut User'),                  readonly="True")
     
     _defaults = {
         'link_kind': lambda *a: 'HiTree',
@@ -1673,14 +1669,12 @@ class plm_document_relation(models.Model):
     @api.model
     def CleanStructure(self, parent_ids=[]):
         executed=[]
-        oIds=self
         for parent_id in parent_ids:
-            if isWritable(self.env['plm.document'], parent_id):
-                criteria = [('parent_id', '=', parent_id)]
-                if not(criteria in executed):
-                    executed.append(criteria)
-                    oIds|=self.search(criteria)
-        oIds.unlink()
+            criteria = [('parent_id', '=', parent_id)]
+            if not(criteria in executed):
+                executed.append(criteria)
+                oIds=self.search(criteria)
+                oIds.unlink()
         return False
 
     @api.model
@@ -1696,12 +1690,11 @@ class plm_document_relation(models.Model):
             oIds=self
             for relation in relations:
                 res['parent_id'], res['child_id'], res['configuration'], res['link_kind'] = relation
-                if isWritable(self.env['plm.document'], res['parent_id']):
-                    if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
-                        criteria = [('child_id', '=', res['child_id'])]
-                    else:
-                        criteria = [('parent_id', '=', res['parent_id'])]
-                    oIds |= self.search(criteria)
+                if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
+                    criteria = [('child_id', '=', res['child_id'])]
+                else:
+                    criteria = [('parent_id', '=', res['parent_id'])]
+                oIds |= self.search(criteria)
             oIds.unlink()
 
         def saveChild(relation):
@@ -1715,9 +1708,8 @@ class plm_document_relation(models.Model):
                 if (res['parent_id'] != None) and (res['child_id'] != None):
                     if (len(str(res['parent_id'])) > 0) and (len(str(res['child_id'])) > 0):
                         if not ((res['parent_id'], res['child_id']) in savedItems):
-                            if isWritable(self.env['plm.document'], res['parent_id']):
-                                savedItems.append((res['parent_id'], res['child_id']))
-                                self.create(res)
+                            savedItems.append((res['parent_id'], res['child_id']))
+                            self.create(res)
                 else:
                     logging.error(
                         "saveChild : Unable to create a relation between documents. One of documents involved doesn't exist. Arguments(" + str(
@@ -1784,14 +1776,14 @@ class plm_backupdoc(models.Model):
     _name = 'plm.backupdoc'
     _description = 'Document Backup'
 
-    userid          =   fields.Many2one ('res.users', 'Related User', index=True, ondelete='cascade')
-    existingfile    =   fields.Char     ('Physical Document Location',size=1024)
-    documentid      =   fields.Many2one ('plm.document', 'Related Document', index=True, ondelete='cascade')
-    revisionid      =   fields.Integer  (related="documentid.revisionid",string="Revision",store=False)
-    minorrevision   =   fields.Char     ('Minor Revision',store=False)
-    state           =   fields.Selection(related="documentid.state",string="Status",store=False)
-    printout        =   fields.Binary   ('Printout Content')
-    preview         =   fields.Binary   ('Preview Content')
+    userid          =   fields.Many2one ('res.users', _('Related User'), ondelete='cascade')
+    existingfile    =   fields.Char     (_('Physical Document Location'),size=1024)
+    documentid      =   fields.Many2one ('plm.document', _('Related Document'), ondelete='cascade')
+    revisionid      =   fields.Integer  (related="documentid.revisionid",string=_("Revision"),store=False)
+    minorrevision   =   fields.Char     (_('Minor Revision'),store=False)
+    state           =   fields.Selection(related="documentid.state",string=_("Status"),store=False)
+    printout        =   fields.Binary   (_('Printout Content'))
+    preview         =   fields.Binary   (_('Preview Content'))
 
     def _insertlog(self, ids, changes={}, note={}):
         ret=False       

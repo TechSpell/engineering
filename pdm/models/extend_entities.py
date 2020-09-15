@@ -27,7 +27,7 @@ from odoo import models, fields, api, _, osv
 class plm_document(models.Model):
     _inherit = 'plm.document'
 
-    linkedcomponents    =   fields.Many2many('product.product', 'plm_component_document_rel','document_id','component_id', string=_('Linked Parts'), index=True)
+    linkedcomponents    =   fields.Many2many('product.product', 'plm_component_document_rel','document_id','component_id', string=_('Linked Parts'))
 
     _defaults = {
                  'state': lambda *a: 'draft',
@@ -50,10 +50,10 @@ class plm_component(models.Model):
                 prod_ids.extend([bom_line_obj.bom_id.product_id.id])
             prod_obj.father_part_ids=list(set(prod_ids))
 
-    linkeddocuments = fields.Many2many  ('plm.document', 'plm_component_document_rel','component_id','document_id', _('Linked Docs'), index=True)  
-    tmp_material    = fields.Many2one   ('plm.material',_('Raw Material'), index=True, required=False, change_default=True, help=_("Select raw material for current product"))
-#     tmp_treatment   = fields.Many2one   ('plm.treatment',_('Thermal Treatment'), index=True, required=False, change_default=True, help=_("Select thermal treatment for current product"))
-    tmp_surface     = fields.Many2one   ('plm.finishing',_('Surface Finishing'), index=True, required=False, change_default=True, help=_("Select surface finishing for current product"))
+    linkeddocuments = fields.Many2many  ('plm.document', 'plm_component_document_rel','component_id','document_id', _('Linked Docs'))  
+    tmp_material    = fields.Many2one   ('plm.material',_('Raw Material'), required=False, change_default=True, help=_("Select raw material for current product"))
+#     tmp_treatment   = fields.Many2one   ('plm.treatment',_('Thermal Treatment'), required=False, change_default=True, help=_("Select thermal treatment for current product"))
+    tmp_surface     = fields.Many2one   ('plm.finishing',_('Surface Finishing'), required=False, change_default=True, help=_("Select surface finishing for current product"))
     father_part_ids = fields.Many2many  ('product.product', compute = _father_part_compute, string=_("BoM Hierarchy"), store =False)
 
     @api.onchange('tmp_material')
@@ -225,6 +225,7 @@ class plm_relation_line(models.Model):
     engineering_revision    =   fields.Integer      (related="product_id.engineering_revision", string=_("Revision"),   help=_("The revision of the product."),                 store=False)
     description             =   fields.Text         (related="product_id.description",          string=_("Description"),                                                        store=False)
     weight                  =   fields.Float        (related="product_id.weight",               string=_("Weight Net"),                                                         store=False)
+#     child_line_ids          =   fields.One2many     ("mrp.bom.line",compute=_get_child_bom_lines,string=_("BOM lines of the referred bom"))
 
 
 class plm_checkout(models.Model):
