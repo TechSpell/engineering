@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+
+    <record id="plm_component_manage_sparebom" model="ir.ui.view">
+        <field name="name">plm.relation.spare</field>
+        <field name="model">plm.temporary</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+        <form string="Creation of Spare BoM">
+        	<group>
+				<field name="revflag" />
+        	</group>
+            <separator string="" colspan="4" />
+            <label for="name" string="Are you sure you want to create a new Spare BoM?" colspan="4"/>
+            <separator string="" colspan="4" />
+            <footer>
+            	<button class="btn-default" special="cancel" string="Cancel"/>
+            	<button class="btn-primary" string="Create Spare BoM" name="action_create_spareBom" type="object"/>
+            </footer>
+        </form>
+        </field>
+    </record>
+
+    <act_window name="Create Spare BoM"
+        res_model="plm.temporary"
+        src_model="product.product"
+        view_mode="form"
+        view_id="plm_component_manage_sparebom"
+        target="new"
+        key2="client_action_multi"
+        groups="group_plm_admin,group_plm_integrationuser"
+        id="act_manage_spareBom"/>
+
+ </data>
+</odoo>
+        
