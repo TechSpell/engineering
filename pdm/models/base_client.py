@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    Copyright (C) 2020-2020 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    
 #    Created on : 2018-03-01
 #    Author : Fabio Colognesi
@@ -32,7 +32,8 @@ from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import odoo.tools.config as tools_config
 
 from .common import getIDs, getCleanList, isAdministrator, packDictionary, unpackDictionary, \
-                    getCleanValue, getCleanBytesDictionary, getCleanBytesList, getUser, streamPDF
+                    getCleanValue, getCleanBytesDictionary, getCleanBytesList, getUser, streamPDF, \
+                    getMachineStorage
                     
 
 
@@ -48,7 +49,7 @@ class plm_config_settings(models.Model):
     def cancel(self):
         pass
 
-    plm_service_id  =   fields.Char(_('Service ID'),            size=128,   help=_("Insert the Service ID and register your PLM module. Ask it to TechSpell."))
+    plm_service_id  =   fields.Char(_('Service ID'),            size=128,   help=_("Insert the Service ID and register your PLM module. Ask it to Didotech."))
     activated_id    =   fields.Char(_('Activated PLM client'),  size=128,   help=_("Listed activated Client."))
     active_editor   =   fields.Char(_('Client Editor Name'),    size=128,   help=_("Used Editor Name"))
     active_node     =   fields.Char(_('OS machine name'),       size=128,   help=_("Editor Machine name"))
@@ -664,7 +665,7 @@ class plm_config_settings(models.Model):
             Get all Service Ids registered.
         """
         
-        message=_("Insert your Activation Code as provided by TechSpell.")
+        message=_("Insert your Activation Code as provided by Didotech.")
         ids=self.GetServiceIds(oids, default=default)
         return ids, message
 
@@ -1108,3 +1109,41 @@ class plm_logging(models.Model):
                 changes="Changed values: "+changes
         return changes
 
+
+class plm_mail(models.Model):
+    _name = "plm.mail"
+    _description = "PLM Mail Services"
+
+    receivers = []
+    
+    @api.model
+    def SendFSCheck(self, repository=False):
+        """
+            Checks automatically file-system availability
+        """
+        receivers=self.receivers
+        if receivers:
+            opt_repository = tools_config.get('document_path', "/srv/filestore")
+            directory=repository if repository else opt_repository
+            partner_obj = self.env['res.partner']
+            mail_obj = self.env['mail.mail']
+            logging.info("SendFSCheck : Going to process.")
+            criteria=[('name','in', receivers),('active','=', True),]
+            (total_size,free_size,ratio),(ltot,lfre,lrat)=getMachineStorage(directory)
+            subject="Periodic Check of Odoo File System" if (ratio>20) else "CRITICAL Check Odoo File System"
+            body="Repository '{dir}' has total size {size} of which available is {free} giving a free ratio {ratio}".format(dir=directory,size=ltot,free=lfre,ratio=lrat)
+    
+            for partner_id in partner_obj.search(criteria, order='id'):
+                if partner_id.email:
+                    vals = {'state': 'outgoing',
+                            'subject': subject,
+                            'body_html': '<pre>%s</pre>' % body,
+                            'email_to': partner_id.email}
+                    mail_obj.sudo().create(vals)
+                    logging.info("SendFSCheck : Queued mail to Partner '{}'.".format(partner_id.name))
+                else:
+                    logging.warning("SendFSCheck : Partner '{}' with no e-mail set.".format(partner_id.name))
+
+        else:
+            logging.warning("SendFSCheck : No receivers configured.")
+          

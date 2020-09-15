@@ -25,6 +25,7 @@ group_plm_admin,access_plm_config_settings,plm_config_settings,plm.config.settin
 group_plm_admin,access_plm_codelist,plm_codelist,plm.codelist,1,1,1,1
 group_plm_admin,access_plm_doculist,plm_doculist,plm.doculist,1,1,1,1
 group_plm_admin,access_plm_email_thread,mail_thread,mail.thread,1,1,1,1
+group_plm_admin,access_plm_email_advice,plm_mail,plm.mail,1,1,1,1
 group_plm_integrationuser,access_iu_plm_logging,plm_logging,plm.logging,1,1,1,0
 group_plm_integrationuser,access_iu_plm_checkout,plm_checkout,plm.checkout,1,1,1,1
 group_plm_integrationuser,access_iu_plm_component_document_rel,plm_component_document_rel,plm.component.document.rel,1,1,1,1

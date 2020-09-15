@@ -31,9 +31,12 @@ Standard Description and Material or Finishing allow to standardize data, insert
         * Inventor 2011 (and above except 2014)
         * SolidEdge ST3 (and above)
         * AutoCAD 2013 (and above except 2014)
-        * UG Nx 10  (and above)
+        * UG NX 10  (and above)
         * Catia V.5
         
+* Server Requirements :
+	* PostgreSQL 9.6 or above
+	
 * Client Requirements :
     * Windows 10
 
@@ -62,6 +65,7 @@ From a terminal let's type:
 * Configure your /etc/odoo-server.conf
     * # sudo vi /etc/odoo-server.conf
         document_path = /srv/filestore
+        data_dir = /srv/filestore/dirdata
         
         addons_path = /opt/server/addons,/opt/server/odoo/addons,/opt/addons
         
@@ -71,8 +75,7 @@ Client Installation
 
 Client containing CAD integrations is available on SourceForge public repository `here <http://sourceforge.net/projects/libreplm/files/Client>`_.
 This is an usual Windows installer and requires Windows 10 or above. Download installer on your CAD workstation and run it "as Administrator". 
-In order to obtain a version covering Windows 7, please ask it to TechSpell srl, writing a mail to "info@techspell.eu"
-
+In order to obtain a version covering Windows 7, please ask it to Didotech srl, writing a mail to "info@didotech.com"
 
 
 Support
@@ -88,5 +91,4 @@ Contact
 =======
 Please, feel free to contact us for more informations, consultancy, support, customizations and more. 
 
-* `TechSpell srl <https://techspell.org>`_, a partner before a supplier.
-
+* `Didotech srl <http://www.didotech.com>`_, a partner before a supplier.

@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    Copyright (C) 2020-2020 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    
 #    Created on : 2018-03-01
 #    Author : Fabio Colognesi
@@ -97,6 +97,7 @@ def getprevminor(minorString):
 
 class plm_document(models.Model):
     _name = 'plm.document'
+    _description = 'Documents Revised'
     _table = 'plm_document'
     _inherit = ['mail.thread','ir.attachment']
 
@@ -145,9 +146,10 @@ class plm_document(models.Model):
     def _getlastrev(self, ids):
         result = []
         for objDoc in self.browse(getCleanList(ids)):
-            docIds = self.search([('name', '=', objDoc.name),
-                                           ('type', '=', 'binary')], order='revisionid, minorrevision' )
-            result.append(docIds[len(docIds) - 1].id)
+            if objDoc and hasattr(objDoc, 'name'):
+                docIds = self.search([('name', '=', objDoc.name),
+                                      ('type', '=', 'binary')], order='revisionid, minorrevision' )
+                result.append(docIds[len(docIds) - 1].id)
         return getCleanList(result)
 
     def _data_get_files(self, ids, listedFiles=([], []), forceFlag=False):
