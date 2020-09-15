@@ -1,4 +1,4 @@
-========
+﻿========
 LibrePLM
 ========
 
@@ -75,8 +75,7 @@ Client Installation
 
 Client containing CAD integrations is available on SourceForge public repository `here <http://sourceforge.net/projects/libreplm/files/Client>`_.
 This is an usual Windows installer and requires Windows 10 or above. Download installer on your CAD workstation and run it "as Administrator". 
-In order to obtain a version covering Windows 7, please ask it to TechSpell srl, writing a mail to "info@techspell.eu"
-
+In order to obtain a version covering Windows 7, please ask it to Didotech srl, writing a mail to "info@didotech.com"
 
 
 Support
@@ -92,5 +91,4 @@ Contact
 =======
 Please, feel free to contact us for more informations, consultancy, support, customizations and more. 
 
-* `TechSpell srl <https://techspell.org>`_, a partner before a supplier.
-
+* `Didotech srl <http://www.didotech.com>`_, a partner before a supplier.

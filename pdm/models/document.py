@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    Copyright (C) 2020-2020 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    
 #    Created on : 2018-03-01
 #    Author : Fabio Colognesi
@@ -97,6 +97,7 @@ def getprevminor(minorString):
 
 class plm_document(models.Model):
     _name = 'plm.document'
+    _description = 'Documents Revised'
     _table = 'plm_document'
     _inherit = ['mail.thread']
 
@@ -145,9 +146,10 @@ class plm_document(models.Model):
     def _getlastrev(self, ids):
         result = []
         for objDoc in self.browse(getCleanList(ids)):
-            docIds = self.search([('name', '=', objDoc.name),
-                                           ('type', '=', 'binary')], order='revisionid, minorrevision' )
-            result.append(docIds[len(docIds) - 1].id)
+            if objDoc and hasattr(objDoc, 'name'):
+                docIds = self.search([('name', '=', objDoc.name),
+                                      ('type', '=', 'binary')], order='revisionid, minorrevision' )
+                result.append(docIds[len(docIds) - 1].id)
         return getCleanList(result)
 
     def _data_get_files(self, ids, listedFiles=([], []), forceFlag=False):
@@ -1291,8 +1293,8 @@ class plm_document(models.Model):
     minorrevision   =   fields.Char     (string='Minor Revision', required=True, default='A')
     writable        =   fields.Boolean  (string='Writable', default=True)
     datas           =   fields.Binary   (string='File Content', inverse='_data_set', compute='_data_get', attachment=True)
-    printout        =   fields.Binary   (string='Printout Content', help="Print PDF content.", attachment=True)
-    preview         =   fields.Binary   (string='Preview Content', help="Static preview.", attachment=True)
+    printout        =   fields.Binary   (string='Printout Content', help="Print PDF content.", attachment=False)
+    preview         =   fields.Binary   (string='Preview Content', help="Static preview.", attachment=False)
     state           =   fields.Selection(USED_STATES,string='Status', help="The status of the document.", readonly="True", required=True, default='draft')
     checkout_user   =   fields.Char(string="Checked-Out to", compute=_get_checkout_state)
     is_checkout     =   fields.Boolean(string='Is Checked-Out', compute=_is_checkout, store=False)
@@ -1825,8 +1827,8 @@ class plm_backupdoc(models.Model):
     revisionid      =   fields.Integer  (related="documentid.revisionid",string="Revision",store=False)
     minorrevision   =   fields.Char     ('Minor Revision',store=False)
     state           =   fields.Selection(related="documentid.state",string="Status",store=False)
-    printout        =   fields.Binary   ('Printout Content', attachment=True)
-    preview         =   fields.Binary   ('Preview Content', attachment=True)
+    printout        =   fields.Binary   ('Printout Content', attachment=False)
+    preview         =   fields.Binary   ('Preview Content', attachment=False)
 
     def _insertlog(self, ids, changes={}, note={}):
         ret=False       
@@ -1913,7 +1915,7 @@ class plm_temporary(osv.osv.osv_memory):
     _inherit = "plm.temporary"
 
     ##  Specialized Actions callable interactively
-    def action_restore_document(self, context):
+    def action_restore_document(self, context={}):
         committed = False
         documentType = self.env['plm.document']
         backupdocType = self.env['plm.backupdoc']

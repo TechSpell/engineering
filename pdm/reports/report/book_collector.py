@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    Copyright (C) 2020-2020 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    
 #    Created on : 2018-03-01
 #    Author : Fabio Colognesi
@@ -76,6 +76,7 @@ def packDocuments(docRepository,documents,bookCollector):
                         Flag=True
                 if Flag:
                     page=PdfFileReader(input1)
+                    page.strict=False
                     orientation,paper=paperFormat(page.getPage(0).mediaBox)
                     if(paper==0)  :
                         output0.append((input1,status))
@@ -181,13 +182,15 @@ class BookCollector(object):
     def addPage(self, streamBuffer, status=""):
         if streamBuffer.getbuffer().nbytes>1:
             mainPage=PdfFileReader(streamBuffer)
+            mainPage.strict = False
             for i in range(0,mainPage.getNumPages()):
                 if self.jumpFirst:
                     self.collector.addPage(mainPage.getPage(i))
                     self.jumpFirst=False
                 else:
                     numberPagerBuffer=self.getNextPageNumber(mainPage.getPage(i).mediaBox, status)
-                    numberPageReader=PdfFileReader(numberPagerBuffer)  
+                    numberPageReader=PdfFileReader(numberPagerBuffer) 
+                    numberPageReader.strict = False 
                     mainPage.getPage(i).mergePage(numberPageReader.getPage(0))
                     self.collector.addPage(mainPage.getPage(i))
     

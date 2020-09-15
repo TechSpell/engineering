@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    Copyright (C) 2020-2020 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    $Id$
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,6 @@ from datetime import datetime
 
 from odoo import models, fields, api, _, osv
 from odoo.exceptions import UserError
-import odoo.addons.decimal_precision as dp
 
 from .common import ORIBOMTYPES, BOMTYPES, getListIDs, getCleanList, getListedDatas, isOldReleased, \
                     isAdministrator, isDraft, isAnyReleased, isReleased, isWritable
@@ -247,7 +246,7 @@ class plm_relation(models.Model):
     
     create_date = fields.Datetime   (string='Creation Date', readonly=True)
     type        = fields.Selection  (selection_add=BOMTYPES, string='BoM Type', required=True, help=HELP)
-    weight      = fields.Float      (string='Weight', digits=dp.get_precision('Stock Weight'), help="The BoM net weight in Kg.")
+    weight      = fields.Float      (string='Weight', digits='Stock Weight', help="The BoM net weight in Kg.")
 
     _defaults = {
         'product_uom' : 1,

@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016-2017 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    Copyright (C) 2020-2020 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    
 #    Created on : 2017-03-21
 #    Author : Fabio Colognesi
@@ -23,9 +23,8 @@
 ##############################################################################
 import base64
 import pickle
-from array import array
 from xmlrpc.client import Binary
-from datetime import datetime
+import os, sys, shutil
 
 from odoo import  SUPERUSER_ID, _
 
@@ -177,8 +176,7 @@ def isinstalled_module(entity, module_name):
             ret=True
             break
     return ret
-    
-    
+
 #   WorkFlow common internal method to apply changes
 
 def move_workflow(entity, idEntities, transition_name="", final_status=""):
@@ -296,3 +294,29 @@ def isDraft(entity, idd):
         Check if a document is in 'draft' state. 
     """
     return isInStatus(entity, idd, status=["draft"])
+
+def getMachineStorage(repository="/", unit="G"):
+    if sys.version_info >= (3, 3):
+        total, used, free = shutil.disk_usage(repository)
+    else:
+        result=os.statvfs(repository)
+        block_size=result.f_frsize
+        total=result.f_blocks*block_size
+        free=result.f_bavail*block_size
+    rate=2**30
+    ratio=0
+    uom="Gb"
+    if unit.upper()=="M":
+        rate=2**20
+        uom="Mb"
+    elif unit.upper()=="K":
+        rate=2**10
+        uom="Kb"
+    total_size=int(total/rate)
+    free_size=int(free/rate)
+    if total_size>0:
+        ratio=int(100*(float(free_size)/float(total_size)))
+    ltot='total_size = %s %s' %(total_size, uom)
+    lfre='free_size = %s %s' %(free_size, uom)
+    lrat='ratio = %s%%' %(ratio)
+    return ((total_size,free_size,ratio),(ltot,lfre,lrat))
