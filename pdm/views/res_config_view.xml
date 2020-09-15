@@ -143,8 +143,7 @@
     	name="Installed Options" 
       	action="action_plm_config_settings"
       	id="menu_plm_settings"
-      	parent="plm_menu_settings"
-      	groups="group_plm_admin,group_plm_integrationuser"/>
+      	parent="plm_menu_settings"/>
 
 	<menuitem
 		name="Dictionaries" 
