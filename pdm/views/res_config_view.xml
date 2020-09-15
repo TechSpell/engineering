@@ -1,7 +1,6 @@
 <openerp>
     <data>
-		<menuitem id="menu_plm_config_settings" name="Settings" parent="plm_menu" sequence="90"
-		groups="group_plm_admin,group_plm_integrationuser"/>
+		<menuitem id="menu_plm_config_settings" name="Settings" parent="plm_menu" sequence="90"/>
         
 	    <record model="ir.ui.view" id="plm_config_settings_tree">
 	        <field name="name">plm.config.settings</field>
@@ -90,8 +89,7 @@
     <menuitem name="Installed Options" 
               action="action_plm_config_settings"
               id="menu_plm_settings"
-              parent="menu_plm_config_settings"
-              groups="group_plm_admin,group_plm_integrationuser"/>
+              parent="menu_plm_config_settings"/>
 
     </data>
 </openerp>

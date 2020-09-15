@@ -33,7 +33,7 @@ from openerp.tools.translate import _
 from openerp.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                        get_signal_workflow, signal_workflow, move_workflow, isWritable, \
+                        get_signal_workflow, signal_workflow, move_workflow, \
                         isAdministrator, isIntegratorUser, isObsoleted, isUnderModify, \
                         isAnyReleased, isReleased, isDraft, getUpdTime
 
@@ -526,9 +526,8 @@ class plm_document(orm.Model):
         for oldObject in self.browse(cr, uid, getListIDs(ids), context=context):
             for linked_product_id in oldObject.linkedcomponents:
                 if latest:
-                    product_ids=prodType.GetLatestIds(cr, uid, [(linked_product_id.name, False, False)] , context=context)
-                    if product_ids and len(product_ids)>0:
-                        product_id=prodType.browse(cr, uid, product_ids[0], context=context)
+                    productId=prodType.GetLatestIds(cr, uid, [(linked_product_id.name, False, False)] , context=context)
+                    product_id=prodType.browse(cr, uid, productId[0], context=context)
                 else:
                     product_id=linked_product_id
                 break
@@ -580,7 +579,7 @@ class plm_document(orm.Model):
                              }
                         self._insertlog(cr, uid, newID, note=note, context=context)
                         self.CheckOut(cr, uid, [[newID], hostName, pwsPath], context=context)            # Take in Check-Out the new Document revision.
-#                         self._copy_DocumentBom(cr, uid, oldObject.id, newID, context=context)
+                        self._copy_DocumentBom(cr, uid, oldObject.id, newID, context=context)
                         self._cleanComponentLinks(cr, uid, [(newID,False)], context=context)
                         self.write(cr, uid, newID, default, context=context)
                         note={
@@ -629,7 +628,7 @@ class plm_document(orm.Model):
                              }
                         self._insertlog(cr, uid, tmpID, note=note, context=context)
                         self.CheckOut(cr, uid, [[newID], hostName, pwsPath], context=context)             # Take in Check-Out the new Document revision.
-#                         self._copy_DocumentBom(cr, uid, oldObject.id, newID, context=context)
+                        self._copy_DocumentBom(cr, uid, oldObject.id, newID, context=context)
                         self._cleanComponentLinks(cr, uid, [(newID,False)], context=context)
                         self.write(cr, uid, newID, {'writable':True, 'state':'draft' }, context=context)
             break
@@ -823,7 +822,6 @@ class plm_document(orm.Model):
             lastupdate=datetime.strptime(str(document['_lastupdate']),'%Y-%m-%d %H:%M:%S') if ('_lastupdate' in document) else datetime.now()
             for fieldName in list(set(document.keys()).difference(set(modelFields))):
                 del (document[fieldName])
-            document['is_integration']=True
             if not existingID:
                 logging.debug("[SaveOrUpdate] Document {name} is creating.".format(name=document['name']))
                 context.update({'internal_writing': True})
@@ -1314,8 +1312,7 @@ class plm_document(orm.Model):
         'preview': fields.binary('Preview Content', help="Static preview."),
         'state': fields.selection(USED_STATES, 'Status', help="The status of the product.", readonly="True"),
         'checkout_user': fields.function(_get_checkout_state, type='char', string="Checked-Out To"),
-        'is_checkout': fields.function(_is_checkout, type='boolean', string="Is Checked-Out", store=False),
-        'is_integration': fields.boolean(string="Is from integration", default=False),
+        'is_checkout': fields.function(_is_checkout, type='boolean', string="Is Checked-Out", store=False)
     }
 
     _defaults = {
@@ -1323,7 +1320,6 @@ class plm_document(orm.Model):
         'revisionid': lambda *a: 0,
         'minorrevision': lambda *a: 'A',
         'writable': lambda *a: True,
-        'is_integration': lambda *a: False,
         'state': lambda *a: 'draft',
     }
 
@@ -1723,8 +1719,6 @@ class plm_document_relation(orm.Model):
         'configuration': fields.char('Configuration Name', size=1024),
         'link_kind': fields.char('Kind of Link', size=64, required=True),
         'create_date': fields.datetime('Date Created', readonly=True),
-        'write_date': fields.datetime('Date Modified', readonly=True),
-        'write_uid': fields.many2one('res.users', 'Modifier User', readonly="True"),
         'userid': fields.many2one('res.users', 'CheckOut User', readonly="True"),
     }
     _defaults = {
@@ -1738,9 +1732,8 @@ class plm_document_relation(orm.Model):
     def CleanStructure(self, cr, uid, parent_ids=[], context=None):
         cleanIds=[]
         for parent_id in parent_ids:
-            if isWritable(self.pool['plm.document'], cr, uid, parent_id, context=context):
-                criteria = [('parent_id', '=', parent_id)]
-                cleanIds.extend(self.search(cr, uid, criteria, context=context))
+            criteria = [('parent_id', '=', parent_id)]
+            cleanIds.extend(self.search(cr, uid, criteria, context=context))
         self.unlink(cr, uid, getCleanList(cleanIds), context=context)
         return False
 
@@ -1757,12 +1750,11 @@ class plm_document_relation(orm.Model):
             cleanIds = []
             for relation in relations:
                 res['parent_id'], res['child_id'], res['configuration'], res['link_kind'] = relation
-                if isWritable(self.pool['plm.document'], cr, uid, res['parent_id'], context=context):
-                    if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
-                        criteria = [('child_id', '=', res['child_id'])]
-                    else:
-                        criteria = [('parent_id', '=', res['parent_id'])]
-                    cleanIds.extend(self.search(cr, uid, criteria, context=context))
+                if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
+                    criteria = [('child_id', '=', res['child_id'])]
+                else:
+                    criteria = [('parent_id', '=', res['parent_id'])]
+                cleanIds.extend(self.search(cr, uid, criteria, context=context))
             self.unlink(cr, uid, getCleanList(cleanIds), context=context)
 
         def saveChild(relation):
@@ -1776,13 +1768,8 @@ class plm_document_relation(orm.Model):
                 if (res['parent_id'] != None) and (res['child_id'] != None):
                     if (len(str(res['parent_id'])) > 0) and (len(str(res['child_id'])) > 0):
                         if not ((res['parent_id'], res['child_id']) in savedItems):
-                            if isWritable(self.pool['plm.document'], cr, uid, res['parent_id'], context=context):
-                                res.update({
-                                    'write_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                                    'write_uid': uid,
-                                    })
-                                savedItems.append((res['parent_id'], res['child_id']))
-                                self.create(cr, uid, res, context=context)
+                            savedItems.append((res['parent_id'], res['child_id']))
+                            self.create(cr, uid, res, context=context)
                 else:
                     logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist.")
                     logging.error("Arguments ({}).".format(relation))
@@ -1802,8 +1789,7 @@ class plm_document_relation(orm.Model):
 
     def IsFather(self, cr, uid, ids, context=None):
         """
-            Checks if a Document is father in a docBoM relation.
-            Excludes if has relation with its layout only.
+            Check if a Document is child in a docBoM relation.
         """
         ret=False
         
@@ -1821,18 +1807,13 @@ class plm_document_relation(orm.Model):
 
     def IsChild(self, cr, uid, ids, context=None):
         """
-            Checks if a Document is child in a docBoM relation.
-            Excludes if has relation with its layout only.
+            Check if a Document is child in a docBoM relation.
         """
         ret=False
         context = context or self.pool['res.users'].context_get(cr, uid)
         for idd in getListIDs(ids):
-            line_ids = self.search(cr, uid, [('child_id', '=', idd), ('link_kind', '=', 'HiTree')], context=context)
-            for line_id in self.browse(cr, uid, getListIDs(line_ids), context=context):
-                feed=True
-                for line_id in self.search(cr, uid, [('parent_id', '=', idd),('child_id', '=', line_id.parent_id.id),('link_kind', '=', 'LyTree')], context=context):
-                    feed=False
-                ret=ret|feed
+            if self.search(cr, uid, [('child_id', '=', idd)], context=context):
+                ret=ret|True
         return ret
 
     def GetChildren(self, cr, uid, ids, link=["HiTree"], context=None):

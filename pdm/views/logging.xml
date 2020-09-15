@@ -76,9 +76,7 @@
         name="List of Logged Activities"
         action="action_plm_logging"
         id="menu_logging"
-        parent="plm_menu_logging"
-		groups="group_plm_admin"/>
-
+        parent="plm_menu_logging"/>
 
 </data>
 </openerp>

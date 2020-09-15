@@ -45,7 +45,7 @@
         action="plm_action_doculist_form"
         id="menu_doculist"
     	sequence="25" 
-        parent="plm_menu_dictionaries"/>
+        parent="plm_menu_settings"/>
     
 </data>
 </openerp>

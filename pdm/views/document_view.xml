@@ -72,8 +72,8 @@
                         		readonly="1"
                         		nolabel="1"
                         		colspan="4"
-                        		height="400"
-                        		width="400"/>
+                        		img_height="400"
+                        		img_width="400"/>
                     </group>
                 </page>
                 <page string="Linked Parts">
@@ -188,7 +188,7 @@
                         <field name="type"/>
                         <newline/>
                         <group col="2" colspan="2" attrs="{'invisible':[('type','=','url')]}">
-                            <field name="datas" filename="datas_fname" groups="pdm.group_plm_admin,pd.group_plm_integrationuser"/>
+                            <field name="datas" filename="datas_fname" groups="pdm.group_plm_admin,pdm.group_plm_integrationuser"/>
                             <field name="datas_fname" select="1"/>
                         </group>
                         <group col="2" colspan="2" attrs="{'invisible':[('type','=','binary')]}">
@@ -283,62 +283,6 @@
 
 <!-- New Revision configuration -->
 
-<!-- Check-In / Out configuration -->
-
-    <record id="plm_document_checkin" model="ir.ui.view">
-        <field name="name">plm.document.checkin</field>
-        <field name="model">plm.temporary</field>
-        <field name="type">form</field>
-        <field name="arch" type="xml">
-        <form string="Moving to Check-In">
-            <label string="Are you sure you want to move to Check-In of selected items?" colspan="4"/>
-            <separator string=""/>
-            <group colspan="4" col="4">
-                <button icon="gtk-cancel" special="cancel" string="Cancel"/>
-                <button icon="terp-gtk-go-back-rtl" string="Check-In" name="action_checkin" type="object"/>
-            </group>
-        </form>
-        </field>
-    </record>
-
-    <act_window name="Check-In"
-        res_model="plm.temporary"
-        src_model="plm.document"
-        view_mode="form"
-        view_id="plm_document_checkin"
-        target="new"
-        key2="client_action_multi"
-        groups="group_plm_admin,group_plm_integrationuser"
-        id="act_document_checkin"/>
-
-
-    <record id="plm_document_checkout" model="ir.ui.view">
-        <field name="name">plm.document.checkout</field>
-        <field name="model">plm.temporary</field>
-        <field name="type">form</field>
-        <field name="arch" type="xml">
-        <form string="Moving to Check-Out">
-            <label string="Are you sure you want to move to Check-Out of selected items?" colspan="4"/>
-            <separator string=""/>
-            <group colspan="4" col="4">
-                <button icon="gtk-cancel" special="cancel" string="Cancel"/>
-                <button icon="terp-gtk-go-back-rtl" string="Check-Out" name="action_checkout" type="object"/>
-            </group>
-        </form>
-        </field>
-    </record>
-
-    <act_window name="Check-Out"
-        res_model="plm.temporary"
-        src_model="plm.document"
-        view_mode="form"
-        view_id="plm_document_checkout"
-        target="new"
-        key2="client_action_multi"
-        groups="group_plm_admin,group_plm_integrationuser"
-        id="act_document_checkout"/>
-
-<!-- Check-In / Out configuration -->
 
 </data>
 </openerp>
