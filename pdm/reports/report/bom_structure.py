@@ -75,7 +75,7 @@ def _createtemplate():
             fileOut.write(u'        <report model="mrp.bom"\n')
             fileOut.write(u'                id="report_%s"\n                string="%s"\n                name="%s.%s"\n' %(label,description,openerpModule,template))
             fileOut.write(u'                report_type="qweb-pdf"\n />\n')
-
+    
         fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
         fileOut.write(u'    </data>\n</openerp>\n')
         fileOut.close()

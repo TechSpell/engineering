@@ -26,32 +26,25 @@ from datetime import datetime
 from openerp import models, fields, api, _, osv
 import openerp.addons.decimal_precision as dp
 
-from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, isOldReleased, \
-                    isAdministrator, isDraft, isAnyReleased, isReleased, isObsoleted, isWritable
+from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, \
+                    isAdministrator, isDraft, isAnyReleased, isReleased, isObsoleted
                     
 
 # To be adequate to plm.document class states
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
                ('obsoleted', 'Obsoleted')]
 
-HELP ="Use a phantom bill of material in raw materials lines that have to be "                                            
-HELP+="automatically computed on a production order and not one per level."             
-HELP+="If you put \"Phantom/Set\" at the root level of a bill of material "              
-HELP+="it is considered as a set or pack: the products are replaced by the components " 
-HELP+="between the sale order to the picking without going through the production order." 
-HELP+="The normal BoM will generate one production order per BoM level."                   
-
 
 class plm_component(models.Model):
     _inherit = 'product.template'
 
-    state                   =   fields.Selection    (USED_STATES, string='Status',           readonly="True",         default='draft',       help="The status of the product in its LifeCycle.")
-    engineering_code        =   fields.Char         (             string='Part Number',      size=64,                                        help="This is engineering reference to manage a different P/N from item Name.")
-    engineering_revision    =   fields.Integer      (             string='Revision',                   required=True, default=0,             help="The revision of the product.")
-    engineering_writable    =   fields.Boolean      (             string='Writable',                                  default=True)
-    engineering_material    =   fields.Char         (             string='Raw Material',     size=128, required=False,                       help="Raw material for current product, only description for titleblock.")
-#   engineering_treatment   =   fields.Char         (             string='Treatment',        size=64,  required=False,                       help="Thermal treatment for current product"))
-    engineering_surface     =   fields.Char         (             string='Surface Finishing',size=128, required=False,                       help="Surface finishing for current product, only description for titleblock.")
+    state                   =   fields.Selection    (USED_STATES, string=_('Status'),           readonly="True",         default='draft',       help=_("The status of the product in its LifeCycle."))
+    engineering_code        =   fields.Char         (             string=_('Part Number'),      size=64,                                        help=_("This is engineering reference to manage a different P/N from item Name."))
+    engineering_revision    =   fields.Integer      (             string=_('Revision'),                   required=True, default=0,             help=_("The revision of the product."))
+    engineering_writable    =   fields.Boolean      (             string=_('Writable'),                                  default=True)
+    engineering_material    =   fields.Char         (             string=_('Raw Material'),     size=128, required=False,                       help=_("Raw material for current product, only description for titleblock."))
+#   engineering_treatment   =   fields.Char         (             string=_('Treatment'),        size=64,  required=False,                       help=_("Thermal treatment for current product"))
+    engineering_surface     =   fields.Char         (             string=_('Surface Finishing'),size=128, required=False,                       help=_("Surface finishing for current product, only description for titleblock."))
 
     _sql_constraints = [
         ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
@@ -98,7 +91,7 @@ class plm_component(models.Model):
     def create(self, vals):
         ret=False
         if vals:
-            if not vals.get('engineering_code', '') and vals.get('name', ''):
+            if not vals.get('engineering_code', ''):
                 vals['engineering_code'] = vals['name']
             ret=super(plm_component, self).create(vals)
         return ret
@@ -107,8 +100,8 @@ class plm_component_document_rel(models.Model):
     _name = 'plm.component.document.rel'
     _description = "Component Document Relations"
     
-    component_id    =   fields.Many2one('product.product', string='Linked Component', index=True, ondelete='cascade')
-    document_id     =   fields.Many2one('plm.document',    string='Linked Document',  index=True, ondelete='cascade')
+    component_id    =   fields.Many2one('product.product', string=_('Linked Component'), ondelete='cascade')
+    document_id     =   fields.Many2one('plm.document',    string=_('Linked Document'),  ondelete='cascade')
 
     _sql_constraints = [
         (
@@ -165,15 +158,22 @@ class plm_component_document_rel(models.Model):
                 ret=saveChild(relation)
         return ret
 
+HELP ="Use a phantom bill of material in raw materials lines that have to be "                                            
+HELP+="automatically computed on a production order and not one per level."             
+HELP+="If you put \"Phantom/Set\" at the root level of a bill of material "              
+HELP+="it is considered as a set or pack: the products are replaced by the components " 
+HELP+="between the sale order to the picking without going through the production order." 
+HELP+="The normal BoM will generate one production order per BoM level."                   
+
          
 class plm_relation_line(models.Model):
     _inherit = 'mrp.bom.line'
     
-    create_date = fields.Datetime   (                string='Creation Date',    readonly=True)
-    source_id   = fields.Many2one   ('plm.document', string='Source Document',  readonly=True, index=True, ondelete='no action', help="This is the document object that declares this BoM.")
-    type        = fields.Selection  (BOMTYPES,       string='BoM Type',         required=True,  help=HELP)
-    itemnum     = fields.Integer    (                string='CAD Item Position',                help="This is the item reference position into the CAD document that declares this BoM.")
-    itemlbl     = fields.Char       (                string='Cad Item Position Label', size=64, help="This is the item reference position into the CAD document that declares this BoM (As literal).")
+    create_date = fields.Datetime   (             string=_('Creation Date'),     readonly=True)
+    source_id   = fields.Many2one   ('plm.document','name',ondelete='no action', readonly=True, help=_("This is the document object that declares this BoM."))
+    type        = fields.Selection  (BOMTYPES, string=_('BoM Type'),             required=True, help=_(HELP))
+    itemnum     = fields.Integer    (          string=_('CAD Item Position'),                   help=_("This is the item reference position into the CAD document that declares this BoM."))
+    itemlbl     = fields.Char       (          string=_('Cad Item Position Label'), size=64,    help=_("This is the item reference position into the CAD document that declares this BoM (As literal)."))
 
     _defaults = {
         'product_uom' : 1,
@@ -240,9 +240,9 @@ class plm_relation(models.Model):
 
     _packed = []
     
-    create_date = fields.Datetime   (          string='Creation Date',    readonly=True)
-    type        = fields.Selection  (BOMTYPES, string='BoM Type',         required=True,                                   help=HELP)
-    weight      = fields.Float      (          string='Weight',           digits_compute=dp.get_precision('Stock Weight'), help="The BoM net weight in Kg.")
+    create_date = fields.Datetime   (          string=_('Creation Date'),    readonly=True)
+    type        = fields.Selection  (BOMTYPES, string=_('BoM Type'),         required=True,                           help=_(HELP))
+    weight      = fields.Float      (          string=_('Weight') ,          digits_compute=dp.get_precision('Stock Weight'), help=_("The BoM net weight in Kg."))
 
     _defaults = {
         'product_uom' : 1,
@@ -496,14 +496,13 @@ class plm_relation(models.Model):
             """
             bl_to_delete = bomLType
             if not parentID==None:
-                if isWritable(self.env['product.product'], parentID):
-                    for bom_id in self.search([('type','=','ebom'),('product_id','=',parentID)]):
-                        if not sourceID==None:
-                            for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
-                                bl_to_delete |= bomLine
-                            bl_to_delete.unlink()                        # Cleans mrp.bom.lines
-                        if not bom_id.bom_line_ids:
-                            bom_id.unlink()                              # Cleans void mrp.bom
+                for bom_id in self.search([('type','=','ebom'),('product_id','=',parentID)]):
+                    if not sourceID==None:
+                        for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
+                            bl_to_delete |= bomLine
+                        bl_to_delete.unlink()                        # Cleans mrp.bom.lines
+                    if not bom_id.bom_line_ids:
+                        bom_id.unlink()                              # Cleans void mrp.bom
                     
 
         def toCleanRelations(relations):
@@ -546,10 +545,9 @@ class plm_relation(models.Model):
                 Gets the father of relation ( parent side in mrp.bom )
             """
             ret=False
-            productType = self.env['product.product']
-            if partID and isWritable(productType, partID):
+            if partID:
                 try:
-                    objTempl=productType.getTemplateItem(partID)
+                    objTempl=self.env['product.product'].getTemplateItem(partID)
                     res={
                          'type': kindBom,
                          'product_id': partID,
@@ -606,21 +604,6 @@ class plm_relation(models.Model):
             toCleanRelations(relations)
             if not toCompute(parentName, relations):
                 ret=True
-        return ret
-
-    @api.model
-    def IsChildBom(self, bom_id, typebom=None):
-        """
-            Checks if a Bom is contained (as Product) as child in another BoM relation.
-        """
-        ret=False
-
-        if bom_id.bom_line_ids:
-            criteria=[('product_id', '=', bom_id.product_id.id)]
-            if typebom:
-                criteria.append(('type', '=', typebom))
-            if self.env['mrp.bom.line'].search(criteria):
-                ret=ret|True
         return ret
 
     @api.model
@@ -827,21 +810,17 @@ class plm_relation(models.Model):
         ids=self._ids
         processIds=[]
         check=self._context.get('internal_writing', False)
-        options=self.env['plm.config.settings'].GetOptions()
         if not check:
             isAdmin = isAdministrator(self)
 
             for bomID in self.browse(getListIDs(ids)):
-                if not self.IsChildBom(bomID, bomID.type):
+                if not self.IsChild(bomID.product_id.id, bomID.type):
                     checkApply=False
                     if isReleased(self.env['product.product'],  bomID.product_id.id):
-                        if isAdmin and options.get('opt_editreleasedbom', False):
+                        if isAdmin:
                             checkApply=True
                     elif isDraft(self.env['product.product'],  bomID.product_id.id):
                         checkApply=True
-                    else:
-                        if options.get('opt_editbom', False) and not isOldReleased(self.env['product.product'], bomID.product_id.id):
-                            checkApply=True
 
                     if not checkApply:
                         continue            # Apply unlink only if have respected rules.
@@ -866,9 +845,9 @@ class plm_material(models.Model):
     _name = "plm.material"
     _description = "Materials"
 
-    name         = fields.Char     (string='Designation',    size=128, required=True)
-    description  = fields.Char     (string='Description',    size=128)
-    sequence     = fields.Integer  (string='Sequence',       help="Gives the sequence order when displaying a list of product categories.")
+    name         = fields.Char     (string=_('Designation'),    size=128, required=True)
+    description  = fields.Char     (string=_('Description'),    size=128)
+    sequence     = fields.Integer  (string=_('Sequence'),       help=_("Gives the sequence order when displaying a list of product categories."))
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
@@ -879,9 +858,9 @@ class plm_finishing(models.Model):
     _name = "plm.finishing"
     _description = "Surface Finishing"
 
-    name         = fields.Char     (string='Designation',    size=128, required=True)
-    description  = fields.Char     (string='Description',    size=128)
-    sequence     = fields.Integer  (string='Sequence',       help="Gives the sequence order when displaying a list of product categories.")
+    name         = fields.Char     (string=_('Designation'),    size=128, required=True)
+    description  = fields.Char     (string=_('Description'),    size=128)
+    sequence     = fields.Integer  (string=_('Sequence'),       help=_("Gives the sequence order when displaying a list of product categories."))
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
@@ -892,18 +871,18 @@ class plm_codelist(models.Model):
     _name = "plm.codelist"
     _description = "Code List"
     
-    name        = fields.Char      (                string='Part Number',   size=128,   help="Choose the Part Number rule.")
-    description = fields.Char      (                string='Description',   size=128,   help="Description of Part Number Rule.")
-    sequence_id = fields.Many2one  ('ir.sequence',  string='Sequence Rule', index=True, help="This is the sequence object related to this P/N rule.")
+    name        = fields.Char      (                string=_('Part Number'),   size=128,   help=_("Choose the Part Number rule."))
+    description = fields.Char      (                string=_('Description'),   size=128,   help=_("Description of Part Number Rule."))
+    sequence_id = fields.Many2one  ('ir.sequence',  string=_('Sequence'),                  help=_("This is the sequence object related to this P/N rule."))
 
 
 class plm_doculist(models.Model):
     _name = "plm.doculist"
     _description = "Document Code List"
     
-    name        = fields.Char      (                string='Document Number', size=128,  help="Choose the Document Number rule.")
-    description = fields.Char      (                string='Description',     size=128,  help="Description of Document Number Rule.")
-    sequence_id = fields.Many2one  ('ir.sequence',  string='Sequence Rule',   index=True,help="This is the sequence object related to this P/N rule.")
+    name        = fields.Char      (                string=_('Document Number'),   size=128,   help=_("Choose the Document Number rule."))
+    description = fields.Char      (                string=_('Description'),   size=128,   help=_("Description of Document Number Rule."))
+    sequence_id = fields.Many2one  ('ir.sequence',  string=_('Sequence'),                  help=_("This is the sequence object related to this P/N rule."))
 
 
 class plm_temporary(models.AbstractModel):
@@ -993,57 +972,4 @@ class plm_temporary(models.AbstractModel):
                     'domain': "[('id','in', [" + ','.join(map(str, revised)) + "])]",
                     }
                         
-        return ret
-
-    def action_checkin(self, ids):
-        """
-            Call for CheckIn method
-        """
-        ret=False
-        active_ids=self._context.get('active_ids', [])
-        active_model=self._context.get('active_model', None)
-        if active_ids and active_model:
-            objectType=self.env[active_model]
-            doc_ids=[]
-            for thisId in active_ids:
-                if isDraft(objectType, thisId):
-                    if objectType._is_checkedout_for_me(thisId):
-                        doc_ids.append(thisId)
-            if doc_ids:
-                ret=objectType.CheckIn(doc_ids)
-        ret={
-            'name': _('Checked In'),
-            'view_type': 'form',
-            "view_mode": 'tree,form',
-            'res_model': active_model,
-            'type': 'ir.actions.act_window',
-            'domain': "[]",
-            }
-                      
-        return ret
- 
-    def action_checkout(self, ids):
-        """
-            Call for CheckOut method
-        """
-        ret=False
-        active_ids=self._context.get('active_ids', [])
-        active_model=self._context.get('active_model', None)
-        if active_ids and active_model:
-            objectType=self.env[active_model]
-            doc_ids=[]
-            for thisId in active_ids:
-                if isDraft(objectType, thisId):
-                    if objectType.ischecked_in(thisId):
-                        doc_ids.append(thisId)
-            if doc_ids:
-                ret=objectType.CheckOut([doc_ids,"",""])                        
-        ret={
-            'name': _('Checked Out'),
-            'view_type': 'form',
-            "view_mode": 'tree,form',
-            'res_model': active_model,
-            'type': 'ir.actions.act_window',
-            'domain': "[]",
-            }
         return ret

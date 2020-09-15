@@ -16,6 +16,7 @@
                 	<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
                </header>
                <sheet>
+	               <label for="name" class="oe_edit_only"/>
 	               <group colspan="4" col="4" name="DocData">
 	 					<group colspan="4" col="4">
 		 					<group colspan="2" col="2">
@@ -26,8 +27,7 @@
 		                    <group col="2" colspan="2" string="Spare Part" >
 			                    <field name="usedforspare" colspan="2"/>
                    				<field name="is_checkout" invisible="True"/>
-                    			<field name="is_integration" invisible="True"/>
-  		                    </group>
+ 		                    </group>
 	                    </group>
 	               	</group>
 	                <notebook col="4" colspan="4">
@@ -35,23 +35,21 @@
 	                	<group col="4" colspan="4" name="Attachment">
 		                	<group col="2" colspan="2">
 		                		<group col="2" colspan="2" name="FileData">
-			                        <group colspan="2" attrs="{'invisible':[('type','=','url')]}">
-			                            <field name="datas" filename="datas_fname" 
-        	                                attrs="{'invisible':['|',('datas_fname','not in',[False,'']),('is_integration','in',[True,1])]}"
-			                            	groups="pdm.group_plm_admin,pdm.group_plm_integrationuser" />
+			                        <group attrs="{'invisible':[('type','=','url')]}">
+			                            <field name="datas" filename="datas_fname" groups="pdm.group_plm_admin,pdm.group_plm_integrationuser" />
 			                            <field name="datas_fname" select="1"/>
 			                        </group>
-			                        <group colspan="2" attrs="{'invisible':[('type','=','binary')]}">
-			                            <field name="url" widget="url"/>
+			                        <group>
+			                            <field name="url" widget="url" attrs="{'invisible':[('type','=','binary')]}"/>
+			                        	<field name="type"/>
 			                        </group>
-			                        <field name="type" invisible="True"/>
 		                        </group>
 		                        <group col="2" colspan="2" name="DocUser">
-			                        <group string="Created" colspan="2">
+			                        <group string="Created">
 			                            <field name="create_uid"  readonly="1" />
 			                            <field name="create_date" readonly="1" />
 			                        </group>
-			                        <group string="Changed" colspan="2">
+			                        <group string="Changed">
 			                            <field name="write_uid"  readonly="1" />
 			                            <field name="write_date" readonly="1" />
 			                        </group>
@@ -209,20 +207,18 @@
                         <field name="type"/>
                         <newline/>
                         <group col="2" colspan="2" attrs="{'invisible':[('type','=','url')]}">
-                            <field name="datas" filename="datas_fname" 
-                                attrs="{'invisible':[('datas_fname','not in',[False,''])]}"
-                            	groups="pdm.group_plm_admin,pdm.group_plm_integrationuser"/>
+                            <field name="datas" filename="datas_fname" groups="pdm.group_plm_admin,pdm.group_plm_integrationuser"/>
                             <field name="datas_fname" select="1"/>
                         </group>
                         <group col="2" colspan="2" attrs="{'invisible':[('type','=','binary')]}">
                             <field name="url" widget="url"/>
                         </group>
-                        <group col="2" colspan="2">
+                        <group col="2" colspan="2" groups="base.group_extended">
                             <separator string="Created" colspan="2"/>
                             <field name="create_uid" readonly="1"/>
                             <field name="create_date" readonly="1"/>
                         </group>
-                        <group col="2" colspan="2">
+                        <group col="2" colspan="2" groups="base.group_extended">
                             <separator string="Modified" colspan="2"/>
                             <field name="write_uid" readonly="1"/>
                             <field name="write_date" readonly="1"/>
@@ -269,14 +265,14 @@
         <field name="model">plm.temporary</field>
         <field name="type">form</field>
         <field name="arch" type="xml">
-	        <form string="Creating a Document New Revision">
-	            <label string="Are you sure you want to create New Revision of selected items?" colspan="4"/>
-	            <separator string=""/>
-	            <footer>
-	                <button class="btn-default" special="cancel" string="Cancel"/>
-	                <button class="btn-primary" string="New Revision" name="action_NewDocRevision" type="object"/>
-	            </footer>
-	        </form>
+        <form string="Creating a Document New Revision">
+            <label string="Are you sure you want to create New Revision of selected items?" colspan="4"/>
+            <separator string=""/>
+            <footer>
+                <button class="btn-default" special="cancel" string="Cancel"/>
+                <button class="btn-primary" string="New Revision" name="action_NewDocRevision" type="object"/>
+            </footer>
+        </form>
         </field>
     </record>
 
@@ -292,62 +288,6 @@
 
 <!-- New Revision configuration -->
 
-<!-- Check-In / Out configuration -->
-
-   <record id="plm_document_checkin" model="ir.ui.view">
-        <field name="name">plm.document.checkin</field>
-        <field name="model">plm.temporary</field>
-        <field name="type">form</field>
-        <field name="arch" type="xml">
-        <form string="Moving to Check-In">
-            <label string="Are you sure you want to move to Check-In of selected items?" colspan="4"/>
-            <separator string=""/>
-            <group colspan="4" col="4">
-                <button icon="gtk-cancel" special="cancel" string="Cancel"/>
-                <button icon="terp-gtk-go-back-rtl" string="Check-In" name="action_checkin" type="object"/>
-            </group>
-        </form>
-        </field>
-    </record>
-
-    <act_window name="Check-In"
-        res_model="plm.temporary"
-        src_model="plm.document"
-        view_mode="form"
-        view_id="plm_document_checkin"
-        target="new"
-        key2="client_action_multi"
-        groups="group_plm_admin,group_plm_integrationuser"
-        id="act_document_checkin"/>
-
-
-     <record id="plm_document_checkout" model="ir.ui.view">
-        <field name="name">plm.document.checkout</field>
-        <field name="model">plm.temporary</field>
-        <field name="type">form</field>
-        <field name="arch" type="xml">
-        <form string="Moving to Check-Out">
-            <label string="Are you sure you want to move to Check-Out of selected items?" colspan="4"/>
-            <separator string=""/>
-            <group colspan="4" col="4">
-                <button icon="gtk-cancel" special="cancel" string="Cancel"/>
-                <button icon="terp-gtk-go-back-rtl" string="Check-Out" name="action_checkout" type="object"/>
-            </group>
-        </form>
-        </field>
-    </record>
-
-    <act_window name="Check-Out"
-        res_model="plm.temporary"
-        src_model="plm.document"
-        view_mode="form"
-        view_id="plm_document_checkout"
-        target="new"
-        key2="client_action_multi"
-        groups="group_plm_admin,group_plm_integrationuser"
-        id="act_document_checkout"/>
-
-<!-- Check-In / Out configuration -->
 
 </data>
 </openerp>
