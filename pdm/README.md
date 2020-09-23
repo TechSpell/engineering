@@ -4,7 +4,7 @@ PLM Engineering Server
 # Odoo and LibrERP module to manage CAD Integrations
 
 #    LibrePLM, Open Source Product Lifcycle Management System    
-    Copyright (C) 2016 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+    Copyright (C) 2020 Didotech srl (<http://didotech.com>). All Rights Reserved
 
     Created on : 2016-03-01
     Author : Fabio Colognesi
