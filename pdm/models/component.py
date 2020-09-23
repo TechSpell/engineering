@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    Copyright (C) 2020-2020 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    
 #    Created on : 2018-03-01
 #    Author : Fabio Colognesi
@@ -43,6 +43,12 @@ class plm_component(models.Model):
 
     create_date     =   fields.Datetime(_('Date Created'),     readonly=True)
     write_date      =   fields.Datetime(_('Date Modified'),    readonly=True)
+
+    @property
+    def _default_rev(self):
+        field = self.env['product.template']._fields.get('engineering_revision', None)
+        default = field.default('product.template') if not(field == None) else 0
+        return default
 
     #   Internal methods
     def _insertlog(self, ids, changes={}, note={}):
@@ -218,7 +224,7 @@ class plm_component(models.Model):
                           'name': new_name,
                           'engineering_code': new_name,
                           'description': "{desc}".format(desc=tmpObject.description),
-                          'engineering_revision': 0,
+                          'engineering_revision': self._default_rev,
                           'engineering_writable': True,
                           'state': 'draft',
                           }
@@ -919,7 +925,7 @@ class plm_component(models.Model):
             if (vals.get('engineering_code', False)==False) or (vals['engineering_code'] == ''):
                 vals['engineering_code'] = vals['name']
             if (vals.get('engineering_revision', False)==False):
-                vals['engineering_revision'] = 0
+                vals['engineering_revision'] = self._default_rev
 
             if existingIDs:
                 existingID = existingIDs[len(existingIDs) - 1]
@@ -1006,7 +1012,7 @@ class plm_component(models.Model):
                 default.update({
                     'name': new_name,
                     'engineering_code': new_name,
-                    'engineering_revision': 0,
+                    'engineering_revision': self._default_rev,
                 })
                 override=True
     
@@ -1030,7 +1036,7 @@ class plm_component(models.Model):
                     values={
                         'name': new_name,
                         'engineering_code': new_name,
-                        'engineering_revision': 0,
+                        'engineering_revision': self._default_rev,
                         }
                     newID.write(values)
         else:

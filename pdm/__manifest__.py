@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    Copyright (C) 2020-2020 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    
 #    Created on : 2018-03-01
 #    Author : Fabio Colognesi
@@ -24,9 +24,9 @@
 {
     'name': 'Engineering & Lifecycle Management',
     'version': '1.0.0',
-    'author': 'TechSpell srl',
-    'website': 'http://www.techspell.eu',
-    'support': 'help@techspell.eu',
+    'author': 'Didotech srl',
+    'website': 'http://www.didotech.com',
+    'support': 'support@didotech.com',
     'category': 'Document Management',
     'sequence': 10,
     'summary': 'PLM Engineering integration with main CAD editors',
