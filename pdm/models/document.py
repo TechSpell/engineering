@@ -101,6 +101,12 @@ class plm_document(models.Model):
     _table = 'plm_document'
     _inherit = ['mail.thread']
 
+    @property
+    def _default_rev(self):
+        field = self.env['product.template']._fields.get('engineering_revision', None)
+        default = field.default('product.template') if not(field == None) else 0
+        return default
+
     def _insertlog(self, ids, changes={}, note={}):
         ret=False
         
@@ -644,7 +650,7 @@ class plm_document(models.Model):
                 exitValues = {
                             '_id': newID,
                             'name': "Copy of {name}".format(name=tmpID.name),
-                            'revisionid': 0,
+                            'revisionid': self._default_rev,
                             'minorrevision':"A",
                             'writable': True,
                             'state': 'draft',
@@ -665,7 +671,7 @@ class plm_document(models.Model):
             new_name = "Copy of {name}".format(name=tmpObject.name)
             exitValues['_id'] = False
             exitValues['name'] = new_name
-            exitValues['revisionid'] = 0
+            exitValues['revisionid'] = self._default_rev
             exitValues['writable'] = True
             exitValues['state'] = 'draft'
             exitValues['store_fname'] = ""
@@ -1174,7 +1180,7 @@ class plm_document(models.Model):
                         minor=vals['minorrevision']="A"
                     major=vals.get('revisionid', None)
                     if not major:
-                        major=vals['revisionid']=0
+                        major=vals['revisionid']=self._default_rev
                     
                     objectItem=super(plm_document, self).create(vals)
                     if objectItem:
