@@ -96,8 +96,15 @@ def getprevminor(minorString):
 
 class plm_document(orm.Model):
     _name = 'plm.document'
+    _description = 'Documents Revised'
     _table = 'plm_document'
     _inherit = 'ir.attachment'
+
+    @property
+    def _default_rev(self):
+        field = self.pool['product.template']._fields.get('engineering_revision', None)
+        default = field.default('product.template') if not(field == None) else 0
+        return default
 
     def _insertlog(self, cr, uid, ids, changes={}, note={}, context=None):
         ret=False
@@ -332,6 +339,8 @@ class plm_document(orm.Model):
                 else:
                     try:
                         objDatas = objDoc.datas
+                        if (objDoc.file_size < 1) and (objDatas):
+                            file_size = len(objDoc.datas)
                     except Exception as msg:
                         logging.warning('[_data_check_files] Document with "id":{idd}  and "name":{name} may contains no data!!'.format(idd=objDoc.id, name=objDoc.name))
     
@@ -667,7 +676,7 @@ class plm_document(orm.Model):
             new_name = "Copy of {name}".format(name=tmpObject.name)
             exitValues['_id'] = False
             exitValues['name'] = new_name
-            exitValues['revisionid'] = 0
+            exitValues['revisionid'] = self._default_rev
             exitValues['writable'] = True
             exitValues['state'] = 'draft'
             exitValues['store_fname'] = ""
@@ -718,7 +727,7 @@ class plm_document(orm.Model):
                     if ('revisionid' in document) and int(document['revisionid'])>=0:
                         criteria.append( ('revisionid', '=', document['revisionid']) )
                         order='minorrevision'
-    
+
                     if ('minorrevision' in document) and document['minorrevision']:
                         criteria.append( ('minorrevision', '=', document['minorrevision']) )
                         order=None
@@ -1164,7 +1173,7 @@ class plm_document(orm.Model):
                         minor=vals['minorrevision']="A"
                     major=vals.get('revisionid', None)
                     if not major:
-                        major=vals['revisionid']=0
+                        major=vals['revisionid']=self._default_rev
                     
                     ret=super(plm_document, self).create(cr, uid, vals, context=context)
                     values={
@@ -1312,7 +1321,8 @@ class plm_document(orm.Model):
         'preview': fields.binary('Preview Content', help="Static preview."),
         'state': fields.selection(USED_STATES, 'Status', help="The status of the product.", readonly="True"),
         'checkout_user': fields.function(_get_checkout_state, type='char', string="Checked-Out To"),
-        'is_checkout': fields.function(_is_checkout, type='boolean', string="Is Checked-Out", store=False)
+        'is_checkout': fields.function(_is_checkout, type='boolean', string="Is Checked-Out", store=False),
+        'is_integration': fields.boolean(string="Is from integration", default=False),
     }
 
     _defaults = {
@@ -1321,6 +1331,7 @@ class plm_document(orm.Model):
         'minorrevision': lambda *a: 'A',
         'writable': lambda *a: True,
         'state': lambda *a: 'draft',
+        'is_integration':lambda *a: False,
     }
 
     _sql_constraints = [
@@ -1750,11 +1761,12 @@ class plm_document_relation(orm.Model):
             cleanIds = []
             for relation in relations:
                 res['parent_id'], res['child_id'], res['configuration'], res['link_kind'] = relation
-                if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
-                    criteria = [('child_id', '=', res['child_id'])]
-                else:
-                    criteria = [('parent_id', '=', res['parent_id'])]
-                cleanIds.extend(self.search(cr, uid, criteria, context=context))
+                if isWritable(self.env['plm.document'], res['parent_id']):
+                    if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
+                        criteria = [('child_id', '=', res['child_id'])]
+                        else:
+                            criteria = [('parent_id', '=', res['parent_id'])]
+                        cleanIds.extend(self.search(cr, uid, criteria, context=context))
             self.unlink(cr, uid, getCleanList(cleanIds), context=context)
 
         def saveChild(relation):
@@ -1768,8 +1780,9 @@ class plm_document_relation(orm.Model):
                 if (res['parent_id'] != None) and (res['child_id'] != None):
                     if (len(str(res['parent_id'])) > 0) and (len(str(res['child_id'])) > 0):
                         if not ((res['parent_id'], res['child_id']) in savedItems):
-                            savedItems.append((res['parent_id'], res['child_id']))
-                            self.create(cr, uid, res, context=context)
+                            if isWritable(self.env['plm.document'], res['parent_id']):
+                                savedItems.append((res['parent_id'], res['child_id']))
+                                self.create(cr, uid, res, context=context)
                 else:
                     logging.error("saveChild : Unable to create a relation between documents. One of documents involved doesn't exist.")
                     logging.error("Arguments ({}).".format(relation))

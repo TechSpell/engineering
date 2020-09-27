@@ -225,6 +225,21 @@ def isInStatus(entity, cr, uid, idd, status=[], context=None):
             pass
     return ret
 
+def isWritable(entity, idd):
+    """
+        Check if a document is released
+    """
+    ret=True
+    context = context or entity.pool['res.users'].context_get(cr, uid)
+    for item_id in entity.browse(cr, uid, getListIDs(idd), context=context):
+        try:
+            if not item_id._iswritable(cr, uid):
+                ret=False
+                break
+        except:
+            pass
+    return ret
+
 def isObsoleted(entity, cr, uid, idd, context=None):
     """
         Check if a document is released
@@ -236,6 +251,12 @@ def isUnderModify(entity, cr, uid, idd, context=None):
         Check if a document is released
     """
     return isInStatus(entity, cr, uid, idd, status=["undermodify"], context=None)
+
+def isOldReleased(entity, idd):
+    """
+        Check if a document is in 'released' state. 
+    """
+    return isInStatus(entity, cr, uid, idd, status=["undermodify","obsoleted"], context=None)
 
 def isReleased(entity, cr, uid, idd, context=None):
     """
@@ -254,3 +275,30 @@ def isDraft(entity, cr, uid, idd, context=None):
         Check if a document is in 'draft' state. 
     """
     return isInStatus(entity, cr, uid, idd, status=["draft"], context=None)
+
+def getMachineStorage(repository="/", unit="G"):
+    if sys.version_info >= (3, 3):
+        total, used, free = shutil.disk_usage(repository)
+    else:
+        result=os.statvfs(repository)
+        block_size=result.f_frsize
+        total=result.f_blocks*block_size
+        free=result.f_bavail*block_size
+    rate=2**30
+    ratio=0
+    uom="Gb"
+    if unit.upper()=="M":
+        rate=2**20
+        uom="Mb"
+    elif unit.upper()=="K":
+        rate=2**10
+        uom="Kb"
+    total_size=int(total/rate)
+    free_size=int(free/rate)
+    if total_size>0:
+        ratio=int(100*(float(free_size)/float(total_size)))
+    ltot='total_size = %s %s' %(total_size, uom)
+    lfre='free_size = %s %s' %(free_size, uom)
+    lrat='ratio = %s%%' %(ratio)
+    return ((total_size,free_size,ratio),(ltot,lfre,lrat))
+
