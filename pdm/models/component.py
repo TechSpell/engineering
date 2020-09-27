@@ -43,6 +43,12 @@ class plm_component(orm.Model):
         'write_date': fields.datetime('Date Modified', readonly=True),
     }
 
+    @property
+    def _default_rev(self):
+        field = self.pool['product.template']._fields.get('engineering_revision', None)
+        default = field.default('product.template') if not(field == None) else 0
+        return default
+
     #   Internal methods
     def _insertlog(self, cr, uid, ids, changes={}, note={}, context=None):
         newID=False
@@ -158,6 +164,29 @@ class plm_component(orm.Model):
         return {}
 
     ##  External methods
+    @api.model
+    def CleanStructure(self, request=[]):
+        """
+            Cleans relations having sourceID (in mrp.bom.line)
+        """
+        ret=False
+        type = "ebom"
+        bomLType = self.pool['mrp.bom.line']
+        bomType = self.pool['mrp.bom']
+        bl_to_delete = bomLType
+        for parentID, sourceID in request:
+            if not parentID==None:
+                if isWritable(self, parentID):
+                    for bom_id in bomType.search([('type','=',type),('product_id','=',parentID)]):
+                        if not sourceID==None:
+                            for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
+                                bl_to_delete |= bomLine
+                            bl_to_delete.unlink()                       # Cleans mrp.bom.lines
+                        if not bom_id.bom_line_ids:
+                            bom_id.unlink()                             # Cleans void mrp.bom
+                    ret = True
+        return ret                          
+
     def Clone(self, cr, uid, ids, default=None, context=None):
         """
             Creates a new copy of the component
@@ -199,7 +228,7 @@ class plm_component(orm.Model):
                           'name': new_name,
                           'engineering_code': new_name,
                           'description': "{desc}".format(desc=tmpObject.description),
-                          'engineering_revision': 0,
+                          'engineering_revision': self._default_rev,
                           'engineering_writable': True,
                           'state': 'draft',
                           }
@@ -383,19 +412,23 @@ class plm_component(orm.Model):
             part=getCleanBytesDictionary(part)
             hasSaved = True
             existingID=False
+            order = None
             if not('engineering_code' in part):
                 continue
             if part['engineering_code'] in listedParts:
                 continue
 
             if ('engineering_code' in part) and ('engineering_revision' in part):
-                existingIDs = self.search(cr, uid, [
-                      ('engineering_code', '=', part['engineering_code'])
-                    , ('engineering_revision', '=', part['engineering_revision'])], context=context)
+                criteria = [
+                      ('engineering_code', '=', part['engineering_code']),
+                      ('engineering_revision', '=', part['engineering_revision'])
+                    ]
             elif ('engineering_code' in part) and not('engineering_revision' in part):
-                existingIDs = self.search(cr, uid, [
-                    ('engineering_code', '=', part['engineering_code']) ]
-                    , order='engineering_revision', context=context)
+                    criteria = [
+                        ('engineering_code', '=', part['engineering_code'])
+                    ]
+                    order='engineering_revision'
+            existingIDs = self.search(cr, uid,  criteria, order=order, context=context)
             if existingIDs:
                 existingIDs.sort()
                 existingID = existingIDs[len(existingIDs) - 1]
@@ -428,6 +461,7 @@ class plm_component(orm.Model):
             part=getCleanBytesDictionary(part)
             hasSaved = False
             existingID=False
+            order=None
             
             if not ('engineering_code' in part) or (not 'engineering_revision' in part):
                 part['componentID'] = False
@@ -436,19 +470,25 @@ class plm_component(orm.Model):
 
             if not ('name' in part) and (('engineering_code' in part) and part['engineering_code']):
                 part['name'] = part['engineering_code'] 
+
+            if (('name' in part) and not(part['name'])) and (('engineering_code' in part) and part['engineering_code']):
+                part['name'] = part['engineering_code'] 
  
             if part['engineering_code'] in listedParts:
                 continue
 
             if not('componentID' in part) or not(part['componentID']):
                 if ('engineering_code' in part) and ('engineering_revision' in part):
-                    existingIDs = self.search(cr, uid, [
-                          ('engineering_code', '=', part['engineering_code'])
-                        , ('engineering_revision', '=', part['engineering_revision'])], context=context)
+                    criteria = [
+                        ('engineering_code', '=', part['engineering_code']),
+                        ('engineering_revision', '=', part['engineering_revision'])
+                    ]
                 elif ('engineering_code' in part) and not('engineering_revision' in part):
-                    existingIDs = self.search(cr, uid, [
-                        ('engineering_code', '=', part['engineering_code']) ]
-                        , order='engineering_revision', context=context)
+                    criteria = [
+                        ('engineering_code', '=', part['engineering_code']) 
+                    ]
+                    order = 'engineering_revision'
+                existingIDs = self.search(cr, uid, criteria, order=order, context=context)
                 if existingIDs:
                     existingIDs.sort()
                     existingID = existingIDs[len(existingIDs) - 1].id
@@ -884,7 +924,7 @@ class plm_component(orm.Model):
             if (vals.get('engineering_code', False)==False) or (vals['engineering_code'] == ''):
                 vals['engineering_code'] = vals['name']
             if (vals.get('engineering_revision', False)==False):
-                vals['engineering_revision'] = 0
+                vals['engineering_revision'] = self._default_rev
 
             if existingIDs:
                 existingID = existingIDs[len(existingIDs) - 1]
@@ -955,7 +995,7 @@ class plm_component(orm.Model):
                 default.update({
                     'name': new_name,
                     'engineering_code': new_name,
-                    'engineering_revision': 0,
+                    'engineering_revision': self._default_rev,
                 })
                 override=True
     
@@ -979,7 +1019,7 @@ class plm_component(orm.Model):
                     values={
                         'name': new_name,
                         'engineering_code': new_name,
-                        'engineering_revision': 0,
+                        'engineering_revision': self._default_rev,
                         }
                     self.write(cr, uid, [newID], values, context=context)
         else:
