@@ -29,7 +29,7 @@ from odoo  import models, fields, api, _, osv
 from odoo.exceptions import UserError
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                    move_workflow, wf_message_post, isAdministrator, isWritable, isReleased, \
+                    move_workflow, wf_message_post, isVoid, isAdministrator, isWritable, isReleased, \
                     isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
 
 
@@ -935,8 +935,9 @@ class plm_component(models.Model):
                                       order='engineering_revision')
             if (vals.get('engineering_code', False)==False) or (vals['engineering_code'] == ''):
                 vals['engineering_code'] = vals['name']
-            if (vals.get('engineering_revision', False)==False):
-                vals['engineering_revision'] = self._default_rev
+            major = vals.get('engineering_revision', None)
+            major= self._default_rev if isVoid(major) else major
+            vals['engineering_revision'] = major
 
             if existingIDs:
                 existingID = existingIDs[len(existingIDs) - 1]
