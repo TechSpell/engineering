@@ -53,7 +53,7 @@ class report_plm_document(models.AbstractModel):
         return byteString.decode('UTF-8')
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         documents = self.env['plm.document'].browse(docids)
         return {'docs': documents,
                 'get_content': self.render_qweb_pdf}
@@ -94,7 +94,7 @@ class report_document_structure(models.AbstractModel):
         return getLevelObjects(myObject, level+1)
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         return {'docs': self.env['plm.document'].browse(docids),
                 'get_children': self.get_children}
 
@@ -147,7 +147,7 @@ class report_document_where_used(models.AbstractModel):
         return getLevelObjects(myObject, level+1)
 
     @api.model
-    def get_report_values(self, docids, data=None):
+    def _get_report_values(self, docids, data=None):
         return {'docs': self.env['plm.document'].browse(docids),
                 'get_children': self.get_fathers}
 
