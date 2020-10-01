@@ -35,7 +35,7 @@ from odoo.exceptions import UserError
 from odoo.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                        get_signal_workflow, signal_workflow, move_workflow, wf_message_post, \
+                        get_signal_workflow, signal_workflow, isVoid, move_workflow, wf_message_post, \
                         isAdministrator, isIntegratorUser,isObsoleted, isUnderModify, isAnyReleased, isDraft, \
                         isReleased, getUpdTime
 
@@ -1170,12 +1170,12 @@ class plm_document(models.Model):
                     status=vals.get('state','draft')
                     vals.update({'state': status})
 
-                    minor=vals.get('minorrevision',False)
-                    if not minor:
-                        minor=vals['minorrevision']="A"
+                    minor=vals.get('minorrevision', None)
+                    minor="A" if(isVoid(minor)) else minor
+                    vals['minorrevision']=minor
                     major=vals.get('revisionid', None)
-                    if not major:
-                        major=vals['revisionid']=self._default_rev
+                    major=self._default_rev if(isVoid(major)) else major
+                    vals['revisionid']=major
                     
                     objectItem=super(plm_document, self).create(vals)
                     if objectItem:
