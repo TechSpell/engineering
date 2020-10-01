@@ -29,7 +29,7 @@ from openerp.exceptions import ValidationError
 from openerp  import models, fields, api, _, osv
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                    signal_workflow, get_signal_workflow, move_workflow, wf_message_post, \
+                    signal_workflow, get_signal_workflow, isVoid, move_workflow, wf_message_post, \
                     isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isReleased, isDraft, getUpdTime
 
 
@@ -914,8 +914,9 @@ class plm_component(models.Model):
                                       order='engineering_revision')
             if (vals.get('engineering_code', False)==False) or (vals['engineering_code'] == ''):
                 vals['engineering_code'] = vals['name']
-            if (vals.get('engineering_revision', False)==False):
-                vals['engineering_revision'] = self._default_rev
+            major = vals.get('engineering_revision', None)
+            major= self._default_rev if isVoid(major) else major
+            vals['engineering_revision'] = major
 
             if existingIDs:
                 existingID = existingIDs[len(existingIDs) - 1]
