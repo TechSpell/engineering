@@ -27,7 +27,7 @@ from openerp.osv import fields, orm
 from openerp.tools.translate import _
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                    signal_workflow, get_signal_workflow, move_workflow, \
+                    signal_workflow, get_signal_workflow, isVoid, move_workflow, \
                     isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isReleased, isDraft, getUpdTime
 
 
@@ -883,8 +883,9 @@ class plm_component(orm.Model):
                                       context=context)
             if (vals.get('engineering_code', False)==False) or (vals['engineering_code'] == ''):
                 vals['engineering_code'] = vals['name']
-            if (vals.get('engineering_revision', False)==False):
-                vals['engineering_revision'] = self._default_rev
+            major = vals.get('engineering_revision', None)
+            major= self._default_rev if isVoid(major) else major
+            vals['engineering_revision'] = major
 
             if existingIDs:
                 existingID = existingIDs[len(existingIDs) - 1]

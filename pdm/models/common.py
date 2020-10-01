@@ -21,6 +21,8 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
+import re
 import base64
 import pickle
 from array import array
@@ -181,7 +183,46 @@ def move_workflow(entity, cr, uid, ids, signal="", status="", context=None):
         if signal_workflow(entity, cr, uid, ids, signal):
             entity.write(cr, uid, ids, {'state': status}, context=context)
             entity.logging_workflow(cr, uid, ids, signal, status, context=context)
-  
+
+def getString(txtValue="", lower=False, upper=False, capitalize=False):
+    ret=""
+    tmpval=txtValue if not(txtValue==None) else ""
+    if isinstance(txtValue, (str,bytes)):
+        if (isinstance(txtValue, str)):
+            tmpval=txtValue
+        elif (isinstance(txtValue, bytes)):
+            tmpval=txtValue.decode("utf-8", 'ignore')
+        else:
+            tmpval="{value}".format(value=txtValue)
+        ret=tmpval.strip()
+        if lower or upper or capitalize:
+            if lower:
+                ret=ret.lower()
+            elif upper:
+                ret=ret.upper()
+            elif capitalize:
+                ret=ret.capitalize()
+    else:
+        ret="{value}".format(value=tmpval).strip()
+    txtValue=None
+    return ret
+
+def isNotVoid(data2Check):
+    ret = True if not(data2Check == None) else False
+    if not ret:
+        if isinstance(data2Check, str):
+            ret = True if not(data2Check in ["",False]) else False
+        if isinstance(data2Check, bool):
+            ret = True if not(getString(data2Check) in ["True","False"]) else False
+        if isinstance(data2Check, int,float):
+            subsetChars=r'[^0-9\-]'
+            tmpval=re.sub(subsetChars, '', getString(data2Check))
+            ret = True if not(tmpval== "") else False
+    return ret
+
+def isVoid(data2Check):
+    return not( isNotVoid(data2Check))
+
 def isAdministrator(entity, cr, uid, context=None):
     """
         Checks if this user is in PLM Administrator group
