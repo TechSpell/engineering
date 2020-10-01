@@ -33,7 +33,7 @@ from openerp.tools.translate import _
 from openerp.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                        get_signal_workflow, signal_workflow, move_workflow, wf_message_post, \
+                        get_signal_workflow, signal_workflow, isVoid, move_workflow, wf_message_post, \
                         isAdministrator, isIntegratorUser, isAnyReleased, isReleased, isDraft, getUpdTime
 
 # To be adequated to plm.component class states
@@ -1158,12 +1158,12 @@ class plm_document(orm.Model):
                 ret=existingID
             else:
                 try:
-                    minor=vals.get('minorrevision',False)
-                    if not minor:
-                        minor=vals['minorrevision']="A"
+                    minor=vals.get('minorrevision', None)
+                    minor="A" if(isVoid(minor)) else minor
+                    vals['minorrevision']=minor
                     major=vals.get('revisionid', None)
-                    if not major:
-                        major=vals['revisionid']=self._default_rev
+                    major=self._default_rev if(isVoid(major)) else major
+                    vals['revisionid']=major
                     
                     ret=super(plm_document, self).create(cr, uid, vals, context=context)
                     values={
