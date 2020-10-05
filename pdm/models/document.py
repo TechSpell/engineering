@@ -563,7 +563,7 @@ class plm_document(models.Model):
                                 'minorrevision':"A",
                                 'writable': True,
                                 'state': 'draft',
-                                'linkedcomponents': [(5)],  # Clean attached products for new revision object
+                                'linkedcomponents': [],  # Clean attached products for new revision object
                                }
                     tmpID = oldObject.with_context(thisContext).copy(default)
                     if tmpID!=None:
@@ -907,7 +907,7 @@ class plm_document(models.Model):
             Clean document component relations..
         """
         objType = self.env['plm.component.document.rel']
-        objType.CleanStructure(parent_ids=relations)
+        objType.CleanStructure(relations=relations)
 
     def _copy_DocumentBom(self, idStart, idDest=None):
         """
@@ -1283,7 +1283,7 @@ class plm_document(models.Model):
     public = fields.Boolean('Is public document')
  
     # for external access
-    access_token = fields.Char('Access Token', groups="pdm.group_plm_viewuser")
+    access_token = fields.Char('Access Token')
  
     # the field 'datas' is computed and may use the other fields below
     db_datas = fields.Binary('Database Data', attachment=True)
