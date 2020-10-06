@@ -703,17 +703,18 @@ class plm_document(models.Model):
         """
         existingID=False
         if document:
-            order=None
+            order='revisionid, minorrevision'
             criteria=[]
-            if not ('name' in document):
-#               These statements can cover document already saved without document data
-                filename=getFileName(document['full_file_name'])
-                if filename:
-                    document['name']=filename
-                    criteria.append( ('datas_fname', '=', filename) )
-                    order='revisionid, minorrevision'
-#               These statements can cover document already saved without document data
+            fullNamePath='full_file_name'
+            if (fullNamePath in document) and document[fullNamePath]:
+                criteria.append( ('datas_fname', '=', document[fullNamePath]) )
             else:
+                fullNamePath='datas_fname'
+                if (fullNamePath in document) and document[fullNamePath]:
+                    criteria.append( ('datas_fname', '=', document[fullNamePath]) )
+                                    
+#               These statements can cover document already saved without document data
+            if not criteria:
                 if document['name']:
                     criteria.append( ('name', '=', document['name']) )
                     order='revisionid, minorrevision'
