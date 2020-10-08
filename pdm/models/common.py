@@ -233,18 +233,19 @@ def getString(txtValue="", lower=False, upper=False, capitalize=False):
 def isNotVoid(data2Check):
     ret = True if not(data2Check == None) else False
     if not ret:
-        if isinstance(data2Check, str):
-            ret = True if not(data2Check in ["",False]) else False
-        if isinstance(data2Check, bool):
-            ret = True if not(getString(data2Check) in ["True","False"]) else False
-        if isinstance(data2Check, int,float):
-            subsetChars=r'[^0-9\-]'
-            tmpval=re.sub(subsetChars, '', getString(data2Check))
-            ret = True if not(tmpval== "") else False
+        if not(data2Check == None):
+            if isinstance(data2Check, str):
+                ret = True if not(data2Check in ["",False]) else False
+            if isinstance(data2Check, bool):
+                ret = True if (getString(data2Check) in ["True","False"]) else False
+            if isinstance(data2Check, int,float):
+                subsetChars=r'[^0-9\-]'
+                tmpval=re.sub(subsetChars, '', getString(data2Check))
+                ret = True if not(tmpval== "") else False
     return ret
 
 def isVoid(data2Check):
-    return not( isNotVoid(data2Check))
+    return not(isNotVoid(data2Check))
 
 def isAdministrator(entity):
     """
