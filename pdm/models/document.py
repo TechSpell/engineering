@@ -706,31 +706,34 @@ class plm_document(orm.Model):
         return existingID
  
     def _getDocumentID(self, cr, uid, document={}, context=None):
+        """
+            Gets ExistingID from document values.
+        """
 
         existingID=False
         if document:
-            order=None
+            order='revisionid, minorrevision'
             criteria=[]
-            if not ('name' in document):
-#               These statements can cover document already saved without document data
-                filename=getFileName(document['full_file_name'])
-                if filename:
-                    document['name']=filename
-                    criteria.append( ('datas_fname', '=', filename) )
-                    order='revisionid, minorrevision'
-#               These statements can cover document already saved without document data
+            fullNamePath='full_file_name'
+            if (fullNamePath in document) and document[fullNamePath]:
+                criteria.append( ('datas_fname', '=', getFileName(document[fullNamePath])) )
             else:
-                if document['name']:
-                    criteria.append( ('name', '=', document['name']) )
-                    order='revisionid, minorrevision'
+                fullNamePath='datas_fname'
+                if (fullNamePath in document) and document[fullNamePath]:
+                    criteria.append( ('datas_fname', '=', getFileName(document[fullNamePath])) )
+                                    
+#               These statements can cover document already saved without document data
+            if document['name']:
+                criteria.append( ('name', '=', document['name']) )
+                order='revisionid, minorrevision'
 
-                    if ('revisionid' in document) and int(document['revisionid'])>=0:
-                        criteria.append( ('revisionid', '=', document['revisionid']) )
-                        order='minorrevision'
+                if ('revisionid' in document) and int(document['revisionid'])>=0:
+                    criteria.append( ('revisionid', '=', document['revisionid']) )
+                    order='minorrevision'
 
-                    if ('minorrevision' in document) and document['minorrevision']:
-                        criteria.append( ('minorrevision', '=', document['minorrevision']) )
-                        order=None
+                if ('minorrevision' in document) and document['minorrevision']:
+                    criteria.append( ('minorrevision', '=', document['minorrevision']) )
+                    order=None
             if criteria:
                 existingIDs = self.search(cr, uid, criteria, order=order, context=context)
                 if existingIDs:
