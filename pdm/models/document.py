@@ -707,25 +707,24 @@ class plm_document(models.Model):
             criteria=[]
             fullNamePath='full_file_name'
             if (fullNamePath in document) and document[fullNamePath]:
-                criteria.append( ('datas_fname', '=', document[fullNamePath]) )
+                criteria.append( ('datas_fname', '=', getFileName(document[fullNamePath])) )
             else:
                 fullNamePath='datas_fname'
                 if (fullNamePath in document) and document[fullNamePath]:
-                    criteria.append( ('datas_fname', '=', document[fullNamePath]) )
+                    criteria.append( ('datas_fname', '=', getFileName(document[fullNamePath])) )
                                     
 #               These statements can cover document already saved without document data
-            if not criteria:
-                if document['name']:
-                    criteria.append( ('name', '=', document['name']) )
-                    order='revisionid, minorrevision'
+            if document['name']:
+                criteria.append( ('name', '=', document['name']) )
+                order='revisionid, minorrevision'
 
-                    if ('revisionid' in document) and int(document['revisionid'])>=0:
-                        criteria.append( ('revisionid', '=', document['revisionid']) )
-                        order='minorrevision'
+                if ('revisionid' in document) and int(document['revisionid'])>=0:
+                    criteria.append( ('revisionid', '=', document['revisionid']) )
+                    order='minorrevision'
 
-                    if ('minorrevision' in document) and document['minorrevision']:
-                        criteria.append( ('minorrevision', '=', document['minorrevision']) )
-                        order=None
+                if ('minorrevision' in document) and document['minorrevision']:
+                    criteria.append( ('minorrevision', '=', document['minorrevision']) )
+                    order=None
             if criteria:
                 existingIDs = self.search(criteria, order=order)
                 if existingIDs:
