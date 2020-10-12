@@ -982,7 +982,7 @@ class plm_document(models.Model):
             action to be executed after automatic upload
         """
         signal='uploaddoc'
-        move_workflow(self, ids, signal)
+        move_workflow(self, ids, signal,'upload')
         return False
 
     def action_upload(self):
@@ -1044,7 +1044,7 @@ class plm_document(models.Model):
         if self.ischecked_in(ids):
             ret=self._action_onrelateddocuments(ids, default, action, status, checkact=True)
         else:
-            move_workflow(self, ids, 'correct')
+            move_workflow(self, ids, 'correct','draft')
         return ret
 
     def action_release(self):
@@ -1100,18 +1100,18 @@ class plm_document(models.Model):
     def _get_checkout_state(self):
         for doc_id in self:
             chechRes = self.getCheckedOut(doc_id.id, None)
+            self.checkout_user = ''
             if chechRes:
                 self.checkout_user = str(chechRes[2])
-            else:
-                self.checkout_user = ''
+                
         
     def _is_checkout(self):
         for doc_id in self:
             chechRes = self.getCheckedOut(doc_id.id, None)
+            self.is_checkout = False
             if chechRes:
                 self.is_checkout = True
-            else:
-                self.is_checkout = False
+                
     
     #   Overridden methods for this entity
  
@@ -1301,7 +1301,7 @@ class plm_document(models.Model):
     datas           =   fields.Binary   (string='File Content', inverse='_data_set', compute='_data_get', attachment=True)
     printout        =   fields.Binary   (string='Printout Content', help="Print PDF content.", attachment=False)
     preview         =   fields.Binary   (string='Preview Content', help="Static preview.", attachment=False)
-    state           =   fields.Selection(USED_STATES,string='Status', help="The status of the document.", readonly="True", required=True, default='draft')
+    state           =   fields.Selection(USED_STATES,string='Status', help="The status of the document.", readonly="True", default='draft')
     checkout_user   =   fields.Char(string="Checked-Out to", compute=_get_checkout_state)
     is_checkout     =   fields.Boolean(string='Is Checked-Out', compute=_is_checkout, store=False)
     is_integration  =   fields.Boolean(string="Is from integration", default=False)

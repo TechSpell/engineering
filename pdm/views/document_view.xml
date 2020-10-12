@@ -11,15 +11,16 @@
                <header name="WFArea">
 					<button name="action_checkuploadeddoc" states="uploaded" string="Check Upload Document" type="object"  
 						groups="pdm.group_plm_integrationuser"/>
-                 	<button name="action_release" states="confirmed" string="Release Document" type="object" class="oe_highlight"  
-                 		attrs="{'invisible': ['|',('is_checkout','=',True)]}" 
+                 	<button name="action_release" string="Release Document" type="object" class="oe_highlight"  
+                 		attrs="{'invisible': ['|',('is_checkout','=',True), ('state','not in',['confirmed'])]}" 
                  		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser,pdm.group_plm_validationuser" />
-                	<button name="action_correct" states="confirmed" string="Correct Document" type="object" 
+                	<button name="action_correct" string="Correct Document" type="object" 
+                  		attrs="{'invisible': ['|',('is_checkout','=',True), ('state','not in',['confirmed'])]}" 
+               		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser,pdm.group_plm_validationuser" />
+                	<button name="action_confirm" string="Confirm Document" type="object" class="oe_highlight"  
+                 		attrs="{'invisible': ['|',('is_checkout','=',True), ('state','not in',['draft'])]}" 
                 		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser,pdm.group_plm_validationuser" />
-                	<button name="action_confirm" states="draft" string="Confirm Document" type="object" class="oe_highlight"  
-                		attrs="{'invisible': ['|',('is_checkout','=',True)]}" 
-                		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser,pdm.group_plm_validationuser" />
-                	<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' readonly="1"/>
+                	<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
                </header>
                <sheet>
 	               <group colspan="4" col="4" name="DocData">
@@ -33,7 +34,7 @@
 			                    <field name="usedforspare" colspan="2"/>
                    				<field name="is_checkout" invisible="True"/>
                     			<field name="is_integration" invisible="True"/>
-  		                    </group>
+ 		                    </group>
 	                    </group>
 	               	</group>
 	                <notebook col="4" colspan="4">
@@ -60,6 +61,10 @@
 			                        <group string="Changed" colspan="2">
 			                            <field name="write_uid"  readonly="1" />
 			                            <field name="write_date" readonly="1" />
+			                        </group>
+			                        <group string="Checked-Out" colspan="2"
+			                        	attrs="{'invisible': [('is_checkout','=',False)]}">
+			                            <field name="checkout_user"  readonly="1" />
 			                        </group>
 		                        </group>
 	                        </group>
