@@ -27,7 +27,7 @@ from openerp.osv import fields, orm
 from openerp.tools.translate import _
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                    signal_workflow, get_signal_workflow, isVoid, move_workflow, \
+                    isWritable, signal_workflow, get_signal_workflow, isVoid, move_workflow, \
                     isAdministrator, isObsoleted, isUnderModify, isAnyReleased, isReleased, isDraft, getUpdTime
 
 
@@ -138,7 +138,7 @@ class plm_component(orm.Model):
 
     ##  External methods
     @api.model
-    def CleanStructure(self, request=[]):
+    def CleanStructure(self, cr, uid, request=[], context=None):
         """
             Cleans relations having sourceID (in mrp.bom.line)
         """
@@ -149,7 +149,7 @@ class plm_component(orm.Model):
         bl_to_delete = bomLType
         for parentID, sourceID in request:
             if not parentID==None:
-                if isWritable(self, parentID):
+                if isWritable(self, cr, uid, parentID, context=context):
                     for bom_id in bomType.search([('type','=',type),('product_id','=',parentID)]):
                         if not sourceID==None:
                             for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
