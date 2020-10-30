@@ -40,11 +40,12 @@
         	                                attrs="{'invisible':[('datas_fname','not in',[False,''])]}"
 			                            	groups="pdm.group_plm_admin,pdm.group_plm_integrationuser" />
 			                            <field name="datas_fname" select="1"/>
+			                            <field name="file_size_mb" />
 			                        </group>
 			                        <group colspan="2" attrs="{'invisible':[('type','=','binary')]}">
 			                            <field name="url" widget="url"/>
 			                        </group>
-			                        <field name="type"/>
+			                        <field name="type" invisible="True"/>
 		                        </group>
 		                        <group col="2" colspan="2" name="DocUser">
 			                        <group string="Created" colspan="2">
@@ -54,6 +55,10 @@
 			                        <group string="Changed" colspan="2">
 			                            <field name="write_uid"  readonly="1" />
 			                            <field name="write_date" readonly="1" />
+			                        </group>
+			                        <group string="Checked-Out" colspan="2"
+			                        	attrs="{'invisible': [('is_checkout','=',False)]}">
+			                            <field name="checkout_user"  readonly="1" />
 			                        </group>
 		                        </group>
 	                        </group>
