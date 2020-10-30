@@ -70,24 +70,29 @@ def getUpdTime(obj):
         return datetime.strptime(obj.create_date,'%Y-%m-%d %H:%M:%S')
 
 def streamPDF(bytesString=""):
-    ret=""
     if isinstance(bytesString, Binary):
-        ret=base64.b64encode(bytesString.data)
+        dump = bytesString.data
     else:
-        ret=base64.b64encode(bytesString)
-    return ret
+        dump = bytesString
+    return base64.b64encode(dump)
 
 def unpackDictionary(bytesString=""):
     ret={}
     if isinstance(bytesString, Binary):
-        ret=pickle.loads(base64.b64decode(bytesString.data))
+        dump = bytesString.data
     else:
-        ret=pickle.loads(base64.b64decode(bytesString))
+        dump = bytesString
+    tmp=base64.b64decode(dump)
+    if isinstance(tmp, bytes):
+        ret=pickle.loads(tmp, encoding="bytes")
+    elif isinstance(tmp, str):
+        ret=pickle.loads(tmp)
     return ret
 
 def packDictionary(thisDict={}):
     # Serialization and encryption of dictionaries readable from Python 2.3 and above.
-    return base64.b64encode(pickle.dumps(thisDict,2))
+    dump = pickle.dumps(thisDict,2)
+    return base64.b64encode(dump)
 
 def getListedDatas(item):
     results=[]

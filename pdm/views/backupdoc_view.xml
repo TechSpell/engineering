@@ -22,6 +22,7 @@
 	                    <field name="userid" readonly="True"/>
 	                	<field name="state" select="1"/>
 	                	<field name="existingfile" select="1"/>
+	                	<field name="file_size_mb" select="1"/>
 	                </group>
 	                <newline/>
 	                <separator colspan="4" string="Preview"/>
@@ -132,7 +133,6 @@
         key2="client_action_multi"
         groups="pdm.group_plm_admin"
         id="act_restore_document"/>
- 
         
 </data>
 </openerp>
