@@ -46,6 +46,7 @@
         	                                attrs="{'invisible':['|',('datas_fname','not in',[False,'']),('is_integration','in',[True,1])]}"
 			                            	groups="pdm.group_plm_admin,pdm.group_plm_integrationuser" />
 			                            <field name="datas_fname" select="1"/>
+			                            <field name="file_size_mb" />
 			                        </group>
 			                        <group colspan="2" attrs="{'invisible':[('type','=','binary')]}">
 			                            <field name="url" widget="url"/>

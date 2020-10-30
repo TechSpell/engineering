@@ -777,7 +777,6 @@ class plm_document(models.Model):
                         hasSaved = True
                         hasCheckedOut = True                        # Managed as SolidEdge cfg files.
 
-
             retValues[getFileName(document[fullNamePath])]={
                         'hasCheckedOut':hasCheckedOut,
                         'documentID':existingID,
@@ -1101,6 +1100,10 @@ class plm_document(models.Model):
         self.logging_workflow(ids, action, status)
         return self.browse(ids).with_context({'internal_writing':True}).write(default)
 
+    def _get_filesize(self):
+        for doc_id in self:
+            doc_id.file_size_mb = float(doc_id.file_size) / (1024.0 * 1024.0)
+
     @api.one
     def _get_checkout_state(self):
         chechRes = self.getCheckedOut(self.id, None)
@@ -1273,6 +1276,8 @@ class plm_document(models.Model):
                 if item:
                     ret=ret | item
         return ret
+
+    file_size_mb = fields.Float('File Size [Mb]', readonly=True, compute=_get_filesize)
 
     usedforspare    =   fields.Boolean  (string='Used for Spare',help="Drawings marked here will be used printing Spare Part Manual report.", default=False)
     usedformftg     =   fields.Boolean  (string='Used for Manufacturing',help="Drawings marked here will be used as skecthes for manufacturing on worksheets.", default=False)
@@ -1815,6 +1820,7 @@ class plm_backupdoc(models.Model):
     revisionid      =   fields.Integer  (related="documentid.revisionid",string="Revision",store=False)
     minorrevision   =   fields.Char     ('Minor Revision',store=False)
     state           =   fields.Selection(related="documentid.state",string="Status",store=False)
+    file_size_mb    =   fields.Float    (related="documentid.file_size_mb",string="File Size [Mb]",store=False)
     printout        =   fields.Binary   ('Printout Content')
     preview         =   fields.Binary   ('Preview Content')
 
