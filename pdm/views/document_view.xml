@@ -40,6 +40,7 @@
 		                        <group col="2" colspan="2" attrs="{'invisible':[('type','=','url')]}">
 		                            <field name="datas" filename="datas_fname" groups="pdm.group_plm_admin,pdm.group_plm_integrationuser" />
 		                            <field name="datas_fname" select="1"/>
+					                <field name="file_size_mb" />
 		                        </group>
 		                        <group col="2" colspan="2">
 		                            <field name="url" widget="url" attrs="{'invisible':[('type','=','binary')]}"/>
@@ -57,6 +58,11 @@
 		                        </group>
 	                        </group>
                            	<separator/>
+			                <group string="Checked-Out" colspan="2"
+			                    attrs="{'invisible': [('is_checkout','=',False)]}">
+			                    <field name="checkout_user"  readonly="1" />
+                           	    <separator/>
+			                </group>
                         </group>
 	                    <separator string="Preview Area" colspan="2"/>
 	                    <sheet>

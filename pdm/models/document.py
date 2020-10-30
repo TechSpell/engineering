@@ -33,7 +33,7 @@ from openerp.tools.translate import _
 from openerp.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
-                        get_signal_workflow, signal_workflow, isVoid, move_workflow, wf_message_post, \
+                        isWritable, get_signal_workflow, signal_workflow, isVoid, move_workflow, wf_message_post, \
                         isAdministrator, isIntegratorUser, isAnyReleased, isReleased, isDraft, getUpdTime
 
 # To be adequated to plm.component class states
@@ -1245,6 +1245,13 @@ class plm_document(orm.Model):
                     ret=ret | item
         return ret
 
+    def _get_filesize(self, cr, uid, ids, field_name, args, context={}):
+        outVal = {}  # {id:value}
+        context = context or self.pool['res.users'].context_get(cr, uid)
+        for doc_id in self.browse(cr, uid, getListIDs(ids), context=context):
+            outVal[doc_id.id] =float(doc_id.file_size) / (1024.0 * 1024.0)
+        return outVal
+
     def _get_checkout_state(self, cr, uid, ids, field_name, args, context={}):
         outVal = {}  # {id:value}
         context = context or self.pool['res.users'].context_get(cr, uid)
@@ -1267,6 +1274,7 @@ class plm_document(orm.Model):
         return outRes
 
     _columns = {
+        'file_size_mb': fields.function(_get_filesize, type="float", string='File Size [Mb]'),
         'usedforspare': fields.boolean('Used for Spare',
                                        help="Drawings marked here will be used printing Spare Part Manual report."),
         'revisionid': fields.integer('Revision Index', required=True),
@@ -1719,11 +1727,11 @@ class plm_document_relation(orm.Model):
             cleanIds = []
             for relation in relations:
                 res['parent_id'], res['child_id'], res['configuration'], res['link_kind'] = relation
-                if isWritable(self.env['plm.document'], res['parent_id']):
+                if isWritable(self.env['plm.document'], cr, uid, res['parent_id'], context=context):
                     if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
                         criteria = [('child_id', '=', res['child_id'])]
-                        else:
-                            criteria = [('parent_id', '=', res['parent_id'])]
+                    else:
+                        criteria = [('parent_id', '=', res['parent_id'])]
                         cleanIds.extend(self.search(cr, uid, criteria, context=context))
             self.unlink(cr, uid, getCleanList(cleanIds), context=context)
 
@@ -1738,7 +1746,7 @@ class plm_document_relation(orm.Model):
                 if (res['parent_id'] != None) and (res['child_id'] != None):
                     if (len(str(res['parent_id'])) > 0) and (len(str(res['child_id'])) > 0):
                         if not ((res['parent_id'], res['child_id']) in savedItems):
-                            if isWritable(self.env['plm.document'], res['parent_id']):
+                            if isWritable(self.env['plm.document'], cr, uid, res['parent_id'], context=context):
                                 savedItems.append((res['parent_id'], res['child_id']))
                                 self.create(cr, uid, res, context=context)
                 else:
@@ -1833,6 +1841,8 @@ class plm_backupdoc(orm.Model):
                                      string="Minor Revision", store=False),
         'state': fields.related('documentid', 'state', type="char", relation="plm.document", string="Status",
                                 store=False),
+        'file_size_mb': fields.related('documentid', 'file_size_mb', type="float", relation="plm.document",
+                                     string="File size [Mb]", store=False),
         'printout': fields.binary('Printout Content'),
         'preview': fields.binary('Preview Content'),
     }
