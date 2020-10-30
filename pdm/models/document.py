@@ -1097,7 +1097,11 @@ class plm_document(models.Model):
         self.logging_workflow(ids, action, status)
         return self.browse(ids).with_context({'internal_writing':True}).write(default)
 
-    def _get_checkout_state(self):
+    def _get_filesize(self):
+        for doc_id in self:
+            doc_id.file_size_mb = float(doc_id.file_size) / (1024.0 * 1024.0)
+
+    def _get_checkout_name(self):
         for doc_id in self:
             chechRes = self.getCheckedOut(doc_id.id, None)
             self.checkout_user = ''
@@ -1289,6 +1293,7 @@ class plm_document(models.Model):
     db_datas = fields.Binary('Database Data', attachment=True)
     store_fname = fields.Char('Stored Filename')
     file_size = fields.Integer('File Size', readonly=True)
+    file_size_mb = fields.Float('File Size [Mb]', readonly=True, compute=_get_filesize)
     checksum = fields.Char("Checksum/SHA1", size=40, index=True, readonly=True)
     mimetype = fields.Char('Mime Type', readonly=True)
     index_content = fields.Text('Indexed Content', readonly=True, prefetch=False)
@@ -1302,7 +1307,7 @@ class plm_document(models.Model):
     printout        =   fields.Binary   (string='Printout Content', help="Print PDF content.", attachment=False)
     preview         =   fields.Binary   (string='Preview Content', help="Static preview.", attachment=False)
     state           =   fields.Selection(USED_STATES,string='Status', help="The status of the document.", readonly="True", default='draft')
-    checkout_user   =   fields.Char(string="Checked-Out to", compute=_get_checkout_state)
+    checkout_user   =   fields.Char(string="Checked-Out to", compute=_get_checkout_name)
     is_checkout     =   fields.Boolean(string='Is Checked-Out', compute=_is_checkout, store=False)
     is_integration  =   fields.Boolean(string="Is from integration", default=False)
     datas_fname     =   fields.Char('Filename', help="Stored filename.")
@@ -1575,7 +1580,7 @@ class plm_document(models.Model):
     def getCheckedOut(self, oid, default=None):
         
         for objDoc in self.env['plm.checkout'].search([('documentid', '=', oid)]):
-            return (objDoc.documentid.name, objDoc.documentid.revisionid, self.getUserSign(objDoc.userid.id),
+            return (objDoc.documentid.name, objDoc.documentid.revisionid, objDoc.userid.name,
                     objDoc.hostname)
         return False
 
@@ -1833,6 +1838,7 @@ class plm_backupdoc(models.Model):
     revisionid      =   fields.Integer  (related="documentid.revisionid",string="Revision",store=False)
     minorrevision   =   fields.Char     ('Minor Revision',store=False)
     state           =   fields.Selection(related="documentid.state",string="Status",store=False)
+    file_size_mb    =   fields.Float    (related="documentid.file_size_mb",string="File Size [Mb]",store=False)
     printout        =   fields.Binary   ('Printout Content', attachment=False)
     preview         =   fields.Binary   ('Preview Content', attachment=False)
 
