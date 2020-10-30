@@ -75,20 +75,19 @@ def getUpdTime(obj):
         return obj.create_date
 
 def streamPDF(bytesString=""):
-    ret=""
     if isinstance(bytesString, Binary):
-        ret=base64.b64encode(bytesString.data)
+        dump = bytesString.data
     else:
-        ret=base64.b64encode(bytesString)
-    return ret
+        dump = bytesString
+    return base64.b64encode(dump)
 
 def unpackDictionary(bytesString=""):
     ret={}
-    tmp=None
     if isinstance(bytesString, Binary):
-        tmp=base64.b64decode(bytesString.data)
+        dump = bytesString.data
     else:
-        tmp=base64.b64decode(bytesString)
+        dump = bytesString
+    tmp=base64.b64decode(dump)
     if isinstance(tmp, bytes):
         ret=pickle.loads(tmp, encoding="bytes")
     elif isinstance(tmp, str):
@@ -97,7 +96,8 @@ def unpackDictionary(bytesString=""):
 
 def packDictionary(thisDict={}):
     # Serialization and encryption of dictionaries readable from Python 2.3 and above.
-    return base64.b64encode(pickle.dumps(thisDict,2))
+    dump = pickle.dumps(thisDict,2)
+    return base64.b64encode(dump)
 
 def getListedDatas(item):
     results=[]
@@ -237,7 +237,7 @@ def isNotVoid(data2Check):
             if isinstance(data2Check, str):
                 ret = True if not(data2Check in ["",False]) else False
             if isinstance(data2Check, bool):
-                ret = True if not(getString(data2Check) in ["True","False"]) else False
+                ret = True if (getString(data2Check) in ["True","False"]) else False
             if isinstance(data2Check, int,float):
                 subsetChars=r'[^0-9\-]'
                 tmpval=re.sub(subsetChars, '', getString(data2Check))
@@ -245,7 +245,7 @@ def isNotVoid(data2Check):
     return ret
 
 def isVoid(data2Check):
-    return not( isNotVoid(data2Check))
+    return not(isNotVoid(data2Check))
 
 def isAdministrator(entity):
     """
