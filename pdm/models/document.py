@@ -777,7 +777,6 @@ class plm_document(models.Model):
                         hasSaved = True
                         hasCheckedOut = True                        # Managed as SolidEdge cfg files.
 
-
             retValues[getFileName(document[fullNamePath])]={
                         'hasCheckedOut':hasCheckedOut,
                         'documentID':existingID,
@@ -1574,6 +1573,7 @@ class plm_checkout(models.Model):
     hostname    = fields.Char     (                string='Hostname',         size=64)
     hostpws     = fields.Char     (                string='PWS Directory',    size=1024)
     documentid  = fields.Many2one ('plm.document', string='Related Document', index=True, ondelete='cascade')
+    preview     = fields.Binary   (related="documentid.preview",string='Preview Content',store=False)
 
     _sql_constraints = [
         ('documentid', 'unique (documentid)', 'The documentid must be unique !')
