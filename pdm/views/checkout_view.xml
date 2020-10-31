@@ -74,14 +74,30 @@
         <field name="priority" eval="1"/>
         <field name="type">form</field>
         <field name="arch" type="xml">
-            <form string="Checked-Out Document">
-                <group>
-                    <field name="userid" select="1" />
-                    <field name="hostname" select="1"/>
-                    <field name="hostpws" select="1" />
-                    <field name="documentid" select="1" />
-                    <field name="create_date" select="1" />
-                </group>
+            <form string="Checked-Out Document" create="false" edit="false">
+	            <sheet>
+	                <group col="4" colspan="4">
+		                <group col="2" colspan="2">
+	                    	<separator string="Check-Out Data" colspan="2"/>
+	                    	<separator  colspan="2"/>
+		                    <field name="userid" select="1" />
+		                    <field name="hostname" select="1"/>
+		                    <field name="hostpws" select="1" />
+		                    <field name="documentid" select="1" />
+		                    <field name="create_date" select="1" />
+		                </group>
+		                <group col="2" colspan="2">
+		                    <field
+		                        name="preview"
+		                        widget="image"
+		                        readonly="1"
+		                        nolabel="1"
+		                        colspan="2"
+		                        img_height="400"
+		                        img_width="800"/>
+		                </group>
+	                </group>
+                </sheet>
             </form>
         </field>
     </record>
