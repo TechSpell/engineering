@@ -1580,6 +1580,8 @@ class plm_checkout(orm.Model):
         'hostname': fields.char('Hostname', size=64),
         'hostpws': fields.char('PWS Directory', size=1024),
         'documentid': fields.many2one('plm.document', 'Related Document', ondelete='cascade'),
+        'preview': fields.related('documentid', 'preview', type="binary", relation="plm.document",
+                                     string="Preview Content", store=False),
     }
 
     _sql_constraints = [
