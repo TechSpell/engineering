@@ -24,7 +24,7 @@
 		 					<group colspan="2" col="2">
 			                    <field name="name" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
 			                    <field name="revisionid" readonly="True" colspan="2"/>
-			                    <newline/>
+			                    <field name="minorrevision" readonly="True" colspan="2"/>
 		                    </group>
 		                    <group col="2" colspan="2">
 								<separator string="Spare Part" colspan="2"/>
