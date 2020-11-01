@@ -1819,7 +1819,7 @@ class plm_backupdoc(models.Model):
     existingfile    =   fields.Char     ('Physical Document Location',size=1024)
     documentid      =   fields.Many2one ('plm.document', 'Related Document', index=True, ondelete='cascade')
     revisionid      =   fields.Integer  (related="documentid.revisionid",string="Revision",store=False)
-    minorrevision   =   fields.Char     ('Minor Revision',store=False)
+    minorrevision   =   fields.Char     (related="documentid.minorrevision",string='Minor Revision',store=False)
     state           =   fields.Selection(related="documentid.state",string="Status",store=False)
     file_size_mb    =   fields.Float    (related="documentid.file_size_mb",string="File Size [Mb]",store=False)
     printout        =   fields.Binary   ('Printout Content')
