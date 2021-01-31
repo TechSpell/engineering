@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<odoo>
+    <data>
+
+        <report id="report_pdm_checkout_pdf"
+                string="Print Drawings Pdf"
+                model="plm.checkout"
+                name="pdm.checkout_pdf"
+                report_type="qweb-html"
+                file=""
+                />
+
+    </data>
+</odoo>
