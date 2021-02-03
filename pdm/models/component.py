@@ -167,14 +167,16 @@ class plm_component(models.Model):
         type = "ebom"
         bomLType = self.env['mrp.bom.line']
         bomType = self.env['mrp.bom']
+        docType=self.env['plm.document']
         bl_to_delete = bomLType
         for parentID, sourceID in request:
             if not parentID==None:
                 if isWritable(self, parentID):
                     for bom_id in bomType.search([('type','=',type),('product_id','=',parentID)]):
                         if not sourceID==None:
-                            for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
-                                bl_to_delete |= bomLine
+                            if docType.IsCheckedOutForMe(sourceID):
+                                for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
+                                    bl_to_delete |= bomLine
                             bl_to_delete.unlink()                       # Cleans mrp.bom.lines
                         if not bom_id.bom_line_ids:
                             bom_id.unlink()                             # Cleans void mrp.bom
