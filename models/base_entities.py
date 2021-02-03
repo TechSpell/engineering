@@ -488,6 +488,7 @@ class plm_relation(models.Model):
         listedParent=[]
         bomLType=self.env['mrp.bom.line']
         modelFields=self.env['plm.config.settings'].GetFieldsModel(bomLType._name)
+        docType=self.env['plm.document']
 
         def cleanStructure(parentID=None, sourceID=None):
             """
@@ -498,8 +499,9 @@ class plm_relation(models.Model):
                 if isWritable(self.env['product.product'], parentID):
                     for bom_id in self.search([('type','=','ebom'),('product_id','=',parentID)]):
                         if not sourceID==None:
-                            for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
-                                bl_to_delete |= bomLine
+                            if docType.IsCheckedOutForMe(sourceID):
+                                for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
+                                    bl_to_delete |= bomLine
                             bl_to_delete.unlink()                        # Cleans mrp.bom.lines
                         if not bom_id.bom_line_ids:
                             bom_id.unlink()                              # Cleans void mrp.bom
@@ -576,6 +578,7 @@ class plm_relation(models.Model):
             ret=False
             if bomID and partID:
                 try:
+                    flag = True
                     res={
                          'type': kindBom,
                          'product_id': partID,
@@ -583,17 +586,19 @@ class plm_relation(models.Model):
                          }
                     if sourceID:
                         res.update({'source_id': sourceID})
+                        flag = docType.IsCheckedOutForMe(sourceID)
  
-                    if args!=None and isinstance(args, dict):
-                        for arg in args.keys():
-                            if arg in modelFields:
-                                res.update({arg : args[arg]})
-                    if ('product_qty' in res):
-                        if isinstance(res['product_qty'], float) and (res['product_qty']<1e-6):
-                            res.update({'product_qty': 1.0})
-                    objectItem=bomLType.with_context({'internal_writing':True,'internal_process':True}).create(res)
-                    if objectItem:
-                        ret=objectItem
+                    if flag:
+                        if args!=None and isinstance(args, dict):
+                            for arg in args.keys():
+                                if arg in modelFields:
+                                    res.update({arg : args[arg]})
+                        if ('product_qty' in res):
+                            if isinstance(res['product_qty'], float) and (res['product_qty']<1e-6):
+                                res.update({'product_qty': 1.0})
+                        objectItem=bomLType.with_context({'internal_writing':True,'internal_process':True}).create(res)
+                        if objectItem:
+                            ret=objectItem
                 except Exception as msg:
                     logging.error("[saveChild] :  Unable to create a relation for part '{name}' with source ({src})."\
                                   .format(name=name, src=sourceID))

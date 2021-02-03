@@ -779,7 +779,6 @@ class plm_document(models.Model):
                         hasSaved = True
                         hasCheckedOut = True                        # Managed as SolidEdge cfg files.
 
-
             retValues[getFileName(document[fullNamePath])]={
                         'hasCheckedOut':hasCheckedOut,
                         'documentID':existingID,
@@ -901,6 +900,13 @@ class plm_document(models.Model):
             if 'datas' in tmpData:
                 expData = tmpData['datas']
         return expData
+
+    @api.model
+    def IsCheckedOutForMe(self, oid=None):
+        """
+            Get if given document (or its latest revision) is checked-out for the requesting user
+        """
+        return self._is_checkedout_for_me(oid)
 
     def _cleanComponentLinks(self, relations=[]):
         """
