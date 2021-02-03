@@ -43,9 +43,11 @@
 		                		<group col="2" colspan="2" name="FileData">
 			                        <group colspan="2" attrs="{'invisible':[('type','=','url')]}">
 			                            <field name="datas" filename="datas_fname" 
-        	                                attrs="{'invisible':['|',('datas_fname','not in',[False,'']),('is_integration','in',[True,1])]}"
+        	                                attrs="{'invisible':[('datas_fname','not in',[False,'']),('is_integration','in',[True,1])],
+        	                                		'readonly':['|',('state','!=','draft'),('is_integration','in',[True,1])]}"
 			                            	groups="pdm.group_plm_admin,pdm.group_plm_integrationuser" />
-			                            <field name="datas_fname" select="1"/>
+			                            <field name="datas_fname" select="1" 
+			                            attrs="{'readonly':['|',('state','!=','draft'),('is_integration','in',[True,1])]}"/>
 			                            <field name="file_size_mb" />
 			                        </group>
 			                        <group colspan="2" attrs="{'invisible':[('type','=','binary')]}">
@@ -284,7 +286,6 @@
 
 
 <!-- New Revision configuration -->
-
 
     <record id="plm_document_newrevision" model="ir.ui.view">
         <field name="name">plm.document.new_revision</field>

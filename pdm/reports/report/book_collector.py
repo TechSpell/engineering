@@ -182,17 +182,16 @@ class BookCollector(object):
     def addPage(self, streamBuffer, status=""):
         if streamBuffer.getbuffer().nbytes>1:
             mainPage=PdfFileReader(streamBuffer)
-            mainPage.strict = False
             for i in range(0,mainPage.getNumPages()):
+                ipage = mainPage.getPage(i)
                 if self.jumpFirst:
-                    self.collector.addPage(mainPage.getPage(i))
                     self.jumpFirst=False
                 else:
-                    numberPagerBuffer=self.getNextPageNumber(mainPage.getPage(i).mediaBox, status)
-                    numberPageReader=PdfFileReader(numberPagerBuffer) 
-                    numberPageReader.strict = False 
-                    mainPage.getPage(i).mergePage(numberPageReader.getPage(0))
-                    self.collector.addPage(mainPage.getPage(i))
+                    numberPagerBuffer=self.getNextPageNumber(ipage.mediaBox, status)
+                    numberPageReader=PdfFileReader(numberPagerBuffer)
+                    page0 = numberPageReader.getPage(0)
+                    mainPage.getPage(i).mergePage(page0)
+                self.collector.addPage(ipage)
     
     def printToFile(self,fileName):  
         outputStream = open(fileName, "wb")

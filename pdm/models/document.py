@@ -898,6 +898,13 @@ class plm_document(models.Model):
                 expData = tmpData['datas']
         return expData
 
+    @api.model
+    def IsCheckedOutForMe(self, oid=None):
+        """
+            Get if given document (or its latest revision) is checked-out for the requesting user
+        """
+        return self._is_checkedout_for_me(oid)
+
     def _cleanComponentLinks(self, relations=[]):
         """
             Clean document component relations..
