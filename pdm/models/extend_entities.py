@@ -303,3 +303,45 @@ class plm_document_relation(models.Model):
     child_line_ids      =   fields.One2many ("plm.document.relation", compute=_get_children_lines,   string="Documents related as children", store=False)
     father_line_ids     =   fields.Many2many('plm.document.relation', compute=_get_fathers_lines,    string="Documents related as fathers",  store=False)
 
+
+class plm_check_product(osv.osv.osv_memory):
+    _name = "plm.check.product"
+    _description = "Products to be checked"
+    
+    temp_id         =   fields.Many2one ('plm.temporary',   index=True,             string=_('Workflow Check'), ondelete='cascade')
+    part_id         =   fields.Many2one ('product.product', index=True,             string=_('Part'),           ondelete='cascade')
+    name            =   fields.Char     (related="part_id.name",                    string=_("Product"),        store=False)
+    revision        =   fields.Integer  (related="part_id.engineering_revision",    string=_("Revision"),       store=False)
+    status          =   fields.Selection(related="part_id.state",                   string=_("Status"),         store=False)
+    description     =   fields.Text     (related="part_id.description",             string=_("Description"),    store=False)
+    reason          =   fields.Char     (string=_("Notes"),                                                                )
+    level           =   fields.Integer  (string=_("Level"),                                                                )
+    choice          =   fields.Boolean  (string=_("Choice"),                                                               )
+    discharge       =   fields.Boolean  (string=_("Discharge"),                     default=False                          )
+    notallowalble   =   fields.Boolean  (string=_("Not Allowalble"),                default=False                          )
+
+
+class plm_check_document(osv.osv.osv_memory):
+    _name = "plm.check.document"
+    _description = "Documents to be checked"
+    
+    temp_id         =   fields.Many2one ('plm.temporary',   index=True,         string=_('Workflow Check'),     ondelete='cascade')
+    docu_id         =   fields.Many2one ('plm.document',    index=True,         string=_('Document'),           ondelete='cascade')
+    name            =   fields.Char     (related="docu_id.name",                string=_("Document"),           store=False)
+    revision        =   fields.Integer  (related="docu_id.revisionid",          string=_("Revision"),           store=False)
+    minor           =   fields.Char     (related="docu_id.minorrevision",       string=_("Minor Revision"),     store=False)
+    status          =   fields.Selection(related="docu_id.state",               string=_("Status"),             store=False)
+    description     =   fields.Text     (related="docu_id.description",         string=_("Description"),        store=False)
+    reason          =   fields.Char     (string=_("Notes"),                                                                )
+    level           =   fields.Integer  (string=_("Level"),                                                                )
+    choice          =   fields.Boolean  (string=_("Choice"),                                                               )
+    discharge       =   fields.Boolean  (string=_("Discharge"),                 default=False                              )
+    notallowalble   =   fields.Boolean  (string=_("Not Allowalble"),            default=False                              )
+
+
+class plm_temporary(osv.osv.osv_memory):
+    _inherit = "plm.temporary"
+
+    part_ids        =   fields.One2many ('plm.check.product',  'temp_id', index=True, string=_('Products to be checked')   )
+    docu_ids        =   fields.One2many ('plm.check.document', 'temp_id', index=True, string=_('Documents to be checked')  )
+    executed        =   fields.Boolean  (string=_("Executed"),            default=False                                    )

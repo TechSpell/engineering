@@ -138,7 +138,7 @@ class ReportBomStructure(models.AbstractModel):
                     lines += (get_sub_lines(line.child_bom_id, line.product_id, bom_line['prod_qty'], line, level + 1))
             if data['operations']:
                 lines.append({
-                    'name': _('Operations'),
+                    'name': _("Operations"),
 ### INJECTED DATA
                     'revi': "",
                     'desc': "",
@@ -146,7 +146,7 @@ class ReportBomStructure(models.AbstractModel):
 ### INJECTED DATA
                     'type': 'operation',
                     'quantity': data['operations_time'],
-                    'uom': _('minutes'),
+                    'uom': _("minutes"),
                     'bom_cost': data['operations_cost'],
                     'level': level,
                 })
@@ -161,7 +161,7 @@ class ReportBomStructure(models.AbstractModel):
 ### INJECTED DATA
                             'type': 'operation',
                             'quantity': operation['duration_expected'],
-                            'uom': _('minutes'),
+                            'uom': _("minutes"),
                             'bom_cost': operation['total'],
                             'level': level + 1,
                         })
