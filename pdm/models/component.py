@@ -137,7 +137,6 @@ class plm_component(orm.Model):
         return {}
 
     ##  External methods
-    @api.model
     def CleanStructure(self, cr, uid, request=[], context=None):
         """
             Cleans relations having sourceID (in mrp.bom.line)
