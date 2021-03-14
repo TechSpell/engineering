@@ -75,6 +75,7 @@ Supported Editors :
              'security/ir.model.access.csv',
              'views/component_view.xml',
              'views/checkout_view.xml',
+             'views/check_workflow.xml',
              'views/backupdoc_view.xml',
              'views/logging.xml',
              'views/board_view.xml',
@@ -105,6 +106,7 @@ Supported Editors :
              'reports/report/bom_structure.xml',
              'reports/report/document_structure_templates.xml',
              'reports/mrp_report_structure.xml',
+             'data/scheduled_action.xml',
        ],
     'demo': [
         ],

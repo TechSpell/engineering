@@ -25,21 +25,9 @@
 import os
 from odoo import models, fields, api, _, osv
 
-from .common import ORIBOMTYPES, BOMTYPES
+from .common import ORIBOMTYPES, BOMTYPES, moduleName
 
-def _moduleName():
-    path = os.path.dirname(__file__)
-    return os.path.basename(os.path.dirname(path))
-openerpModule=_moduleName()
-
-def _modulePath():
-    return os.path.dirname(__file__)
-openerpModulePath=_modulePath()
-
-def _customPath():
-    return os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'custom'),'report')
-customModulePath=_customPath()
-
+openerpModule=moduleName()
 
 BOM_SHOW_FIELDS=['Position','Code','Description','Quantity']
 

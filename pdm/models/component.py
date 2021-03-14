@@ -715,10 +715,17 @@ class plm_component(models.Model):
         """
             Action to be executed for Uploaded state
         """
-        
+        options=self.env['plm.config.settings'].GetOptions()
         status = 'uploaded'
         action = 'upload'
-        ids=self._ids
+        default = {
+                   'state': status,
+                   'engineering_writable': False,
+                   }
+        doc_default = {
+                   'state': status,
+                   'writable': False,
+                   }
         operationParams = {
                             'status': status,
                             'statusName': _('Uploaded'),
@@ -726,21 +733,31 @@ class plm_component(models.Model):
                             'docaction': 'uploaddoc',
                             'excludeStatuses': ['uploaded', 'confirmed', 'transmitted','released', 'undermodify', 'obsoleted'],
                             'includeStatuses': ['draft'],
+                            'default': default,
+                            'doc_default': doc_default,
                             }
-        default = {
-                   'state': status,
-                   'engineering_writable': False,
-                   }
-        self.logging_workflow(ids, action, status)
-        return self._action_to_perform(ids, operationParams, default)
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            ids=self._ids
+            self.logging_workflow(ids, action, status)
+            return self._action_to_perform(ids, operationParams, default)
 
     def action_draft(self):
         """
             Action to be executed for Draft state
         """
+        options=self.env['plm.config.settings'].GetOptions()
         status = 'draft'
         action = 'draft'
-        ids=self._ids
+        default = {
+                   'state': status,
+                   'engineering_writable': True,
+                   }
+        doc_default = {
+                   'state': status,
+                   'writable': True,
+                   }
         operationParams = {
                             'status': status,
                             'statusName': _('Draft'),
@@ -748,22 +765,31 @@ class plm_component(models.Model):
                             'docaction': 'draft',
                             'excludeStatuses': ['draft', 'released', 'undermodify', 'obsoleted'],
                             'includeStatuses': ['confirmed', 'uploaded', 'transmitted'],
+                            'default': default,
+                            'doc_default': doc_default,
                             }
-        default = {
-                   'state': status,
-                   'engineering_writable': True,
-                   }
-        self.logging_workflow(ids, action, status)
-        return self._action_to_perform(ids, operationParams, default)
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            ids=self._ids
+            self.logging_workflow(ids, action, status)
+            return self._action_to_perform(ids, operationParams, default)
 
     def action_confirm(self):
         """
             Action to be executed for Confirmed state
         """
-        
+        options=self.env['plm.config.settings'].GetOptions()
         status = 'confirmed'
         action = 'confirm'
-        ids=self._ids
+        default = {
+                   'state': status,
+                   'engineering_writable': False,
+                   }
+        doc_default = {
+                   'state': status,
+                   'writable': False,
+                   }
         operationParams = {
                             'status': status,
                             'statusName': _('Confirmed'),
@@ -771,22 +797,31 @@ class plm_component(models.Model):
                             'docaction': 'confirm',
                             'excludeStatuses': ['confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted'],
                             'includeStatuses': ['draft'],
+                            'default': default,
+                            'doc_default': doc_default,
                             }
-        default = {
-                   'state': status,
-                   'engineering_writable': False,
-                   }
-        self.logging_workflow(ids, action, status)
-        return self._action_to_perform(ids, operationParams, default)
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            ids=self._ids
+            self.logging_workflow(ids, action, status)
+            return self._action_to_perform(ids, operationParams, default)
 
     def action_correct(self):
         """
             Action to be executed for Draft state (signal "correct")
         """
-        
+        options=self.env['plm.config.settings'].GetOptions()
         status='draft'
         action = 'correct'
-        ids=self._ids
+        default = {
+                   'state': status,
+                   'engineering_writable': True,
+                   }
+        doc_default = {
+                   'state': status,
+                   'writable': True,
+                   }
         operationParams = {
                             'status': status,
                             'statusName': _('Draft'),
@@ -794,26 +829,60 @@ class plm_component(models.Model):
                             'docaction': 'correct',
                             'excludeStatuses': ['draft', 'transmitted', 'released', 'undermodify', 'obsoleted'],
                             'includeStatuses': ['confirmed'],
+                            'default': default,
+                            'doc_default': doc_default,
                             }
-        default = {
-                   'state': status,
-                   'engineering_writable': True,
-                   }
-        self.logging_workflow(ids, action, status)
-        return self._action_to_perform(ids, operationParams, default)
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            ids=self._ids
+            self.logging_workflow(ids, action, status)
+            return self._action_to_perform(ids, operationParams, default)
 
     def action_release(self):
+        options=self.env['plm.config.settings'].GetOptions()
+        status='released'
+        action = 'release'
+        default = {
+                   'state': status,
+                   'engineering_writable': False,
+                   }
+        doc_default = {
+                   'state': status,
+                   'writable': False,
+                   }
         excludeStatuses = ['released', 'undermodify', 'obsoleted']
         includeStatuses = ['confirmed']
-        return self._action_to_release(self._ids, excludeStatuses, includeStatuses)
+        operationParams = {
+                            'status': status,
+                            'statusName': _('Released'),
+                            'action': action,
+                            'docaction': 'release',
+                            'excludeStatuses': excludeStatuses,
+                            'includeStatuses': includeStatuses,
+                            'default': default,
+                            'doc_default': doc_default,
+                            }
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            return self._action_to_release(self._ids, excludeStatuses, includeStatuses)
 
     def action_obsolete(self):
         """
             Action to be executed for Obsoleted state
         """
-        ids=self._ids
+        options=self.env['plm.config.settings'].GetOptions()
         status = 'obsoleted'
         action = 'obsolete'
+        default={
+                'engineering_writable': False,
+                'state': status,
+                }
+        doc_default = {
+                   'state': status,
+                   'writable': False,
+                   }
         operationParams = {
                             'status': status,
                             'statusName': _('Obsoleted'),
@@ -821,21 +890,29 @@ class plm_component(models.Model):
                             'docaction': 'obsolete',
                             'excludeStatuses': ['draft', 'confirmed', 'transmitted', 'obsoleted'],
                             'includeStatuses': ['undermodify', 'released'],
+                            'default': default,
+                            'doc_default': doc_default,
                             }
-        default={
-                'engineering_writable': False,
-                'state': status,
-                }
-        return self._action_to_perform(ids, operationParams, default)
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            return self._action_to_perform(self._ids, operationParams, default)
 
     def action_reactivate(self):
         """
             action to be executed for Released state (signal "reactivate")
         """
-        
+        options=self.env['plm.config.settings'].GetOptions()
         status = 'released'
         action = 'reactivate'
-        ids=self._ids
+        default={
+                'engineering_writable': False,
+                'state': status,
+                }
+        doc_default = {
+                   'state': status,
+                   'writable': False,
+                   }
         operationParams = {
                             'status': status,
                             'statusName': _('Released'),
@@ -843,12 +920,13 @@ class plm_component(models.Model):
                             'docaction': 'reactivate',
                             'excludeStatuses': ['draft', 'confirmed', 'transmitted', 'released'],
                             'includeStatuses': ['undermodify', 'obsoleted'],
+                            'default': default,
+                            'doc_default': doc_default,
                             }
-        default={
-                'engineering_writable': False,
-                'state': status,
-                }
-        return self._action_to_perform(ids, operationParams, default)
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            return self._action_to_perform(self._ids, operationParams, default)
 
     def logging_workflow(self, ids, action, status):
         note={
@@ -1023,6 +1101,7 @@ class plm_component(models.Model):
                 'state': 'draft',
                 'engineering_writable': True,
                 'write_date': None,
+                'linkeddocuments': []
             })
     
             note={
