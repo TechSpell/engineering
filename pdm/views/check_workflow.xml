@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+    
+       <record id="plm_product_check_wf_tree_view" model="ir.ui.view">
+            <field name="name">product.check_wf.tree</field>
+            <field name="model">plm.check.product</field>
+            <field name="type">tree</field>
+            <field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <tree string="Products involved">
+                    <field name="choice" select="True" />
+                    <field name="level" select="True" />
+                    <field name="name" select="True" />
+                    <field name="revision" select="True"/>
+                    <field name="status" select="True"/>
+                    <field name="description" select="True"/>
+                    <field name="reason" select="True"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="plm_document_check_wf_tree_view" model="ir.ui.view">
+            <field name="name">plm.document.check_wf.tree</field>
+            <field name="model">plm.check.document</field>
+            <field name="type">tree</field>
+            <field name="priority" eval="10"/>
+            <field name="arch" type="xml">
+                <tree string="Documents involved">
+                    <field name="choice" select="True" />
+                    <field name="level" select="True" />
+                    <field name="name" select="True" />
+                    <field name="revision" select="True"/>
+                    <field name="minor" select="True"/>
+                    <field name="status" select="True"/>
+                    <field name="description" select="True"/>
+                    <field name="reason" select="True"/>
+                </tree>
+            </field>
+        </record>
+
+     <record model="ir.ui.view" id="plm_check_wf_form_view">
+        <field name="name">plm.check.wf.form.view</field>
+        <field name="model">plm.temporary</field>
+        <field name="type">form</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <form string="Check Workflow" create="false" delete="false">
+                <header>
+                    <field name="executed" invisible="True" />
+                    <button name="action_workflow_apply" string="Apply workflow changes" 
+                            type="object" class="btn-primary" attrs="{'invisible':[('executed','=', True)]}"/>
+                </header>
+                <group col="4" colspan="4">
+                    <notebook colspan="4">
+                        <page string="Select Products to move" colspan="4" col="4">
+                             <field name="part_ids" widget="section_and_note_one2many" mode="tree">
+                                <tree editable="bottom" edit="1" create="0" delete="0" 
+                                        decoration-danger="discharge" 
+                                        decoration-muted="notallowalble">
+                                    <field name="choice" class="oe_inline" attrs="{'readonly':[('discharge','=', True)]}"/>
+                                    <field name="level" readonly="True" invisible="True" />
+                                    <field name="name"/>
+                                    <field name="revision"/>
+                                    <field name="status"/>
+                                    <field name="description"/>
+                                    <field name="reason" readonly ="True"/>
+                                    <field name="discharge" invisible="True"/>
+                                    <field name="notallowalble" invisible="True"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Select Documents to move">
+                            <field  name="docu_ids" widget="section_and_note_one2many" mode="tree">
+                                 <tree editable="bottom" edit="1" create="0" delete="0" 
+                                        decoration-danger="discharge" 
+                                        decoration-muted="notallowalble">
+                                    <field name="choice" class="oe_inline" attrs="{'readonly':[('discharge','=', True)]}"/>
+                                    <field name="level" readonly="True" invisible="True"/>
+                                    <field name="name"/>
+                                    <field name="revision"/>
+                                    <field name="minor"/>
+                                    <field name="status"/>
+                                    <field name="description"/>
+                                    <field name="reason" readonly ="True"/>
+                                    <field name="discharge" invisible="True"/>
+                                    <field name="notallowalble" invisible="True"/>
+                                 </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </group>
+            </form>
+        </field>
+     </record>
+
+     <act_window name="Check Workflow"
+            res_model="plm.temporary"
+            src_model="product.product"
+            view_mode="form"
+            target="new"
+            key2="client_action_multi"
+            id="act_plm_check_wf"/>
+
+    </data>
+</odoo>
