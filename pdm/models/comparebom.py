@@ -2,7 +2,7 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2016-2018 TechSpell srl (<http://techspell.eu>). All Rights Reserved
+#    Copyright (C) 2020-2020 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    
 #    Created on : 2018-03-01
 #    Author : Fabio Colognesi
@@ -25,21 +25,9 @@
 import os
 from odoo import models, fields, api, _, osv
 
-from .common import ORIBOMTYPES, BOMTYPES
+from .common import ORIBOMTYPES, BOMTYPES, moduleName
 
-def _moduleName():
-    path = os.path.dirname(__file__)
-    return os.path.basename(os.path.dirname(path))
-openerpModule=_moduleName()
-
-def _modulePath():
-    return os.path.dirname(__file__)
-openerpModulePath=_modulePath()
-
-def _customPath():
-    return os.path.join(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))),'custom'),'report')
-customModulePath=_customPath()
-
+openerpModule=moduleName()
 
 BOM_SHOW_FIELDS=['Position','Code','Description','Quantity']
 

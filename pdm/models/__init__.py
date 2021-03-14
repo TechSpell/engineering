@@ -35,5 +35,6 @@ from . import comparebom
 from . import descriptions
 from . import sparebom
 from . import extconnections
+from . import workflow_analysis
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

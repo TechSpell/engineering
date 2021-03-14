@@ -232,7 +232,7 @@ def isNotVoid(data2Check):
             if isinstance(data2Check, str):
                 ret = True if not(data2Check in ["",False]) else False
             if isinstance(data2Check, bool):
-                ret = True if not(getString(data2Check) in ["True","False"]) else False
+                ret = True if (getString(data2Check) in ["True","False"]) else False
             if isinstance(data2Check, int,float):
                 subsetChars=r'[^0-9\-]'
                 tmpval=re.sub(subsetChars, '', getString(data2Check))
@@ -240,7 +240,7 @@ def isNotVoid(data2Check):
     return ret
 
 def isVoid(data2Check):
-    return not( isNotVoid(data2Check))
+    return not(isNotVoid(data2Check))
 
 def isAdministrator(entity):
     """
@@ -357,3 +357,7 @@ def getMachineStorage(repository="/", unit="G"):
     lfre='free_size = %s %s' %(free_size, uom)
     lrat='ratio = %s%%' %(ratio)
     return ((total_size,free_size,ratio),(ltot,lfre,lrat))
+
+def moduleName():
+    path = os.path.dirname(__file__)
+    return os.path.basename(os.path.dirname(path))
