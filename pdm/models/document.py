@@ -995,113 +995,231 @@ class plm_document(models.Model):
         """
             action to be executed after automatic upload
         """
+        options=self.env['plm.config.settings'].GetOptions()
         status='uploaded'
         action = 'upload'
-        ids=self._ids
         default = {
-                    'writable': False,
+                    'engineering_writable': False,
                     'state': status,
                     }
+        doc_default = {
+                   'writable': False,
+                   'state': status
+                   }
+        operationParams = {
+                            'status': status,
+                            'statusName': _('Uploaded'),
+                            'action': action,
+                            'docaction': 'uploaddoc',
+                            'excludeStatuses': ['uploaded', 'confirmed', 'released', 'undermodify', 'obsoleted'],
+                            'includeStatuses': ['draft'],
+                            'default': default,
+                            'doc_default': doc_default,
+                            }
         
-        self.logging_workflow(ids, default, action, status)
-        return self.browse(ids).with_context({'internal_writing':True}).write(default)
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            ids=self._ids
+            self.logging_workflow(ids, doc_default, action, status)
+            return self.browse(ids).with_context({'internal_writing':True}).write(doc_default)
 
     def action_draft(self):
         """
             release the object
         """
+        options=self.env['plm.config.settings'].GetOptions()
         status='draft'
         action = 'draft'
-        ids=self._ids
         default = {
-                    'writable': True,
+                    'engineering_writable': True,
                     'state': status,
                     }
-        
-        return self._action_onrelateddocuments(ids, default, action, status)
+        doc_default = {
+                   'writable': True,
+                   'state': status
+                   }
+        operationParams = {
+                            'status': status,
+                            'statusName': _('Draft'),
+                            'action': action,
+                            'docaction': 'draft',
+                            'excludeStatuses': ['draft', 'released', 'undermodify', 'obsoleted'],
+                            'includeStatuses': ['confirmed', 'uploaded', 'transmitted'],
+                            'default': default,
+                            'doc_default': doc_default,
+                            }
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            return self._action_onrelateddocuments(self._ids, doc_default, action, status)
 
     def action_correct(self):
         """
             release the object
         """
+        options=self.env['plm.config.settings'].GetOptions()
         status='draft'
         action = 'correct'
-        ids=self._ids
         default = {
-                    'writable': True,
+                    'engineering_writable': True,
                     'state': status,
                     }
-        
-        return self._action_onrelateddocuments(ids, default, action, status)
+        doc_default = {
+                   'writable': True,
+                   'state': status
+                   }
+        operationParams = {
+                            'status': status,
+                            'statusName': _('Draft'),
+                            'action': action,
+                            'docaction': 'correct',
+                            'excludeStatuses': ['draft', 'released', 'undermodify', 'obsoleted'],
+                            'includeStatuses': ['confirmed', 'uploaded'],
+                            'default': default,
+                            'doc_default': doc_default,
+                            }
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            return self._action_onrelateddocuments(self._ids, doc_default, action, status)
 
     def action_confirm(self):
         """
             action to be executed for Draft state
         """
         ret=False
+        options=self.env['plm.config.settings'].GetOptions()
         status='confirmed'
         action='confirm'
-        ids=self._ids
         default = {
+                   'engineering_writable': False,
+                   'state': status
+                   }
+        doc_default = {
                    'writable': False,
                    'state': status
                    }
-        
-        if self.ischecked_in(ids):
-            ret=self._action_onrelateddocuments(ids, default, action, status, checkact=True)
+        operationParams = {
+                            'status': status,
+                            'statusName': _('Confirmed'),
+                            'action': action,
+                            'docaction': 'confirm',
+                            'excludeStatuses': ['confirmed', 'released', 'undermodify', 'obsoleted'],
+                            'includeStatuses': ['draft'],
+                            'default': default,
+                            'doc_default': doc_default,
+                            }
+        if options.get('opt_showWFanalysis', False):
+            ret = self.action_check_workflow(operationParams)
         else:
-            move_workflow(self, ids, 'correct','draft')
+            ids=self._ids
+            if self.ischecked_in(ids):
+                ret = self._action_onrelateddocuments(ids, doc_default, action, status, checkact=True)
+            else:
+                move_workflow(self, ids, 'correct')
         return ret
 
     def action_release(self):
         """
             release the object
         """
+        options=self.env['plm.config.settings'].GetOptions()
         status='released'
         action = 'release'
-        ids=self._ids
         default = {
-                    'writable': False,
+                    'engineering_writable': False,
                     'state': status,
                     }
-        
-        for oldObject in self.browse(ids):
-            for last_id in self._getbyaltminorevision(oldObject):
-                move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
-            for last_id in self._getbyrevision(oldObject.name, oldObject.revisionid - 1):
-                move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
-        return self._action_onrelateddocuments(ids, default, action, status, checkact=True)
+        doc_default = {
+                   'writable': False,
+                   'state': status
+                   }
+        operationParams = {
+                            'status': status,
+                            'statusName': _('Released'),
+                            'action': action,
+                            'docaction': 'release',
+                            'excludeStatuses': ['released', 'undermodify', 'obsoleted'],
+                            'includeStatuses': ['confirmed'],
+                            'default': default,
+                            'doc_default': doc_default,
+                            }
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            ids=self._ids
+            for oldObject in self.browse(ids):
+                for last_id in self._getbyaltminorevision(oldObject):
+                    move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
+                for last_id in self._getbyrevision(oldObject.name, oldObject.revisionid - 1):
+                    move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
+            return self._action_onrelateddocuments(ids, doc_default, action, status, checkact=True)
 
     def action_obsolete(self):
         """
             obsolete the object
         """
+        options=self.env['plm.config.settings'].GetOptions()
         status='obsoleted'
         action = 'obsolete'
-        ids=self._ids
         default = {
-                    'writable': False,
+                    'engineering_writable': False,
                     'state': status,
                     }
-        
-        self.logging_workflow(ids, action, status)
-        wf_message_post(self, ids, body='Status moved to: {status}.'.format(status=status))
-        return self.browse(ids).with_context({'internal_writing':True}).write(default)
+        doc_default = {
+                   'writable': False,
+                   'state': status
+                   }
+        operationParams = {
+                            'status': status,
+                            'statusName': _('Obsoleted'),
+                            'action': action,
+                            'docaction': 'obsolete',
+                            'excludeStatuses': ['draft', 'confirmed', 'obsoleted'],
+                            'includeStatuses': ['undermodify', 'released'],
+                            'default': default,
+                            'doc_default': doc_default,
+                            }
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            ids=self._ids
+            self.logging_workflow(ids, action, status)
+            wf_message_post(self, ids, body='Status moved to: {status}.'.format(status=status))
+            return self.browse(ids).with_context({'internal_writing':True}).write(doc_default)
 
     def action_reactivate(self):
         """
             reactivate the object
         """
+        options=self.env['plm.config.settings'].GetOptions()
         status='released'
         action = 'reactivate'
-        ids=self._ids
         default = {
                    'engineering_writable': False,
                    'state': status,
                    }
-        
-        self.logging_workflow(ids, action, status)
-        return self.browse(ids).with_context({'internal_writing':True}).write(default)
+        doc_default = {
+                   'writable': False,
+                   'state': status
+                   }
+        operationParams = {
+                            'status': status,
+                            'statusName': _('Released'),
+                            'action': action,
+                            'docaction': 'reactivate',
+                            'excludeStatuses': ['draft', 'confirmed', 'released'],
+                            'includeStatuses': ['undermodify', 'obsoleted'],
+                            'default': default,
+                            'doc_default': doc_default,
+                            }
+        if options.get('opt_showWFanalysis', False):
+            return self.action_check_workflow(operationParams)
+        else:
+            ids=self._ids
+            self.logging_workflow(ids, action, status)
+            return self.browse(ids).with_context({'internal_writing':True}).write(doc_default)
 
     def _get_filesize(self):
         for doc_id in self:
@@ -1930,7 +2048,6 @@ class plm_backupdoc(models.Model):
 
 
 class plm_temporary(osv.osv.osv_memory):
-    _name = "plm.temporary"
     _inherit = "plm.temporary"
 
     ##  Specialized Actions callable interactively

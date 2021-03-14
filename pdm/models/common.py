@@ -362,3 +362,7 @@ def getMachineStorage(repository="/", unit="G"):
     lfre='free_size = %s %s' %(free_size, uom)
     lrat='ratio = %s%%' %(ratio)
     return ((total_size,free_size,ratio),(ltot,lfre,lrat))
+
+def moduleName():
+    path = os.path.dirname(__file__)
+    return os.path.basename(os.path.dirname(path))
