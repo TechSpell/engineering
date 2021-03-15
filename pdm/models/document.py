@@ -1998,6 +1998,7 @@ class plm_backupdoc(models.Model):
 
     @api.multi
     def unlink(self):
+        ret = False
         committed = False
         documentType = self.env['plm.document']
         ids=self._ids
@@ -2011,25 +2012,26 @@ class plm_backupdoc(models.Model):
         checkObjs = self.browse(ids)
         for checkObj in checkObjs:
             if not int(checkObj.documentid):
-                return super(plm_backupdoc, self).unlink(ids)
+                ret = super(plm_backupdoc, checkObj).unlink()
             currentname = checkObj.documentid.store_fname
             if checkObj.existingfile != currentname:
+                committed = True
                 fullname = os.path.join(documentType._get_filestore(), checkObj.existingfile)
                 if os.path.exists(fullname):
                     if os.path.exists(fullname):
                         os.chmod(fullname, stat.S_IWRITE)
                         os.unlink(fullname)
-                        committed = True
-                        self.logging_operation(checkObj.documentid, 'Removed Physical Copy')
+                        self.logging_operation(checkObj.documentid.id, 'Removed Physical Copy')
                 else:
                     logging.warning(
                         "unlink : Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(
                             checkObj.documentid.revisionid) + ") from backup set. You can't change writable flag.")
-                    raise UserError(_("Unable to remove the document '{}-{}' from backup set.\nIt isn't a backup file, it's original current one.".format(checkObj.documentid.name,checkObj.documentid.revisionid)))
-        if committed:
-            return super(plm_backupdoc, self).unlink(ids)
-        else:
-            return False
+            else:    
+                raise UserError(_("Unable to remove the document '{}-{}' from backup set.\nIt isn't a backup file, it's original current one.".format(checkObj.documentid.name,checkObj.documentid.revisionid)))
+            if committed:
+                self.logging_operation(checkObj.documentid.id, 'Removed Backup Reference')
+                ret = super(plm_backupdoc, checkObj).unlink()
+        return ret            
 
 
 class plm_temporary(osv.osv.osv_memory):
