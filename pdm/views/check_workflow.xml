@@ -9,13 +9,13 @@
             <field name="priority" eval="10"/>
             <field name="arch" type="xml">
                 <tree string="Products involved">
-                    <field name="choice" select="True" />
-                    <field name="level" select="True" />
-                    <field name="name" select="True" />
-                    <field name="revision" select="True"/>
-                    <field name="status" select="True"/>
-                    <field name="description" select="True"/>
-                    <field name="reason" select="True"/>
+                    <field name="choice" />
+                    <field name="level" />
+                    <field name="name" />
+                    <field name="revision"/>
+                    <field name="status"/>
+                    <field name="description"/>
+                    <field name="reason"/>
                 </tree>
             </field>
         </record>
@@ -27,14 +27,14 @@
             <field name="priority" eval="10"/>
             <field name="arch" type="xml">
                 <tree string="Documents involved">
-                    <field name="choice" select="True" />
-                    <field name="level" select="True" />
-                    <field name="name" select="True" />
-                    <field name="revision" select="True"/>
-                    <field name="minor" select="True"/>
-                    <field name="status" select="True"/>
-                    <field name="description" select="True"/>
-                    <field name="reason" select="True"/>
+                    <field name="choice" />
+                    <field name="level" />
+                    <field name="name" />
+                    <field name="revision"/>
+                    <field name="minor"/>
+                    <field name="status"/>
+                    <field name="description"/>
+                    <field name="reason"/>
                 </tree>
             </field>
         </record>
@@ -47,10 +47,15 @@
         <field name="arch" type="xml">
             <form string="Check Workflow" create="false" delete="false">
                 <header>
+                    <field name="executable" invisible="True" />
                     <field name="executed" invisible="True" />
                     <button name="action_workflow_apply" string="Apply workflow changes" 
-                            type="object" class="btn-primary" attrs="{'invisible':[('executed','=', True)]}"/>
+                            type="object" class="btn-primary" 
+                            attrs="{'invisible':['|',('executed','=', True),('executable','=', False)]}"/>
                 </header>
+                <div class="alert alert-info" role="alert" style="margin-bottom:0px;" attrs="{'invisible': [('executable','=',True)]}">
+                    <bold><a class="alert-link" href="#outstanding" role="button">Attention</a></bold> One (or more) Product or Document is not movable.
+                </div>
                 <group col="4" colspan="4">
                     <notebook colspan="4">
                         <page string="Select Products to move" colspan="4" col="4">

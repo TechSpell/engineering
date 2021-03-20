@@ -71,6 +71,7 @@ class plm_config_settings(models.Model):
     opt_autostepinbom       =   fields.Integer(_("Assign step to automatic positions in BoM"),  help=_("Allows to use this step assigning item positions, editing a BoM. Default = 5."),                default = 5)
     opt_autotypeinbom       =   fields.Boolean(_("Assign automatically types in BoM"),          help=_("Allows to use the same type of BoM in all new items, editing a BoM. Default = True."),          default = True)
     opt_showWFanalysis      =   fields.Boolean(_("Show workflow Analysis before to move"),      help=_("Allows to analyze what will happen moving workflow for a Product/document. Default = False."),  default = False)
+    opt_mangeWFDocByProd    =   fields.Boolean(_("Manage Product workflow linked to Documents"),help=_("Allows to manage Product workflow moving based on Document capabilities. Default = False."),    default = False)
 #   Option fields managed for each Service ID
 
     @api.model
@@ -1085,11 +1086,13 @@ class plm_config_settings(models.Model):
 
         return packDictionary(results)
     
-    
     def getCriteriaNames(self):
         """
             Gets criteria names and their translated labels.
         """
+        user_id = self.env['res.users'].browse(self._uid)
+        self = self.with_context(lang=user_id.lang)
+        
         return  {
                     "like": _("Like"),
                     "not like": _("Not Like"),
@@ -1109,6 +1112,9 @@ class plm_config_settings(models.Model):
         """
             Gets tables and columns (label and visibility) for materialized views.
         """
+        user_id = self.env['res.users'].browse(self._uid)
+        self = self.with_context(lang=user_id.lang)
+        
         tables=[['ext_document','document'],['ext_component','component'],['ext_docbom','docbom'],
                     ['ext_bom','mrpbom'],['ext_checkout','checkout'],['ext_linkdoc','linkdoc']]
         quick_tables=[['ext_document','document'],['ext_checkout','checkout']]
