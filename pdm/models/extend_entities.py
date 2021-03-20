@@ -37,7 +37,7 @@ class plm_document(models.Model):
 
 class plm_component(models.Model):
     _inherit = 'product.product'
-    
+
     def _father_part_compute(self):
         """ 
             Gets father BoM.
@@ -84,7 +84,7 @@ class plm_component(models.Model):
             if thisObject.name:
                 values['engineering_surface']="{name}".format(name=thisObject.name)
         return {'value': {'engineering_surface':values['engineering_surface']}}
-    
+
     def _father_compute(self):
         """ 
             Gets father BoM.
@@ -272,7 +272,7 @@ class plm_document_relation(models.Model):
             for child_id in self.search( criteria ):
                 ids.append(child_id.id)
         return self.browse(list(set(ids)))
-            
+
     def _get_fathers_lines(self):
         res = []
         for line_id in self.browse(self._ids):
@@ -333,6 +333,23 @@ class plm_check_document(osv.osv.osv_memory):
 class plm_temporary(osv.osv.osv_memory):
     _inherit = "plm.temporary"
 
+    def _check_part_compute(self):
+        """ 
+            Check if operation can continue.
+        """
+        for temp_id in self:
+            ret = True
+            for part_id in temp_id.part_ids:
+                if part_id.discharge:
+                    ret = False
+                    break
+            for docu_id in temp_id.docu_ids:
+                if docu_id.discharge:
+                    ret = False
+                    break
+            temp_id.executable = ret
+
     part_ids        =   fields.One2many ('plm.check.product',  'temp_id', index=True, string=_('Products to be checked')   )
     docu_ids        =   fields.One2many ('plm.check.document', 'temp_id', index=True, string=_('Documents to be checked')  )
     executed        =   fields.Boolean  (string=_("Executed"),            default=False                                    )
+    executable      =   fields.Boolean  (string=_("Executable"),          default=True, compute = _check_part_compute      )

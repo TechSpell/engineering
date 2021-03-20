@@ -8,7 +8,7 @@
                 <form class= "oe_form_configuration" version="7.0">
                     <separator string="Add a New Service ID"/>
                     <group>
-                        <label for="id" string="Service ID"/>
+                        <label for="plm_service_id" string="Service ID"/>
                        	<div>
                         	<div>
                                 <field name="plm_service_id" class="oe_inline"/>
@@ -105,6 +105,7 @@
                                     <field name="opt_autostepinbom" />
                                     <field name="opt_autotypeinbom" />
                                     <field name="opt_showWFanalysis"  />
+                                    <field name="opt_mangeWFDocByProd" attrs="{'invisible':[('opt_showWFanalysis','=',False)]}" />
                               </group>
                           </group>
                        </page>
