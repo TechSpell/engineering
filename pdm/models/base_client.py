@@ -71,6 +71,7 @@ class plm_config_settings(models.Model):
     opt_autostepinbom       =   fields.Integer(_("Assign step to automatic positions in BoM"),  help=_("Allows to use this step assigning item positions, editing a BoM. Default = 5."),                default = 5)
     opt_autotypeinbom       =   fields.Boolean(_("Assign automatically types in BoM"),          help=_("Allows to use the same type of BoM in all new items, editing a BoM. Default = True."),          default = True)
     opt_showWFanalysis      =   fields.Boolean(_("Show workflow Analysis before to move"),      help=_("Allows to analyze what will happen moving workflow for a Product/document. Default = False."),  default = False)
+    opt_mangeWFDocByProd    =   fields.Boolean(_("Manage Product workflow linked to Documents"),help=_("Allows to manage Product workflow moving based on Document capabilities. Default = False."),    default = False)
 #   Option fields managed for each Service ID
 
     @api.model

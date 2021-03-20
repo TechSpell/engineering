@@ -24,7 +24,6 @@
 
 from odoo import models, fields, api, _, osv
 from .common import moduleName
-import xxlimited
 
 openerpModule=moduleName()
 
@@ -72,6 +71,20 @@ class plm_component(models.Model):
                         product_ids += child
         return product_ids
 
+    @property
+    @api.model
+    def check_linked_documents(self):
+        """
+            Gets linked documents, (all or checked-in).
+        """
+        ret = True
+        for product_id in self:
+            for document_id in product_id.linkeddocuments:
+                if not document_id.ischecked_in(document_id.id):
+                    ret = False
+                    break
+        return ret
+
     @api.model
     def _get_linked_documents(self, checked_in=False):
         """
@@ -96,13 +109,15 @@ class plm_component(models.Model):
         """
         excludeStatuses=operationParams['excludeStatuses']
         includeStatuses=operationParams['includeStatuses']
+        options=self.env['plm.config.settings'].GetOptions()
 
         tempType = self.env["plm.temporary"]
         product_ids = productType = self.env['product.product']
         document_ids = documentType = self.env['plm.document']
         part_ids = checkProductType = self.env["plm.check.product"]
         docu_ids = checkDocumentType = self.env["plm.check.document"]
-        
+        manageByDoc = options.get('opt_mangeWFDocByProd', False)
+
         if self:
             product_ids=self._get_new_recursive_parts(excludeStatuses, includeStatuses)
             document_ids = product_ids._get_linked_documents(checked_in=False)
@@ -122,6 +137,13 @@ class plm_component(models.Model):
                             'part_id': product_id.id,
                             'temp_id': tmp_id.id,
                             }
+                        if manageByDoc:
+                            if not product_id.check_linked_documents:
+                                discharge = True
+                                values.update({
+                                    'discharge': True,
+                                    'reason': _('one of linked Documents is not checked-In.'),
+                                    })
                         values.update({
                             'choice': not discharge,
                             })
@@ -133,6 +155,7 @@ class plm_component(models.Model):
                             'docu_id': document_id.id,
                             'temp_id': tmp_id.id,
                             }
+
                         if document_id.is_checkout or document_id.state in excludeStatuses or not(document_id.state in includeStatuses): 
                             discharge = True
                             if document_id.state in excludeStatuses or not(document_id.state in includeStatuses):
@@ -339,3 +362,7 @@ class plm_temporary(osv.osv.osv_memory):
                 document_ids.apply_workflow_action(operationParams)
 
             self.write({'executed': True})
+
+    @api.multi
+    def action_workflow_reject(self):
+        return False

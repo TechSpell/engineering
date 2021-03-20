@@ -342,6 +342,24 @@ class plm_check_document(osv.osv.osv_memory):
 class plm_temporary(osv.osv.osv_memory):
     _inherit = "plm.temporary"
 
+    @api.multi
+    def _check_part_compute(self):
+        """ 
+            Check if operation can continue.
+        """
+        for temp_id in self:
+            ret = True
+            for part_id in temp_id.part_ids:
+                if part_id.discharge:
+                    ret = False
+                    break
+            for docu_id in temp_id.docu_ids:
+                if docu_id.discharge:
+                    ret = False
+                    break
+            temp_id.executable = ret
+
     part_ids        =   fields.One2many ('plm.check.product',  'temp_id', index=True, string=_('Products to be checked')   )
     docu_ids        =   fields.One2many ('plm.check.document', 'temp_id', index=True, string=_('Documents to be checked')  )
     executed        =   fields.Boolean  (string=_("Executed"),            default=False                                    )
+    executable      =   fields.Boolean  (string=_("Executable"),          default=True, compute = _check_part_compute      )
