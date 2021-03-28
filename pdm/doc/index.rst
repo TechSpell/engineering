@@ -1,4 +1,4 @@
-========
+﻿========
 LibrePLM
 ========
 
@@ -73,7 +73,7 @@ From a terminal let's type:
 Client Installation
 ===================
 
-Client containing CAD integrations is available on SourceForge public repository `here <http://sourceforge.net/projects/libreplm/files/Client>`_.
+Client containing CAD integrations is available to download on SourceForge public repository “https://sourceforge.net/projects/libreplm/files/Client”.
 This is an usual Windows installer and requires Windows 10 or above. Download installer on your CAD workstation and run it "as Administrator". 
 In order to obtain a version covering Windows 7, please ask it to Didotech srl, writing a mail to "info@didotech.com"
 
