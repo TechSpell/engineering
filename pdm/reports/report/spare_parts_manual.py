@@ -61,7 +61,7 @@ class report_spare_parts_document(models.AbstractModel):
     _description = "Report Spare Bom One Level"
 
     @api.model
-    def create(self, components):
+    def pdfcreate(self, components):
         ret=(False, '')
         recursion=True
         if self._name == 'report.pdm.spare_pdf_one':
@@ -126,7 +126,7 @@ class report_spare_parts_document(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         documents = self.env['product.product'].browse(docids)
         return {'docs': documents,
-                'get_content': self.create}
+                'get_content': self.pdfcreate}
 
 
 class ReportSpareDocumentAll(report_spare_parts_document):
