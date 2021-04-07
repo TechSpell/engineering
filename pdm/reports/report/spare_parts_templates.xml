@@ -41,10 +41,12 @@
                         </thead>
                         <tbody>
                             <tr t-foreach="productObjs.linkeddocuments" t-as="document">
-                                <td><img class="image" t-att-src="'data:image/png;base64,%s' % to_text(document.preview)" widget="image"/></td>
-                                <td><b><span t-esc="document.name"/></b></td>
-                                <td><b><span t-esc="document.revisionid"/></b></td>
-                                <td><b><span t-esc="document.minorrevision"/></b></td>
+                            	<t t-if="not document.printout">
+                                    <td><img class="image" t-att-src="'data:image/png;base64,%s' % to_text(document.preview)" widget="image"/></td>
+                                    <td><b><span t-esc="document.name"/></b></td>
+                                    <td><b><span t-esc="document.revisionid"/></b></td>
+                                    <td><b><span t-esc="document.minorrevision"/></b></td>
+                                </t>
                             </tr>
                         </tbody>
                     </table>
