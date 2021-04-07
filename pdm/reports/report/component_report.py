@@ -38,7 +38,7 @@ class report_plm_component(models.AbstractModel):
     _description = "Base PDF Report Component"
 
     @api.model
-    def render_qweb_pdf(self, products=None, level=0, checkState=False, data=None):
+    def _render_qweb_pdf(self, products=None, level=0, checkState=False, data=None):
         documents = []
         processed=[]
         content = emptyDocument()
@@ -67,7 +67,7 @@ class report_plm_component(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         products = self.env['product.product'].browse(docids)
         return {'docs': products,
-                'get_content': self.render_qweb_pdf}
+                'get_content': self._render_qweb_pdf}
 
 
 class ReportProductPdf(report_plm_component):

@@ -47,7 +47,7 @@ class report_plm_document(models.AbstractModel):
         return ret
 
     @api.model
-    def render_qweb_pdf(self, documents=None, data=None):
+    def _render_qweb_pdf(self, documents=None, data=None):
         content = self.get_pdf_content(documents)
         byteString = b"data:application/pdf;base64," + base64.encodebytes(content)
         return byteString.decode('UTF-8')
@@ -56,7 +56,7 @@ class report_plm_document(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         documents = self.env['plm.document'].browse(docids)
         return {'docs': documents,
-                'get_content': self.render_qweb_pdf}
+                'get_content': self._render_qweb_pdf}
 
 
 class report_document_structure(models.AbstractModel):

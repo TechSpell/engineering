@@ -38,7 +38,7 @@ class report_plm_checkout(models.AbstractModel):
     _description = "Base Report Checkout"
 
     @api.model
-    def render_qweb_pdf(self, checkouts=None, data=None):
+    def _render_qweb_pdf(self, checkouts=None, data=None):
         documents = []
         processed=[]
         content = emptyDocument()
@@ -60,4 +60,4 @@ class report_plm_checkout(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         checkouts = self.env['plm.checkout'].browse(docids)
         return {'docs': checkouts,
-                'get_content': self.render_qweb_pdf}
+                'get_content': self._render_qweb_pdf}
