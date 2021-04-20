@@ -2,7 +2,9 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
-#    Copyright (C) 2020-2020 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
+#    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
+#    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    
 #    Created on : 2018-03-01
 #    Author : Fabio Colognesi
@@ -21,6 +23,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
+
 
 from odoo import models, fields, api, _, osv
 from odoo.exceptions import UserError
