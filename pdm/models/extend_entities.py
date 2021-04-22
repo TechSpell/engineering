@@ -104,7 +104,7 @@ class plm_component(models.Model):
             prod_ids[prod_obj.id]=list(set(prodIDs))
         return prod_ids
 
-    def recurse_father_part_compute(self, productIDs=[]):
+    def recurse_father_part_compute(self, productIDs=[], alreadyListed=[]):
         """ Gets all fathers of a product (extended to top level, flat list).
         @param self: The object pointer
         @param cr: The current row, from the database cursor,
@@ -114,12 +114,12 @@ class plm_component(models.Model):
         @return:  Dictionary of values
         """
         result={}
-        if not self.alreadyListed:
-            self.alreadyListed=[]
+        if not alreadyListed:
+            alreadyListed=[]
         for prod_obj in self.browse(productIDs):
             prod_ids=[]
-            if not(prod_obj.id in self.alreadyListed):
-                self.alreadyListed.append(prod_obj.id)
+            if not(prod_obj.id in alreadyListed):
+                alreadyListed.append(prod_obj.id)
                 tmp_ids=prod_obj._father_compute()
                 if tmp_ids:
                     prod_ids.extend(tmp_ids[prod_obj.id])

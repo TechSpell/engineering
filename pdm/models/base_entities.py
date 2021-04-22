@@ -204,42 +204,40 @@ class plm_relation_line(models.Model):
                 father_id=fatherObj.id if fatherObj else False 
             product_id=self._context['product_id']
             if father_id and product_id:
-                prodTypeObj.alreadyListed=[]
+                alreadyListed=[]
                 productObj=prodTypeObj.browse(product_id)
-                fatherIDs=prodTypeObj.recurse_father_part_compute([father_id, product_id])
+                fatherIDs=prodTypeObj.recurse_father_part_compute([father_id, product_id], alreadyListed)
                 if (father_id == product_id) or (product_id in fatherIDs[father_id]):
                     logging.warning("Writing BoM check: This is a circular reference to: %s - %d." %(productObj.product_tmpl_id.name, productObj.product_tmpl_id.engineering_revision))
                     values.update({'product_id': False})
                 if not options.get('opt_duplicatedrowsinbom', True):
                     listed_products=[]
                     if 'parent' in self._context:
-                        if 'bom_line_ids' in self._context['parent']:
-                            mrp_bom_lines=self._context['parent']['bom_line_ids']
-                            for mrp_bom_line in mrp_bom_lines:
-                                prod_id=False
-                                req, bom_line, vals=mrp_bom_line
-                                if req and req!=2:
-                                    if bom_line:
-                                        prod_id=self.browse(bom_line).product_id.id
-                                else:
-                                    if vals and 'product_id' in vals:
-                                        prod_id=vals['product_id']
-                                if prod_id:
-                                    listed_products.append(prod_id)
-                        if (product_id in listed_products):
-                            logging.warning("Writing BoM check: This is a duplicated line : %s - %d." %(productObj.product_tmpl_id.name, productObj.product_tmpl_id.engineering_revision))
-                            values.update({'product_id': False})
+                        if isinstance(self._context['parent'], dict):
+                            if 'bom_line_ids' in self._context['parent']:
+                                mrp_bom_lines=self._context['parent']['bom_line_ids']
+                                for mrp_bom_line in mrp_bom_lines:
+                                    prod_id=False
+                                    req, bom_line, vals=mrp_bom_line
+                                    if req and req!=2:
+                                        if bom_line:
+                                            prod_id=self.browse(bom_line).product_id.id
+                                    else:
+                                        if vals and 'product_id' in vals:
+                                            prod_id=vals['product_id']
+                                    if prod_id:
+                                        listed_products.append(prod_id)
+                            if (product_id in listed_products):
+                                logging.warning("Writing BoM check: This is a duplicated line : %s - %d." %(productObj.product_tmpl_id.name, productObj.product_tmpl_id.engineering_revision))
+                                values.update({'product_id': False})
                 if options.get('opt_autonumbersinbom', False):
-                    if 'parent' in self._context:
-                        length=0
+                    if fatherObj:
                         step=options.get('opt_autostepinbom', 5)
-                        if 'bom_line_ids' in self._context['parent']:
-                            mrp_bom_lines=self._context['parent']['bom_line_ids']
-                            length=len(mrp_bom_lines)
+                        length=len(fatherObj.bom_line_ids)
                         values.update({'itemnum': step*(length+1) })
                 if options.get('opt_autotypeinbom', False):
-                    if ('parent' in self._context) and ('type' in self._context['parent']):
-                        values.update({'type': self._context['parent']['type'] })
+                    if fatherObj:
+                        values.update({'type': fatherObj.type})
         if values:
             return {'value': values }
 
