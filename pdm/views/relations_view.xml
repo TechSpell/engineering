@@ -42,6 +42,7 @@
 	                     	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
 	                     	help="Created today"/>
                    	<separator orientation="vertical"/>
+                    <field name="product_tmpl_id"/>
                     <field name="product_id"/>
                     <field name="description"/>
                     <field name="code" string="Reference"/>
@@ -49,6 +50,7 @@
                     <group expand="0" string="Group By..." colspan="4" col="8">
  	                  	<filter name="byname"    string="Reference"    	domain="[]" context="{'group_by':'code'}"/>
                     	<filter name="byproduct" string="Product" 	domain="[]" context="{'group_by':'product_id'}"/>
+                    	<filter name="byprdtmpl" string="Product Template" 	domain="[]" context="{'group_by':'product_tmpl_id'}"/>
                    </group>
                 </search>            
             </field>
