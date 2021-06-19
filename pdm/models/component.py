@@ -1103,7 +1103,6 @@ class plm_component(models.Model):
                 'state': 'draft',
                 'engineering_writable': True,
                 'write_date': None,
-                'linkeddocuments': []
             })
     
             note={
