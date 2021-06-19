@@ -384,7 +384,6 @@ class plm_component(models.Model):
                              'engineering_revision': newIndex,
                              'engineering_writable': True,
                              'state': 'draft',
-                             'linkeddocuments': [(5)],  # Clean attached documents for new revision object
                              }
     
                     # Creates a new "old revision" object
@@ -1105,7 +1104,6 @@ class plm_component(models.Model):
                 'state': 'draft',
                 'engineering_writable': True,
                 'write_date': None,
-                'linkeddocuments': []
             })
     
             note={
