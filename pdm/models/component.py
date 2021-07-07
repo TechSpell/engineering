@@ -1129,7 +1129,7 @@ class plm_component(models.Model):
                         'name': new_name,
                         'engineering_code': new_name,
                         'engineering_revision': self._default_rev,
-                        'linkeddocuments': []
+                        'linkeddocuments': [(5,)]
                         }
                     newID.write(values)
         else:
@@ -1137,7 +1137,7 @@ class plm_component(models.Model):
             if tmpID:
                 newID=tmpID
                 default.update({
-                    'linkeddocuments': []
+                    'linkeddocuments': [(5,)]
                 })
                 newID.with_context({'internal_writing':True}).write(default) 
         if newID and previous_name:
