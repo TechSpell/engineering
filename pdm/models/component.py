@@ -384,7 +384,6 @@ class plm_component(models.Model):
                              'engineering_revision': newIndex,
                              'engineering_writable': True,
                              'state': 'draft',
-                             'linkeddocuments': [(5)],  # Clean attached documents for new revision object
                              }
     
                     # Creates a new "old revision" object
@@ -1114,7 +1113,6 @@ class plm_component(models.Model):
                 'state': 'draft',
                 'engineering_writable': True,
                 'write_date': None,
-                'linkeddocuments': []
             })
     
             note={
@@ -1131,12 +1129,16 @@ class plm_component(models.Model):
                         'name': new_name,
                         'engineering_code': new_name,
                         'engineering_revision': self._default_rev,
+                        'linkeddocuments': [(5,)]
                         }
                     newID.write(values)
         else:
             tmpID=super(plm_component, self.browse(oid).with_context({'internal_writing':True})).copy(default)
             if tmpID:
                 newID=tmpID
+                default.update({
+                    'linkeddocuments': [(5,)]
+                })
                 newID.with_context({'internal_writing':True}).write(default) 
         if newID and previous_name:
             wf_message_post(self, getListIDs(newID), body='Copied starting from : {value}.'.format(value=previous_name))
