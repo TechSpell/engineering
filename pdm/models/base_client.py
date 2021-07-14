@@ -375,9 +375,9 @@ class plm_config_settings(models.Model):
         viewName=request
         if viewName:
             criteria=[('name','=','{}.inherit'.format(viewName)),('type','=','form')]
-            if not self.checkViewExistence(criteria):
+            if not self.sudo().checkViewExistence(criteria):
                 criteria=[('name','=',viewName),('type','=','form')]
-        return self.getViewArchitecture(criteria)
+        return self.sudo().getViewArchitecture(criteria)
 
     @api.model
     def GetTreeView(self, request=None, default=None):
@@ -385,9 +385,9 @@ class plm_config_settings(models.Model):
         viewName=request
         if viewName:
             criteria=[('name','=','{}.inherit'.format(viewName)),('type','=','tree')]
-            if not self.checkViewExistence(criteria):
+            if not self.sudo().checkViewExistence(criteria):
                 criteria=[('name','=',viewName),('type','=','tree')]
-        return self.getViewArchitecture(criteria)
+        return self.sudo().getViewArchitecture(criteria)
 
     @api.model
     def GetFormViewByModel(self, request=None, default=None):
@@ -403,7 +403,7 @@ class plm_config_settings(models.Model):
         modelName=request
         if modelName:
             criteria=[('model','=',modelName),('type','=','tree')]
-        return self.getViewArchitecture(criteria)
+        return self.sudo().getViewArchitecture(criteria)
 
     @api.model
     def GetProperties(self, request=None, default=None):
@@ -413,7 +413,7 @@ class plm_config_settings(models.Model):
         objectName, editor=request
         
         userType=self.env[objectName] if objectName in self.env else None
-        return packDictionary(self.getEditProperties(userType, editor))
+        return packDictionary(self.sudo().getEditProperties(userType, editor))
 
     @api.model
     def GetValues(self, request=None, default=None):
@@ -437,7 +437,7 @@ class plm_config_settings(models.Model):
         objectID, editor, propNames=request
         propNames=getCleanBytesList(propNames)
         
-        return packDictionary(self.getValuePropertiesbyObject(objectID, editor, propNames))
+        return packDictionary(self.sudo().getValuePropertiesbyObject(objectID, editor, propNames))
 
     @api.model
     def IsAdministrator(self, request=None, default=None):
@@ -625,7 +625,7 @@ class plm_config_settings(models.Model):
         if (userType!=None and userType!=False) and codeProperties:
             objectID=self.getCodedObject(userType, codeProperties)
             if objectID:
-                ret=self.getValuePropertiesbyObject(objectID, editor, propNames)
+                ret=self.sudo().getValuePropertiesbyObject(objectID, editor, propNames)
 
         return ret
 
