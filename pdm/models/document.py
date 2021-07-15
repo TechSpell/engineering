@@ -435,30 +435,44 @@ class plm_document(models.Model):
         return ret
 
     @api.model
-    def CheckIn(self, ids=[], default=None):
+    def _checkIn(self):
         """
             Executes Check-In on requested document
         """
         objCheckOut=self.env['plm.checkout']
-        for tmpObject in self.browse(getListIDs(ids)):
+        for tmpObject in self:
             for checkObj in objCheckOut.search([('documentid', '=', tmpObject.id)] ):
                 checkObj.with_context({'internal_writing':True}).unlink()
         return True
+
+    @api.model
+    def _checkOut(self, hostName="", pwsPath=""):
+        """
+            Executes Check-In on requested document
+        """
+        ret=False
+        objCheckOut=self.env['plm.checkout']
+        for tmpObject in self:
+            if objCheckOut.with_context({'internal_writing':True}).create({
+                            'documentid':tmpObject.id, 'userid':self._uid, 'hostname':hostName, 'hostpws':pwsPath
+                            }):
+                ret=True
+        return ret
+        
+    @api.model
+    def CheckIn(self, ids=[], default=None):
+        """
+            Executes Check-In on requested document
+        """
+        return self.browse(getListIDs(ids)).sudo()._checkIn()
 
     @api.model
     def CheckOut(self, request=[], default=None):
         """
             Executes Check-In on requested document
         """
-        ret=False
         ids, hostName, pwsPath=request
-        objCheckOut=self.env['plm.checkout']
-        for tmpObject in self.browse(getListIDs(ids)):
-            if objCheckOut.with_context({'internal_writing':True}).create({
-                            'documentid':tmpObject.id, 'userid':self._uid, 'hostname':hostName, 'hostpws':pwsPath
-                            }):
-                ret=True
-        return ret
+        return self.browse(getListIDs(ids)).sudo()._checkOut(hostName=hostName, pwsPath=pwsPath)
 
     @api.model
     def CheckInRecursive(self, ids=[], default=None):
@@ -467,7 +481,6 @@ class plm_document(models.Model):
               Returns list of involved files.
        """
         ret=[]
-        
         for idDoc,namefile,_,_,_,_ in self.checkAllFiles([getListIDs(ids),[[],[]],False]):
             if self.CheckIn(idDoc):
                 ret.append(namefile)
@@ -480,7 +493,6 @@ class plm_document(models.Model):
               Returns list of involved files.
        """
         ret=[]
-        
         ids, hostName, pwsPath=request
         for idDoc,namefile,_,_,_,_ in self.checkAllFiles([getListIDs(ids),[[],[]],False]):
             if self.CheckOut([idDoc, hostName, pwsPath]):
@@ -565,7 +577,7 @@ class plm_document(models.Model):
                                 'minorrevision':"A",
                                 'writable': True,
                                 'state': 'draft',
-                                'linkedcomponents': [],  # Clean attached products for new revision object
+                                'linkedcomponents': [(5,)],  # Clean attached products for new revision object
                                }
                     tmpID = oldObject.with_context(thisContext).copy(default)
                     if tmpID!=None:
@@ -766,7 +778,7 @@ class plm_document(models.Model):
 
             if existingID:
                 hasSaved = False
-                hasCheckedOut=self._is_checkedout_for_me(existingID)
+                hasCheckedOut=self.sudo()._is_checkedout_for_me(existingID)
                 if hasCheckedOut:
                     objDocument = self.browse(existingID)
                     if ('_lastupdate' in document) and document['_lastupdate']:
@@ -798,7 +810,7 @@ class plm_document(models.Model):
         listedDocuments=[]
         fullNamePath='datas_fname'
         documents, [hostName,pwsPath]=unpackDictionary(request)
-        modelFields=self.env['plm.config.settings'].GetFieldsModel(self._name)
+        modelFields=self.env['plm.config.settings'].sudo().GetFieldsModel(self._name)
         for document in documents:
             document=getCleanBytesDictionary(document)
             hasSaved = False
@@ -837,11 +849,11 @@ class plm_document(models.Model):
                 if objectItem:
                     existingID=objectItem.id
                     if autocheckout:
-                        hasCheckedOut=self.CheckOut([existingID, hostName, pwsPath])
+                        hasCheckedOut=self.sudo().CheckOut([existingID, hostName, pwsPath])
                     hasSaved = True
             else:
                 if autocheckout:
-                    hasCheckedOut=self._is_checkedout_for_me(existingID)
+                    hasCheckedOut=self.sudo()._is_checkedout_for_me(existingID)
                 else:
                     hasCheckedOut=True
                 if hasCheckedOut:
@@ -858,7 +870,7 @@ class plm_document(models.Model):
                     else:
                         logging.error("[SaveOrUpdate] Document {name}/{revi} doesn't exist anymore.".format(name=document['name'],revi=document['revisionid']))
                 else:
-                    userName=self.getUserSign(self._uid)
+                    userName=self.sudo().getUserSign(self._uid)
                     logging.error("[SaveOrUpdate] Document {name}/{revi} was not checked-out for {user}.".format(name=document['name'],revi=document['revisionid'],user=userName))
    
             retValues[getFileName(document[fullNamePath])]={
