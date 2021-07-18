@@ -175,7 +175,7 @@ class plm_component(models.Model):
             if not parentID==None:
                 if isWritable(self, parentID):
                     for bom_id in bomType.search([('type','=',type),('product_id','=',parentID)]):
-                        if not sourceID==None:
+                        if not sourceID==None and sourceID:
                             if docType.IsCheckedOutForMe(sourceID):
                                 for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
                                     bl_to_delete |= bomLine
