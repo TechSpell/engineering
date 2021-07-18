@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 13:16+0000\n"
-"PO-Revision-Date: 2021-03-14 13:16+0000\n"
+"POT-Creation-Date: 2021-07-18 14:19+0000\n"
+"PO-Revision-Date: 2021-07-18 14:19+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -74,6 +74,12 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "About"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "About Client"
 msgstr ""
 
 #. module: pdm
@@ -157,6 +163,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pdm.view_add_workflow
 msgid ""
 "Add workflow management to PLM module, managing processes and signatures"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Additions"
 msgstr ""
 
 #. module: pdm
@@ -308,6 +320,15 @@ msgstr ""
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mangeWFDocByProd
+#, python-format
+msgid ""
+"Allows to manage Product workflow moving based on Document capabilities. "
+"Default = False."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_autotypeinbom
 #, python-format
 msgid ""
@@ -402,7 +423,13 @@ msgstr ""
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
-msgid "Assign Document Data"
+msgid "Assign Document Data to 2D layout"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Assign Layout Data"
 msgstr ""
 
 #. module: pdm
@@ -469,6 +496,7 @@ msgstr ""
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
+#: model_terms:ir.ui.view,arch_db:pdm.plm_check_wf_form_view
 #, python-format
 msgid "Attention"
 msgstr ""
@@ -757,6 +785,12 @@ msgid "Check File System Dimensions"
 msgstr ""
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Check Operations"
+msgstr ""
+
+#. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_form
 msgid "Check Upload Document"
 msgstr ""
@@ -789,6 +823,7 @@ msgstr ""
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
 #: model:ir.actions.act_window,name:pdm.act_document_checkin
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_checkin
 #, python-format
@@ -808,6 +843,7 @@ msgid "Check-In current document"
 msgstr ""
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -1003,7 +1039,13 @@ msgstr ""
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
-msgid "Clone Part and Document"
+msgid "Clone"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Clone Part and Document from current one"
 msgstr ""
 
 #. module: pdm
@@ -1601,6 +1643,12 @@ msgstr ""
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Derive Operations"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -1805,6 +1853,12 @@ msgid "Document Code List"
 msgstr ""
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Document Data"
+msgstr ""
+
+#. module: pdm
 #: code:addons/pdm/models/document.py:0
 #, python-format
 msgid ""
@@ -1855,6 +1909,12 @@ msgid "Document Numbers Rules"
 msgstr ""
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Document Operations"
+msgstr ""
+
+#. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_docbom_search
 msgid "Document Relation Kind"
 msgstr ""
@@ -1867,6 +1927,7 @@ msgid "Document Relations"
 msgstr ""
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -2111,13 +2172,19 @@ msgstr ""
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
-msgid "Edit Document Comment"
+msgid "Edit Comment"
 msgstr ""
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
-msgid "Edit Document Data"
+msgid "Edit Data"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Edit Document Comment"
 msgstr ""
 
 #. module: pdm
@@ -2141,7 +2208,13 @@ msgstr ""
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
-msgid "Edit Part Data"
+msgid "Edit Part & Document Data"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Edit only Document Data"
 msgstr ""
 
 #. module: pdm
@@ -2298,9 +2371,16 @@ msgid "Error assigning new file name"
 msgstr ""
 
 #. module: pdm
+#: code:addons/pdm/models/extend_entities.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_temporary__executable
+#, python-format
+msgid "Executable"
+msgstr ""
+
+#. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
-msgid "Execute Login"
+msgid "Execute Login on Database"
 msgstr ""
 
 #. module: pdm
@@ -2610,6 +2690,12 @@ msgid "Format Feature Composed"
 msgstr ""
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "General"
+msgstr ""
+
+#. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_finishing__sequence
 #: model:ir.model.fields,help:pdm.field_plm_material__sequence
 msgid "Gives the sequence order when displaying a list of product categories."
@@ -2716,13 +2802,25 @@ msgstr ""
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
+msgid "Import Document"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
 msgid "Import a Document"
 msgstr ""
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
-msgid "Import a Document by Component"
+msgid "Import a Document searching by Component"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Import by Component"
 msgstr ""
 
 #. module: pdm
@@ -3199,6 +3297,7 @@ msgstr ""
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Login"
 msgstr ""
@@ -3212,6 +3311,13 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Maintains opening list"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mangeWFDocByProd
+#, python-format
+msgid "Manage Product workflow linked to Documents"
 msgstr ""
 
 #. module: pdm
@@ -3264,6 +3370,7 @@ msgid "Mime Type"
 msgstr ""
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -3368,17 +3475,21 @@ msgstr ""
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
-msgid "New Minor Revision"
+msgid "New Minor Document Revision"
 msgstr ""
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:0
 #: model:ir.actions.act_window,name:pdm.act_component_newrevision
 #: model:ir.actions.act_window,name:pdm.act_document_newrevision
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_newrevision
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_newrevision
-#, python-format
 msgid "New Revision"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "New Revision of Part and Document"
 msgstr ""
 
 #. module: pdm
@@ -3620,9 +3731,20 @@ msgid "October"
 msgstr ""
 
 #. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_check_wf_form_view
+msgid "One (or more) Product or Document is not movable."
+msgstr ""
+
+#. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Online Uploading"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Open Document"
 msgstr ""
 
 #. module: pdm
@@ -3634,13 +3756,25 @@ msgstr ""
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
+msgid "Open Related"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
 msgid "Open a Document"
 msgstr ""
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
-msgid "Open a Document by Component"
+msgid "Open a Document searching by Component"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Open by Component"
 msgstr ""
 
 #. module: pdm
@@ -3705,6 +3839,7 @@ msgid "Optional Parameters"
 msgstr ""
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -3813,6 +3948,12 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__part_id
 #, python-format
 msgid "Part"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Part Data"
 msgstr ""
 
 #. module: pdm
@@ -4111,6 +4252,7 @@ msgstr ""
 
 #. module: pdm
 #: model:ir.model,name:pdm.model_product_template
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
 msgid "Product Template"
 msgstr ""
 
@@ -4150,6 +4292,12 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Purge Checked-In files from PWS"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Purge files"
 msgstr ""
 
 #. module: pdm
@@ -4195,6 +4343,12 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Ready to Process"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Recursive Check-In"
 msgstr ""
 
 #. module: pdm
@@ -4452,6 +4606,7 @@ msgid "Results found"
 msgstr ""
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -5269,6 +5424,7 @@ msgstr ""
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Upload"
 msgstr ""
@@ -5326,6 +5482,12 @@ msgstr ""
 msgid ""
 "Upload stopped. Some error occurred during execution.\n"
 "Please, try regenerating current document and save it locally before to perform Upload again."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Upload to DB"
 msgstr ""
 
 #. module: pdm
@@ -5757,6 +5919,12 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "on host"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/workflow_analysis.py:0
+#, python-format
+msgid "one of linked Documents is not checked-In."
 msgstr ""
 
 #. module: pdm
