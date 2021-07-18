@@ -5,7 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
-#    $Id$
+#    
+#    Created on : 2018-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -508,7 +510,7 @@ class plm_relation(models.Model):
             if not parentID==None:
                 if isWritable(self.env['product.product'], parentID):
                     for bom_id in self.search([('type','=','ebom'),('product_id','=',parentID)]):
-                        if not sourceID==None:
+                        if not sourceID==None and sourceID:
                             if docType.IsCheckedOutForMe(sourceID):
                                 for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
                                     bl_to_delete |= bomLine

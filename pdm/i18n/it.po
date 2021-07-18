@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 12.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 13:35+0000\n"
-"PO-Revision-Date: 2021-03-14 13:35+0000\n"
+"POT-Creation-Date: 2021-07-18 12:15+0000\n"
+"PO-Revision-Date: 2021-07-18 12:15+0000\n"
 "Last-Translator: <>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:793
+#: code:addons/pdm/models/base_client.py:796
 #, python-format
 msgid "\n"
 "Did you link this layout to its new 3D model?"
@@ -24,7 +24,7 @@ msgstr "\n"
 "Hai collegato questo layout al suo nuovo modello 3D?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:794
+#: code:addons/pdm/models/base_client.py:797
 #, python-format
 msgid "\n"
 "Would you continue?"
@@ -70,14 +70,20 @@ msgid "<span>View</span>"
 msgstr "<span>Vista</span>"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:682
-#: code:addons/pdm/models/base_client.py:907
+#: code:addons/pdm/models/base_client.py:910
+#: code:addons/pdm/models/base_client.py:1099
 #, python-format
 msgid "About"
 msgstr "Info su LibrePLM"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:716
+#: code:addons/pdm/models/base_client.py:685
+#, python-format
+msgid "About Client"
+msgstr "Info su Client"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:719
 #, python-format
 msgid "About Ringer"
 msgstr "Info su Ringer"
@@ -88,7 +94,7 @@ msgid "Access Token"
 msgstr "Token di accesso"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:828
+#: code:addons/pdm/models/base_client.py:831
 #, python-format
 msgid "Acquiring a new Document Name..."
 msgstr "Acquisendo un nuovo Nome documento..."
@@ -99,20 +105,20 @@ msgid "Action Needed"
 msgstr "Azione richiesta"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1065
+#: code:addons/pdm/models/base_client.py:1068
 #, python-format
 msgid "Actions"
 msgstr "Azioni"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:53
+#: code:addons/pdm/models/base_client.py:55
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__activated_id
 #, python-format
 msgid "Activated PLM client"
 msgstr "Client PLM Attivato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:900
+#: code:addons/pdm/models/base_client.py:903
 #, python-format
 msgid "Activation"
 msgstr "Attivazione"
@@ -129,8 +135,8 @@ msgid "Activities"
 msgstr "Attività"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:981
-#: code:addons/pdm/models/base_client.py:1014
+#: code:addons/pdm/models/base_client.py:984
+#: code:addons/pdm/models/base_client.py:1017
 #, python-format
 msgid "Add Filter Criteria"
 msgstr "Aggiungi criterio per filtro"
@@ -164,62 +170,68 @@ msgid "Add workflow management to PLM module, managing processes and signatures"
 msgstr "Aggiungere la gestione del Workflow al modulo PLM, gestendo processi e firme mulitple"
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:1095
+#, python-format
+msgid "Additions"
+msgstr "Aggiunte"
+
+#. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_res_config_settings__module_wkf
 msgid "Advanced Workflow Management"
 msgstr "Gestione del Workflow Avanzato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1046
+#: code:addons/pdm/models/base_client.py:1049
 #, python-format
 msgid "All"
 msgstr "Tutto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:978
-#: code:addons/pdm/models/base_client.py:1011
+#: code:addons/pdm/models/base_client.py:981
+#: code:addons/pdm/models/base_client.py:1014
 #, python-format
 msgid "All Updated"
 msgstr "Tutto Aggiornato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:68
+#: code:addons/pdm/models/base_client.py:70
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_obsoletedinbom
 #, python-format
 msgid "Allow Obsoleted in BoM"
 msgstr "Ammetti prodotti obsoleti nella Distinta"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:68
+#: code:addons/pdm/models/base_client.py:70
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_obsoletedinbom
 #, python-format
 msgid "Allow Obsoleted products releasing a BoM. Default = False."
 msgstr "Ammetti prodotti obsoleti rilasciando una Distinta. Default = Fals0."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:69
+#: code:addons/pdm/models/base_client.py:71
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_duplicatedrowsinbom
 #, python-format
 msgid "Allow rows duplicated in BoM"
 msgstr "Ammetti prodotti duplicati nella Distinta"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:70
+#: code:addons/pdm/models/base_client.py:72
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_autonumbersinbom
 #, python-format
 msgid "Allow to assign automatic positions in BoM"
 msgstr "Permetti di assegnare le posizione in automatico nella Distinta"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:44
+#: code:addons/pdm/models/descriptions.py:46
 #: model:ir.model.fields,help:pdm.field_plm_description__fmtend
 #, python-format
 msgid "Allow to represent a normalized composition of technical features : %s%s allows to build chained values."
 msgstr "Permetti di rappresentare una composizione normalizzata di caratteristiche tecniche : %s%s Permette di costruire valori concatenati."
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:39
 #: code:addons/pdm/models/descriptions.py:41
 #: code:addons/pdm/models/descriptions.py:43
+#: code:addons/pdm/models/descriptions.py:45
 #: model:ir.model.fields,help:pdm.field_plm_description__fmt1
 #: model:ir.model.fields,help:pdm.field_plm_description__fmt2
 #: model:ir.model.fields,help:pdm.field_plm_description__fmt3
@@ -228,30 +240,30 @@ msgid "Allow to represent the measure: %s%s allow to build um and value, %s buil
 msgstr "Permetti di rappresentare una misura: %s%s permette di assemblare UoM e valore, %s rappresenta solo il valore."
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:83
+#: code:addons/pdm/models/descriptions.py:85
 #: model:ir.model.fields,help:pdm.field_product_product__std_umc1
 #, python-format
 msgid "Allow to specifiy a unit measure for the first feature."
 msgstr "Permetti di specificare una unità di misura per la prima caratteristica."
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:85
+#: code:addons/pdm/models/descriptions.py:87
 #: model:ir.model.fields,help:pdm.field_product_product__std_umc2
 #, python-format
 msgid "Allow to specifiy a unit measure for the second feature."
 msgstr "Permetti di specificare una unità di misura per la seconda caratteristica."
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:87
+#: code:addons/pdm/models/descriptions.py:89
 #: model:ir.model.fields,help:pdm.field_product_product__std_umc3
 #, python-format
 msgid "Allow to specifiy a unit measure for the third feature."
 msgstr "Permetti di specificare una unità di misura per la terza caratteristica."
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:38
 #: code:addons/pdm/models/descriptions.py:40
 #: code:addons/pdm/models/descriptions.py:42
+#: code:addons/pdm/models/descriptions.py:44
 #: model:ir.model.fields,help:pdm.field_plm_description__umc1
 #: model:ir.model.fields,help:pdm.field_plm_description__umc2
 #: model:ir.model.fields,help:pdm.field_plm_description__umc3
@@ -260,75 +272,82 @@ msgid "Allow to specify a unit measure or a label for the feature."
 msgstr "Permetti di specificare una etichetta per la caratteristica."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1047
+#: code:addons/pdm/models/base_client.py:1050
 #, python-format
 msgid "Allowed"
 msgstr "Ammesso"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:73
+#: code:addons/pdm/models/base_client.py:75
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_showWFanalysis
 #, python-format
 msgid "Allows to analyze what will happen moving workflow for a Product/document. Default = False."
 msgstr "Peremette di analizzare cosa succederà muovendo il workflow di un prodotto o documento. Default = Falso."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:70
+#: code:addons/pdm/models/base_client.py:72
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_autonumbersinbom
 #, python-format
 msgid "Allows to assign automatically item positions editing a BoM. Default = False."
 msgstr "Permetti di assegnare in automatico le posizioni prodotto editando una Distinta. Default = Falso."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:69
+#: code:addons/pdm/models/base_client.py:71
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_duplicatedrowsinbom
 #, python-format
 msgid "Allows to duplicate product rows editing a BoM. Default = True."
 msgstr "Permette di duplicare prodotti editando una Distinta. Default = Vero"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:67
+#: code:addons/pdm/models/base_client.py:69
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_editreleasedbom
 #, python-format
 msgid "Allows to edit BoM if product is in 'Released' status. Default = False."
 msgstr "Permetti di editare Distinta se il prodotto é nello stato 'Rilasciato'. Default = Falso."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:66
+#: code:addons/pdm/models/base_client.py:68
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_editbom
 #, python-format
 msgid "Allows to edit BoM if product is not in 'Draft' status. Default = False."
 msgstr "Permetti di editare Distinta se il prodotto non é nello stato 'Bozza'. Default = Falso."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:72
+#: code:addons/pdm/models/base_client.py:76
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mangeWFDocByProd
+#, python-format
+msgid "Allows to manage Product workflow moving based on Document capabilities. Default = False."
+msgstr "Permetti di gestire il workflow del Prodotto muovendolo in base alla capacità del Documento correlato. Default = False."
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:74
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_autotypeinbom
 #, python-format
 msgid "Allows to use the same type of BoM in all new items, editing a BoM. Default = True."
 msgstr "Permetti di usare lo stesso tipo di distinta in tutti le nuove righe, editando una distinta. Default = Vero."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:71
+#: code:addons/pdm/models/base_client.py:73
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_autostepinbom
 #, python-format
 msgid "Allows to use this step assigning item positions, editing a BoM. Default = 5."
 msgstr "Permetti di usare questo passo assegnando le nupve posizioni, editando una distinta. Default = 5."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:963
+#: code:addons/pdm/models/base_client.py:966
 #, python-format
 msgid "Analysis before to perform Upload"
 msgstr "Analizza prima di eseguire il caricamento su DB"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1044
+#: code:addons/pdm/models/base_client.py:1047
 #, python-format
 msgid "Analysis on document"
 msgstr "Analisi sul documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:982
-#: code:addons/pdm/models/base_client.py:1015
+#: code:addons/pdm/models/base_client.py:985
+#: code:addons/pdm/models/base_client.py:1018
 #, python-format
 msgid "Apply Filter Criteria"
 msgstr "Applica il criterio di filtro"
@@ -377,55 +396,61 @@ msgid "Are you sure you want to restore this document?"
 msgstr "Sei sicuro di voler ripristinare i documenti selezionati?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:977
-#: code:addons/pdm/models/base_client.py:1010
+#: code:addons/pdm/models/base_client.py:980
+#: code:addons/pdm/models/base_client.py:1013
 #, python-format
 msgid "As Saved"
 msgstr "Come Salvato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1154
+#: code:addons/pdm/models/base_client.py:1192
 #, python-format
 msgid "Assembly Name"
 msgstr "Nome Assieme"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:690
+#: code:addons/pdm/models/base_client.py:693
 #, python-format
-msgid "Assign Document Data"
-msgstr "Assegna Dati Documento"
+msgid "Assign Document Data to 2D layout"
+msgstr "Assegna i dati Documento su una tavola 2D."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:72
+#: code:addons/pdm/models/base_client.py:1107
+#, python-format
+msgid "Assign Layout Data"
+msgstr "Assegna Dati Tavola"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:74
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_autotypeinbom
 #, python-format
 msgid "Assign automatically types in BoM"
 msgstr "Assegna in automatico i tipi nella Distinta."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:71
+#: code:addons/pdm/models/base_client.py:73
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_autostepinbom
 #, python-format
 msgid "Assign step to automatic positions in BoM"
 msgstr "Assegna l' incremento per le posizioni automatiche nella Distinta."
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:46
+#: code:addons/pdm/models/descriptions.py:48
 #: model:ir.model.fields,help:pdm.field_plm_description__sequence
 #, python-format
 msgid "Assign the sequence order when displaying a list of product categories."
 msgstr "Assegna la sequenza quando mostra una lista di categorie."
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:84
+#: code:addons/pdm/models/descriptions.py:86
 #: model:ir.model.fields,help:pdm.field_product_product__std_value1
 #, python-format
 msgid "Assign value to the first characteristic."
 msgstr "Assegna il valore alla prima caratteristica."
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:86
 #: code:addons/pdm/models/descriptions.py:88
+#: code:addons/pdm/models/descriptions.py:90
 #: model:ir.model.fields,help:pdm.field_product_product__std_value2
 #: model:ir.model.fields,help:pdm.field_product_product__std_value3
 #, python-format
@@ -433,14 +458,14 @@ msgid "Assign value to the second characteristic."
 msgstr "Assegna il valore alla seconda caratteristica."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:779
+#: code:addons/pdm/models/base_client.py:782
 #, python-format
 msgid "Assigning document Name..."
 msgstr "Assegnando il nome documento..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:827
-#: code:addons/pdm/models/base_client.py:829
+#: code:addons/pdm/models/base_client.py:830
+#: code:addons/pdm/models/base_client.py:832
 #, python-format
 msgid "Assigning properties to current document..."
 msgstr "Assegnando le proprietà al documento corrente..."
@@ -462,7 +487,8 @@ msgid "Attachment URL"
 msgstr "URL allegato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:908
+#: code:addons/pdm/models/base_client.py:911
+#: model_terms:ir.ui.view,arch_db:pdm.plm_check_wf_form_view
 #, python-format
 msgid "Attention"
 msgstr "Attenzione"
@@ -475,7 +501,7 @@ msgid "August"
 msgstr "Agosto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:961
+#: code:addons/pdm/models/base_client.py:964
 #, python-format
 msgid "Automatic Document P/N from Product"
 msgstr "Nome Documento in automatico dal Codice Prodotto"
@@ -564,8 +590,8 @@ msgid "Bill of Material Line"
 msgstr "Riga distinta base"
 
 #. module: pdm
-#: code:addons/pdm/models/base_entities.py:938
-#: code:addons/pdm/models/sparebom.py:61
+#: code:addons/pdm/models/base_entities.py:942
+#: code:addons/pdm/models/sparebom.py:64
 #: model_terms:ir.ui.view,arch_db:pdm.mrp_part_tree_view_where
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_tree_structure
 #, python-format
@@ -573,8 +599,8 @@ msgid "Bill of Materials"
 msgstr "Distinta Base"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:276
-#: code:addons/pdm/models/comparebom.py:293
+#: code:addons/pdm/models/comparebom.py:278
+#: code:addons/pdm/models/comparebom.py:295
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__bom_id
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__bom_id
 #, python-format
@@ -582,21 +608,21 @@ msgid "BoM"
 msgstr "Distinta"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:46
+#: code:addons/pdm/models/comparebom.py:48
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__bom_id1
 #, python-format
 msgid "BoM 1"
 msgstr "Distinta 1"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:51
+#: code:addons/pdm/models/comparebom.py:53
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__bom_id2
 #, python-format
 msgid "BoM 2"
 msgstr "Distinta 2"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:56
+#: code:addons/pdm/models/comparebom.py:58
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__anotinb
 #, python-format
 msgid "BoM Adding"
@@ -619,8 +645,8 @@ msgid "BoM Hierarchy"
 msgstr "Gerarchia Distinta"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:277
-#: code:addons/pdm/models/comparebom.py:294
+#: code:addons/pdm/models/comparebom.py:279
+#: code:addons/pdm/models/comparebom.py:296
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__bom_idrow
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__bom_idrow
 #, python-format
@@ -628,7 +654,7 @@ msgid "BoM Line"
 msgstr "Riga Distinta"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:57
+#: code:addons/pdm/models/comparebom.py:59
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__bnotina
 #, python-format
 msgid "BoM Missing"
@@ -655,8 +681,8 @@ msgid "BoM Relations in Bom 2"
 msgstr "Nome Relazioni in Distinta 2"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:47
-#: code:addons/pdm/models/comparebom.py:52
+#: code:addons/pdm/models/comparebom.py:49
+#: code:addons/pdm/models/comparebom.py:54
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom__type
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__type
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__type_id1
@@ -671,8 +697,8 @@ msgid "Boms"
 msgstr "Distinte"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:281
-#: code:addons/pdm/models/comparebom.py:298
+#: code:addons/pdm/models/comparebom.py:283
+#: code:addons/pdm/models/comparebom.py:300
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__itemnum
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__itemnum
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__itemnum
@@ -686,9 +712,9 @@ msgid "Cad Item Position Label"
 msgstr "Posizione Parte CAD Letterale"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:986
-#: code:addons/pdm/models/base_client.py:1019
-#: code:addons/pdm/models/base_client.py:1049
+#: code:addons/pdm/models/base_client.py:989
+#: code:addons/pdm/models/base_client.py:1022
+#: code:addons/pdm/models/base_client.py:1052
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_create_normalbom_wizard
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_manage_sparebom
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_newrevision
@@ -702,26 +728,26 @@ msgid "Cancel"
 msgstr "Annulla"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:886
-#: code:addons/pdm/models/base_client.py:1076
+#: code:addons/pdm/models/base_client.py:889
+#: code:addons/pdm/models/base_client.py:1079
 #, python-format
 msgid "Cannot execute Upload. Missing filename"
 msgstr "Non posso eseguire Upload. Nome file mancante."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:894
+#: code:addons/pdm/models/base_client.py:897
 #, python-format
 msgid "Cannot execute Upload. Status doesn't allow uploading."
 msgstr "Non posso eseguire Upload. Lo stato non permette di eseguire il caricamento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1040
+#: code:addons/pdm/models/base_client.py:1043
 #, python-format
 msgid "Change Date"
 msgstr "Data Modifica"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1130
+#: code:addons/pdm/models/base_client.py:1168
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_form
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_user_form
 #, python-format
@@ -751,6 +777,12 @@ msgid "Check File System Dimensions"
 msgstr "Controllo Dimensioni del file system"
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:1090
+#, python-format
+msgid "Check Operations"
+msgstr "Operazioni di Controllo"
+
+#. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_form
 msgid "Check Upload Document"
 msgstr "Controllo Caricamento Documento"
@@ -767,21 +799,22 @@ msgid "Check Workflow"
 msgstr "Controlla il Workflow"
 
 #. module: pdm
-#: code:addons/pdm/models/workflow_analysis.py:111
-#: code:addons/pdm/models/workflow_analysis.py:214
+#: code:addons/pdm/models/workflow_analysis.py:127
+#: code:addons/pdm/models/workflow_analysis.py:238
 #, python-format
 msgid "Check Workflow moving to \"{}\""
 msgstr "Controlla il Workflow muovendo verso '{}'"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1056
+#: code:addons/pdm/models/base_client.py:1059
 #, python-format
 msgid "Check this flag, forcing the upload operation to be performed foreground."
 msgstr "Controlla questo flag, forzando l' operazione di caricamento ad essere eseguita in linea."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:728
-#: code:addons/pdm/models/base_client.py:754
+#: code:addons/pdm/models/base_client.py:731
+#: code:addons/pdm/models/base_client.py:757
+#: code:addons/pdm/models/base_client.py:1101
 #: model:ir.actions.act_window,name:pdm.act_document_checkin
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_checkin
 #, python-format
@@ -789,21 +822,22 @@ msgid "Check-In"
 msgstr ""
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:721
+#: code:addons/pdm/models/base_client.py:724
 #, python-format
 msgid "Check-In Paused"
 msgstr "Check-In Fermato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:684
+#: code:addons/pdm/models/base_client.py:687
 #, python-format
 msgid "Check-In current document"
 msgstr "Check-In documento corrente"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:741
-#: code:addons/pdm/models/base_client.py:767
-#: code:addons/pdm/models/base_client.py:1052
+#: code:addons/pdm/models/base_client.py:744
+#: code:addons/pdm/models/base_client.py:770
+#: code:addons/pdm/models/base_client.py:1055
+#: code:addons/pdm/models/base_client.py:1103
 #: model:ir.actions.act_window,name:pdm.act_document_checkout
 #: model_terms:ir.ui.view,arch_db:pdm.document_structure_template
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_checkout
@@ -817,13 +851,13 @@ msgid "Check-Out Data"
 msgstr "Dati di Check-Out"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:734
+#: code:addons/pdm/models/base_client.py:737
 #, python-format
 msgid "Check-Out Paused"
 msgstr "Check-Out Fermato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:686
+#: code:addons/pdm/models/base_client.py:689
 #, python-format
 msgid "Check-Out current document"
 msgstr "Check-Out documento corrente"
@@ -834,13 +868,13 @@ msgid "CheckOut User"
 msgstr "CheckOut Utente"
 
 #. module: pdm
-#: code:addons/pdm/models/base_entities.py:1027
+#: code:addons/pdm/models/base_entities.py:1031
 #, python-format
 msgid "Checked In"
 msgstr "È in Check-In"
 
 #. module: pdm
-#: code:addons/pdm/models/base_entities.py:1055
+#: code:addons/pdm/models/base_entities.py:1059
 #, python-format
 msgid "Checked Out"
 msgstr "È in Check-Out"
@@ -851,7 +885,7 @@ msgid "Checked-Out"
 msgstr "È in Check-Out"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1038
+#: code:addons/pdm/models/base_client.py:1041
 #, python-format
 msgid "Checked-Out By"
 msgstr "In Check-Out per"
@@ -883,8 +917,8 @@ msgid "Checked-Out To"
 msgstr "Checked-Out A"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1131
-#: code:addons/pdm/models/base_client.py:1205
+#: code:addons/pdm/models/base_client.py:1169
+#: code:addons/pdm/models/base_client.py:1243
 #, python-format
 msgid "Checked-Out by"
 msgstr "Checked-Out Da"
@@ -925,20 +959,20 @@ msgid "Child"
 msgstr "Figlio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1177
+#: code:addons/pdm/models/base_client.py:1215
 #, python-format
 msgid "Child Document"
 msgstr "Documento Figlio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1180
+#: code:addons/pdm/models/base_client.py:1218
 #, python-format
 msgid "Child File"
 msgstr "File Figlio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1153
-#: code:addons/pdm/models/base_client.py:1171
+#: code:addons/pdm/models/base_client.py:1191
+#: code:addons/pdm/models/base_client.py:1209
 #, python-format
 msgid "Child ID"
 msgstr "ID Figlio"
@@ -949,8 +983,8 @@ msgid "Child Preview"
 msgstr "Anteprima Figlio"
 
 #. module: pdm
-#: code:addons/pdm/models/extend_entities.py:319
-#: code:addons/pdm/models/extend_entities.py:337
+#: code:addons/pdm/models/extend_entities.py:321
+#: code:addons/pdm/models/extend_entities.py:339
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__choice
 #: model:ir.model.fields,field_description:pdm.field_plm_check_product__choice
 #, python-format
@@ -958,14 +992,14 @@ msgid "Choice"
 msgstr "Scelta"
 
 #. module: pdm
-#: code:addons/pdm/models/sparebom.py:131
+#: code:addons/pdm/models/sparebom.py:134
 #: model:ir.model.fields,field_description:pdm.field_plm_description__bom_tmpl
 #, python-format
 msgid "Choose a BoM"
 msgstr "Scegliere una Distinta"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1035
+#: code:addons/pdm/models/base_client.py:1038
 #, python-format
 msgid "Choose a Document"
 msgstr "Scegli un Documento"
@@ -981,23 +1015,29 @@ msgid "Choose the Part Number rule."
 msgstr "Scegliere una regola Numero Prodotto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:54
+#: code:addons/pdm/models/base_client.py:56
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_editor
 #, python-format
 msgid "Client Editor Name"
 msgstr "Nome dell' editor Client"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:927
+#: code:addons/pdm/models/base_client.py:930
 #, python-format
 msgid "Client Options"
 msgstr "Opzioni del Client"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:696
+#: code:addons/pdm/models/base_client.py:1113
 #, python-format
-msgid "Clone Part and Document"
-msgstr "Clona Prodotto e Documento"
+msgid "Clone "
+msgstr "Clona"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:699
+#, python-format
+msgid "Clone Part and Document from current one"
+msgstr "Clona Prodotto e Documento dal corrente"
 
 #. module: pdm
 #: model:ir.model,name:pdm.model_plm_codelist
@@ -1005,13 +1045,13 @@ msgid "Code List"
 msgstr "Lista Codice"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:838
+#: code:addons/pdm/models/base_client.py:841
 #, python-format
 msgid "Collected data."
 msgstr "Dati Raccolti"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:837
+#: code:addons/pdm/models/base_client.py:840
 #, python-format
 msgid "Collecting data for Upload evaluation."
 msgstr "Raccolta dati per valutare il Caricamento"
@@ -1033,28 +1073,28 @@ msgid "Compare selected BoMs"
 msgstr "contronta le distinte selezionate "
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:898
+#: code:addons/pdm/models/base_client.py:901
 #, python-format
 msgid "Completed upload of"
 msgstr "Completato il caricamento di"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:725
-#: code:addons/pdm/models/base_client.py:738
-#: code:addons/pdm/models/base_client.py:751
-#: code:addons/pdm/models/base_client.py:764
+#: code:addons/pdm/models/base_client.py:728
+#: code:addons/pdm/models/base_client.py:741
+#: code:addons/pdm/models/base_client.py:754
+#: code:addons/pdm/models/base_client.py:767
 #, python-format
 msgid "Completing operations..."
 msgstr "Completando le operazioni..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1189
+#: code:addons/pdm/models/base_client.py:1227
 #, python-format
 msgid "Component"
 msgstr "Prodotto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1190
+#: code:addons/pdm/models/base_client.py:1228
 #, python-format
 msgid "Component Code"
 msgstr "Codice Prodotto"
@@ -1065,7 +1105,7 @@ msgid "Component Document Relations"
 msgstr "Relazioni Prodotto Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1187
+#: code:addons/pdm/models/base_client.py:1225
 #, python-format
 msgid "Component ID"
 msgstr "ID Prodotto"
@@ -1078,7 +1118,7 @@ msgid "Component Name"
 msgstr "Nome Prodotto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1191
+#: code:addons/pdm/models/base_client.py:1229
 #, python-format
 msgid "Component Revision"
 msgstr "Revisione Prodotto"
@@ -1089,7 +1129,7 @@ msgid "Component Status"
 msgstr "Stato Prodotto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_entities.py:119
+#: code:addons/pdm/models/base_entities.py:123
 #: sql_constraint:plm.component.document.rel:0
 #, python-format
 msgid "Component and Document relation has to be unique !"
@@ -1134,8 +1174,8 @@ msgid "Confirm Document"
 msgstr "Conferma Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/component.py:800
-#: code:addons/pdm/models/document.py:1106
+#: code:addons/pdm/models/component.py:801
+#: code:addons/pdm/models/document.py:1120
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__count_component_confirmed
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
@@ -1147,13 +1187,13 @@ msgid "Confirmed"
 msgstr "Confermato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:944
+#: code:addons/pdm/models/base_client.py:947
 #, python-format
 msgid "Connection Parameters"
 msgstr "Parametri di Connessione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1100
+#: code:addons/pdm/models/base_client.py:1138
 #, python-format
 msgid "Contains"
 msgstr "Contiene"
@@ -1170,13 +1210,13 @@ msgid "Correct Document"
 msgstr "Correggi Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:896
+#: code:addons/pdm/models/base_client.py:899
 #, python-format
 msgid "Counted files"
 msgstr "File contati"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1039
+#: code:addons/pdm/models/base_client.py:1042
 #, python-format
 msgid "Create Date"
 msgstr "Data di Creazione"
@@ -1194,12 +1234,12 @@ msgid "Create Spare BoM"
 msgstr "Crea Distinta Parti di Ricambio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1128
-#: code:addons/pdm/models/base_client.py:1145
-#: code:addons/pdm/models/base_client.py:1163
-#: code:addons/pdm/models/base_client.py:1182
-#: code:addons/pdm/models/base_client.py:1195
+#: code:addons/pdm/models/base_client.py:1166
+#: code:addons/pdm/models/base_client.py:1183
 #: code:addons/pdm/models/base_client.py:1201
+#: code:addons/pdm/models/base_client.py:1220
+#: code:addons/pdm/models/base_client.py:1233
+#: code:addons/pdm/models/base_client.py:1239
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_form
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_user_form
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_edit_document
@@ -1337,7 +1377,7 @@ msgid "Creating a Product New Revision"
 msgstr "Creazione di Nuova Revisione Prodotto"
 
 #. module: pdm
-#: code:addons/pdm/models/sparebom.py:56
+#: code:addons/pdm/models/sparebom.py:59
 #, python-format
 msgid "Creating a new Spare BoM Error.\n"
 "\n"
@@ -1363,10 +1403,10 @@ msgid "Creation of Spare BoM"
 msgstr "Creazione di Distinta Ricambi"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1127
-#: code:addons/pdm/models/base_client.py:1144
-#: code:addons/pdm/models/base_client.py:1162
-#: code:addons/pdm/models/base_client.py:1181
+#: code:addons/pdm/models/base_client.py:1165
+#: code:addons/pdm/models/base_client.py:1182
+#: code:addons/pdm/models/base_client.py:1200
+#: code:addons/pdm/models/base_client.py:1219
 #: model_terms:ir.ui.view,arch_db:pdm.plm_backupdoc_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 #, python-format
@@ -1374,38 +1414,38 @@ msgid "Creator"
 msgstr "Creatore"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:984
-#: code:addons/pdm/models/base_client.py:1017
+#: code:addons/pdm/models/base_client.py:987
+#: code:addons/pdm/models/base_client.py:1020
 #, python-format
 msgid "Criteria"
 msgstr "Criterio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_entities.py:806
+#: code:addons/pdm/models/base_entities.py:810
 #, python-format
 msgid "Current Bill of Material of product isn't modifiable."
 msgstr "La distinta del prodotto corrente non è modificabile."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:850
+#: code:addons/pdm/models/base_client.py:853
 #, python-format
 msgid "Current document"
 msgstr "Documento corrente"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:729
+#: code:addons/pdm/models/base_client.py:732
 #, python-format
 msgid "Current document has Checked-In."
 msgstr "Il documento corrente è in Check-In."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:742
+#: code:addons/pdm/models/base_client.py:745
 #, python-format
 msgid "Current document has Checked-Out."
 msgstr "Il documento corrente è in Check-Out"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:835
+#: code:addons/pdm/models/base_client.py:838
 #, python-format
 msgid "Current document has already saved in DB.\n"
 "\n"
@@ -1415,52 +1455,52 @@ msgstr "Il documento corrente è già salvato nel DB.\n"
 " Sarà creato un nuovo documento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:755
+#: code:addons/pdm/models/base_client.py:758
 #, python-format
 msgid "Current document has been recursively Checked-In."
 msgstr "Il documento corrente è stato ricorsivamente posto in Check-In."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:768
+#: code:addons/pdm/models/base_client.py:771
 #, python-format
 msgid "Current document has been recursively Checked-Out."
 msgstr "Il documento corrente è stato ricorsivamente posto in Check-Out."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:727
+#: code:addons/pdm/models/base_client.py:730
 #, python-format
 msgid "Current document has not Checked-In."
 msgstr "Il documento corrente non è in Check-In."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:740
+#: code:addons/pdm/models/base_client.py:743
 #, python-format
 msgid "Current document has not Checked-Out."
 msgstr "Il documento corrente non è in Check-Out."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:731
-#: code:addons/pdm/models/base_client.py:744
-#: code:addons/pdm/models/base_client.py:757
-#: code:addons/pdm/models/base_client.py:770
+#: code:addons/pdm/models/base_client.py:734
+#: code:addons/pdm/models/base_client.py:747
+#: code:addons/pdm/models/base_client.py:760
+#: code:addons/pdm/models/base_client.py:773
 #, python-format
 msgid "Current document has not Uploaded."
 msgstr "Il documento corrente non è stato caricato in DB."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:753
+#: code:addons/pdm/models/base_client.py:756
 #, python-format
 msgid "Current document has not been recursively Checked-In."
 msgstr "Il documento corrente non è stato ricorsivamente posto in Check-In."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:766
+#: code:addons/pdm/models/base_client.py:769
 #, python-format
 msgid "Current document has not been recursively Checked-Out."
 msgstr "Il documento corrente non è stato ricorsivamente posto in Check-Out."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:836
+#: code:addons/pdm/models/base_client.py:839
 #, python-format
 msgid "Current document has reference not yet saved in DB.\n"
 "\n"
@@ -1470,24 +1510,24 @@ msgstr "Il documento corrente ha un riferimento non ancora salvato nel DB.\n"
 " Salva prima il riferimento, poi riprova a salvare questo documento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:730
-#: code:addons/pdm/models/base_client.py:756
+#: code:addons/pdm/models/base_client.py:733
+#: code:addons/pdm/models/base_client.py:759
 #, python-format
 msgid "Current document is already Checked-In."
 msgstr "Il documento corrente è già in Check-In."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:743
-#: code:addons/pdm/models/base_client.py:769
+#: code:addons/pdm/models/base_client.py:746
+#: code:addons/pdm/models/base_client.py:772
 #, python-format
 msgid "Current document is not Checked-In."
 msgstr "Il documento corrente non è in Check-In. "
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:722
-#: code:addons/pdm/models/base_client.py:735
-#: code:addons/pdm/models/base_client.py:748
-#: code:addons/pdm/models/base_client.py:761
+#: code:addons/pdm/models/base_client.py:725
+#: code:addons/pdm/models/base_client.py:738
+#: code:addons/pdm/models/base_client.py:751
+#: code:addons/pdm/models/base_client.py:764
 #, python-format
 msgid "Current document seems to be changed.\n"
 "Would you continue?"
@@ -1495,14 +1535,14 @@ msgstr "Il documento corrente sembra essere modificato.\n"
 "Vuoi contnuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:842
-#: code:addons/pdm/models/base_client.py:862
+#: code:addons/pdm/models/base_client.py:845
+#: code:addons/pdm/models/base_client.py:865
 #, python-format
 msgid "Current document will be uploaded to server."
 msgstr "Il documento corrente sarà caricato sul server."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:946
+#: code:addons/pdm/models/base_client.py:949
 #, python-format
 msgid "DB Name"
 msgstr "Nome Database"
@@ -1513,7 +1553,7 @@ msgid "Data"
 msgstr "Dati"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:956
+#: code:addons/pdm/models/base_client.py:959
 #, python-format
 msgid "Data package [MB]"
 msgstr "Dimensione pacchetto dati [MB]"
@@ -1521,7 +1561,7 @@ msgstr "Dimensione pacchetto dati [MB]"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__db_datas
 msgid "Database Data"
-msgstr "Dati Database"
+msgstr "Dati database"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_backupdoc_search
@@ -1531,7 +1571,7 @@ msgid "Date"
 msgstr "Data"
 
 #. module: pdm
-#: code:addons/pdm/models/component.py:44
+#: code:addons/pdm/models/component.py:46
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__create_date
 #: model:ir.model.fields,field_description:pdm.field_product_product__create_date
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__create_date
@@ -1541,7 +1581,7 @@ msgid "Date Created"
 msgstr "Data Creato"
 
 #. module: pdm
-#: code:addons/pdm/models/component.py:45
+#: code:addons/pdm/models/component.py:47
 #: model:ir.model.fields,field_description:pdm.field_product_product__write_date
 #, python-format
 msgid "Date Modified"
@@ -1561,47 +1601,53 @@ msgid "December"
 msgstr "Dicembre"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:960
+#: code:addons/pdm/models/base_client.py:963
 #, python-format
 msgid "Default Configuration Name"
 msgstr "Nome della Configurazione di default"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:955
+#: code:addons/pdm/models/base_client.py:958
 #, python-format
 msgid "Deferred Open"
 msgstr "Apertura differita"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:955
+#: code:addons/pdm/models/base_client.py:958
 #, python-format
 msgid "Deferred downloading for files if their size or number exceeds limits. Default is False."
 msgstr "Scaricamento differito per files se la loro dimensione od il loro numero eccede i limiti fissati. Default è Falso."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:958
+#: code:addons/pdm/models/base_client.py:961
 #, python-format
 msgid "Deferred uploading. This option allows to execute document Upload using a background job queue (True), rather a foreground on-line process (False). Default is True."
 msgstr "Caricamento differito. Questa opzione permette di eseguire il caricamento dei files come processo in secondo piano (Vero), piuttosto che come processo in linea (Falso). Default è Vero."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:840
-#: code:addons/pdm/models/base_client.py:860
+#: code:addons/pdm/models/base_client.py:843
+#: code:addons/pdm/models/base_client.py:863
 #, python-format
 msgid "Deferring Upload..."
 msgstr "Caricamento differito..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:972
-#: code:addons/pdm/models/base_client.py:1143
-#: code:addons/pdm/models/base_client.py:1157
-#: code:addons/pdm/models/base_client.py:1161
-#: code:addons/pdm/models/comparebom.py:50
-#: code:addons/pdm/models/comparebom.py:55
-#: code:addons/pdm/models/comparebom.py:280
-#: code:addons/pdm/models/comparebom.py:297
-#: code:addons/pdm/models/extend_entities.py:316
-#: code:addons/pdm/models/extend_entities.py:334
+#: code:addons/pdm/models/base_client.py:1094
+#, python-format
+msgid "Derive Operations"
+msgstr "Operazioni di Derivazione"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:975
+#: code:addons/pdm/models/base_client.py:1181
+#: code:addons/pdm/models/base_client.py:1195
+#: code:addons/pdm/models/base_client.py:1199
+#: code:addons/pdm/models/comparebom.py:52
+#: code:addons/pdm/models/comparebom.py:57
+#: code:addons/pdm/models/comparebom.py:282
+#: code:addons/pdm/models/comparebom.py:299
+#: code:addons/pdm/models/extend_entities.py:318
+#: code:addons/pdm/models/extend_entities.py:336
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom__description
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__description
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__description
@@ -1625,7 +1671,7 @@ msgid "Description"
 msgstr "Descrizione"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:37
+#: code:addons/pdm/models/descriptions.py:39
 #: model:ir.model.fields,field_description:pdm.field_plm_description__description_en
 #, python-format
 msgid "Description English"
@@ -1637,7 +1683,7 @@ msgid "Description of Document Number Rule."
 msgstr "Descrizione della regola Numero Documento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1439
+#: code:addons/pdm/models/base_client.py:1477
 #: model:ir.model.fields,help:pdm.field_plm_logging__op_note
 #, python-format
 msgid "Description of Operation."
@@ -1670,8 +1716,8 @@ msgid "Dictionaries"
 msgstr "Dizionari"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:283
-#: code:addons/pdm/models/comparebom.py:300
+#: code:addons/pdm/models/comparebom.py:285
+#: code:addons/pdm/models/comparebom.py:302
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__reason
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__reason
 #, python-format
@@ -1684,27 +1730,27 @@ msgid "Differences Between BoMs"
 msgstr "Differenze tra Distinte"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:167
+#: code:addons/pdm/models/comparebom.py:169
 #, python-format
 msgid "Differences on BoMs"
 msgstr "Differenze tra Distinte"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:956
+#: code:addons/pdm/models/base_client.py:959
 #, python-format
 msgid "Dimensions (in MegaBytes) to automatically decide downloading of files from server. Used with 'Deferred Open."
 msgstr "Dimensioni (in MegaBytes) per decidere autonomamente se lo scaricamento dei files dal server sarà differito od in linea."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1207
+#: code:addons/pdm/models/base_client.py:1245
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__directory
 #, python-format
 msgid "Directory"
 msgstr "Direttorio"
 
 #. module: pdm
-#: code:addons/pdm/models/extend_entities.py:320
-#: code:addons/pdm/models/extend_entities.py:338
+#: code:addons/pdm/models/extend_entities.py:322
+#: code:addons/pdm/models/extend_entities.py:340
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__discharge
 #: model:ir.model.fields,field_description:pdm.field_plm_check_product__discharge
 #, python-format
@@ -1764,11 +1810,11 @@ msgid "Docs"
 msgstr "Documenti"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1036
-#: code:addons/pdm/models/base_client.py:1192
-#: code:addons/pdm/models/base_client.py:1202
-#: code:addons/pdm/models/extend_entities.py:329
-#: code:addons/pdm/models/extend_entities.py:330
+#: code:addons/pdm/models/base_client.py:1039
+#: code:addons/pdm/models/base_client.py:1230
+#: code:addons/pdm/models/base_client.py:1240
+#: code:addons/pdm/models/extend_entities.py:331
+#: code:addons/pdm/models/extend_entities.py:332
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__name
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__docu_id
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__name
@@ -1795,7 +1841,13 @@ msgid "Document Code List"
 msgstr "Lista Codice Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/document.py:360
+#: code:addons/pdm/models/base_client.py:1106
+#, python-format
+msgid "Document Data"
+msgstr "Dati Documento"
+
+#. module: pdm
+#: code:addons/pdm/models/document.py:362
 #, python-format
 msgid "Document Error\n"
 "Permission denied or directory '{}' cannot be created."
@@ -1803,20 +1855,20 @@ msgstr "Errore Documento\n"
 "Permesso negato o la directory '{}' non può essere creata."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1188
+#: code:addons/pdm/models/base_client.py:1226
 #, python-format
 msgid "Document ID"
 msgstr "ID Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1194
-#: code:addons/pdm/models/base_client.py:1204
+#: code:addons/pdm/models/base_client.py:1232
+#: code:addons/pdm/models/base_client.py:1242
 #, python-format
 msgid "Document Minor Revision"
 msgstr "Revisione Minore Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1123
+#: code:addons/pdm/models/base_client.py:1161
 #: model_terms:ir.ui.view,arch_db:pdm.plm_backupdoc_search
 #, python-format
 msgid "Document Name"
@@ -1845,6 +1897,12 @@ msgid "Document Numbers Rules"
 msgstr "Regole Numero Documento"
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:1093
+#, python-format
+msgid "Document Operations"
+msgstr "Operazioni su Documento"
+
+#. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_docbom_search
 msgid "Document Relation Kind"
 msgstr "Tipo Relazione Documento"
@@ -1857,8 +1915,9 @@ msgid "Document Relations"
 msgstr "Relazioni Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1193
-#: code:addons/pdm/models/base_client.py:1203
+#: code:addons/pdm/models/base_client.py:1116
+#: code:addons/pdm/models/base_client.py:1231
+#: code:addons/pdm/models/base_client.py:1241
 #, python-format
 msgid "Document Revision"
 msgstr "Revisione Documento"
@@ -1882,8 +1941,8 @@ msgid "Document Structure PDF Report"
 msgstr "Report PDF Struttura Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:891
-#: code:addons/pdm/models/base_client.py:895
+#: code:addons/pdm/models/base_client.py:894
+#: code:addons/pdm/models/base_client.py:898
 #, python-format
 msgid "Document Upload has denied because checked-in."
 msgstr "Caricamento documento negato perchè è in Check-In."
@@ -1899,55 +1958,55 @@ msgid "Document board"
 msgstr "Tabella Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:890
-#: code:addons/pdm/models/base_client.py:1080
+#: code:addons/pdm/models/base_client.py:893
+#: code:addons/pdm/models/base_client.py:1083
 #, python-format
 msgid "Document changed locally and checked-out."
 msgstr "Documento modificato localmente e posto in Check-Out"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:888
-#: code:addons/pdm/models/base_client.py:1078
+#: code:addons/pdm/models/base_client.py:891
+#: code:addons/pdm/models/base_client.py:1081
 #, python-format
 msgid "Document changed locally but Upload has denied because checked-in."
 msgstr "Documento modificato localmente ma il caricamento è negato perchè è in Check-In."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:889
-#: code:addons/pdm/models/base_client.py:1079
+#: code:addons/pdm/models/base_client.py:892
+#: code:addons/pdm/models/base_client.py:1082
 #, python-format
 msgid "Document changed locally but Upload has denied because checked-out to a different user."
 msgstr "Documento modificato localmente ma il caricamento è negato perchè è in Check-Out per un altro utente."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:892
+#: code:addons/pdm/models/base_client.py:895
 #, python-format
 msgid "Document checked-out to a different user."
 msgstr "Il documento in Check-Out per un altro utente."
 
 #. module: pdm
-#: code:addons/pdm/models/workflow_analysis.py:146
-#: code:addons/pdm/models/workflow_analysis.py:239
+#: code:addons/pdm/models/workflow_analysis.py:170
+#: code:addons/pdm/models/workflow_analysis.py:263
 #, python-format
 msgid "Document is Checked-Out to: {}."
 msgstr "Il documento è in Check-Out per: {}."
 
 #. module: pdm
-#: code:addons/pdm/models/workflow_analysis.py:141
-#: code:addons/pdm/models/workflow_analysis.py:234
+#: code:addons/pdm/models/workflow_analysis.py:165
+#: code:addons/pdm/models/workflow_analysis.py:258
 #, python-format
 msgid "Document is not in allowable status."
 msgstr "Il documento non è in uno stato ammissibile."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:878
+#: code:addons/pdm/models/base_client.py:881
 #, python-format
 msgid "Document managed as attached."
 msgstr "Documento gestito come allegato."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:875
-#: code:addons/pdm/models/base_client.py:1067
+#: code:addons/pdm/models/base_client.py:878
+#: code:addons/pdm/models/base_client.py:1070
 #, python-format
 msgid "Document unchanged."
 msgstr "Documento non modificato."
@@ -1968,13 +2027,13 @@ msgid "Documents Checked-Out"
 msgstr "Documenti in Check-Out"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1062
+#: code:addons/pdm/models/base_client.py:1065
 #, python-format
 msgid "Documents Contained"
 msgstr "Documenti Contenuti"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1063
+#: code:addons/pdm/models/base_client.py:1066
 #, python-format
 msgid "Documents Related"
 msgstr "Documenti Correlati"
@@ -1990,7 +2049,7 @@ msgid "Documents Summary"
 msgstr "Sommario Documenti"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1054
+#: code:addons/pdm/models/base_client.py:1057
 #, python-format
 msgid "Documents contained in current one."
 msgstr "Documenti contenuti nel documenot corrente."
@@ -2017,13 +2076,13 @@ msgid "Documents related as fathers"
 msgstr "Documenti collegati come padri"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1055
+#: code:addons/pdm/models/base_client.py:1058
 #, python-format
 msgid "Documents related to current one."
 msgstr "Documenti correlati al documento corrente."
 
 #. module: pdm
-#: code:addons/pdm/models/extend_entities.py:346
+#: code:addons/pdm/models/extend_entities.py:365
 #: model:ir.model,name:pdm.model_plm_check_document
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__docu_ids
 #, python-format
@@ -2031,40 +2090,40 @@ msgid "Documents to be checked"
 msgstr "Documenti che devono essere controllati"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1101
+#: code:addons/pdm/models/base_client.py:1139
 #, python-format
 msgid "Doesn't Contain"
 msgstr "Non Contiene"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:62
+#: code:addons/pdm/models/base_client.py:64
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__domain_id
 #, python-format
 msgid "Domain Name"
 msgstr "Nome del Dominio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:989
-#: code:addons/pdm/models/base_client.py:1022
+#: code:addons/pdm/models/base_client.py:992
+#: code:addons/pdm/models/base_client.py:1025
 #, python-format
 msgid "Download files updated to latest revision or as saved."
 msgstr "Scarica i files aggiornati alla più recente revisione o come salvati."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:783
-#: code:addons/pdm/models/base_client.py:785
-#: code:addons/pdm/models/base_client.py:787
-#: code:addons/pdm/models/base_client.py:789
-#: code:addons/pdm/models/base_client.py:791
+#: code:addons/pdm/models/base_client.py:786
+#: code:addons/pdm/models/base_client.py:788
+#: code:addons/pdm/models/base_client.py:790
+#: code:addons/pdm/models/base_client.py:792
+#: code:addons/pdm/models/base_client.py:794
 #, python-format
 msgid "Downloading document..."
 msgstr "Scaricamento del documento..."
 
 #. module: pdm
-#: code:addons/pdm/models/component.py:767
-#: code:addons/pdm/models/component.py:833
-#: code:addons/pdm/models/document.py:1043
-#: code:addons/pdm/models/document.py:1074
+#: code:addons/pdm/models/component.py:768
+#: code:addons/pdm/models/component.py:834
+#: code:addons/pdm/models/document.py:1057
+#: code:addons/pdm/models/document.py:1088
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__count_component_draft
 #: selection:plm.document,state:0
 #: selection:product.template,state:0
@@ -2083,33 +2142,39 @@ msgid "Drawings marked here will be used printing Spare Part Manual report."
 msgstr "I disegni indicati saranno utilizzati come stampe per il Manuale Parti di Ricambio."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:67
+#: code:addons/pdm/models/base_client.py:69
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_editreleasedbom
 #, python-format
 msgid "Edit BoM in 'released'"
 msgstr "Editare distinta in 'Rilasciato'"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:66
+#: code:addons/pdm/models/base_client.py:68
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_editbom
 #, python-format
 msgid "Edit BoM not in 'draft'"
 msgstr "Editare distinta non in 'Bozza'"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:700
+#: code:addons/pdm/models/base_client.py:1117
+#, python-format
+msgid "Edit Comment"
+msgstr "Compila Commento"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:1092
+#, python-format
+msgid "Edit Data"
+msgstr "Compila Dati"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:703
 #, python-format
 msgid "Edit Document Comment"
 msgstr "Editare Commento a Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:689
-#, python-format
-msgid "Edit Document Data"
-msgstr "Edita Dati Documento"
-
-#. module: pdm
-#: code:addons/pdm/models/document.py:1349
+#: code:addons/pdm/models/document.py:1363
 #, python-format
 msgid "Edit Entity Error.\n"
 "\n"
@@ -2119,7 +2184,7 @@ msgstr "Errore in Edit Entità.\n"
 "L' entità '{name}-{rev}' non può essere scritta."
 
 #. module: pdm
-#: code:addons/pdm/models/document.py:1345
+#: code:addons/pdm/models/document.py:1359
 #, python-format
 msgid "Edit Entity Error.\n"
 "\n"
@@ -2129,48 +2194,54 @@ msgstr "Errore in Edit Entità.\n"
 "L' entità '{name}-{rev}' è in uno stato che non ti permette di eseguire il salvataggio dati."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:688
+#: code:addons/pdm/models/base_client.py:691
 #, python-format
-msgid "Edit Part Data"
-msgstr "Edita Dati Prodotto"
+msgid "Edit Part & Document Data"
+msgstr "Edita Dati Prodotto e Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:55
+#: code:addons/pdm/models/base_client.py:692
+#, python-format
+msgid "Edit only Document Data"
+msgstr "Compila solo i dati Documento"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:57
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_node
 #, python-format
 msgid "Editor Machine name"
 msgstr "Nome Macchina Editor"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:60
+#: code:addons/pdm/models/base_client.py:62
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_os_arch
 #, python-format
 msgid "Editor OS architecture"
 msgstr "Architettura sistema operativo Editor"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:57
+#: code:addons/pdm/models/base_client.py:59
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_os
 #, python-format
 msgid "Editor OS name"
 msgstr "Nome sistema operativo Editor"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:58
+#: code:addons/pdm/models/base_client.py:60
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_os_rel
 #, python-format
 msgid "Editor OS release"
 msgstr "Rilascio sistema operativo"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:59
+#: code:addons/pdm/models/base_client.py:61
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_os_ver
 #, python-format
 msgid "Editor OS version"
 msgstr "Versione sistema operativo"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1082
+#: code:addons/pdm/models/base_client.py:1085
 #, python-format
 msgid "End Report"
 msgstr "Fine Report"
@@ -2201,9 +2272,9 @@ msgid "Engineering BoMs"
 msgstr "Distinte Ingegneria"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1140
-#: code:addons/pdm/models/base_client.py:1155
-#: code:addons/pdm/models/base_client.py:1159
+#: code:addons/pdm/models/base_client.py:1178
+#: code:addons/pdm/models/base_client.py:1193
+#: code:addons/pdm/models/base_client.py:1197
 #, python-format
 msgid "Engineering Code"
 msgstr "Codice Ingegneria"
@@ -2249,77 +2320,84 @@ msgid "Entity"
 msgstr "Entità"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1437
+#: code:addons/pdm/models/base_client.py:1475
 #: model:ir.model.fields,help:pdm.field_plm_logging__type
 #, python-format
 msgid "Entity Type."
 msgstr "Tipo Entità"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1434
+#: code:addons/pdm/models/base_client.py:1472
 #: model:ir.model.fields,help:pdm.field_plm_logging__name
 #, python-format
 msgid "Entity name."
 msgstr "Nome Entità"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1098
+#: code:addons/pdm/models/base_client.py:1136
 #, python-format
 msgid "Equal"
 msgstr "Uguale"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:732
-#: code:addons/pdm/models/base_client.py:745
-#: code:addons/pdm/models/base_client.py:758
-#: code:addons/pdm/models/base_client.py:771
-#: code:addons/pdm/models/base_client.py:848
-#: code:addons/pdm/models/base_client.py:867
+#: code:addons/pdm/models/base_client.py:735
+#: code:addons/pdm/models/base_client.py:748
+#: code:addons/pdm/models/base_client.py:761
+#: code:addons/pdm/models/base_client.py:774
+#: code:addons/pdm/models/base_client.py:851
 #: code:addons/pdm/models/base_client.py:870
-#: code:addons/pdm/models/base_client.py:935
+#: code:addons/pdm/models/base_client.py:873
+#: code:addons/pdm/models/base_client.py:938
 #, python-format
 msgid "Error"
 msgstr "Errore"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:830
+#: code:addons/pdm/models/base_client.py:833
 #, python-format
 msgid "Error assigning new file name"
 msgstr "Errore assegnando il nome al file"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:683
+#: code:addons/pdm/models/extend_entities.py:367
+#: model:ir.model.fields,field_description:pdm.field_plm_temporary__executable
 #, python-format
-msgid "Execute Login"
-msgstr "Eseguire Login"
+msgid "Executable"
+msgstr "Eseguibile"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1060
+#: code:addons/pdm/models/base_client.py:686
+#, python-format
+msgid "Execute Login on Database"
+msgstr "Eseguire Login sul database"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:1063
 #, python-format
 msgid "Execute all check-out operations as allowed."
 msgstr "Esegue tutte le operazioni di Check-Out se ammissibili."
 
 #. module: pdm
-#: code:addons/pdm/models/extend_entities.py:347
+#: code:addons/pdm/models/extend_entities.py:366
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__executed
 #, python-format
 msgid "Executed"
 msgstr "Eseguito"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:958
+#: code:addons/pdm/models/base_client.py:961
 #, python-format
 msgid "Executes Background Upload"
 msgstr "Esegue Caricamento in secondo piano"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:910
+#: code:addons/pdm/models/base_client.py:913
 #, python-format
 msgid "Exit"
 msgstr "Termina"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:56
+#: code:addons/pdm/models/base_client.py:58
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__expire_date
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__expire_date
 #, python-format
@@ -2327,21 +2405,21 @@ msgid "Expiration Date"
 msgstr "Data Scadenza"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:924
+#: code:addons/pdm/models/base_client.py:927
 #, python-format
 msgid "Expire Date"
 msgstr "Data di Scadenza"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:995
+#: code:addons/pdm/models/base_client.py:998
 #, python-format
 msgid "Explosion"
 msgstr "Esplosione Scalare"
 
 #. module: pdm
-#: code:addons/pdm/models/extconnections/dataconnector.py:427
-#: code:addons/pdm/models/extconnections/dataconnector.py:454
-#: code:addons/pdm/models/extconnections/dataconnector.py:459
+#: code:addons/pdm/models/extconnections/dataconnector.py:429
+#: code:addons/pdm/models/extconnections/dataconnector.py:456
+#: code:addons/pdm/models/extconnections/dataconnector.py:461
 #, python-format
 msgid "Export Data Error.\n"
 "\n"
@@ -2351,7 +2429,7 @@ msgstr "Errore Esportazione Dati.\n"
 "Nessun file di estrazione distinte è stato generato, per il prodtto '{}'."
 
 #. module: pdm
-#: code:addons/pdm/models/extconnections/dataconnector.py:420
+#: code:addons/pdm/models/extconnections/dataconnector.py:422
 #, python-format
 msgid "Export Data Error.\n"
 "\n"
@@ -2361,7 +2439,7 @@ msgstr "Errore Esportazione Dati.\n"
 "Il percorso di scrittura dati richiesto '{}' non esiste."
 
 #. module: pdm
-#: code:addons/pdm/models/extconnections/dataconnector.py:432
+#: code:addons/pdm/models/extconnections/dataconnector.py:434
 #, python-format
 msgid "Export Data Error.\n"
 "\n"
@@ -2371,23 +2449,23 @@ msgstr "Errore Esportazione Dati.\n"
 "Le operazioni di scrittura dati sul file '{}' sono fallite."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1172
+#: code:addons/pdm/models/base_client.py:1210
 #, python-format
 msgid "Father Document"
 msgstr "Documento Padre"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1175
+#: code:addons/pdm/models/base_client.py:1213
 #, python-format
 msgid "Father File"
 msgstr "File Padre"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1151
-#: code:addons/pdm/models/base_client.py:1152
-#: code:addons/pdm/models/base_client.py:1169
-#: code:addons/pdm/models/base_client.py:1170
-#: code:addons/pdm/models/base_client.py:1186
+#: code:addons/pdm/models/base_client.py:1189
+#: code:addons/pdm/models/base_client.py:1190
+#: code:addons/pdm/models/base_client.py:1207
+#: code:addons/pdm/models/base_client.py:1208
+#: code:addons/pdm/models/base_client.py:1224
 #, python-format
 msgid "Father ID"
 msgstr "ID Padre"
@@ -2400,7 +2478,7 @@ msgid "February"
 msgstr "Febbraio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1436
+#: code:addons/pdm/models/base_client.py:1474
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__file
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__datas_fname
 #: selection:plm.document,type:0
@@ -2411,10 +2489,10 @@ msgstr ""
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__datas
 msgid "File Content"
-msgstr "Contenuto File"
+msgstr "Contenuto file"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1132
+#: code:addons/pdm/models/base_client.py:1170
 #, python-format
 msgid "File Name"
 msgstr "Nome File"
@@ -2422,7 +2500,7 @@ msgstr "Nome File"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__file_size
 msgid "File Size"
-msgstr "Dimensione File"
+msgstr "Dimensione file"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__file_size_mb
@@ -2438,7 +2516,7 @@ msgid "File Size [kB]"
 msgstr "Dimensione File [kB]"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1436
+#: code:addons/pdm/models/base_client.py:1474
 #: model:ir.model.fields,help:pdm.field_plm_logging__file
 #, python-format
 msgid "File name (in case of documents)."
@@ -2450,13 +2528,13 @@ msgid "File name has to be unique!"
 msgstr "Il nome File deve essere univoco!"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:957
+#: code:addons/pdm/models/base_client.py:960
 #, python-format
 msgid "File package number"
 msgstr "Numero di files nel pacchetto standard"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1208
+#: code:addons/pdm/models/base_client.py:1246
 #, python-format
 msgid "FileName"
 msgstr "Nome File"
@@ -2464,7 +2542,7 @@ msgstr "Nome File"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__datas_fname
 msgid "Filename"
-msgstr "Nome File"
+msgstr "Nome file"
 
 #. module: pdm
 #: model:ir.actions.act_window,name:pdm.action_view_file_month
@@ -2489,35 +2567,35 @@ msgid "Files details by Users"
 msgstr "Dettagli file per Utenti"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:991
-#: code:addons/pdm/models/base_client.py:1024
+#: code:addons/pdm/models/base_client.py:994
+#: code:addons/pdm/models/base_client.py:1027
 #, python-format
 msgid "Filter Conditions"
 msgstr "Condizioni di Filtro"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1058
+#: code:addons/pdm/models/base_client.py:1061
 #, python-format
 msgid "Filter on documents 'Allowed' to be uploaded."
 msgstr "Filtra sui documenti 'Ammessi' ad essere caricati sul server."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1059
+#: code:addons/pdm/models/base_client.py:1062
 #, python-format
 msgid "Filter on documents 'Requested' to be uploaded but not yet allowed."
 msgstr "Filtra sui documenti 'Richiesti' di essere caricati sul server ma non ancora ammessi."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:998
-#: code:addons/pdm/models/base_client.py:1029
-#: code:addons/pdm/models/base_client.py:1064
+#: code:addons/pdm/models/base_client.py:1001
+#: code:addons/pdm/models/base_client.py:1032
+#: code:addons/pdm/models/base_client.py:1067
 #, python-format
 msgid "Filters"
 msgstr "Filtri"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1000
-#: code:addons/pdm/models/base_client.py:1031
+#: code:addons/pdm/models/base_client.py:1003
+#: code:addons/pdm/models/base_client.py:1034
 #, python-format
 msgid "Filters applied"
 msgstr "Filtri applicati"
@@ -2550,57 +2628,63 @@ msgid "Followers (Partners)"
 msgstr "Chi sta seguendo (partner)"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:975
-#: code:addons/pdm/models/base_client.py:1008
+#: code:addons/pdm/models/base_client.py:978
+#: code:addons/pdm/models/base_client.py:1011
 #, python-format
 msgid "Force Download in PWS"
 msgstr "Forza lo scaricamento nel PWS"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:904
+#: code:addons/pdm/models/base_client.py:907
 #, python-format
 msgid "Force Refresh"
 msgstr "Forza Aggiornamento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:962
+#: code:addons/pdm/models/base_client.py:965
 #, python-format
 msgid "Force to assign Document P/N"
 msgstr "Forza l' assegnamento del Nome Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:966
+#: code:addons/pdm/models/base_client.py:969
 #, python-format
 msgid "Force to execute upload Document"
 msgstr "Forza l' esecuzione del Caricamento documento"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:39
+#: code:addons/pdm/models/descriptions.py:41
 #: model:ir.model.fields,field_description:pdm.field_plm_description__fmt1
 #, python-format
 msgid "Format Feature 1"
 msgstr "Formato Carattieristica 1"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:41
+#: code:addons/pdm/models/descriptions.py:43
 #: model:ir.model.fields,field_description:pdm.field_plm_description__fmt2
 #, python-format
 msgid "Format Feature 2"
 msgstr "Formato Carattieristica 2"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:43
+#: code:addons/pdm/models/descriptions.py:45
 #: model:ir.model.fields,field_description:pdm.field_plm_description__fmt3
 #, python-format
 msgid "Format Feature 3"
 msgstr "Formato Carattieristica 3"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:44
+#: code:addons/pdm/models/descriptions.py:46
 #: model:ir.model.fields,field_description:pdm.field_plm_description__fmtend
 #, python-format
 msgid "Format Feature Composed"
 msgstr "Formato Carattieristica Composta"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:1089
+#, python-format
+msgid "General"
+msgstr "Generale"
 
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_finishing__sequence
@@ -2609,13 +2693,13 @@ msgid "Gives the sequence order when displaying a list of product categories."
 msgstr "Assegna l' ordine di sequenza quando mostra una lista di categorie prodotto."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1102
+#: code:addons/pdm/models/base_client.py:1140
 #, python-format
 msgid "Greater"
 msgstr "Maggiore"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1103
+#: code:addons/pdm/models/base_client.py:1141
 #, python-format
 msgid "Greater Equal"
 msgstr "Maggiore o Uguale"
@@ -2635,7 +2719,7 @@ msgid "Group Operations By..."
 msgstr "Raggruppa operazioni per..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1206
+#: code:addons/pdm/models/base_client.py:1244
 #: model:ir.model.fields,field_description:pdm.field_plm_checkout__hostname
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__hostname
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
@@ -2644,9 +2728,9 @@ msgid "Hostname"
 msgstr "Nome Host"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1122
-#: code:addons/pdm/models/base_client.py:1137
-#: code:addons/pdm/models/base_client.py:1200
+#: code:addons/pdm/models/base_client.py:1160
+#: code:addons/pdm/models/base_client.py:1175
+#: code:addons/pdm/models/base_client.py:1238
 #: model:ir.model.fields,field_description:pdm.field_pdm_product_product_pdf__id
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__id
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__id
@@ -2710,94 +2794,106 @@ msgid "If checked, some messages have a delivery error."
 msgstr "Se selezionato, alcuni messaggi presentano un errore di consegna."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:692
+#: code:addons/pdm/models/base_client.py:1109
+#, python-format
+msgid "Import Document"
+msgstr "Importa Documento"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:695
 #, python-format
 msgid "Import a Document"
 msgstr "Importa un Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:695
+#: code:addons/pdm/models/base_client.py:698
 #, python-format
-msgid "Import a Document by Component"
+msgid "Import a Document searching by Component"
 msgstr "Importa un Documento tramite Prodotto"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:1112
+#, python-format
+msgid "Import by Component"
+msgstr "Importa da Prodotto"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__index_content
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_form
 msgid "Indexed Content"
-msgstr "Contenuto Indicizzato"
+msgstr "Contenuto indicizzato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:919
+#: code:addons/pdm/models/base_client.py:922
 #, python-format
 msgid "Info"
 msgstr "Informazioni"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:720
-#: code:addons/pdm/models/base_client.py:733
-#: code:addons/pdm/models/base_client.py:746
-#: code:addons/pdm/models/base_client.py:759
-#: code:addons/pdm/models/base_client.py:772
-#: code:addons/pdm/models/base_client.py:781
-#: code:addons/pdm/models/base_client.py:799
-#: code:addons/pdm/models/base_client.py:807
-#: code:addons/pdm/models/base_client.py:813
-#: code:addons/pdm/models/base_client.py:819
-#: code:addons/pdm/models/base_client.py:821
-#: code:addons/pdm/models/base_client.py:823
+#: code:addons/pdm/models/base_client.py:723
+#: code:addons/pdm/models/base_client.py:736
+#: code:addons/pdm/models/base_client.py:749
+#: code:addons/pdm/models/base_client.py:762
+#: code:addons/pdm/models/base_client.py:775
+#: code:addons/pdm/models/base_client.py:784
+#: code:addons/pdm/models/base_client.py:802
+#: code:addons/pdm/models/base_client.py:810
+#: code:addons/pdm/models/base_client.py:816
+#: code:addons/pdm/models/base_client.py:822
+#: code:addons/pdm/models/base_client.py:824
 #: code:addons/pdm/models/base_client.py:826
-#: code:addons/pdm/models/base_client.py:833
-#: code:addons/pdm/models/base_client.py:869
+#: code:addons/pdm/models/base_client.py:829
+#: code:addons/pdm/models/base_client.py:836
+#: code:addons/pdm/models/base_client.py:872
 #, python-format
 msgid "Information"
 msgstr "Informazione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:945
+#: code:addons/pdm/models/base_client.py:948
 #, python-format
 msgid "Insert the Server Name."
 msgstr "Inserisci il nome del Server"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:52
+#: code:addons/pdm/models/base_client.py:54
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__plm_service_id
 #, python-format
 msgid "Insert the Service ID and register your PLM module. Ask it to Didotech."
 msgstr "Inserire il Service ID e registrare il module PLM. Chiederlo a Didodtech."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:946
+#: code:addons/pdm/models/base_client.py:949
 #, python-format
 msgid "Insert the database Name."
 msgstr "Inserisci il nome del Database"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:950
+#: code:addons/pdm/models/base_client.py:953
 #, python-format
 msgid "Insert the password"
 msgstr "Inserisci la password"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:947
+#: code:addons/pdm/models/base_client.py:950
 #, python-format
 msgid "Insert the port number."
 msgstr "Inserisci il numero della porta del servizio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:948
+#: code:addons/pdm/models/base_client.py:951
 #, python-format
 msgid "Insert the protocol"
 msgstr "Inserisci il protocollo del servizio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:949
+#: code:addons/pdm/models/base_client.py:952
 #, python-format
 msgid "Insert the user account"
 msgstr "Inserisci il nome dell' utente"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:669
+#: code:addons/pdm/models/base_client.py:672
 #, python-format
 msgid "Insert your Activation Code as provided by Didotech."
 msgstr "Inserire il Codice Attivazione come fornito da Didotech"
@@ -2813,7 +2909,7 @@ msgid "Installed Options"
 msgstr "Opzioni Installate"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1199
+#: code:addons/pdm/models/base_client.py:1237
 #, python-format
 msgid "Internal ID"
 msgstr "ID Interno"
@@ -2829,13 +2925,13 @@ msgid "Is Follower"
 msgstr "Sta seguendo"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1107
+#: code:addons/pdm/models/base_client.py:1145
 #, python-format
 msgid "Is Not Null"
 msgstr "Non è Nullo"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1106
+#: code:addons/pdm/models/base_client.py:1144
 #, python-format
 msgid "Is Null"
 msgstr "È Nullo"
@@ -2851,8 +2947,8 @@ msgid "Is public document"
 msgstr "È un documento pubblico"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:988
-#: code:addons/pdm/models/base_client.py:1021
+#: code:addons/pdm/models/base_client.py:991
+#: code:addons/pdm/models/base_client.py:1024
 #, python-format
 msgid "It will be applied only to Checked-In files."
 msgstr "Sarà applicato solo ai files in Check-In."
@@ -2889,7 +2985,7 @@ msgid "Kind"
 msgstr "Tipo"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1176
+#: code:addons/pdm/models/base_client.py:1214
 #, python-format
 msgid "Kind Relation"
 msgstr "Relazione Tipo"
@@ -2900,14 +2996,14 @@ msgid "Kind of Link"
 msgstr "Tipo di Collegamento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:63
+#: code:addons/pdm/models/base_client.py:65
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_kind
 #, python-format
 msgid "Kind of license"
 msgstr "Tipo di licenza"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:63
+#: code:addons/pdm/models/base_client.py:65
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_kind
 #, python-format
 msgid "Kind of license code ('node-locked' = Local individual license, 'domain-assigned' = Domain level license)."
@@ -2922,13 +3018,13 @@ msgid "Kit"
 msgstr ""
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1053
+#: code:addons/pdm/models/base_client.py:1056
 #, python-format
 msgid "Knowledge Upload"
 msgstr "Conoscenza del Caricamento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1081
+#: code:addons/pdm/models/base_client.py:1084
 #, python-format
 msgid "Knowledge Upload Report"
 msgstr "Report Conoscenza del Caricamento"
@@ -3076,8 +3172,8 @@ msgid "Latest 7 Days"
 msgstr "Ultimi 7 Giorni"
 
 #. module: pdm
-#: code:addons/pdm/models/extend_entities.py:318
-#: code:addons/pdm/models/extend_entities.py:336
+#: code:addons/pdm/models/extend_entities.py:320
+#: code:addons/pdm/models/extend_entities.py:338
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__level
 #: model:ir.model.fields,field_description:pdm.field_plm_check_product__level
 #, python-format
@@ -3085,25 +3181,25 @@ msgid "Level"
 msgstr "Livello"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:822
+#: code:addons/pdm/models/base_client.py:825
 #, python-format
 msgid "LibrePLM Client is not Activated"
 msgstr "Il Client LibrePLM non è Attivato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:717
+#: code:addons/pdm/models/base_client.py:720
 #, python-format
 msgid "LibrePLM Embedded Client"
 msgstr "LibrePLM Client Aggiunto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:718
+#: code:addons/pdm/models/base_client.py:721
 #, python-format
 msgid "LibrePLM Embedded Client Not Activated"
 msgstr "LibrePLM Client Non Attivato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:923
+#: code:addons/pdm/models/base_client.py:926
 #, python-format
 msgid "License"
 msgstr "Licenza"
@@ -3120,7 +3216,7 @@ msgid "LifeCycle Status"
 msgstr "Stato del Ciclo di Vita"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1096
+#: code:addons/pdm/models/base_client.py:1134
 #, python-format
 msgid "Like"
 msgstr "Contiene"
@@ -3155,28 +3251,28 @@ msgid "Linked Parts"
 msgstr "Prodotti Collegati"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:53
+#: code:addons/pdm/models/base_client.py:55
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__activated_id
 #, python-format
 msgid "Listed activated Client."
 msgstr "Lista Client attivati."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:62
+#: code:addons/pdm/models/base_client.py:64
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__domain_id
 #, python-format
 msgid "Listed domain name."
 msgstr "Lista Nomi di Dominio."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:61
+#: code:addons/pdm/models/base_client.py:63
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__node_id
 #, python-format
 msgid "Listed registered Client."
 msgstr "Lista Client registrati."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:876
+#: code:addons/pdm/models/base_client.py:879
 #, python-format
 msgid "Local part."
 msgstr "Parte locale."
@@ -3192,7 +3288,8 @@ msgid "Logged Activities"
 msgstr "Attività Registrate"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:906
+#: code:addons/pdm/models/base_client.py:909
+#: code:addons/pdm/models/base_client.py:1100
 #, python-format
 msgid "Login"
 msgstr ""
@@ -3203,10 +3300,17 @@ msgid "Main Attachment"
 msgstr "Allegato principale"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:965
+#: code:addons/pdm/models/base_client.py:968
 #, python-format
 msgid "Maintains opening list"
 msgstr "Mantiene la lista di apertura"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:76
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mangeWFDocByProd
+#, python-format
+msgid "Manage Product workflow linked to Documents"
+msgstr "Gestire workflow di Prodotto collegato a quello dei Documenti"
 
 #. module: pdm
 #: selection:mrp.bom,type:0
@@ -3259,10 +3363,11 @@ msgid "Mime Type"
 msgstr "Tipo MIME"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1125
-#: code:addons/pdm/models/base_client.py:1174
-#: code:addons/pdm/models/base_client.py:1179
-#: code:addons/pdm/models/extend_entities.py:332
+#: code:addons/pdm/models/base_client.py:1115
+#: code:addons/pdm/models/base_client.py:1163
+#: code:addons/pdm/models/base_client.py:1212
+#: code:addons/pdm/models/base_client.py:1217
+#: code:addons/pdm/models/extend_entities.py:334
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__minorrevision
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__minor
 #: model:ir.model.fields,field_description:pdm.field_plm_document__minorrevision
@@ -3274,8 +3379,8 @@ msgid "Minor Revision"
 msgstr "Revisione Minore"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1147
-#: code:addons/pdm/models/base_client.py:1165
+#: code:addons/pdm/models/base_client.py:1185
+#: code:addons/pdm/models/base_client.py:1203
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_edit_document
 #, python-format
 msgid "Modified"
@@ -3288,9 +3393,9 @@ msgid "Modified Date"
 msgstr "Data Modificato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1129
-#: code:addons/pdm/models/base_client.py:1146
-#: code:addons/pdm/models/base_client.py:1164
+#: code:addons/pdm/models/base_client.py:1167
+#: code:addons/pdm/models/base_client.py:1184
+#: code:addons/pdm/models/base_client.py:1202
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__change_user
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__change_user
 #, python-format
@@ -3323,11 +3428,11 @@ msgid "Moving to Check-Out"
 msgstr "Porre in Check-Out"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:971
-#: code:addons/pdm/models/base_client.py:983
-#: code:addons/pdm/models/base_client.py:1005
-#: code:addons/pdm/models/base_client.py:1016
-#: code:addons/pdm/models/base_client.py:1434
+#: code:addons/pdm/models/base_client.py:974
+#: code:addons/pdm/models/base_client.py:986
+#: code:addons/pdm/models/base_client.py:1008
+#: code:addons/pdm/models/base_client.py:1019
+#: code:addons/pdm/models/base_client.py:1472
 #: model:ir.model.fields,field_description:pdm.field_plm_document__name
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__docname
@@ -3338,51 +3443,55 @@ msgid "Name"
 msgstr "Nome"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:960
+#: code:addons/pdm/models/base_client.py:963
 #, python-format
 msgid "Name of the configuration has to be considered as default. Used to distinguish active configuration."
 msgstr "Nome della Configurazione che deve essere considerata come Default. Usato per distinguere la configurazione attiva."
 
 #. module: pdm
-#: code:addons/pdm/reports/component_kanban.py:83
-#: code:addons/pdm/reports/component_kanban.py:88
-#: code:addons/pdm/reports/component_kanban.py:118
+#: code:addons/pdm/reports/component_kanban.py:85
+#: code:addons/pdm/reports/component_kanban.py:90
+#: code:addons/pdm/reports/component_kanban.py:120
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_kanban
 #, python-format
 msgid "New Component"
 msgstr "Nuovo Prodotto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:699
+#: code:addons/pdm/models/base_client.py:702
 #, python-format
 msgid "New Document Revision"
 msgstr "Nuove Revisione Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:698
+#: code:addons/pdm/models/base_client.py:701
 #, python-format
-msgid "New Minor Revision"
+msgid "New Minor Document Revision"
 msgstr "Nuova Revisione Minore"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:697
 #: model:ir.actions.act_window,name:pdm.act_component_newrevision
 #: model:ir.actions.act_window,name:pdm.act_document_newrevision
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_newrevision
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_newrevision
-#, python-format
 msgid "New Revision"
 msgstr "Nuova Revisione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_entities.py:968
-#: code:addons/pdm/models/base_entities.py:999
+#: code:addons/pdm/models/base_client.py:700
+#, python-format
+msgid "New Revision of Part and Document"
+msgstr "Nuova Revisione di Prodotto e Documento"
+
+#. module: pdm
+#: code:addons/pdm/models/base_entities.py:972
+#: code:addons/pdm/models/base_entities.py:1003
 #, python-format
 msgid "New Revisions"
 msgstr "Nuove Revisioni"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:796
+#: code:addons/pdm/models/base_client.py:799
 #, python-format
 msgid "No Part data are available.\n"
 "Perhaps you would Clone manually current document data.\n"
@@ -3392,7 +3501,7 @@ msgstr "Non sono disponibili informazioni di Parte.\n"
 "Vuoi continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:780
+#: code:addons/pdm/models/base_client.py:783
 #, python-format
 msgid "No Part data are available.\n"
 "Perhaps you would assign manually current document data.\n"
@@ -3402,8 +3511,8 @@ msgstr "Non sono disponibili informazioni di Parte.\n"
 "Vuoi continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:973
-#: code:addons/pdm/models/base_client.py:1006
+#: code:addons/pdm/models/base_client.py:976
+#: code:addons/pdm/models/base_client.py:1009
 #, python-format
 msgid "No filters applied."
 msgstr "Nessun filtro applicato."
@@ -3441,7 +3550,7 @@ msgid "Normalized features formatting"
 msgstr "Formato caratteristiche normalizzate"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:45
+#: code:addons/pdm/models/descriptions.py:47
 #: model:ir.model.fields,field_description:pdm.field_plm_description__unitab
 #, python-format
 msgid "Normative Rule"
@@ -3453,8 +3562,8 @@ msgid "Normative reference"
 msgstr "Normativa di riferimento"
 
 #. module: pdm
-#: code:addons/pdm/models/extend_entities.py:321
-#: code:addons/pdm/models/extend_entities.py:339
+#: code:addons/pdm/models/extend_entities.py:323
+#: code:addons/pdm/models/extend_entities.py:341
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__notallowalble
 #: model:ir.model.fields,field_description:pdm.field_plm_check_product__notallowalble
 #, python-format
@@ -3462,19 +3571,19 @@ msgid "Not Allowalble"
 msgstr "Non ammissibile"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1099
+#: code:addons/pdm/models/base_client.py:1137
 #, python-format
 msgid "Not Equal"
 msgstr "Non Uguale"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1097
+#: code:addons/pdm/models/base_client.py:1135
 #, python-format
 msgid "Not Like"
 msgstr "Non Contiene"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:35
+#: code:addons/pdm/models/descriptions.py:37
 #: model:ir.model.fields,field_description:pdm.field_plm_description__name
 #, python-format
 msgid "Note to Description"
@@ -3486,8 +3595,8 @@ msgid "Note to help selection"
 msgstr "Note di aiuto alla selezione"
 
 #. module: pdm
-#: code:addons/pdm/models/extend_entities.py:317
-#: code:addons/pdm/models/extend_entities.py:335
+#: code:addons/pdm/models/extend_entities.py:319
+#: code:addons/pdm/models/extend_entities.py:337
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__reason
 #: model:ir.model.fields,field_description:pdm.field_plm_check_product__reason
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_form
@@ -3497,8 +3606,8 @@ msgid "Notes"
 msgstr "Note"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:874
-#: code:addons/pdm/models/base_client.py:1066
+#: code:addons/pdm/models/base_client.py:877
+#: code:addons/pdm/models/base_client.py:1069
 #, python-format
 msgid "Nothing to do"
 msgstr "Nulla da eseguire"
@@ -3531,7 +3640,7 @@ msgid "Number of error"
 msgstr "Numero di errori"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:957
+#: code:addons/pdm/models/base_client.py:960
 #, python-format
 msgid "Number of files involved to automatically decide downloading  from server. Used with 'Deferred Open' active."
 msgstr "Numero dei files da considerare per decidere autonomamente lo scaricamento differito dal server."
@@ -3552,51 +3661,51 @@ msgid "Number of unread messages"
 msgstr "Numero di messaggi non letti"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:987
-#: code:addons/pdm/models/base_client.py:1020
-#: code:addons/pdm/models/base_client.py:1050
+#: code:addons/pdm/models/base_client.py:990
+#: code:addons/pdm/models/base_client.py:1023
+#: code:addons/pdm/models/base_client.py:1053
 #, python-format
 msgid "OK"
 msgstr ""
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:60
+#: code:addons/pdm/models/base_client.py:62
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_os_arch
 #, python-format
 msgid "OS architecture"
 msgstr "Architettura sistema operativo"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:55
+#: code:addons/pdm/models/base_client.py:57
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_node
 #, python-format
 msgid "OS machine name"
 msgstr "Nome macchina (sistema operativo)"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:57
+#: code:addons/pdm/models/base_client.py:59
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_os
 #, python-format
 msgid "OS name"
 msgstr "Nome del sistema operativo"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:58
+#: code:addons/pdm/models/base_client.py:60
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_os_rel
 #, python-format
 msgid "OS release"
 msgstr "Rilascio sistema operativo"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:59
+#: code:addons/pdm/models/base_client.py:61
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_os_ver
 #, python-format
 msgid "OS version"
 msgstr "Versione sistema operativo"
 
 #. module: pdm
-#: code:addons/pdm/models/component.py:896
-#: code:addons/pdm/models/document.py:1179
+#: code:addons/pdm/models/component.py:897
+#: code:addons/pdm/models/document.py:1193
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__count_component_obsoleted
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
@@ -3614,102 +3723,126 @@ msgid "October"
 msgstr "Ottobre"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1045
+#: model_terms:ir.ui.view,arch_db:pdm.plm_check_wf_form_view
+msgid "One (or more) Product or Document is not movable."
+msgstr "Uno (o più) Prodotto o Documento non può essere mosso."
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:1048
 #, python-format
 msgid "Online Uploading"
 msgstr "Caricamento In Linea"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:693
+#: code:addons/pdm/models/base_client.py:1108
+#, python-format
+msgid "Open Document"
+msgstr "Apri Documento"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:696
 #, python-format
 msgid "Open Documents related to current one"
 msgstr "Aprire i Documenti correlati a quello corrente"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:691
+#: code:addons/pdm/models/base_client.py:1110
+#, python-format
+msgid "Open Related"
+msgstr "Apri Correlati"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:694
 #, python-format
 msgid "Open a Document"
 msgstr "Aprire un Documenot"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:694
+#: code:addons/pdm/models/base_client.py:697
 #, python-format
-msgid "Open a Document by Component"
-msgstr "Aprire un Documento dal Prodotto"
+msgid "Open a Document searching by Component"
+msgstr "Apre un Documento ricercando sul Prodotto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:994
-#: code:addons/pdm/models/base_client.py:1027
+#: code:addons/pdm/models/base_client.py:1111
+#, python-format
+msgid "Open by Component"
+msgstr "Apri da Prodotto"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:997
+#: code:addons/pdm/models/base_client.py:1030
 #, python-format
 msgid "Opened in session"
 msgstr "Aperto nella sessione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:976
-#: code:addons/pdm/models/base_client.py:1009
+#: code:addons/pdm/models/base_client.py:979
+#: code:addons/pdm/models/base_client.py:1012
 #, python-format
 msgid "Opening Options"
 msgstr "Opzioni di apertura"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1440
+#: code:addons/pdm/models/base_client.py:1478
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__op_date
 #, python-format
 msgid "Operation Date"
 msgstr "Data Operazione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1440
+#: code:addons/pdm/models/base_client.py:1478
 #: model:ir.model.fields,help:pdm.field_plm_logging__op_date
 #, python-format
 msgid "Operation Date."
 msgstr "Data Operazione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1439
+#: code:addons/pdm/models/base_client.py:1477
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__op_note
 #, python-format
 msgid "Operation Note"
 msgstr "Nota Operazione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1438
+#: code:addons/pdm/models/base_client.py:1476
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__op_type
 #, python-format
 msgid "Operation Type"
 msgstr "Tipo di operazione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1438
+#: code:addons/pdm/models/base_client.py:1476
 #: model:ir.model.fields,help:pdm.field_plm_logging__op_type
 #, python-format
 msgid "Operation Type."
 msgstr "Tipo Operazione"
 
 #. module: pdm
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:141
+#: code:addons/pdm/reports/mrp_report_bom_structure.py:143
 #, python-format
 msgid "Operations"
 msgstr "Operazioni"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:954
+#: code:addons/pdm/models/base_client.py:957
 #, python-format
 msgid "Optional Parameters"
 msgstr "Parametri Opzionali"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:903
-#: code:addons/pdm/models/base_client.py:954
-#: code:addons/pdm/models/base_client.py:992
-#: code:addons/pdm/models/base_client.py:1025
+#: code:addons/pdm/models/base_client.py:906
+#: code:addons/pdm/models/base_client.py:957
+#: code:addons/pdm/models/base_client.py:995
+#: code:addons/pdm/models/base_client.py:1028
+#: code:addons/pdm/models/base_client.py:1119
 #: model:ir.actions.act_window,name:pdm.action_menu_options
 #, python-format
 msgid "Options"
 msgstr "Opzioni"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:702
+#: code:addons/pdm/models/base_client.py:705
 #, python-format
 msgid "Options and User Settings"
 msgstr "Opzioni e Impostazioni Utente"
@@ -3763,25 +3896,25 @@ msgid "PWS Directory"
 msgstr "PWS Direttorio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:914
+#: code:addons/pdm/models/base_client.py:917
 #, python-format
 msgid "PageBoy Tray Servant Started"
 msgstr "Il servizio PageBoy è avviato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:915
+#: code:addons/pdm/models/base_client.py:918
 #, python-format
 msgid "PageBoy Tray Servant has failed"
 msgstr "Il servizio PageBoy ha incontrato errori"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:913
+#: code:addons/pdm/models/base_client.py:916
 #, python-format
 msgid "PageBoy Tray Servant is Starting Up"
 msgstr "Il servizio PageBoy sta avviandosi"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:912
+#: code:addons/pdm/models/base_client.py:915
 #, python-format
 msgid "PageBoy Tray Servant is Syncronizing"
 msgstr "Il servizio PageBoy sta sincronizzando i dati"
@@ -3797,9 +3930,9 @@ msgid "Parent Preview"
 msgstr "Preview Padre"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:278
-#: code:addons/pdm/models/comparebom.py:295
-#: code:addons/pdm/models/extend_entities.py:312
+#: code:addons/pdm/models/comparebom.py:280
+#: code:addons/pdm/models/comparebom.py:297
+#: code:addons/pdm/models/extend_entities.py:314
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__part_id
 #: model:ir.model.fields,field_description:pdm.field_plm_check_product__part_id
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__part_id1
@@ -3810,8 +3943,14 @@ msgid "Part"
 msgstr "Prodotto"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:45
-#: code:addons/pdm/models/sparebom.py:33
+#: code:addons/pdm/models/base_client.py:1105
+#, python-format
+msgid "Part Data"
+msgstr "Dati Prodotto"
+
+#. module: pdm
+#: code:addons/pdm/models/comparebom.py:47
+#: code:addons/pdm/models/sparebom.py:36
 #: model:ir.model.fields,field_description:pdm.field_plm_codelist__name
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__name
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__name
@@ -3840,7 +3979,7 @@ msgid "Part Number Rules"
 msgstr "Regole Codice Prodotto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_entities.py:58
+#: code:addons/pdm/models/base_entities.py:62
 #: sql_constraint:product.template:0
 #, python-format
 msgid "Part Number has to be unique!"
@@ -3858,36 +3997,36 @@ msgid "Part Relations"
 msgstr "Relazioni Prodotto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:881
-#: code:addons/pdm/models/base_client.py:1071
+#: code:addons/pdm/models/base_client.py:884
+#: code:addons/pdm/models/base_client.py:1074
 #, python-format
 msgid "Part without a proper Document Minor Revision."
 msgstr "Parte senza una corretta Revisione Minore di documento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:879
-#: code:addons/pdm/models/base_client.py:1069
+#: code:addons/pdm/models/base_client.py:882
+#: code:addons/pdm/models/base_client.py:1072
 #, python-format
 msgid "Part without a proper Document Name."
 msgstr "Parte senza un corretto Nome di documento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:880
-#: code:addons/pdm/models/base_client.py:1070
+#: code:addons/pdm/models/base_client.py:883
+#: code:addons/pdm/models/base_client.py:1073
 #, python-format
 msgid "Part without a proper Document Revision."
 msgstr "Parte senza una corretta Revisione di documento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:882
-#: code:addons/pdm/models/base_client.py:1072
+#: code:addons/pdm/models/base_client.py:885
+#: code:addons/pdm/models/base_client.py:1075
 #, python-format
 msgid "Part without a proper Product Part Number."
 msgstr "Parte senza un corretto Codice di prodotto."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:883
-#: code:addons/pdm/models/base_client.py:1073
+#: code:addons/pdm/models/base_client.py:886
+#: code:addons/pdm/models/base_client.py:1076
 #, python-format
 msgid "Part without a proper Product Part Revision."
 msgstr "Parte senza una corretta Revisione di prodotto."
@@ -3898,45 +4037,45 @@ msgid "Partner"
 msgstr ""
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:950
+#: code:addons/pdm/models/base_client.py:953
 #, python-format
 msgid "Password"
 msgstr ""
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:724
+#: code:addons/pdm/models/base_client.py:727
 #, python-format
 msgid "Performing Check-In..."
 msgstr "Eseguendo il Check-In..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:737
+#: code:addons/pdm/models/base_client.py:740
 #, python-format
 msgid "Performing Check-Out..."
 msgstr "Eseguendo il Check-Out..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:824
+#: code:addons/pdm/models/base_client.py:827
 #, python-format
 msgid "Performing Clone..."
 msgstr "Eseguendo il Clona..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:801
-#: code:addons/pdm/models/base_client.py:809
-#: code:addons/pdm/models/base_client.py:815
+#: code:addons/pdm/models/base_client.py:804
+#: code:addons/pdm/models/base_client.py:812
+#: code:addons/pdm/models/base_client.py:818
 #, python-format
 msgid "Performing New Revision..."
 msgstr "Eseguendo una Nuova Revisione..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:750
+#: code:addons/pdm/models/base_client.py:753
 #, python-format
 msgid "Performing Recursive Check-In..."
 msgstr "Eseguendo il Check-In Ricorsivo..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:763
+#: code:addons/pdm/models/base_client.py:766
 #, python-format
 msgid "Performing Recursive Check-Out..."
 msgstr "Eseguendo il Check-Out Ricorsivo..."
@@ -3947,7 +4086,7 @@ msgid "Physical Document Location"
 msgstr "Ubicazione fisica documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:947
+#: code:addons/pdm/models/base_client.py:950
 #, python-format
 msgid "Port No"
 msgstr "Numero Porta"
@@ -3958,37 +4097,37 @@ msgid "Position"
 msgstr "Posizione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:990
-#: code:addons/pdm/models/base_client.py:1023
+#: code:addons/pdm/models/base_client.py:993
+#: code:addons/pdm/models/base_client.py:1026
 #, python-format
 msgid "Preloaded filter name."
 msgstr "Nome del filtro precaricato."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:782
-#: code:addons/pdm/models/base_client.py:784
-#: code:addons/pdm/models/base_client.py:786
-#: code:addons/pdm/models/base_client.py:788
-#: code:addons/pdm/models/base_client.py:790
+#: code:addons/pdm/models/base_client.py:785
+#: code:addons/pdm/models/base_client.py:787
+#: code:addons/pdm/models/base_client.py:789
+#: code:addons/pdm/models/base_client.py:791
+#: code:addons/pdm/models/base_client.py:793
 #, python-format
 msgid "Preparing Download..."
 msgstr "Preparazione dello scaricamento..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:839
-#: code:addons/pdm/models/base_client.py:859
+#: code:addons/pdm/models/base_client.py:842
+#: code:addons/pdm/models/base_client.py:862
 #, python-format
 msgid "Preparing Upload..."
 msgstr "Preparazione del caricamento..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:778
+#: code:addons/pdm/models/base_client.py:781
 #, python-format
 msgid "Preparing to Assign Document Name..."
 msgstr "Preparazione di Assegna Nome Documento..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1133
+#: code:addons/pdm/models/base_client.py:1171
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__child_preview
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__parent_preview
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_form
@@ -4041,7 +4180,7 @@ msgid "Print Pdf"
 msgstr "Stampa PDF"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1051
+#: code:addons/pdm/models/base_client.py:1054
 #, python-format
 msgid "Print Report"
 msgstr "Stampa del Report"
@@ -4064,14 +4203,14 @@ msgid "Print Spare Parts Manual One Level"
 msgstr "Stampa Manuale Distinta Parti di Ricambio - 1 Livello"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1061
+#: code:addons/pdm/models/base_client.py:1064
 #, python-format
 msgid "Print a report on text file."
 msgstr "Stampa un report su file di testo."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:974
-#: code:addons/pdm/models/base_client.py:1007
+#: code:addons/pdm/models/base_client.py:977
+#: code:addons/pdm/models/base_client.py:1010
 #, python-format
 msgid "PrintOut"
 msgstr "Stampa"
@@ -4083,13 +4222,13 @@ msgid "Printout Content"
 msgstr "Stampa Contenuto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:902
+#: code:addons/pdm/models/base_client.py:905
 #, python-format
 msgid "Processing Requests"
 msgstr "Evasione delle richieste"
 
 #. module: pdm
-#: code:addons/pdm/models/extend_entities.py:313
+#: code:addons/pdm/models/extend_entities.py:315
 #: model:ir.model,name:pdm.model_product_product
 #: model:ir.model.fields,field_description:pdm.field_plm_check_product__name
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
@@ -4098,14 +4237,15 @@ msgid "Product"
 msgstr "Prodotto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1139
-#: code:addons/pdm/models/base_client.py:1158
+#: code:addons/pdm/models/base_client.py:1177
+#: code:addons/pdm/models/base_client.py:1196
 #, python-format
 msgid "Product Name"
 msgstr "Nome Prodotto"
 
 #. module: pdm
 #: model:ir.model,name:pdm.model_product_template
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
 msgid "Product Template"
 msgstr "Modello prodotto"
 
@@ -4122,7 +4262,7 @@ msgid "Products involved"
 msgstr "Prodotti coinvolti"
 
 #. module: pdm
-#: code:addons/pdm/models/extend_entities.py:345
+#: code:addons/pdm/models/extend_entities.py:364
 #: model:ir.model,name:pdm.model_plm_check_product
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__part_ids
 #, python-format
@@ -4130,7 +4270,7 @@ msgid "Products to be checked"
 msgstr "Prodotti da controllare"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:948
+#: code:addons/pdm/models/base_client.py:951
 #, python-format
 msgid "Protocol"
 msgstr "Protocollo"
@@ -4142,14 +4282,20 @@ msgid "Purchase Description"
 msgstr "Descrizione per Acquisti"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:701
+#: code:addons/pdm/models/base_client.py:704
 #, python-format
 msgid "Purge Checked-In files from PWS"
 msgstr "Elimina file in Check-In dal PWS"
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:282
-#: code:addons/pdm/models/comparebom.py:299
+#: code:addons/pdm/models/base_client.py:1118
+#, python-format
+msgid "Purge files"
+msgstr "Pulizia files"
+
+#. module: pdm
+#: code:addons/pdm/models/comparebom.py:284
+#: code:addons/pdm/models/comparebom.py:301
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__itemqty
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__itemqty
 #: model_terms:ir.ui.view,arch_db:pdm.bom_structure_template
@@ -4158,8 +4304,8 @@ msgid "Quantity"
 msgstr "Quantità"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:993
-#: code:addons/pdm/models/base_client.py:1026
+#: code:addons/pdm/models/base_client.py:996
+#: code:addons/pdm/models/base_client.py:1029
 #, python-format
 msgid "Quick Filters"
 msgstr "Filtri Rapidi"
@@ -4172,8 +4318,8 @@ msgid "Raw Material"
 msgstr "Materia Prima"
 
 #. module: pdm
-#: code:addons/pdm/models/base_entities.py:885
-#: code:addons/pdm/models/base_entities.py:898
+#: code:addons/pdm/models/base_entities.py:889
+#: code:addons/pdm/models/base_entities.py:902
 #: sql_constraint:plm.finishing:0
 #: sql_constraint:plm.material:0
 #, python-format
@@ -4187,25 +4333,31 @@ msgid "Raw material for current product, only description for titleblock."
 msgstr "Materia Prime per il prodotto corrente, sola descrizione per cartiglio."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:901
+#: code:addons/pdm/models/base_client.py:904
 #, python-format
 msgid "Ready to Process"
 msgstr "In attesa di processare dati"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:747
+#: code:addons/pdm/models/base_client.py:1102
+#, python-format
+msgid "Recursive Check-In"
+msgstr "Check-In Ricorsivo"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:750
 #, python-format
 msgid "Recursive Check-In Paused"
 msgstr "Check-In ricorsivo Fermato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:685
+#: code:addons/pdm/models/base_client.py:688
 #, python-format
 msgid "Recursive Check-In from current document"
 msgstr "Check-In Recursivo per il documento corrente"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:760
+#: code:addons/pdm/models/base_client.py:763
 #, python-format
 msgid "Recursive Check-Out Paused"
 msgstr "Check-Out ricorsivo Fermato"
@@ -4222,36 +4374,36 @@ msgid "Reference"
 msgstr "Riferimento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:726
-#: code:addons/pdm/models/base_client.py:739
-#: code:addons/pdm/models/base_client.py:752
-#: code:addons/pdm/models/base_client.py:765
-#: code:addons/pdm/models/base_client.py:844
-#: code:addons/pdm/models/base_client.py:864
+#: code:addons/pdm/models/base_client.py:729
+#: code:addons/pdm/models/base_client.py:742
+#: code:addons/pdm/models/base_client.py:755
+#: code:addons/pdm/models/base_client.py:768
+#: code:addons/pdm/models/base_client.py:847
+#: code:addons/pdm/models/base_client.py:867
 #, python-format
 msgid "Refreshing Data..."
 msgstr "Aggiornamento dei dati..."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:893
+#: code:addons/pdm/models/base_client.py:896
 #, python-format
 msgid "Refused"
 msgstr "Rifiutato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:61
+#: code:addons/pdm/models/base_client.py:63
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__node_id
 #, python-format
 msgid "Registered PLM client"
 msgstr "Client PLM registrato"
 
 #. module: pdm
-#: code:addons/pdm/reports/component_kanban.py:95
-#: code:addons/pdm/reports/component_kanban.py:104
-#: code:addons/pdm/reports/component_kanban.py:113
-#: code:addons/pdm/reports/component_kanban.py:131
-#: code:addons/pdm/reports/component_kanban.py:141
-#: code:addons/pdm/reports/component_kanban.py:150
+#: code:addons/pdm/reports/component_kanban.py:97
+#: code:addons/pdm/reports/component_kanban.py:106
+#: code:addons/pdm/reports/component_kanban.py:115
+#: code:addons/pdm/reports/component_kanban.py:133
+#: code:addons/pdm/reports/component_kanban.py:143
+#: code:addons/pdm/reports/component_kanban.py:152
 #, python-format
 msgid "Related Boms"
 msgstr "Distinte Collegate"
@@ -4263,13 +4415,13 @@ msgid "Related Document"
 msgstr "Documento Collegato"
 
 #. module: pdm
-#: code:addons/pdm/reports/component_kanban.py:124
+#: code:addons/pdm/reports/component_kanban.py:126
 #, python-format
 msgid "Related Documents"
 msgstr "Documenti Collegati"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1441
+#: code:addons/pdm/models/base_client.py:1479
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__userid
 #: model:ir.model.fields,field_description:pdm.field_plm_checkout__userid
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__userid
@@ -4278,7 +4430,7 @@ msgid "Related User"
 msgstr "Utente Relazionato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1441
+#: code:addons/pdm/models/base_client.py:1479
 #: model:ir.model.fields,help:pdm.field_plm_logging__userid
 #, python-format
 msgid "Related User."
@@ -4306,10 +4458,10 @@ msgid "Release Document"
 msgstr "Rilasciare Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/component.py:865
-#: code:addons/pdm/models/component.py:927
-#: code:addons/pdm/models/document.py:1142
-#: code:addons/pdm/models/document.py:1213
+#: code:addons/pdm/models/component.py:866
+#: code:addons/pdm/models/component.py:928
+#: code:addons/pdm/models/document.py:1156
+#: code:addons/pdm/models/document.py:1227
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__count_component_released
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
@@ -4322,14 +4474,14 @@ msgid "Released"
 msgstr "Rilasciato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:980
-#: code:addons/pdm/models/base_client.py:1013
+#: code:addons/pdm/models/base_client.py:983
+#: code:addons/pdm/models/base_client.py:1016
 #, python-format
 msgid "Reload"
 msgstr "Ricarica"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1057
+#: code:addons/pdm/models/base_client.py:1060
 #, python-format
 msgid "Remove all filters."
 msgstr "Rimuovi tutti i filtri."
@@ -4395,13 +4547,13 @@ msgid "Report Spare Bom One Level"
 msgstr "Report Distinta Ricambi Un Livello"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1048
+#: code:addons/pdm/models/base_client.py:1051
 #, python-format
 msgid "Requested"
 msgstr "Richiesto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:872
+#: code:addons/pdm/models/base_client.py:875
 #, python-format
 msgid "Requested file"
 msgstr "Il file richiesto"
@@ -4409,12 +4561,12 @@ msgstr "Il file richiesto"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__res_model_name
 msgid "Res Model Name"
-msgstr "Nome risorsa modello"
+msgstr "Nome del modello risorsa"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__res_field
 msgid "Resource Field"
-msgstr "Campo Risorsa"
+msgstr "Campo risorsa"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__res_id
@@ -4424,7 +4576,7 @@ msgstr "ID risorsa"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__res_model
 msgid "Resource Model"
-msgstr "Modello della Risorsa"
+msgstr "Modello risorsa"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__res_name
@@ -4447,27 +4599,28 @@ msgid "Restore Selected Document"
 msgstr "Ripristinare Documento Selezionato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:999
-#: code:addons/pdm/models/base_client.py:1030
+#: code:addons/pdm/models/base_client.py:1002
+#: code:addons/pdm/models/base_client.py:1033
 #, python-format
 msgid "Results found"
 msgstr "Risultati trovati"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1037
-#: code:addons/pdm/models/base_client.py:1124
-#: code:addons/pdm/models/base_client.py:1141
-#: code:addons/pdm/models/base_client.py:1156
-#: code:addons/pdm/models/base_client.py:1160
-#: code:addons/pdm/models/base_client.py:1173
-#: code:addons/pdm/models/base_client.py:1178
-#: code:addons/pdm/models/base_client.py:1435
-#: code:addons/pdm/models/comparebom.py:49
-#: code:addons/pdm/models/comparebom.py:54
-#: code:addons/pdm/models/comparebom.py:279
-#: code:addons/pdm/models/comparebom.py:296
-#: code:addons/pdm/models/extend_entities.py:314
-#: code:addons/pdm/models/extend_entities.py:331
+#: code:addons/pdm/models/base_client.py:1040
+#: code:addons/pdm/models/base_client.py:1114
+#: code:addons/pdm/models/base_client.py:1162
+#: code:addons/pdm/models/base_client.py:1179
+#: code:addons/pdm/models/base_client.py:1194
+#: code:addons/pdm/models/base_client.py:1198
+#: code:addons/pdm/models/base_client.py:1211
+#: code:addons/pdm/models/base_client.py:1216
+#: code:addons/pdm/models/base_client.py:1473
+#: code:addons/pdm/models/comparebom.py:51
+#: code:addons/pdm/models/comparebom.py:56
+#: code:addons/pdm/models/comparebom.py:281
+#: code:addons/pdm/models/comparebom.py:298
+#: code:addons/pdm/models/extend_entities.py:316
+#: code:addons/pdm/models/extend_entities.py:333
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom__engineering_revision
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__engineering_revision
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__revision
@@ -4500,7 +4653,7 @@ msgid "Revision Index"
 msgstr "Indice Revisione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1435
+#: code:addons/pdm/models/base_client.py:1473
 #: model:ir.model.fields,help:pdm.field_plm_logging__revision
 #, python-format
 msgid "Revision involved."
@@ -4513,21 +4666,21 @@ msgid "Sale Description"
 msgstr "Descrizione per Vendite"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:979
-#: code:addons/pdm/models/base_client.py:1012
+#: code:addons/pdm/models/base_client.py:982
+#: code:addons/pdm/models/base_client.py:1015
 #, python-format
 msgid "Save"
 msgstr "Salva"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:964
+#: code:addons/pdm/models/base_client.py:967
 #, python-format
 msgid "Save settings used for Open Documents"
 msgstr "Salvare le impostazioni utilizzate per Apri Documenti"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:997
-#: code:addons/pdm/models/base_client.py:1028
+#: code:addons/pdm/models/base_client.py:1000
+#: code:addons/pdm/models/base_client.py:1031
 #, python-format
 msgid "Search"
 msgstr "Ricerca"
@@ -4544,7 +4697,7 @@ msgid "Search on Document Relations"
 msgstr "Ricerca u Relazioni Documento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1004
+#: code:addons/pdm/models/base_client.py:1007
 #: model:ir.ui.menu,name:pdm.menu_documents
 #, python-format
 msgid "Search on Documents"
@@ -4561,7 +4714,7 @@ msgid "Search on Normal Bill of Materials"
 msgstr "Ricerca su Distinte di Produzione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:970
+#: code:addons/pdm/models/base_client.py:973
 #, python-format
 msgid "Search on Products"
 msgstr "Ricerca sui Prodotti"
@@ -4582,7 +4735,7 @@ msgid "Select Products to move"
 msgstr "Scegli i prodotti da muovere"
 
 #. module: pdm
-#: code:addons/pdm/models/sparebom.py:131
+#: code:addons/pdm/models/sparebom.py:134
 #: model:ir.model.fields,help:pdm.field_plm_description__bom_tmpl
 #, python-format
 msgid "Select a  BoM as template to drive building Spare BoM."
@@ -4594,7 +4747,7 @@ msgid "Select raw material for current product"
 msgstr "Scegliere Materia Prima per il prodotto corrente"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:82
+#: code:addons/pdm/models/descriptions.py:84
 #: model:ir.model.fields,help:pdm.field_product_product__std_description
 #, python-format
 msgid "Select standard description for current product."
@@ -4613,7 +4766,7 @@ msgid "September"
 msgstr "Settembre"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:46
+#: code:addons/pdm/models/descriptions.py:48
 #: model:ir.model.fields,field_description:pdm.field_plm_description__sequence
 #: model:ir.model.fields,field_description:pdm.field_plm_finishing__sequence
 #: model:ir.model.fields,field_description:pdm.field_plm_material__sequence
@@ -4628,43 +4781,43 @@ msgid "Sequence Rule"
 msgstr "Regola Sequenza"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:917
+#: code:addons/pdm/models/base_client.py:920
 #, python-format
 msgid "Servant"
 msgstr "Servizio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:944
+#: code:addons/pdm/models/base_client.py:947
 #, python-format
 msgid "Server Login"
 msgstr "Login sul Server"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:945
+#: code:addons/pdm/models/base_client.py:948
 #, python-format
 msgid "Server Name"
 msgstr "Nome del Server"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:931
+#: code:addons/pdm/models/base_client.py:934
 #, python-format
 msgid "Server doesn't answer or network has errors."
 msgstr "Il server non risponde o la rete presenta errori."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:941
+#: code:addons/pdm/models/base_client.py:944
 #, python-format
 msgid "Server doesn't answer or network has errors. Please, contact your IT administrator."
 msgstr "Il server non risponde o la rete presenta errori. Per piacere, contatta il tuo amministratore IT."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:905
+#: code:addons/pdm/models/base_client.py:908
 #, python-format
 msgid "Server is Unreachable"
 msgstr "Il server non è raggiungibile"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:52
+#: code:addons/pdm/models/base_client.py:54
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__plm_service_id
 #: model_terms:ir.ui.view,arch_db:pdm.view_add_service_id
 #, python-format
@@ -4684,38 +4837,38 @@ msgid "Show Document Relation"
 msgstr "Mostra Relazione Doumento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:73
+#: code:addons/pdm/models/base_client.py:75
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_showWFanalysis
 #, python-format
 msgid "Show workflow Analysis before to move"
 msgstr "Mostra Analisi del Workflow prima di muovere i dati"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1104
+#: code:addons/pdm/models/base_client.py:1142
 #, python-format
 msgid "Smaller"
 msgstr "Minore"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1105
+#: code:addons/pdm/models/base_client.py:1143
 #, python-format
 msgid "Smaller Equal"
 msgstr "Minore o Uguale"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:937
+#: code:addons/pdm/models/base_client.py:940
 #, python-format
 msgid "Some issue accessing to Document Data."
 msgstr "Qualche problema accedendo ai Dati Documento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:940
+#: code:addons/pdm/models/base_client.py:943
 #, python-format
 msgid "Some issue accessing to Knowledge interface."
 msgstr "Qualche problema accedendo all' interfaccia di Conoscenza."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:936
+#: code:addons/pdm/models/base_client.py:939
 #, python-format
 msgid "Some issue accessing to Part Data."
 msgstr "Qualche problema accedendo ai Dati Prodotto."
@@ -4724,7 +4877,7 @@ msgstr "Qualche problema accedendo ai Dati Prodotto."
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__source_id
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_form_view
 msgid "Source Document"
-msgstr "Documento Origine"
+msgstr "Documento di origine"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
@@ -4765,15 +4918,15 @@ msgid "Specific Options"
 msgstr "Specificare Opzioni"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:45
+#: code:addons/pdm/models/descriptions.py:47
 #: model:ir.model.fields,help:pdm.field_plm_description__unitab
 #, python-format
 msgid "Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description."
 msgstr "Specificare regole normative (UNI, ISO, DIN...). Sarà accodato per costruire la descrizione prodotto."
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:36
-#: code:addons/pdm/models/descriptions.py:80
+#: code:addons/pdm/models/descriptions.py:38
+#: code:addons/pdm/models/descriptions.py:82
 #: model:ir.model.fields,field_description:pdm.field_plm_description__description
 #: model:ir.model.fields,field_description:pdm.field_product_product__std_description
 #: model_terms:ir.ui.view,arch_db:pdm.plm_base_component_tech_form
@@ -4804,10 +4957,10 @@ msgid "Static preview."
 msgstr "Anteprime statica"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1126
-#: code:addons/pdm/models/base_client.py:1142
-#: code:addons/pdm/models/extend_entities.py:315
-#: code:addons/pdm/models/extend_entities.py:333
+#: code:addons/pdm/models/base_client.py:1164
+#: code:addons/pdm/models/base_client.py:1180
+#: code:addons/pdm/models/extend_entities.py:317
+#: code:addons/pdm/models/extend_entities.py:335
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom__state
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__state
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__state
@@ -4833,7 +4986,7 @@ msgid "Status by Year"
 msgstr "Stato per Anno"
 
 #. module: pdm
-#: code:addons/pdm/models/document.py:215
+#: code:addons/pdm/models/document.py:217
 #, python-format
 msgid "Stored Document Error\n"
 "Document '{}-{}' cannot be accessed."
@@ -4843,10 +4996,10 @@ msgstr "Errore su Documento Immagazzinato\n"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__store_fname
 msgid "Stored Filename"
-msgstr "Nome del File Registrato"
+msgstr "Nome file memorizzato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:928
+#: code:addons/pdm/models/base_client.py:931
 #, python-format
 msgid "Successfully Saved."
 msgstr "Salvate con successo."
@@ -4887,7 +5040,7 @@ msgid "Technical feature label and formatting"
 msgstr "Caratteristica tecnica, etichetta e formato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_entities.py:924
+#: code:addons/pdm/models/base_entities.py:928
 #, python-format
 msgid "Temp"
 msgstr ""
@@ -4898,7 +5051,7 @@ msgid "Template BOM"
 msgstr "Modello Distinta"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1138
+#: code:addons/pdm/models/base_client.py:1176
 #, python-format
 msgid "Template ID"
 msgstr "ID Modello"
@@ -4914,7 +5067,7 @@ msgid "The BoM net weight in Kg."
 msgstr "Peso netto della distinta in kg."
 
 #. module: pdm
-#: code:addons/pdm/models/document.py:1826
+#: code:addons/pdm/models/document.py:1840
 #: sql_constraint:plm.document.relation:0
 #, python-format
 msgid "The Document Relation must be unique !"
@@ -4926,7 +5079,7 @@ msgid "The database object this attachment will be attached to."
 msgstr "L'oggetto del database a cui verrà assegnato questo allegato."
 
 #. module: pdm
-#: code:addons/pdm/models/document.py:949
+#: code:addons/pdm/models/document.py:963
 #, python-format
 msgid "The document %s - %s has not checked-in"
 msgstr "Il documento %s - %s non è in check-in"
@@ -4973,7 +5126,7 @@ msgid "The status of the product in its LifeCycle."
 msgstr "Lo stato del prodotto nel suo Ciclo di Vita."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:825
+#: code:addons/pdm/models/base_client.py:828
 #, python-format
 msgid "This is a 2D Layout, it's not allowed to use 'EditParts'.\n"
 "Use 'AssigndocName' instead 'EditParts' to assign document data."
@@ -4986,7 +5139,7 @@ msgid "This is engineering reference to manage a different P/N from item Name."
 msgstr "Questo è il riferimento d' ingegneria per gestire un diverso codice prodotto."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:776
+#: code:addons/pdm/models/base_client.py:779
 #, python-format
 msgid "This is not Default configuration.\n"
 "Edit document data is not allowed."
@@ -5017,37 +5170,37 @@ msgid "This is the sequence object related to this P/N rule."
 msgstr "Questa è la sequenza correlata alla regola di codifica prodotto."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:963
+#: code:addons/pdm/models/base_client.py:966
 #, python-format
 msgid "This option allows to execute document analysis before Upload, to show how document will be managed uploading to database. Default is False."
 msgstr "Questa opzione permette di eseguire l' analisi del documento prima del caricamento, per mostrare come il doumenot sara` gestito nel caricamento sul Database. Default è Falso."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:966
+#: code:addons/pdm/models/base_client.py:969
 #, python-format
 msgid "This option allows to force uploading a file also if seems changed. Default is False."
 msgstr "Questa opzione permette di forzare il caricamento di un file anche se sembra modificato. Default è Falso."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:965
+#: code:addons/pdm/models/base_client.py:968
 #, python-format
 msgid "This option allows to store latest opened document name. Default is False."
 msgstr "Questa opzione permette di memorizzare i nomi degli ultimi documenti aperti. Default è Falso."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:964
+#: code:addons/pdm/models/base_client.py:967
 #, python-format
 msgid "This option allows to store settings used in Component or Document Open and Import interfaces. Default is False."
 msgstr "Questa opzione permette di memorizzare le impostazioni usate nelle interfacce di Apri Componente o Documento. Default è Falso."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:961
+#: code:addons/pdm/models/base_client.py:964
 #, python-format
 msgid "This option avoids to edit document data, assigning them automatically from product. Default is False."
 msgstr "Questa opzione evita di editare i dati Documento, assegnandoli in automatico a partire dal Codice Prodotto. Default è Falso."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:962
+#: code:addons/pdm/models/base_client.py:965
 #, python-format
 msgid "This option avoids to reuse document file name (if any) as document P/N. Default is True."
 msgstr "Questa opzione evita di riutiliare il nome file di un Documento com Nome Documento. Default è Vero."
@@ -5063,7 +5216,7 @@ msgid "Thumbnail"
 msgstr "Miniatura"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:959
+#: code:addons/pdm/models/base_client.py:962
 #, python-format
 msgid "Time (in seconds) to wait before to start initial uploading of files to server. Used with 'Deferred Upload' active."
 msgstr "Tempo (in secondi) da attendere prima di avviare il processo iniziale di caricamento differito. Utilizzato quando 'Caricamento Differito' è attivo."
@@ -5076,29 +5229,29 @@ msgid "TitleBlock Informations"
 msgstr "Informazioni di Cartiglio"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:885
-#: code:addons/pdm/models/base_client.py:1075
+#: code:addons/pdm/models/base_client.py:888
+#: code:addons/pdm/models/base_client.py:1078
 #, python-format
 msgid "To Refuse"
 msgstr "Da rifiutare"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:887
-#: code:addons/pdm/models/base_client.py:1077
+#: code:addons/pdm/models/base_client.py:890
+#: code:addons/pdm/models/base_client.py:1080
 #, python-format
 msgid "To Update"
 msgstr "Da Aggiornare"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:877
-#: code:addons/pdm/models/base_client.py:1068
+#: code:addons/pdm/models/base_client.py:880
+#: code:addons/pdm/models/base_client.py:1071
 #, python-format
 msgid "To Upload"
 msgstr "Da caricare"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:884
-#: code:addons/pdm/models/base_client.py:1074
+#: code:addons/pdm/models/base_client.py:887
+#: code:addons/pdm/models/base_client.py:1077
 #, python-format
 msgid "To Upload as new document."
 msgstr "Da caricare come nuovo documento."
@@ -5119,13 +5272,13 @@ msgid "Today"
 msgstr "Oggi"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:925
+#: code:addons/pdm/models/base_client.py:928
 #, python-format
 msgid "Tray Application to assist background operations."
 msgstr "Servizio per le operazioni in secondo piano."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:1437
+#: code:addons/pdm/models/base_client.py:1475
 #: model:ir.model.fields,field_description:pdm.field_plm_document__type
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__type
 #: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
@@ -5134,8 +5287,8 @@ msgid "Type"
 msgstr "Tipologia"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:38
-#: code:addons/pdm/models/descriptions.py:83
+#: code:addons/pdm/models/descriptions.py:40
+#: code:addons/pdm/models/descriptions.py:85
 #: model:ir.model.fields,field_description:pdm.field_plm_description__umc1
 #: model:ir.model.fields,field_description:pdm.field_product_product__std_umc1
 #, python-format
@@ -5143,8 +5296,8 @@ msgid "UM / Feature 1"
 msgstr "UoM / Caratteristica 1"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:40
-#: code:addons/pdm/models/descriptions.py:85
+#: code:addons/pdm/models/descriptions.py:42
+#: code:addons/pdm/models/descriptions.py:87
 #: model:ir.model.fields,field_description:pdm.field_plm_description__umc2
 #: model:ir.model.fields,field_description:pdm.field_product_product__std_umc2
 #, python-format
@@ -5152,8 +5305,8 @@ msgid "UM / Feature 2"
 msgstr "UoM / Caratteristica 2"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:42
-#: code:addons/pdm/models/descriptions.py:87
+#: code:addons/pdm/models/descriptions.py:44
+#: code:addons/pdm/models/descriptions.py:89
 #: model:ir.model.fields,field_description:pdm.field_plm_description__umc3
 #: model:ir.model.fields,field_description:pdm.field_product_product__std_umc3
 #, python-format
@@ -5166,7 +5319,7 @@ msgid "URL"
 msgstr ""
 
 #. module: pdm
-#: code:addons/pdm/models/document.py:1789
+#: code:addons/pdm/models/document.py:1803
 #, python-format
 msgid "Unable to Check-In the required document.\n"
 "\n"
@@ -5176,7 +5329,7 @@ msgstr "Check-In non concesso sul documento in oggetto.\n"
 "Non sei autorizzato in questo contesto."
 
 #. module: pdm
-#: code:addons/pdm/models/document.py:2028
+#: code:addons/pdm/models/document.py:2044
 #, python-format
 msgid "Unable to remove the document '{}-{}' from backup set.\n"
 "It isn't a backup file, it's original current one."
@@ -5184,8 +5337,8 @@ msgstr "Non ammesso eliminare il documento '{}-{}' dall' insieme di backup.\n"
 "Non è un file di backup, è la versione originale."
 
 #. module: pdm
-#: code:addons/pdm/models/document.py:2010
-#: code:addons/pdm/models/document.py:2050
+#: code:addons/pdm/models/document.py:2025
+#: code:addons/pdm/models/document.py:2066
 #, python-format
 msgid "Unable to remove the required document.\n"
 " You aren't authorized in this context."
@@ -5193,7 +5346,7 @@ msgstr "Non ammesso eliminare il documento richiesto.\n"
 "Non sei autorizzato in questo contesto."
 
 #. module: pdm
-#: code:addons/pdm/models/document.py:2063
+#: code:addons/pdm/models/document.py:2079
 #, python-format
 msgid "Unable to restore the document '{}-{}' from backup set.\n"
 "Check if it's checked-in, before to retry."
@@ -5227,7 +5380,7 @@ msgid "Unread Messages Counter"
 msgstr "Numero messaggi non letti"
 
 #. module: pdm
-#: code:addons/pdm/models/component.py:155
+#: code:addons/pdm/models/component.py:157
 #, python-format
 msgid "Update Part Error.\n"
 "\n"
@@ -5244,21 +5397,22 @@ msgid "Update revisions"
 msgstr "Aggiornare revisioni"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:841
-#: code:addons/pdm/models/base_client.py:861
+#: code:addons/pdm/models/base_client.py:844
+#: code:addons/pdm/models/base_client.py:864
+#: code:addons/pdm/models/base_client.py:1104
 #, python-format
 msgid "Upload"
 msgstr "Caricamento"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:687
+#: code:addons/pdm/models/base_client.py:690
 #, python-format
 msgid "Upload current document"
 msgstr "Caricare il documento corrente"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:846
-#: code:addons/pdm/models/base_client.py:866
+#: code:addons/pdm/models/base_client.py:849
+#: code:addons/pdm/models/base_client.py:869
 #, python-format
 msgid "Upload interface object is not running.\n"
 "Please, restart the O.S. then try to perform Upload again."
@@ -5266,20 +5420,20 @@ msgstr "Il caricamento dell' oggetto interfaccia non funziona.\n"
 "Per piacere, riavvia il sistema operativo e riprova ad eseguire il caricamento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:849
+#: code:addons/pdm/models/base_client.py:852
 #, python-format
 msgid "Upload stopped"
 msgstr "Caricamento interrotto"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:773
+#: code:addons/pdm/models/base_client.py:776
 #, python-format
 msgid "Upload stopped. Current document has been modifying and has to be saved locally, before uploading it to server."
 msgstr "Caricamento interrotto. Il documento corrente è stato modificato e deve essere salvato localmente, prima di caricarlo sul server."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:843
-#: code:addons/pdm/models/base_client.py:863
+#: code:addons/pdm/models/base_client.py:846
+#: code:addons/pdm/models/base_client.py:866
 #, python-format
 msgid "Upload stopped. Current document was modified and/or it has to be regenerated before to Upload it.\n"
 "Please, regenerate and save it locally before to perform Upload again."
@@ -5287,7 +5441,7 @@ msgstr "Caricamento interrotto. Il documento corrente è stato modificato e/o de
 "Per piacere, rigeneralo e salvalo localmente, prima di ricaricarlo nel DB."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:857
+#: code:addons/pdm/models/base_client.py:860
 #, python-format
 msgid "Upload stopped. Current document was modified but it has Checked-In.\n"
 "Take it in check-out for you before to upload changes."
@@ -5295,8 +5449,8 @@ msgstr "Caricamento interrotto. Il documento corrente è stato modificato localm
 "Prendilo in Check-Out a tuo nome, prima di ricaricarlo nel DB."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:845
-#: code:addons/pdm/models/base_client.py:865
+#: code:addons/pdm/models/base_client.py:848
+#: code:addons/pdm/models/base_client.py:868
 #, python-format
 msgid "Upload stopped. Some error occurred during execution.\n"
 "Please, try regenerating current document and save it locally before to perform Upload again."
@@ -5304,14 +5458,20 @@ msgstr "Caricamento interrotto. Si e` verificato un errore imprevisto durante l'
 "Per piacere, prova a rigenerare il documento e salvalo localmente, prima di ricaricarlo nel DB."
 
 #. module: pdm
-#: code:addons/pdm/models/component.py:734
-#: code:addons/pdm/models/document.py:1009
+#: code:addons/pdm/models/base_client.py:1091
+#, python-format
+msgid "Upload to DB"
+msgstr "Caricamento su DB"
+
+#. module: pdm
+#: code:addons/pdm/models/component.py:735
+#: code:addons/pdm/models/document.py:1023
 #, python-format
 msgid "Uploaded"
 msgstr "Caricato"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:897
+#: code:addons/pdm/models/base_client.py:900
 #, python-format
 msgid "Uploaded documents"
 msgstr "Docuemnti caricati"
@@ -5333,7 +5493,7 @@ msgid "Use latest product revisions evaluating new BoM."
 msgstr "Utilizzare le più recenti revisioni di prodotto calcolando la nuova distinta."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:54
+#: code:addons/pdm/models/base_client.py:56
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_editor
 #, python-format
 msgid "Used Editor Name"
@@ -5350,8 +5510,8 @@ msgid "Used for Spare"
 msgstr "Usato per Ricambi"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:938
-#: code:addons/pdm/models/base_client.py:949
+#: code:addons/pdm/models/base_client.py:941
+#: code:addons/pdm/models/base_client.py:952
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__user
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__user
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_wall__user
@@ -5366,28 +5526,28 @@ msgid "Users that did not inserted documents since one month"
 msgstr "Utenti che non hanno inserito documenti da più di un mese"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:985
-#: code:addons/pdm/models/base_client.py:1018
+#: code:addons/pdm/models/base_client.py:988
+#: code:addons/pdm/models/base_client.py:1021
 #, python-format
 msgid "Value"
 msgstr "Valore"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:84
+#: code:addons/pdm/models/descriptions.py:86
 #: model:ir.model.fields,field_description:pdm.field_product_product__std_value1
 #, python-format
 msgid "Value 1"
 msgstr "Valore 1"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:86
+#: code:addons/pdm/models/descriptions.py:88
 #: model:ir.model.fields,field_description:pdm.field_product_product__std_value2
 #, python-format
 msgid "Value 2"
 msgstr "Valore 2"
 
 #. module: pdm
-#: code:addons/pdm/models/descriptions.py:88
+#: code:addons/pdm/models/descriptions.py:90
 #: model:ir.model.fields,field_description:pdm.field_product_product__std_value3
 #, python-format
 msgid "Value 3"
@@ -5404,29 +5564,29 @@ msgid "Visualize BoM"
 msgstr "Visualizza Distinta"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:959
+#: code:addons/pdm/models/base_client.py:962
 #, python-format
 msgid "Wait for initial upload [seconds]"
 msgstr "Attesa per caricamento iniziale [secondi]"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:909
+#: code:addons/pdm/models/base_client.py:912
 #, python-format
 msgid "Waiting for connection/syncronization to Server."
 msgstr "In attesa della connessione/sincronizzazione col Server."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:774
 #: code:addons/pdm/models/base_client.py:777
-#: code:addons/pdm/models/base_client.py:798
-#: code:addons/pdm/models/base_client.py:806
-#: code:addons/pdm/models/base_client.py:812
-#: code:addons/pdm/models/base_client.py:818
-#: code:addons/pdm/models/base_client.py:832
-#: code:addons/pdm/models/base_client.py:847
-#: code:addons/pdm/models/base_client.py:868
-#: code:addons/pdm/models/base_client.py:930
+#: code:addons/pdm/models/base_client.py:780
+#: code:addons/pdm/models/base_client.py:801
+#: code:addons/pdm/models/base_client.py:809
+#: code:addons/pdm/models/base_client.py:815
+#: code:addons/pdm/models/base_client.py:821
+#: code:addons/pdm/models/base_client.py:835
+#: code:addons/pdm/models/base_client.py:850
+#: code:addons/pdm/models/base_client.py:871
 #: code:addons/pdm/models/base_client.py:933
+#: code:addons/pdm/models/base_client.py:936
 #, python-format
 msgid "Warning"
 msgstr "Attezione"
@@ -5449,7 +5609,7 @@ msgid "Weight of the product, packaging not included. The unit of measure can be
 msgstr "Peso del prodotto senza l'imballaggio. L'unità di misura può essere cambiata nelle impostazioni generali. "
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:996
+#: code:addons/pdm/models/base_client.py:999
 #, python-format
 msgid "Where Used"
 msgstr "Dove Impiegato"
@@ -5465,7 +5625,7 @@ msgid "WorkFlow Actions"
 msgstr "Azioni di Workflow"
 
 #. module: pdm
-#: code:addons/pdm/models/component.py:983
+#: code:addons/pdm/models/component.py:984
 #, python-format
 msgid "WorkFlow Error.\n"
 "\n"
@@ -5475,8 +5635,8 @@ msgstr "Errore di Workflow.\n"
 "Uno o più prodotti non possono essere rilasciati."
 
 #. module: pdm
-#: code:addons/pdm/models/extend_entities.py:311
-#: code:addons/pdm/models/extend_entities.py:328
+#: code:addons/pdm/models/extend_entities.py:313
+#: code:addons/pdm/models/extend_entities.py:330
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__temp_id
 #: model:ir.model.fields,field_description:pdm.field_plm_check_product__temp_id
 #, python-format
@@ -5484,7 +5644,7 @@ msgid "Workflow Check"
 msgstr "Controllo del Workflow"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:855
+#: code:addons/pdm/models/base_client.py:858
 #, python-format
 msgid "Would you continue?"
 msgstr "Vuoi continuare?"
@@ -5521,7 +5681,7 @@ msgid "Yesterday"
 msgstr "Ieri"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:719
+#: code:addons/pdm/models/base_client.py:722
 #, python-format
 msgid "You are already logged.\n"
 "Would you continue?"
@@ -5529,13 +5689,13 @@ msgstr "Sei già loggato.\n"
 "Vuoi continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:797
+#: code:addons/pdm/models/base_client.py:800
 #, python-format
 msgid "You are cloning a layout with 3D model not yet saved."
 msgstr "Stai cercando di clonare un layout il cui modello 3D non è ancora stato caricato nel DB."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:723
+#: code:addons/pdm/models/base_client.py:726
 #, python-format
 msgid "You are going to Check-In current document.\n"
 "Would you continue?"
@@ -5543,7 +5703,7 @@ msgstr "Stai cercando di eseguire il Check-In del documento corrente.\n"
 "Vuoi continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:749
+#: code:addons/pdm/models/base_client.py:752
 #, python-format
 msgid "You are going to Check-In recursively current document.\n"
 "Would you continue?"
@@ -5551,7 +5711,7 @@ msgstr "Stai cercando di eseguire il Check-In ricorsivo del documento corrente.\
 "Vuoi continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:736
+#: code:addons/pdm/models/base_client.py:739
 #, python-format
 msgid "You are going to Check-Out current document.\n"
 "Would you continue?"
@@ -5559,7 +5719,7 @@ msgstr "Stai cercando di eseguire il Check-Out del documento corrente.\n"
 "Vuoi continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:762
+#: code:addons/pdm/models/base_client.py:765
 #, python-format
 msgid "You are going to Check-Out recursively from current document.\n"
 "Would you continue?"
@@ -5567,7 +5727,7 @@ msgstr "Stai cercando di eseguire il Check-Out ricorsivo del documento corrente.
 "Vuoi continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:795
+#: code:addons/pdm/models/base_client.py:798
 #, python-format
 msgid "You are going to Clone current Part and Document data.\n"
 "Would you continue?"
@@ -5575,7 +5735,7 @@ msgstr "Stai cercando di eseguire il Clone dei dati di Prodotto e Documento.\n"
 "Vuoi continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:834
+#: code:addons/pdm/models/base_client.py:837
 #, python-format
 msgid "You are going to assign document data.\n"
 "Would you continue?"
@@ -5583,7 +5743,7 @@ msgstr "Stai cercando di assegnare i dati di Documento.\n"
 "Vuoi continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:814
+#: code:addons/pdm/models/base_client.py:817
 #, python-format
 msgid "You are going to execute New Minor Revision on current Document.\n"
 "Are you sure to continue?"
@@ -5591,7 +5751,7 @@ msgstr "Stai cercando di eseguire la Nuova Revisione Minore del documento corren
 "Vuoi davvero continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:800
+#: code:addons/pdm/models/base_client.py:803
 #, python-format
 msgid "You are going to execute New Revision both on current Product and Document data.\n"
 "Are you sure to continue?"
@@ -5599,7 +5759,7 @@ msgstr "Stai cercando di eseguire la Nuova Revisione del prodotto e documento co
 "Vuoi davvero continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:808
+#: code:addons/pdm/models/base_client.py:811
 #, python-format
 msgid "You are going to execute New Revision on current Document.\n"
 "Are you sure to continue?"
@@ -5607,7 +5767,7 @@ msgstr "Stai cercando di eseguire la Nuova Revisione del documento corrente.\n"
 "Vuoi davvero continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:820
+#: code:addons/pdm/models/base_client.py:823
 #, python-format
 msgid "You are going to execute Purge operation on\n"
 "your Private WorkSpace.\n"
@@ -5617,7 +5777,7 @@ msgstr "Stai cercando di eseguire il Purge (cancellazione forzata) del\n"
 "Vuoi davvero continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:858
+#: code:addons/pdm/models/base_client.py:861
 #, python-format
 msgid "You are going to upload data to server as a new document.\n"
 "Would you continue?"
@@ -5625,7 +5785,7 @@ msgstr "Stai cercando di eseguire il caricamento del documento corrente sul serv
 "Vuoi continuare?"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:792
+#: code:addons/pdm/models/base_client.py:795
 #, python-format
 msgid "You are working with a CAD system that requires to edit manually links to model."
 msgstr "Stai lavorando con un sistema CAD che richiede di editare manualmente il collegamento con il modello 3D."
@@ -5636,7 +5796,7 @@ msgid "You can either upload a file from your computer or copy/paste an internet
 msgstr "Puoi inviare un file dal computer o copiare/incollare un indirizzo Internet che è collegato al tuo file."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:805
+#: code:addons/pdm/models/base_client.py:808
 #, python-format
 msgid "You cannot execute New Revision on Layout Document.\n"
 "You have to execute 'New Document Revision' instead."
@@ -5644,11 +5804,11 @@ msgstr "Non puoi eseguire la Nuova Revisione su un documento 2D Layout.\n"
 "Invece devi eseguire la Nuova Revisione Documento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:803
-#: code:addons/pdm/models/base_client.py:810
-#: code:addons/pdm/models/base_client.py:811
-#: code:addons/pdm/models/base_client.py:816
-#: code:addons/pdm/models/base_client.py:817
+#: code:addons/pdm/models/base_client.py:806
+#: code:addons/pdm/models/base_client.py:813
+#: code:addons/pdm/models/base_client.py:814
+#: code:addons/pdm/models/base_client.py:819
+#: code:addons/pdm/models/base_client.py:820
 #, python-format
 msgid "You cannot execute New Revision on current Document.\n"
 "Check on DB for status of Document."
@@ -5656,7 +5816,7 @@ msgstr "Non puoi eseguire la Nuova Revisione del documento corrente.\n"
 "Controlla il motivo sul database, verifica lo stato del documento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:802
+#: code:addons/pdm/models/base_client.py:805
 #, python-format
 msgid "You cannot execute New Revision on current Product and Document.\n"
 "Check on DB for status of Product or Document."
@@ -5664,7 +5824,7 @@ msgstr "Non puoi eseguire la Nuova Revisione del prodotto e del documento corren
 "Controlla il motivo sul database, verifica lo stato di prodotto e documento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:804
+#: code:addons/pdm/models/base_client.py:807
 #, python-format
 msgid "You cannot execute New Revision on current Product.\n"
 "Check on DB for status of Product."
@@ -5672,86 +5832,92 @@ msgstr "Non puoi eseguire la Nuova Revisione del prodotto corrente.\n"
 "Controlla il motivo sul database, verifica lo stato di prodotto e/o documento."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:853
+#: code:addons/pdm/models/base_client.py:856
 #, python-format
 msgid "You cannot upload changes"
 msgstr "Non puoi eseguire caricare sul DB le modifiche"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:934
+#: code:addons/pdm/models/base_client.py:937
 #, python-format
 msgid "Your PLM Client is not activated."
 msgstr "Il tuo Client PLM non è attivato."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:831
+#: code:addons/pdm/models/base_client.py:834
 #, python-format
 msgid "already exists"
 msgstr "esiste già"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:591
+#: code:addons/pdm/models/base_client.py:594
 #, python-format
 msgid "description"
 msgstr "descrizione"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:939
+#: code:addons/pdm/models/base_client.py:942
 #, python-format
 msgid "is not logged on server"
 msgstr "non è loggato sul server"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:856
+#: code:addons/pdm/models/base_client.py:859
 #, python-format
 msgid "is not newer of the one already uploaded to server"
 msgstr "non è più recente di quello caricato sul server."
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:920
+#: code:addons/pdm/models/base_client.py:923
 #, python-format
 msgid "logged on Odoo server"
 msgstr "loggato sul server Odoo"
 
 #. module: pdm
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:149
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:164
+#: code:addons/pdm/reports/mrp_report_bom_structure.py:151
+#: code:addons/pdm/reports/mrp_report_bom_structure.py:166
 #, python-format
 msgid "minutes"
 msgstr "minuti"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:918
+#: code:addons/pdm/models/base_client.py:921
 #, python-format
 msgid "not"
 msgstr "non"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:852
+#: code:addons/pdm/models/base_client.py:855
 #, python-format
 msgid "on host"
 msgstr "sulla macchina"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:854
+#: code:addons/pdm/models/workflow_analysis.py:146
+#, python-format
+msgid "one of linked Documents is not checked-In."
+msgstr "uno dei documenti correlati non è in Check-In."
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:857
 #, python-format
 msgid "was modified and you are going to upload data to server"
 msgstr "è stato modificato e sarà caricato sul server"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:851
+#: code:addons/pdm/models/base_client.py:854
 #, python-format
 msgid "was modified but it has Checked-Out to user"
 msgstr "è stato modificato ma è in Check-Out per l' utente"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:873
+#: code:addons/pdm/models/base_client.py:876
 #, python-format
 msgid "was uploaded successfully on server"
 msgstr "è stato caricato con successo sul server"
 
 #. module: pdm
-#: code:addons/pdm/models/base_client.py:921
+#: code:addons/pdm/models/base_client.py:924
 #, python-format
 msgid "with user"
 msgstr "con l' utente"

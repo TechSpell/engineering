@@ -325,7 +325,7 @@ class plm_config_settings(models.Model):
         """
             Get properties as assigned.
         """
-        return packDictionary(self.getDataModel(request, default))
+        return packDictionary(self.sudo().getDataModel(request, default))
 
     @api.model
     def getDataModel(self, request=None, default=None):
@@ -682,23 +682,23 @@ class plm_config_settings(models.Model):
         self = self.with_context(lang=user_id.lang)
         
         results={
-            'About':            _('About'),
-            'Login':            _('Execute Login'),
+            'About':            _('About Client'),
+            'Login':            _('Execute Login on Database'),
             'CheckIn':          _('Check-In current document'),
             'CheckInRecursive': _('Recursive Check-In from current document'),
             'CheckOut':         _('Check-Out current document'),
             'Upload':           _('Upload current document'),
-            'EditParts':        _('Edit Part Data'),
-            'EditDocuments':    _('Edit Document Data'),
-            'AssignDocName':    _('Assign Document Data'),
+            'EditParts':        _('Edit Part & Document Data'),
+            'EditDocuments':    _('Edit only Document Data'),
+            'AssignDocName':    _('Assign Document Data to 2D layout'),
             'DocumentOpen':     _('Open a Document'),
             'DocumentImport':   _('Import a Document'),
             'OpenRelatedDocs':  _('Open Documents related to current one'),
-            'ComponentOpen':    _('Open a Document by Component'),
-            'ComponentImport':  _('Import a Document by Component'),
-            'Clone':            _('Clone Part and Document'),
-            'NewRevision':      _('New Revision'),
-            'NewMinorRevision': _('New Minor Revision'),
+            'ComponentOpen':    _('Open a Document searching by Component'),
+            'ComponentImport':  _('Import a Document searching by Component'),
+            'Clone':            _('Clone Part and Document from current one'),
+            'NewRevision':      _('New Revision of Part and Document'),
+            'NewMinorRevision': _('New Minor Document Revision'),
             'NewDocRevision':   _('New Document Revision'),
             'EditDocComment':   _('Edit Document Comment'),
             'PurgePWS':         _('Purge Checked-In files from PWS'),
@@ -1084,6 +1084,41 @@ class plm_config_settings(models.Model):
                 'reporttitle':               _("Knowledge Upload Report"),
                 'reportclose':               _("End Report"),
                 },
+
+            'panelMenu':      {
+                'General':                   _("General"),
+                'Check':                     _("Check Operations"),
+                'Upload':                    _("Upload to DB"),
+                'Edit':                      _("Edit Data"),
+                'Document':                  _("Document Operations"),
+                'Derive':                    _("Derive Operations"),
+                'Last':                      _("Additions"),
+                  },
+
+            'labelMenu':      {
+                'About':            _('About'),
+                'Login':            _('Login'),
+                'CheckIn':          _('Check-In'),
+                'CheckInRecursive': _('Recursive Check-In'),
+                'CheckOut':         _('Check-Out'),
+                'Upload':           _('Upload'),
+                'EditParts':        _('Part Data'),
+                'EditDocuments':    _('Document Data'),
+                'AssignDocName':    _('Assign Layout Data'),
+                'DocumentOpen':     _('Open Document'),
+                'DocumentImport':   _('Import Document'),
+                'OpenRelatedDocs':  _('Open Related'),
+                'ComponentOpen':    _('Open by Component'),
+                'ComponentImport':  _('Import by Component'),
+                'Clone':            _('Clone'),
+                'NewRevision':      _('Revision'),
+                'NewMinorRevision': _('Minor Revision'),
+                'NewDocRevision':   _('Document Revision'),
+                'EditDocComment':   _('Edit Comment'),
+                'PurgePWS':         _('Purge files'),
+                'Options':          _('Options'),
+                  },
+
             }
 
         return packDictionary(results)

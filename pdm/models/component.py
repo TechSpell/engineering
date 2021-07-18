@@ -114,7 +114,7 @@ class plm_component(models.Model):
         return getCleanList(result)
 
     @api.model
-    def RegMessage(self, request, default=None):
+    def RegMessage(self, request=[], default=None):
         """
             Registers a message for requested component
         """
@@ -175,7 +175,7 @@ class plm_component(models.Model):
             if not parentID==None:
                 if isWritable(self, parentID):
                     for bom_id in bomType.search([('type','=',type),('product_id','=',parentID)]):
-                        if not sourceID==None:
+                        if not sourceID==None and sourceID:
                             if docType.IsCheckedOutForMe(sourceID):
                                 for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
                                     bl_to_delete |= bomLine
@@ -186,7 +186,7 @@ class plm_component(models.Model):
         return ret                          
 
     @api.model
-    def Clone(self, ids, default=None):
+    def Clone(self, ids=[], default=None):
         """
             Creates a new copy of the component
         """
@@ -214,7 +214,7 @@ class plm_component(models.Model):
         return packDictionary(exitValues)
 
     @api.model
-    def CloneVirtual(self, ids, default=None):
+    def CloneVirtual(self, ids=[], default=None):
         """
             Creates a "false" new copy of the component.
             Really returns only new values avoiding creation of new object.
