@@ -66,7 +66,7 @@ msgstr "<span>Nuovo</span>"
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_kanban
 msgid "<span>Report</span>"
-msgstr ""
+msgstr "span>Resoconto</span>"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_kanban
@@ -222,7 +222,7 @@ msgstr "Ammetti prodotti duplicati nella Distinta"
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_autonumbersinbom
 #, python-format
 msgid "Allow to assign automatic positions in BoM"
-msgstr "Permetti di assegnare le posizione in automatico nella Distinta"
+msgstr "Permetti di assegnare le posizioni in automatico nella Distinta"
 
 #. module: pdm
 #: code:addons/pdm/models/descriptions.py:0
@@ -452,7 +452,7 @@ msgstr "Nome Assieme"
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Assign Document Data to 2D layout"
-msgstr "Assegna i dati Documento su una tavola 2D"
+msgstr "Assegna i dati Documento su una tavola 2D."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -905,7 +905,7 @@ msgstr "Check-Out documento corrente"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__userid
 msgid "CheckOut User"
-msgstr "CheckOut Utente"
+msgstr "Utente di CheckOut"
 
 #. module: pdm
 #: code:addons/pdm/models/base_entities.py:0
@@ -934,7 +934,7 @@ msgstr "In Check-Out per"
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_form
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out Document"
-msgstr "Checked-Out Documento"
+msgstr "Documento in Check-Out"
 
 #. module: pdm
 #: model:ir.actions.act_window,name:pdm.action_view_checkout_custom
@@ -943,50 +943,50 @@ msgstr "Checked-Out Documento"
 #: model:ir.ui.menu,name:pdm.plm_collaboration_menu
 #: model_terms:ir.ui.view,arch_db:pdm.board_plm_manager_form
 msgid "Checked-Out Documents"
-msgstr "Checked-Out Documenti"
+msgstr "Documenti in Check-Out"
 
 #. module: pdm
 #: model:ir.actions.act_window,name:pdm.action_plm_checkout
 msgid "Checked-Out List Documents"
-msgstr "Checked-Out Lista Documenti"
+msgstr "Lista Documenti in Check-Out"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__child_checkedout
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__parent_checkedout
 msgid "Checked-Out To"
-msgstr "Checked-Out A"
+msgstr "In Check-Out A"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Checked-Out by"
-msgstr "Checked-Out Da"
+msgstr "In Check-Out Da"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out last month"
-msgstr "Checked-Out Ultimo Mese"
+msgstr "In Check-Out Ultimo Mese"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out latest 7 Days"
-msgstr "Checked-Out Ultimi 7 giorni"
+msgstr "In Check-Out Ultimi 7 giorni"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__checkout_user
 msgid "Checked-Out to"
-msgstr "Checked-Out A"
+msgstr "In Check-Out A"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out today"
-msgstr "Checked-Out Oggi"
+msgstr "In Check-Out Oggi"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out yesterday"
-msgstr "Checked-Out Ieri"
+msgstr "In Check-Out Ieri"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__checksum
@@ -2121,7 +2121,7 @@ msgstr "Sommario Documenti"
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Documents contained in current one."
-msgstr "Documenti contenuti nel documenot corrente."
+msgstr "Documenti contenuti nel documento corrente."
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_backupdoc_tree
@@ -2226,13 +2226,13 @@ msgstr "Editare distinta in 'Rilasciato'"
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_editbom
 #, python-format
 msgid "Edit BoM not in 'draft'"
-msgstr "Editare distinta non in 'Bozza'"
+msgstr "Modificare distinta non in 'Bozza'"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Edit Comment"
-msgstr ""
+msgstr "Compila Commento"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -2244,7 +2244,7 @@ msgstr "Compila Dati"
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Edit Document Comment"
-msgstr "Editare Commento a Documento"
+msgstr "Editare commento a Documento"
 
 #. module: pdm
 #: code:addons/pdm/models/document.py:0
@@ -2700,7 +2700,7 @@ msgstr "Finiture"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__message_follower_ids
 msgid "Followers"
-msgstr "Follower"
+msgstr "Chi sta seguendo"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__message_channel_ids
@@ -3205,7 +3205,7 @@ msgstr "Ultima Volta Postato"
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__write_uid
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__write_uid
 msgid "Last Updated by"
-msgstr "Ultimo aggiornamento di"
+msgstr "Ultimo aggiornamento da"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__write_date
@@ -3405,7 +3405,7 @@ msgstr "Gestire workflow di Prodotto collegato a quello dei Documenti"
 #: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id1__normal
 #: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id2__normal
 msgid "Manufacture this product"
-msgstr "Produci questo prodotto"
+msgstr "Produrre questo prodotto"
 
 #. module: pdm
 #: model:ir.model.fields.selection,name:pdm.selection__report_plm_checkout_board__month__03
@@ -3552,7 +3552,7 @@ msgstr "Nuovo Prodotto"
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "New Document Revision"
-msgstr "Nuove Revisione Documento"
+msgstr "Nuova Revisione Documento"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -3732,7 +3732,7 @@ msgstr "Numero di azioni"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__message_has_error_counter
 msgid "Number of errors"
-msgstr ""
+msgstr "Numero di errori"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -3841,7 +3841,7 @@ msgstr "Apri Documento"
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Open Documents related to current one"
-msgstr "Aprire i Documenti correlati a quello corrente"
+msgstr "Apre i Documenti correlati a quello corrente"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -3853,7 +3853,7 @@ msgstr "Apri Correlati"
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Open a Document"
-msgstr "Aprire un Documenot"
+msgstr "Apri Documento"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -4753,7 +4753,7 @@ msgstr "Revisione coinvolta"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__message_has_sms_error
 msgid "SMS Delivery error"
-msgstr ""
+msgstr "Errore in invio SMS"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_form
@@ -4977,7 +4977,7 @@ msgstr "Qualche problema accedendo ai Dati Prodotto."
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__source_id
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_form_view
 msgid "Source Document"
-msgstr "Documento Origine"
+msgstr "Documento di origine"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
@@ -5102,12 +5102,12 @@ msgstr ""
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__store_fname
 msgid "Stored Filename"
-msgstr "Nome del File Registrato"
+msgstr "Nome file memorizzato"
 
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_document__datas_fname
 msgid "Stored filename."
-msgstr ""
+msgstr "Nome file memorizzato"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -5564,13 +5564,13 @@ msgstr "Aggiornare revisioni"
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Upload"
-msgstr "Caricamento"
+msgstr "Carica"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Upload current document"
-msgstr "Caricare il documento corrente"
+msgstr "Caricare il documento corrente sul database"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
