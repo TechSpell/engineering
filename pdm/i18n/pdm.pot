@@ -1028,7 +1028,7 @@ msgstr ""
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:1113
 #, python-format
-msgid "Clone "
+msgid "Clone"
 msgstr ""
 
 #. module: pdm

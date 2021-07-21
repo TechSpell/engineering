@@ -62,7 +62,7 @@ msgstr "<span>Nuovo</span>"
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_kanban
 msgid "<span>Report</span>"
-msgstr ""
+msgstr "span>Resoconto</span>"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_kanban
@@ -74,13 +74,13 @@ msgstr "<span>Vista</span>"
 #: code:addons/pdm/models/base_client.py:1099
 #, python-format
 msgid "About"
-msgstr "Info su LibrePLM"
+msgstr "Informazioni"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:685
 #, python-format
 msgid "About Client"
-msgstr "Info su Client"
+msgstr "Informazioni sul Client"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:719
@@ -219,7 +219,7 @@ msgstr "Ammetti prodotti duplicati nella Distinta"
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_autonumbersinbom
 #, python-format
 msgid "Allow to assign automatic positions in BoM"
-msgstr "Permetti di assegnare le posizione in automatico nella Distinta"
+msgstr "Permetti di assegnare le posizioni in automatico nella Distinta"
 
 #. module: pdm
 #: code:addons/pdm/models/descriptions.py:46
@@ -865,7 +865,7 @@ msgstr "Check-Out documento corrente"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__userid
 msgid "CheckOut User"
-msgstr "CheckOut Utente"
+msgstr "Utente di CheckOut"
 
 #. module: pdm
 #: code:addons/pdm/models/base_entities.py:1031
@@ -894,7 +894,7 @@ msgstr "In Check-Out per"
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_form
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out Document"
-msgstr "Checked-Out Documento"
+msgstr "Documento in Check-Out"
 
 #. module: pdm
 #: model:ir.actions.act_window,name:pdm.action_view_checkout_custom
@@ -903,50 +903,50 @@ msgstr "Checked-Out Documento"
 #: model:ir.ui.menu,name:pdm.plm_collaboration_menu
 #: model_terms:ir.ui.view,arch_db:pdm.board_plm_manager_form
 msgid "Checked-Out Documents"
-msgstr "Checked-Out Documenti"
+msgstr "Documenti in Check-Out"
 
 #. module: pdm
 #: model:ir.actions.act_window,name:pdm.action_plm_checkout
 msgid "Checked-Out List Documents"
-msgstr "Checked-Out Lista Documenti"
+msgstr "Lista Documenti in Check-Out"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__child_checkedout
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__parent_checkedout
 msgid "Checked-Out To"
-msgstr "Checked-Out A"
+msgstr "In Check-Out A"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:1169
 #: code:addons/pdm/models/base_client.py:1243
 #, python-format
 msgid "Checked-Out by"
-msgstr "Checked-Out Da"
+msgstr "In Check-Out Da"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out last month"
-msgstr "Checked-Out Ultimo Mese"
+msgstr "In Check-Out Ultimo Mese"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out latest 7 Days"
-msgstr "Checked-Out Ultimi 7 giorni"
+msgstr "In Check-Out Ultimi 7 giorni"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__checkout_user
 msgid "Checked-Out to"
-msgstr "Checked-Out A"
+msgstr "In Check-Out A"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out today"
-msgstr "Checked-Out Oggi"
+msgstr "In Check-Out Oggi"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out yesterday"
-msgstr "Checked-Out Ieri"
+msgstr "In Check-Out Ieri"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__checksum
@@ -1030,7 +1030,7 @@ msgstr "Opzioni del Client"
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:1113
 #, python-format
-msgid "Clone "
+msgid "Clone"
 msgstr "Clona"
 
 #. module: pdm
@@ -1561,7 +1561,7 @@ msgstr "Dimensione pacchetto dati [MB]"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__db_datas
 msgid "Database Data"
-msgstr "Dati database"
+msgstr "Dati Database"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_backupdoc_search
@@ -2052,7 +2052,7 @@ msgstr "Sommario Documenti"
 #: code:addons/pdm/models/base_client.py:1057
 #, python-format
 msgid "Documents contained in current one."
-msgstr "Documenti contenuti nel documenot corrente."
+msgstr "Documenti contenuti nel documento corrente."
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_backupdoc_tree
@@ -2153,7 +2153,7 @@ msgstr "Editare distinta in 'Rilasciato'"
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_editbom
 #, python-format
 msgid "Edit BoM not in 'draft'"
-msgstr "Editare distinta non in 'Bozza'"
+msgstr "Modificare distinta non in 'Bozza'"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:1117
@@ -2171,7 +2171,7 @@ msgstr "Compila Dati"
 #: code:addons/pdm/models/base_client.py:703
 #, python-format
 msgid "Edit Document Comment"
-msgstr "Editare Commento a Documento"
+msgstr "Editare commento a Documento"
 
 #. module: pdm
 #: code:addons/pdm/models/document.py:1363
@@ -3318,7 +3318,7 @@ msgstr "Gestire workflow di Prodotto collegato a quello dei Documenti"
 #: selection:plm.compare.bom,type_id1:0
 #: selection:plm.compare.bom,type_id2:0
 msgid "Manufacture this product"
-msgstr "Produci questo prodotto"
+msgstr "Produrre questo prodotto"
 
 #. module: pdm
 #: selection:report.plm_checkout.board,month:0
@@ -3461,7 +3461,7 @@ msgstr "Nuovo Prodotto"
 #: code:addons/pdm/models/base_client.py:702
 #, python-format
 msgid "New Document Revision"
-msgstr "Nuove Revisione Documento"
+msgstr "Nuova Revisione Documento"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:701
@@ -3743,7 +3743,7 @@ msgstr "Apri Documento"
 #: code:addons/pdm/models/base_client.py:696
 #, python-format
 msgid "Open Documents related to current one"
-msgstr "Aprire i Documenti correlati a quello corrente"
+msgstr "Apre i Documenti correlati a quello corrente"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:1110
@@ -3755,7 +3755,7 @@ msgstr "Apri Correlati"
 #: code:addons/pdm/models/base_client.py:694
 #, python-format
 msgid "Open a Document"
-msgstr "Aprire un Documenot"
+msgstr "Apri Documento"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:697
@@ -5402,13 +5402,13 @@ msgstr "Aggiornare revisioni"
 #: code:addons/pdm/models/base_client.py:1104
 #, python-format
 msgid "Upload"
-msgstr "Caricamento"
+msgstr "Carica"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:690
 #, python-format
 msgid "Upload current document"
-msgstr "Caricare il documento corrente"
+msgstr "Caricare il documento corrente sul database"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:849
@@ -5921,4 +5921,3 @@ msgstr "è stato caricato con successo sul server"
 #, python-format
 msgid "with user"
 msgstr "con l' utente"
-
