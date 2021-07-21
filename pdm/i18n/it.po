@@ -896,7 +896,7 @@ msgstr "Check-Out documento corrente"
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__userid
 msgid "CheckOut User"
-msgstr "CheckOut Utente"
+msgstr "Utente di CheckOut"
 
 #. module: pdm
 #: code:addons/pdm/models/base_entities.py:0
@@ -925,7 +925,7 @@ msgstr "In Check-Out per"
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_form
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out Document"
-msgstr "Checked-Out Documento"
+msgstr "Documento in Check-Out"
 
 #. module: pdm
 #: model:ir.model,name:pdm.model_plm_checkout
@@ -937,45 +937,45 @@ msgstr "Documenti in Check-Out"
 #. module: pdm
 #: model:ir.actions.act_window,name:pdm.action_plm_checkout
 msgid "Checked-Out List Documents"
-msgstr "Checked-Out Lista Documenti"
+msgstr "Lista Documenti in Check-Out"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__child_checkedout
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__parent_checkedout
 msgid "Checked-Out To"
-msgstr "Checked-Out A"
+msgstr "In Check-Out A"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Checked-Out by"
-msgstr "Checked-Out Da"
+msgstr "In Check-Out Da"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out last month"
-msgstr "Checked-Out Ultimo Mese"
+msgstr "In Check-Out Ultimo Mese"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out latest 7 Days"
-msgstr "Checked-Out Ultimi 7 giorni"
+msgstr "In Check-Out Ultimi 7 giorni"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__checkout_user
 msgid "Checked-Out to"
-msgstr "Checked-Out A"
+msgstr "In Check-Out A"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out today"
-msgstr "Checked-Out Oggi"
+msgstr "In Check-Out Oggi"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
 msgid "Checked-Out yesterday"
-msgstr "Checked-Out Ieri"
+msgstr "In Check-Out Ieri"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__checksum
@@ -2859,7 +2859,7 @@ msgstr "Contenuto Indicizzato"
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Info"
-msgstr ""
+msgstr "Informazioni"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -4208,7 +4208,7 @@ msgstr "Stampa Disegni PDF Collegati"
 #: model:ir.actions.report,name:pdm.report_pdm_all_product_product_pdf
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_kanban
 msgid "Print Bom All Levels PDF Drawings"
-msgstr "Stampa Disegni PDF a tutti i livelli BoM"
+msgstr "Stampa Disegni PDF Distinta a tutti i livelli"
 
 #. module: pdm
 #: model:ir.actions.report,name:pdm.report_pdm_one_product_product_pdf
@@ -4934,7 +4934,7 @@ msgstr "Qualche problema accedendo ai Dati Prodotto."
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__source_id
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_form_view
 msgid "Source Document"
-msgstr "Documento Origine"
+msgstr "Documento di origine"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
@@ -5054,7 +5054,7 @@ msgstr ""
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__store_fname
 msgid "Stored Filename"
-msgstr "Nome del File Registrato"
+msgstr "Nome file memorizzato"
 
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_document__datas_fname
