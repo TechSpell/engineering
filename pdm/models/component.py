@@ -397,7 +397,7 @@ class plm_component(models.Model):
                                 'reason': "Created new revision '{index}' for product '{name}'.".format(index=newIndex,name=oldObject.name),
                              }
                         self._insertlog(newID, note=note)
-                        oldObject.with_context(thisContext)._copy_productBom(newID, ["normal","spbom"])
+                        oldObject.with_context(thisContext)._copy_productBom(oldObject.id, newID, ["normal","spbom"])
                         tmpID.with_context(thisContext).write( {'name': oldObject.name, } )
                         note={
                                 'type': 'revision process',
@@ -598,32 +598,59 @@ class plm_component(models.Model):
             Creates a new 'bomType' BoM (arrested at first level BoM children).
         """
         default = {}
-        if not idDest:
-            idDest=idStart
-        
-        checkObjDest = self.browse(idDest)
-        if checkObjDest:
-            objBomType = self.env['mrp.bom']
-            for bomType in bomTypes:
-                objBoms = objBomType.search([('product_id', '=', idDest), ('type', '=', bomType), ('active', '=', True)])
-                idBoms = objBomType.search([('product_id', '=', idStart), ('type', '=', bomType), ('active', '=', True)])
-                if not objBoms:
-                    for oldObj in idBoms:
-                        newidBom = oldObj.with_context({'internal_writing':True}).copy(default)
-                        if newidBom:
-                            newidBom.with_context({'internal_writing':True}).write( 
-                                            {'name': checkObjDest.name, 
-                                             'product_tmpl_id': checkObjDest.product_tmpl_id.id, 
-                                             'type': bomType, 'active': True, })
-                            ok_rows = self._summarizeBom(newidBom.bom_line_ids)
-                            for bom_line in list(set(newidBom.bom_line_ids) ^ set(ok_rows)):
-                                bom_line.unlink()
-                            for bom_line in ok_rows:
-                                bom_line.with_context({'internal_writing':True}).write(
-                                               {'type': bomType, 'source_id': False, 
-                                                'name': bom_line.product_id.name,
-                                                'product_qty': bom_line.product_qty, })
-        return False
+        if idDest and idStart:
+            options=self.env['plm.config.settings'].GetOptions()
+            
+            if options.get('opt_mgeCopyBoMProd', False):
+                checkObjDest = self.browse(idDest)
+                if checkObjDest:
+                    objBomType = self.env['mrp.bom']
+                    for bomType in bomTypes:
+                        objBoms = objBomType.search([('product_id', '=', idDest), ('type', '=', bomType), ('active', '=', True)])
+                        idBoms = objBomType.search([('product_id', '=', idStart), ('type', '=', bomType), ('active', '=', True)])
+                        if not objBoms:
+                            for oldObj in idBoms:
+                                newidBom = oldObj.with_context({'internal_writing':True}).copy(default)
+                                if newidBom:
+                                    newidBom.with_context({'internal_writing':True}).write( 
+                                                    {'code': checkObjDest.name, 
+                                                     'product_tmpl_id': checkObjDest.product_tmpl_id.id, 
+                                                     'product_id': checkObjDest.id, 
+                                                     'type': bomType, 'active': True, })
+                                    ok_rows = self._summarizeBom(newidBom.bom_line_ids)
+                                    for bom_line in list(set(newidBom.bom_line_ids) ^ set(ok_rows)):
+                                        bom_line.unlink()
+                                    for bom_line in ok_rows:
+                                        bom_line.with_context({'internal_writing':True}).write(
+                                                       {'type': bomType, 'source_id': False, 
+                                                        'product_qty': bom_line.product_qty, })
+                                    if options.get('opt_mgeCopyBoMRoute', False):
+                                        if oldObj.routing_id and oldObj.routing_id.active:
+                                            if not options.get('opt_mgeResetTmRoute', False):
+                                                newidBom.with_context({'internal_writing':True}).write( 
+                                                    {
+                                                     'routing_id': oldObj.routing_id.id, 
+                                                     })
+                                            else:
+                                                default = {
+                                                    'name': oldObj.routing_id.name,
+                                                    'code': oldObj.routing_id.code,
+                                                    }
+                                                newRoute = oldObj.routing_id.copy(default)
+                                                oldObj.routing_id.write( 
+                                                    {
+                                                     'active': False, 
+                                                     })
+                                                newidBom.with_context({'internal_writing':True}).write( 
+                                                    {
+                                                     'routing_id': newRoute.id, 
+                                                     })                                                                                                                                
+                                    else:
+                                        newidBom.with_context({'internal_writing':True}).write( 
+                                            {
+                                             'routing_id': False, 
+                                             })
+            return False
 
     def _summarizeBom(self, datarows):
         dic = {}

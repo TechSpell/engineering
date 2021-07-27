@@ -695,15 +695,15 @@ class plm_relation(models.Model):
         
         options=self.env['plm.config.settings'].GetOptions()
 
-        for bomObject in self.browse( getListIDs(bomIDs)):
+        for bomObject in self.browse(getListIDs(bomIDs)):
             prodItem=productType.getFromTemplateID(bomObject.product_tmpl_id.id)
             if prodItem:
-                if not options.get('opt_editbom', False):
-                    if not isDraft(productType, prodItem.id):
+                if isAnyReleased(productType, prodItem.id):
+                    if not options.get('opt_editreleasedbom', False):
                         ret=True
                         break
-                if not options.get('opt_editreleasedbom', False):
-                    if isAnyReleased(productType, prodItem.id):
+                elif not isDraft(productType, prodItem.id):
+                    if not options.get('opt_editbom', False):
                         ret=True
                         break
         return ret
