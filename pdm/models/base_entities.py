@@ -5,7 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
-#    $Id$
+#    
+#    Created on : 2018-03-01
+#    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -690,15 +692,15 @@ class plm_relation(models.Model):
         
         options=self.env['plm.config.settings'].GetOptions()
 
-        for bomObject in self.browse( getListIDs(bomIDs)):
+        for bomObject in self.browse(getListIDs(bomIDs)):
             prodItem=productType.getFromTemplateID(bomObject.product_tmpl_id.id)
             if prodItem:
-                if not options.get('opt_editbom', False):
-                    if not isDraft(productType, prodItem.id):
+                if isAnyReleased(productType, prodItem.id):
+                    if not options.get('opt_editreleasedbom', False):
                         ret=True
                         break
-                if not options.get('opt_editreleasedbom', False):
-                    if isAnyReleased(productType, prodItem.id):
+                elif not isDraft(productType, prodItem.id):
+                    if not options.get('opt_editbom', False):
                         ret=True
                         break
         return ret
