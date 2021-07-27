@@ -106,6 +106,9 @@
                                     <field name="opt_autotypeinbom" />
                                     <field name="opt_showWFanalysis"  />
                                     <field name="opt_mangeWFDocByProd" attrs="{'invisible':[('opt_showWFanalysis','=',False)]}" />
+                                    <field name="opt_mgeCopyBoMProd" />
+                                    <field name="opt_mgeCopyBoMRoute" attrs="{'invisible':[('opt_mgeCopyBoMProd','=',False)]}" />
+                                    <field name="opt_mgeResetTmRoute" attrs="{'invisible':['|',('opt_mgeCopyBoMRoute','=',False),('opt_mgeCopyBoMProd','=',False)]}" />
                               </group>
                           </group>
                        </page>

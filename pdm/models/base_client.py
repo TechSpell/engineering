@@ -65,15 +65,18 @@ class plm_config_settings(models.Model):
     active_kind     =   fields.Char(_('Kind of license'),       size=128,   help=_("Kind of license code ('node-locked' = Local individual license, 'domain-assigned' = Domain level license)."))
 
 #   Option fields managed for each Service ID
-    opt_editbom             =   fields.Boolean(_("Edit BoM not in 'draft'"),                    help=_("Allows to edit BoM if product is not in 'Draft' status. Default = False."))
-    opt_editreleasedbom     =   fields.Boolean(_("Edit BoM in 'released'"),                     help=_("Allows to edit BoM if product is in 'Released' status. Default = False."))
-    opt_obsoletedinbom      =   fields.Boolean(_("Allow Obsoleted in BoM"),                     help=_("Allow Obsoleted products releasing a BoM. Default = False."),                                   default = False)
-    opt_duplicatedrowsinbom =   fields.Boolean(_("Allow rows duplicated in BoM"),               help=_("Allows to duplicate product rows editing a BoM. Default = True."),                              default = True)
-    opt_autonumbersinbom    =   fields.Boolean(_("Allow to assign automatic positions in BoM"), help=_("Allows to assign automatically item positions editing a BoM. Default = False."))
-    opt_autostepinbom       =   fields.Integer(_("Assign step to automatic positions in BoM"),  help=_("Allows to use this step assigning item positions, editing a BoM. Default = 5."),                default = 5)
-    opt_autotypeinbom       =   fields.Boolean(_("Assign automatically types in BoM"),          help=_("Allows to use the same type of BoM in all new items, editing a BoM. Default = True."),          default = True)
-    opt_showWFanalysis      =   fields.Boolean(_("Show workflow Analysis before to move"),      help=_("Allows to analyze what will happen moving workflow for a Product/document. Default = False."),  default = False)
-    opt_mangeWFDocByProd    =   fields.Boolean(_("Manage Product workflow linked to Documents"),help=_("Allows to manage Product workflow moving based on Document capabilities. Default = False."),    default = False)
+    opt_editbom             =   fields.Boolean(_("Edit BoM not in 'draft'"),                            help=_("Allows to edit BoM if product is not in 'Draft' status. Default = False."))
+    opt_editreleasedbom     =   fields.Boolean(_("Edit BoM in 'released'"),                             help=_("Allows to edit BoM if product is in 'Released' status. Default = False."))
+    opt_obsoletedinbom      =   fields.Boolean(_("Allow Obsoleted in BoM"),                             help=_("Allow Obsoleted products releasing a BoM. Default = False."),                                       default = False)
+    opt_duplicatedrowsinbom =   fields.Boolean(_("Allow rows duplicated in BoM"),                       help=_("Allows to duplicate product rows editing a BoM. Default = True."),                                  default = True)
+    opt_autonumbersinbom    =   fields.Boolean(_("Allow to assign automatic positions in BoM"),         help=_("Allows to assign automatically item positions editing a BoM. Default = False."))
+    opt_autostepinbom       =   fields.Integer(_("Assign step to automatic positions in BoM"),          help=_("Allows to use this step assigning item positions, editing a BoM. Default = 5."),                    default = 5)
+    opt_autotypeinbom       =   fields.Boolean(_("Assign automatically types in BoM"),                  help=_("Allows to use the same type of BoM in all new items, editing a BoM. Default = True."),              default = True)
+    opt_showWFanalysis      =   fields.Boolean(_("Show workflow Analysis before to move"),              help=_("Allows to analyze what will happen moving workflow for a Product/document. Default = False."),      default = False)
+    opt_mangeWFDocByProd    =   fields.Boolean(_("Manage Product workflow linked to Documents"),        help=_("Allows to manage Product workflow moving based on Document capabilities. Default = False."),        default = False)
+    opt_mgeCopyBoMProd      =   fields.Boolean(_("Manage copy of the BoM linked to Product"),           help=_("Allows to copy the 'normal' Bom related to Product performing a New Revision. Default = False."),   default = False)
+    opt_mgeCopyBoMRoute     =   fields.Boolean(_("Manage copy of the Routing linked to BoM"),           help=_("Allows to copy the Routing related to Bom performing a New Revision. Default = False."),            default = False)
+    opt_mgeResetTmRoute     =   fields.Boolean(_("Manage reset of the timing registered on Routing"),   help=_("Allows to reset the timing registered on Routing performing a New Revision. Default = False."),     default = False)
 #   Option fields managed for each Service ID
 
     @api.model
