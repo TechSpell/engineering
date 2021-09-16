@@ -462,7 +462,7 @@ class plm_document(models.Model):
         """
             Executes Check-In on requested document
         """
-        return self.browse(getListIDs(ids)).sudo()._checkIn()
+        return self.browse(getListIDs(ids))._checkIn()
 
     @api.model
     def CheckOut(self, request=[]):
@@ -470,7 +470,7 @@ class plm_document(models.Model):
             Executes Check-In on requested document
         """
         ids, hostName, pwsPath=request
-        return self.browse(getListIDs(ids)).sudo()._checkOut(hostName=hostName, pwsPath=pwsPath)
+        return self.browse(getListIDs(ids))._checkOut(hostName=hostName, pwsPath=pwsPath)
 
     @api.model
     def CheckInRecursive(self, ids=[]):
@@ -776,7 +776,7 @@ class plm_document(models.Model):
 
             if existingID:
                 hasSaved = False
-                hasCheckedOut=self.sudo()._is_checkedout_for_me(existingID)
+                hasCheckedOut=self._is_checkedout_for_me(existingID)
                 if hasCheckedOut:
                     objDocument = self.browse(existingID)
                     if ('_lastupdate' in document) and document['_lastupdate']:
@@ -846,11 +846,11 @@ class plm_document(models.Model):
                 if objectItem:
                     existingID=objectItem.id
                     if autocheckout:
-                        hasCheckedOut=self.sudo().CheckOut([existingID, hostName, pwsPath])
+                        hasCheckedOut=self.CheckOut([existingID, hostName, pwsPath])
                     hasSaved = True
             else:
                 if autocheckout:
-                    hasCheckedOut=self.sudo()._is_checkedout_for_me(existingID)
+                    hasCheckedOut=self._is_checkedout_for_me(existingID)
                 else:
                     hasCheckedOut=True
                 if hasCheckedOut:
@@ -867,7 +867,7 @@ class plm_document(models.Model):
                     else:
                         logging.error("[SaveOrUpdate] Document {name}/{revi} doesn't exist anymore.".format(name=document['name'],revi=document['revisionid']))
                 else:
-                    userName=self.sudo().getUserSign(self._uid)
+                    userName=self.getUserSign(self._uid)
                     logging.error("[SaveOrUpdate] Document {name}/{revi} was not checked-out for {user}.".format(name=document['name'],revi=document['revisionid'],user=userName))
    
             retValues[getFileName(document[fullNamePath])]={
