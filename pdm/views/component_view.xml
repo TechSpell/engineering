@@ -323,6 +323,38 @@
 	        <field name="context">{"search_default_latest":1}</field>      
 	    </record>
 
+<!-- New Revision configuration -->
+
+	    <record id="plm_component_newrevision" model="ir.ui.view">
+	        <field name="name">plm.component.new_revision</field>
+	        <field name="model">plm.temporary</field>
+	        <field name="type">form</field>
+	        <field name="arch" type="xml">
+	        <form string="Creating a Product New Revision">
+				<field name="name" invisible="True"/>
+	            <label for="name" string="Are you sure you want to create New Revision of selected items?" colspan="4"/>
+	            <separator string=""/>
+	            <footer>
+	                <button class="btn-default" special="cancel" string="Cancel" />
+	                <button class="btn-primary" string="New Revision" name="action_NewRevision" type="object" />
+	            </footer>
+	        </form>
+	        </field>
+	    </record>
+	
+        <record model="ir.actions.act_window" id="act_component_newrevision">
+        	<field name="name">New Revision</field>
+         	<field name="res_model">plm.temporary</field>
+         	<field name="binding_model_id" ref="model_product_product"/>
+           	<field name="view_mode">form</field> 
+            <field name="view_id" ref="plm_component_newrevision"/>
+            <field name="context">{"search_default_latest":1}</field>      
+            <field name="target">new</field>
+            <field name="groups_id" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
+        </record>
+
+<!-- New Revision configuration -->
+
 <!-- Create Normal BoM configuration -->
 
 	    <record id="plm_component_create_normalbom_wizard" model="ir.ui.view">
@@ -345,45 +377,16 @@
 	        </field>
 	    </record>
 
-	    <act_window name="Create Normal Bom"
-	        res_model="plm.temporary"
-        	binding_model="product.product"
-	        view_mode="form"
-	        view_id="plm_component_create_normalbom_wizard"
-	        target="new"
-	        groups="group_plm_admin,group_plm_integrationuser"
-	        id="act_create_normalBom"/>
-
-<!-- New Revision configuration -->
-
-	    <record id="plm_component_newrevision" model="ir.ui.view">
-	        <field name="name">plm.component.new_revision</field>
-	        <field name="model">plm.temporary</field>
-	        <field name="type">form</field>
-	        <field name="arch" type="xml">
-	        <form string="Creating a Product New Revision">
-				<field name="name" invisible="True"/>
-	            <label for="name" string="Are you sure you want to create New Revision of selected items?" colspan="4"/>
-	            <separator string=""/>
-	            <footer>
-	                <button class="btn-default" special="cancel" string="Cancel" />
-	                <button class="btn-primary" string="New Revision" name="action_NewRevision" type="object" />
-	            </footer>
-	        </form>
-	        </field>
-	    </record>
-	
-	    <act_window name="New Revision"
-	        res_model="plm.temporary"
-        	binding_model="product.product"
-	        view_mode="form"
-	        view_id="plm_component_newrevision"
-	        target="new"
-	        groups="group_plm_admin,group_plm_integrationuser"
-	        id="act_component_newrevision"/>
-
-<!-- New Revision configuration -->
-
+        <record model="ir.actions.act_window" id="act_create_normalBom">
+        	<field name="name">Create Normal Bom</field>
+         	<field name="res_model">plm.temporary</field>
+         	<field name="binding_model_id" ref="model_product_product"/>
+           	<field name="view_mode">form</field> 
+            <field name="view_id" ref="plm_component_create_normalbom_wizard"/>
+            <field name="context">{"search_default_latest":1}</field>      
+            <field name="target">new</field>
+            <field name="groups_id" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
+        </record>
 
 <!-- Redefines standard Products tree view -->
 
