@@ -12,12 +12,12 @@
 				<filter name="lastmonth" string="Last Month" separator="1"
 				        domain="[('op_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-relativedelta(day=1,months=1)).strftime('%%Y-%%m-%%d'))]"
 				        help="Created last month"/>
-               	<filter name="latestweek" string="Last Week" separator="1"
-                        domain="[('op_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
-                     	help="Created last week"/>
-               	<filter name="latest7days" string="Latest 7 Days" separator="1"
+               	<filter name="latestweek" string="Last 2 Weeks" separator="1"
+                        domain="[('op_date','&lt;=', (datetime.date.today()-datetime.timedelta(weeks=0)).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=2)).strftime('%%Y-%%m-%%d'))]"
+                     	help="Created last two weeks"/>
+               	<filter name="latest7days" string="Latest Week" separator="1"
                        	domain="[('op_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
-                      	help="Created latest 7 Days"/>
+                      	help="Created latest week"/>
              	<filter name="yesterday" string="Yesterday" separator="1"
                      	domain="[('op_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('op_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
                 		help="Created yesterday"/>
@@ -29,13 +29,15 @@
             	<field name="name"/>
             	<field name="file"/>
             	<field name="userid"/>
+            	<field name="type" invisible="1"/>
                	<separator orientation="vertical"/>
                  <group expand="0" string="Group Operations By...">
-                    <filter name="byname" string="Name"   domain="[]" context="{'group_by':'name'}"/>
-                    <filter name="bydate" string="Date"   domain="[]" context="{'group_by':'op_date'}"/>
-                    <filter name="bytype" string="Type"   domain="[]" context="{'group_by':'op_type'}"/>
-                    <filter name="byuser" string="User"   domain="[]" context="{'group_by':'userid'}"/>
-                    <filter name="byents" string="Entity" domain="[]" context="{'group_by':'type'}"/>
+                    <filter name="byname"   string="Name"          domain="[]" context="{'group_by':'name'}"/>
+                    <filter name="bydate"   string="Date"          domain="[]" context="{'group_by':'op_date'}"/>
+                    <filter name="bytype"   string="Entity Type"   domain="[]" context="{'group_by':'type'}"/>
+                    <filter name="byoptype" string="Type"          domain="[]" context="{'group_by':'op_type'}"/>
+                    <filter name="byuser"   string="User"          domain="[]" context="{'group_by':'userid'}"/>
+                    <filter name="byents"   string="Entity"        domain="[]" context="{'group_by':'type'}"/>
                 </group>
             </search>
      	</field>

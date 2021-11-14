@@ -143,6 +143,16 @@
                      	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
                      	help="Created today"/>
            		<separator orientation="vertical"/>
+               	<filter name="chglatestweek" string="Changed Last Week" separator="1"
+                       	domain="[('write_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('write_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+                      	help="Changed latest week"/>
+             	<filter name="chgyesterday" string="Changed Yesterday" separator="1"
+                     	domain="[('write_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('write_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+                		help="Changed yesterday"/>
+            	<filter name="chgtoday" string="Changed Today" separator="1"
+                     	domain="[('write_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('write_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
+                     	help="Changed today"/>
+           		<separator orientation="vertical"/>
                 <filter name="create_uid" domain="[('create_uid','=',uid)]" help="Created by me"/>
                 <filter name="write_uid"  domain="[('write_uid','=',uid)]"  help="Changed by me"/>
            		<separator orientation="vertical"/>
@@ -303,14 +313,15 @@
         </field>
     </record>
 
-    <act_window name="New Revision"
-        res_model="plm.temporary"
-        binding_model="plm.document"
-        view_mode="form"
-        view_id="plm_document_newrevision"
-        target="new"
-        groups="group_plm_admin,group_plm_integrationuser"
-        id="act_document_newrevision"/>
+    <record id="act_document_newrevision" model="ir.actions.act_window">
+        <field name="name">New Revision</field>
+        <field name="res_model">plm.temporary</field>
+        <field name="binding_model_id" ref="model_plm_document"/>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="plm_document_newrevision"/>
+        <field name="target">new</field>
+        <field name="groups_id" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
+    </record>
 
 <!-- New Revision configuration -->
 
@@ -333,17 +344,18 @@
         </field>
     </record>
 
-    <act_window name="Check-In"
-        res_model="plm.temporary"
-        binding_model="plm.document"
-        view_mode="form"
-        view_id="plm_document_checkin"
-        target="new"
-        groups="group_plm_admin,group_plm_integrationuser"
-        id="act_document_checkin"/>
+    <record model="ir.actions.act_window" id="act_document_checkin">
+    	<field name="name">Check-In</field>
+     	<field name="res_model">plm.temporary</field>
+        <field name="binding_model_id" ref="model_plm_document"/>
+       	<field name="view_mode">tree,form</field> 
+        <field name="view_id" ref="plm_document_checkin"/>
+        <field name="context">{"search_default_latest":1}</field>      
+        <field name="target">new</field>
+        <field name="groups_id" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
+    </record>
 
-
-     <record id="plm_document_checkout" model="ir.ui.view">
+    <record id="plm_document_checkout" model="ir.ui.view">
         <field name="name">plm.document.checkout</field>
         <field name="model">plm.temporary</field>
         <field name="type">form</field>
@@ -360,14 +372,15 @@
         </field>
     </record>
 
-    <act_window name="Check-Out"
-        res_model="plm.temporary"
-        binding_model="plm.document"
-        view_mode="form"
-        view_id="plm_document_checkout"
-        target="new"
-        groups="group_plm_admin,group_plm_integrationuser"
-        id="act_document_checkout"/>
+    <record model="ir.actions.act_window" id="act_document_checkout">
+    	<field name="name">Check-Out</field>
+     	<field name="res_model">plm.temporary</field>
+        <field name="binding_model_id" ref="model_plm_document"/>
+       	<field name="view_mode">form</field> 
+        <field name="view_id" ref="plm_document_checkout"/>
+        <field name="target">new</field>
+         <field name="groups_id" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
+    </record>
 
 <!-- Check-In / Out configuration -->
 

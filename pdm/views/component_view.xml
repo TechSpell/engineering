@@ -45,6 +45,16 @@
 	                     	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
 	                     	help="Created today"/>
 	               	<separator orientation="vertical"/>
+	               	<filter name="chglatestweek" string="Changed Last Week" separator="1"
+	                       	domain="[('write_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('write_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+	                      	help="Changed last week"/>
+	             	<filter name="chgyesterday" string="Changed Yesterday" separator="1"
+	                     	domain="[('write_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('write_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+	                		help="Changed yesterday"/>
+	            	<filter name="chgtoday" string="Changed Today" separator="1"
+	                     	domain="[('write_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('write_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
+	                     	help="Changed today"/>
+	               	<separator orientation="vertical"/>
 	            	<field name="name"/>
 	            	<field name="description"/>
 	               	<separator orientation="vertical"/>
@@ -154,6 +164,16 @@
 	            	<filter name="today" string="Today" separator="1"
 	                     	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
 	                     	help="Created today"/>
+	               	<separator orientation="vertical"/>
+	               	<filter name="chglatestweek" string="Changed Last Week" separator="1"
+	                       	domain="[('write_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('write_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
+	                      	help="Changed last week"/>
+	             	<filter name="chgyesterday" string="Changed Yesterday" separator="1"
+	                     	domain="[('write_date','&lt;=', (datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d')),('write_date','&gt;=',(datetime.date.today()-datetime.timedelta(days=1)).strftime('%%Y-%%m-%%d'))]"
+	                		help="Changed yesterday"/>
+	            	<filter name="chgtoday" string="Changed Today" separator="1"
+	                     	domain="[('write_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('write_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
+	                     	help="Changed today"/>
 	               	<separator orientation="vertical"/>
 	            	<field name="name"/>
 	            	<field name="description"/>
