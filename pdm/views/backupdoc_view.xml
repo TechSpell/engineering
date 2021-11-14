@@ -118,15 +118,14 @@
         </field>
     </record>
 
-    <record id="act_restore_document" model="ir.actions.act_window">
-        <field name="name">Restore Document</field>
-        <field name="res_model">plm.temporary</field>
-        <field name="binding_model_id" ref="model_plm_backupdoc"/>
-        <field name="view_mode">form</field>
-        <field name="view_id" ref="restore_document_button_view"/>
-        <field name="target">new</field>
-     	<field name="groups_id" eval="[(4,ref('group_plm_admin'))]"/>
-    </record>
+    <act_window name="Restore Document"
+        res_model="plm.temporary"
+        binding_model="plm.backupdoc"
+        view_mode="form"
+        view_id="restore_document_button_view"
+        target="new"
+        groups="pdm.group_plm_admin"
+        id="act_restore_document"/>
         
 </data>
 </odoo>

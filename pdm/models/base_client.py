@@ -365,11 +365,9 @@ class plm_config_settings(models.Model):
         if criteria:
             viewID=self.checkViewExistence(criteria)
             if viewID:
-                readView=viewID._get_combined_arch()
+                readView=viewID.read_combined(["arch"])
                 if 'arch' in readView:
                     ret=[[readView['arch'],],]
-                else:
-                    ret=self.Read(['ir.ui.view', criteria, ["arch_db"]]) 
             else:
                 ret=self.Read(['ir.ui.view', criteria, ["arch_db"]]) 
         return ret
@@ -487,7 +485,7 @@ class plm_config_settings(models.Model):
                     if typeFields[keyName].help:
                         tmp_props['tooltip']=_(typeFields[keyName].help)
     
-                    if (fieldType in["char","string","text","html"]):
+                    if (fieldType in["char","string","text"]):
                         tmp_props['type']="string"
                         tmp_props['value']=""
                         try:

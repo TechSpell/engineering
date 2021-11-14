@@ -190,8 +190,8 @@ class plm_relation(models.Model):
  
     state                   = fields.Selection  (related="product_id.state",                string="Status",     help="The status of the product in its LifeCycle.",  store=False)
     engineering_revision    = fields.Integer    (related="product_id.engineering_revision", string="Revision",   help="The revision of the product.",                 store=False)
-    description             = fields.Html       (related="product_id.description",          string="Description",                                                     store=False)
-    father_complete_ids     = fields.Many2many  ('mrp.bom.line', compute=_father_compute,   string="BoM Hierarchy",                                                   store=False)
+    description             = fields.Text       (related="product_id.description",          string="Description",                                                        store=False)
+    father_complete_ids     = fields.Many2many  ('mrp.bom.line', compute=_father_compute,   string="BoM Hierarchy",                                                      store=False)
 
 
 class plm_relation_line(models.Model):
@@ -218,7 +218,7 @@ class plm_relation_line(models.Model):
 
     state                   =   fields.Selection    (related="product_id.state",                string="Status",     help="The status of the product in its LifeCycle.",  store=False)
     engineering_revision    =   fields.Integer      (related="product_id.engineering_revision", string="Revision",   help="The revision of the product.",                 store=False)
-    description             =   fields.Html         (related="product_id.description",          string="Description",                                                        store=False)
+    description             =   fields.Text         (related="product_id.description",          string="Description",                                                        store=False)
     weight                  =   fields.Float        (related="product_id.weight",               string="Weight Net",                                                         store=False)
 
 
@@ -306,7 +306,7 @@ class plm_check_product(osv.osv.osv_memory):
     name            =   fields.Char     (related="part_id.name",                    string=_("Product"),        store=False)
     revision        =   fields.Integer  (related="part_id.engineering_revision",    string=_("Revision"),       store=False)
     status          =   fields.Selection(related="part_id.state",                   string=_("Status"),         store=False)
-    description     =   fields.Html     (related="part_id.description",             string=_("Description"),    store=False)
+    description     =   fields.Text     (related="part_id.description",             string=_("Description"),    store=False)
     reason          =   fields.Char     (string=_("Notes"),                                                                )
     level           =   fields.Integer  (string=_("Level"),                                                                )
     choice          =   fields.Boolean  (string=_("Choice"),                                                               )

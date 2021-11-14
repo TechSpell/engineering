@@ -113,8 +113,8 @@ class plm_component(models.Model):
         options=self.env['plm.config.settings'].GetOptions()
 
         tempType = self.env["plm.temporary"]
-        product_ids = self.env['product.product']
-        document_ids = self.env['plm.document']
+        product_ids = productType = self.env['product.product']
+        document_ids = documentType = self.env['plm.document']
         part_ids = checkProductType = self.env["plm.check.product"]
         docu_ids = checkDocumentType = self.env["plm.check.document"]
         manageByDoc = options.get('opt_mangeWFDocByProd', False)
@@ -226,7 +226,7 @@ class plm_document(models.Model):
         includeStatuses=operationParams['includeStatuses']
 
         tempType = self.env["plm.temporary"]
-        document_ids = self.env['plm.document']
+        document_ids = documentType = self.env['plm.document']
         docu_ids = checkDocumentType = self.env["plm.check.document"]
         
         for document_id in self:

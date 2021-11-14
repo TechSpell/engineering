@@ -98,14 +98,13 @@
             </form>
         </field>
      </record>
-<!--
-     <record model="ir.actions.act_window" id="act_plm_check_wf">
-          <field name="name">Check Workflow</field>
-          <field name="res_model">plm.temporary</field>
-          <field name="view_mode">form</field>
-          <field name="view_id" ref="plm_check_wf_form_view"/>
-          <field name="target">new</field>
-     </record>
--->
+
+     <act_window name="Check Workflow"
+            res_model="plm.temporary"
+            binding_model="product.product"
+            view_mode="form"
+            target="new"
+            id="act_plm_check_wf"/>
+
     </data>
 </odoo>

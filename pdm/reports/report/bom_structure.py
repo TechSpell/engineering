@@ -70,15 +70,11 @@ def _createtemplate():
         fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
       
         for label,template,description in listout:
-            fileOut.write(u'        <record id="%s" model="ir.actions.report">\n' %(label))
-            fileOut.write(u'            <field name="name">%s</field>\n' %(description))
-            fileOut.write(u'            <field name="model">mrp.bom</field>\n')
-            fileOut.write(u'            <field name="report_type">qweb-pdf</field>\n')
-            fileOut.write(u'            <field name="report_name">%s.%s</field>\n' %(thisModuleName,template))
-            fileOut.write(u'            <field name="report_file">%s.%s</field>\n' %(thisModuleName,template))
-            fileOut.write(u'            <field name="binding_model_id" ref="model_mrp_bom"/> \n')
-            fileOut.write(u'            <field name="binding_type">report</field>\n')
-            fileOut.write(u'        </record>\n')
+            fileOut.write(u'        <report model="mrp.bom" \n')
+            fileOut.write(u'                id="%s" \n' %(label))
+            fileOut.write(u'                string="%s" \n ' %(description))
+            fileOut.write(u'                name="%s.%s" \n' %(thisModuleName,template))
+            fileOut.write(u'                report_type="qweb-pdf"\n /> \n')
         
         fileOut.write(u'<!--\n       IMPORTANT : DO NOT CHANGE THIS FILE, IT WILL BE REGENERERATED AUTOMATICALLY\n-->\n\n')
         fileOut.write(u'    </data>\n</odoo>\n')
