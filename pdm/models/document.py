@@ -267,14 +267,15 @@ class plm_document(models.Model):
 
     def _explodedocs(self, oid, kinds, listed_documents=[], recursion=True):
         result = []
-        if not(oid in listed_documents):
+        if oid and not(oid in listed_documents):
             
             documentRelation = self.env['plm.document.relation']
             for child in documentRelation.search([('parent_id', '=', oid), ('link_kind', 'in', kinds)]):
                 if recursion:
                     listed_documents.append(oid)
                     result.extend(self._explodedocs(child.child_id.id, kinds, listed_documents, recursion))
-                result.append(child.child_id.id)
+                if child.child_id:
+                    result.append(child.child_id.id)
         return result
 
     def _relateddocs(self, oid, kinds, listed_documents=[], recursion=True):
