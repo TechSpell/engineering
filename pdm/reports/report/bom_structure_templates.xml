@@ -53,7 +53,7 @@
 	                                    <span t-esc="l['previ']"/>
 	                                </td>
 	                                <td>
-	                                    <span t-esc="l['pdesc']"/>
+	                                    <span t-raw="l['pdesc']"/>
 	                                </td>
 	                                <td>
 	                                    <span t-esc="l['pqty']"/>
