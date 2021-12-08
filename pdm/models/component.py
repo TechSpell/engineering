@@ -1089,6 +1089,8 @@ class plm_component(models.Model):
                         'userid': self._uid,
                         }
                 self.env['plm.logging'].create(values)
+        else:
+            ret=super(plm_component, self).create(vals)
         return ret
 
     @api.multi
