@@ -202,6 +202,7 @@ class plm_relation_line(models.Model):
             options=self.env['plm.config.settings'].GetOptions()
             prodTypeObj=self.env['product.product']
             father_id=self._context['father_id']
+            fatherObj=prodTypeObj
             if not father_id:
                 fatherObj=prodTypeObj.getFromTemplateID(self._context['father_tmpl_id'])
                 father_id=fatherObj.id if fatherObj else False 
