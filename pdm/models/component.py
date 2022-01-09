@@ -1170,7 +1170,7 @@ class plm_component(models.Model):
                 })
                 newID.with_context({'internal_writing':True}).write(default) 
         if newID and previous_name:
-            wf_message_post(self, getListIDs(newID), body='Copied starting from : {value}.'.format(value=previous_name))
+            wf_message_post(self, getListIDs(newID.id), body='Copied starting from : {value}.'.format(value=previous_name))
         return newID
 
     @api.multi
