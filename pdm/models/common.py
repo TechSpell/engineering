@@ -29,6 +29,7 @@ import base64
 import pickle
 from xmlrpc.client import Binary
 import os, sys, shutil
+from datetime import timedelta
 
 from odoo import  SUPERUSER_ID, _
 
@@ -65,16 +66,15 @@ def getCleanBytesDictionary(myDict={}):
     return ret
 
 def getUpdStrTime(obj, timefmt='%Y-%m-%d %H:%M:%S'):
-    if(obj.write_date!=False):
-        return obj.write_date.strftime(timefmt)
-    else:
-        return obj.create_date.strftime(timefmt)
+    objTime = getUpdTime(obj)
+    return objTime.strftime(timefmt)
 
 def getUpdTime(obj):
+    delta = getUserDelta(obj)
     if(obj.write_date!=False):
-        return obj.write_date
+        return obj.write_date + delta
     else:
-        return obj.create_date
+        return obj.create_date + delta
 
 def streamPDF(bytesString=""):
     if isinstance(bytesString, Binary):
@@ -168,6 +168,21 @@ def getUserName(entity=None, uid=False):
     uiUser=getUser(entity, uid)
     if uiUser:
         ret=uiUser.name
+    return ret
+
+def getUserDelta(entity=None):
+    """
+        Gets the user login, name and signature
+    """
+    ret=timedelta(minutes=0)
+    if entity:
+        user_id=getUser(entity, entity._uid)
+        if user_id:
+            tzone = user_id.tz_offset
+            factor = -1.0 if (tzone[0] == "-") else 1.0
+            minutes = int(tzone[3:5])
+            hours = int(tzone[1:3])
+            ret = factor * timedelta(hours=hours, minutes=minutes)
     return ret
 
 def isinstalled_module(entity, module_name):
