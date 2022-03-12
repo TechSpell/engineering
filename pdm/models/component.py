@@ -1032,10 +1032,14 @@ class plm_component(models.Model):
     def create(self, vals):
         ret=False
         if vals and vals.get('name', False):
-            existingIDs = self.search([('name', '=', vals['name'])],
-                                      order='engineering_revision')
             if (vals.get('engineering_code', False)==False) or (vals['engineering_code'] == ''):
                 vals['engineering_code'] = vals['name']
+            criteria = ['|',
+                        ('name', '=', vals['name']),
+                        ('engineering_code', '=', vals['engineering_code']),
+            ]
+            existingIDs = self.search(criteria,
+                                      order='engineering_revision')
             major = vals.get('engineering_revision', None)
             major= self._default_rev if isVoid(major) else major
             vals['engineering_revision'] = major
