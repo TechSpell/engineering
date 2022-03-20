@@ -35,7 +35,7 @@ import odoo.tools.config as tools_config
 
 from .common import getIDs, getCleanList, isAdministrator, packDictionary, unpackDictionary, \
                     getCleanValue, getCleanBytesDictionary, getCleanBytesList, getUser, streamPDF, \
-                    getUpdStrTime, getMachineStorage
+                    getUpdStrTime, getMachineStorage, getUserDelta
                     
 
 
@@ -302,7 +302,10 @@ class plm_config_settings(models.Model):
         """
             calculate the server db time 
         """
-        return datetime.datetime.now().strftime(DEFAULT_SERVER_DATETIME_FORMAT), DEFAULT_SERVER_DATETIME_FORMAT
+        timeNow = datetime.datetime.now()
+        delta = getUserDelta(self)
+        timeNow += delta
+        return timeNow.strftime(DEFAULT_SERVER_DATETIME_FORMAT), DEFAULT_SERVER_DATETIME_FORMAT
 
     @api.model
     def GetUserSign(self, request=None, default=None):
@@ -808,20 +811,26 @@ class plm_config_settings(models.Model):
             'NewRevision03':        _("You cannot execute New Revision on current Document.\nCheck on DB for status of Document."),
             'NewRevision04':        _("You cannot execute New Revision on current Product.\nCheck on DB for status of Product."),
             'NewRevision05':        _("You cannot execute New Revision on Layout Document.\nYou have to execute 'New Document Revision' instead."),
-            'NewRevision06':        _("Warning"),
+            'NewRevision06':        _("Execution Stopped."),
             'NewRevision07':        _("Information"),
+            'NewRevision08':        _("The document is newer than stored on Odoo.\nRemove from PWS and download it again."),
+            'NewRevision09':        _("The document is not checked-in."),
             'NewDocRevision00':     _("You are going to execute New Revision on current Document.\nAre you sure to continue?"),
             'NewDocRevision01':     _("Performing New Revision..."),
             'NewDocRevision02':     _("You cannot execute New Revision on current Document.\nCheck on DB for status of Document."),
             'NewDocRevision03':     _("You cannot execute New Revision on current Document.\nCheck on DB for status of Document."),
-            'NewDocRevision04':     _("Warning"),
+            'NewDocRevision04':     _("Execution Stopped."),
             'NewDocRevision05':     _("Information"),
+            'NewDocRevision06':     _("The document is newer than stored on Odoo.\nRemove from PWS and download it again."),
+            'NewDocRevision07':     _("The document is not checked-in."),
             'NewMinorRevision00':   _("You are going to execute New Minor Revision on current Document.\nAre you sure to continue?"),
             'NewMinorRevision01':   _("Performing New Revision..."),
             'NewMinorRevision02':   _("You cannot execute New Revision on current Document.\nCheck on DB for status of Document."),
             'NewMinorRevision03':   _("You cannot execute New Revision on current Document.\nCheck on DB for status of Document."),
-            'NewMinorRevision04':   _("Warning"),
+            'NewMinorRevision04':   _("Execution Stopped."),
             'NewMinorRevision05':   _("Information"),
+            'NewMinorRevision06':   _("The document is newer than stored on Odoo.\nRemove from PWS and download it again."),
+            'NewMinorRevision07':   _("The document is not checked-in."),
             'PurgePWS00':           _("You are going to execute Purge operation on\nyour Private WorkSpace.\nAre you sure to continue?"),
             'PurgePWS01':           _("Information"),
             'activationMessage00':  _("LibrePLM Client is not Activated"),
