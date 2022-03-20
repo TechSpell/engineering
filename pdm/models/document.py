@@ -1522,6 +1522,19 @@ class plm_document(models.Model):
                 ids.append(docIds[len(docIds) - 1].id)
         return getCleanList(ids)
 
+   @api.model
+    def GetAllPreviousIds(self, thisID, default=None):
+        """
+            Get Last/Requested revision of given items (by name, revision, update time)
+        """
+        ids = []
+        criteria = [('id', '=', thisID)]
+        for doc_id in self.search(criteria):
+            criteria = [('name', '=', doc_id.name)]
+            docIds = self.search(criteria, order='revisionid,minorrevision')
+            ids = docIds.ids
+        return ids
+
     @api.model
     def CheckWholeSetFiles(self, request, default=None):
         """

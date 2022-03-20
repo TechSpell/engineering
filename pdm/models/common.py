@@ -171,7 +171,7 @@ def getUserDelta(entity=None):
         Gets the user login, name and signature
     """
     ret=timedelta(minutes=0)
-    if entity:
+    if not(entity==None):
         user_id=getUser(entity, entity._uid)
         if user_id:
             tzone = user_id.tz_offset
