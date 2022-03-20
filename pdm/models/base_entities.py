@@ -512,9 +512,15 @@ class plm_relation(models.Model):
                 if isWritable(self.env['product.product'], parentID):
                     for bom_id in self.search([('type','=','ebom'),('product_id','=',parentID)]):
                         if not sourceID==None and sourceID:
+                            all_ids = docType.GetAllPreviousIds(sourceID)
                             if docType.IsCheckedOutForMe(sourceID):
-                                for bomLine in bomLType.search([('source_id','=',sourceID),('bom_id','=',bom_id.id)]):
+                                criteria = [('source_id', '=', sourceID), ('bom_id', '=', bom_id.id)]
+                                for bomLine in bomLType.search(criteria):
                                     bl_to_delete |= bomLine
+                                if all_ids:
+                                    criteria = [('source_id', 'in', all_ids), ('bom_id', '=', bom_id.id)]
+                                    for bomLine in bomLType.search(criteria):
+                                        bl_to_delete |= bomLine
                             bl_to_delete.unlink()                        # Cleans mrp.bom.lines
                         if not bom_id.bom_line_ids:
                             bom_id.unlink()                              # Cleans void mrp.bom
