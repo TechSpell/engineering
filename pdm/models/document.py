@@ -1522,7 +1522,7 @@ class plm_document(models.Model):
                 ids.append(docIds[len(docIds) - 1].id)
         return getCleanList(ids)
 
-   @api.model
+    @api.model
     def GetAllPreviousIds(self, thisID, default=None):
         """
             Get Last/Requested revision of given items (by name, revision, update time)
