@@ -28,13 +28,13 @@
     <template id="report_mrp_bom_line" name="enhance_report_report_mrp_bom_line" inherit_id="mrp.report_mrp_bom_line">
          <xpath expr="//td[@name='td_mrp_bom']" position="before">
              <td>
-                 <span><a href="#" t-if="data['report_type'] == 'html'"><t t-esc="l['prod_revi']"/></a></span>
+                 <span><a><t t-esc="l['prod_revi']"/></a></span>
              </td>
              <td>
-                 <span><a href="#" t-if="data['report_type'] == 'html'"><t t-esc="l['prod_stat']"/></a></span>
+                 <span><a><t t-esc="l['prod_stat']"/></a></span>
              </td>
              <td>
-                 <span><a href="#" t-if="data['report_type'] == 'html'"><t t-esc="l['prod_desc']"/></a></span>
+                 <span><a><t t-esc="l['prod_desc']"/></a></span>
              </td>
         </xpath>
          <xpath expr="//td[@name='td_opr']" position="after">
