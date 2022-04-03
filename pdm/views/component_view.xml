@@ -86,7 +86,7 @@
 	            </xpath>
 	
 	            <notebook position="inside">
-	                <page string="Engineering Infos">
+	                <page string="Engineering Infos" name="engineering_infos">
 	                    <group colspan="4" col="4" string="Part Number Area">
 	                        <group colspan="4" col="4" name="PNArea">
 	                            <field name="engineering_code" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
