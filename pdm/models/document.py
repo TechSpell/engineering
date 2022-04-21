@@ -721,14 +721,15 @@ class plm_document(models.Model):
         existingID=False
         if document:
             order='revisionid, minorrevision'
+            full_criteria=[]
             criteria=[]
             fullNamePath='full_file_name'
             if (fullNamePath in document) and document[fullNamePath]:
-                criteria.append( ('datas_fname', '=', getFileName(document[fullNamePath])) )
+                full_criteria.append( ('datas_fname', '=', getFileName(document[fullNamePath])) )
             else:
                 fullNamePath='datas_fname'
                 if (fullNamePath in document) and document[fullNamePath]:
-                    criteria.append( ('datas_fname', '=', getFileName(document[fullNamePath])) )
+                    full_criteria.append( ('datas_fname', '=', getFileName(document[fullNamePath])) )
                                     
 #               These statements can cover document already saved without document data
             if document['name']:
@@ -743,10 +744,16 @@ class plm_document(models.Model):
                     criteria.append( ('minorrevision', '=', document['minorrevision']) )
                     order=None
             if criteria:
-                existingIDs = self.search(criteria, order=order)
+                full_criteria.extend(criteria)
+                existingIDs = self.search(full_criteria, order=order)
                 if existingIDs:
                     ids=sorted(existingIDs.ids)
                     existingID = ids[len(ids) - 1]
+                else:
+                    existingIDs = self.search(criteria, order=order)
+                    if existingIDs:
+                        ids=sorted(existingIDs.ids)
+                        existingID = ids[len(ids) - 1]
         return existingID
 
     @api.model
