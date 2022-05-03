@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 14.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-16 12:56+0000\n"
-"PO-Revision-Date: 2021-07-16 12:56+0000\n"
+"POT-Creation-Date: 2022-05-03 15:03+0000\n"
+"PO-Revision-Date: 2022-05-03 15:03+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -310,8 +310,26 @@ msgid ""
 "Allows to assign automatically item positions editing a BoM. Default = "
 "False."
 msgstr ""
-"Permetti di assegnare in automatico le posizioni prodotto editando una Distinta."
-"Default = Falso."
+"Permetti di assegnare in automatico le posizioni prodotto editando una "
+"Distinta. Predefinito = Falso."
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeCopyBoMProd
+#, python-format
+msgid ""
+"Allows to copy the 'normal' Bom related to Product performing a New "
+"Revision. Default = False."
+msgstr "Permette di copiare la distinta 'normale" collegata ad un prodotto eseguendo una Nuova Revisione. Predefinito = Falso."
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeCopyBoMRoute
+#, python-format
+msgid ""
+"Allows to copy the Routing related to Bom performing a New Revision. Default"
+" = False."
+msgstr "Permette di copiare il Ciclo collegato ad una distinta Eseguendo una Nuova Revisione. Predefinito = Falso."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -348,8 +366,17 @@ msgid ""
 "Allows to manage Product workflow moving based on Document capabilities. "
 "Default = False."
 msgstr ""
-"Permetti di gestire il workflow del Prodotto muovendolo in base alla capacità del Documento correlato. "
+"Permette di gestire il workflow del Prodotto muovendolo in base alla "
+"capacità del Documento correlato. Predefinito = Falso."
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeResetTmRoute
+#, python-format
+msgid ""
+"Allows to reset the timing registered on Routing performing a New Revision. "
 "Default = False."
+msgstr "Permette di azzerare i contatori registrati sul Ciclo eseguendo una Nuova Revisione. Predefinito = Falso."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -359,7 +386,7 @@ msgid ""
 "Allows to use the same type of BoM in all new items, editing a BoM. Default "
 "= True."
 msgstr ""
-"Permetti di usare lo stesso tipo di distinta in tutti le nuove righe, "
+"Permette di usare lo stesso tipo di distinta in tutti le nuove righe, "
 "editando una distinta. Default = Vero."
 
 #. module: pdm
@@ -793,6 +820,33 @@ msgid "Changed"
 msgstr "Modificato"
 
 #. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed Last Week"
+msgstr "Modificato nell' ultima settimana"
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed Today"
+msgstr "Modificato Oggi"
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed Yesterday"
+msgstr "Modificato Ieri"
+
+#. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
 msgid "Changed by"
 msgstr "Modificato da"
@@ -806,6 +860,37 @@ msgstr "Modificato per Data"
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
 msgid "Changed by me"
 msgstr "Modificato da me"
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed last week"
+msgstr "Modificato la settimana scorsa"
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+msgid "Changed latest week"
+msgstr "Modificato nell' ultima settimana"
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed today"
+msgstr "Modificato Oggi"
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed yesterday"
+msgstr "Modificato Ieri"
 
 #. module: pdm
 #: model:ir.actions.server,name:pdm.ir_cron_pdm_mail_action_ir_actions_server
@@ -1310,8 +1395,8 @@ msgstr "Creato Ultimo Mese"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
-msgid "Created last week"
-msgstr "Creato Ultima Settimana"
+msgid "Created last two weeks"
+msgstr "Creato nelle ultime due settimane"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_backupdoc_search
@@ -1321,11 +1406,15 @@ msgstr "Creato Ultima Settimana"
 #: model_terms:ir.ui.view,arch_db:pdm.plm_config_settings_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_docbom_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
 #: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_description_search
 msgid "Created latest 7 Days"
 msgstr "Creato Ultimi 7 Giorni"
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
+msgid "Created latest week"
+msgstr "Creato Ultima Settimana"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__create_date
@@ -1444,6 +1533,15 @@ msgstr "La distinta del prodotto corrente non è modificabile."
 #, python-format
 msgid "Current document"
 msgstr "Documento corrente"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid ""
+"Current document could be in a status different from 'Draft', not writable.\n"
+"Please, check the status before to perform Upload again."
+msgstr "Il documento corrente potrebbe essere in uno stato diverso da 'Bozza', non scrivibile."
+"Si prega di controllare lo stato prima di eseguire il Caricamneto di nuovo."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -1692,6 +1790,7 @@ msgstr "Operazioni di Derivazione"
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__description
 #: model_terms:ir.ui.view,arch_db:pdm.bom_structure_template
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_form
+#: model_terms:ir.ui.view,arch_db:pdm.report_mrp_bom
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_description
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_description_search
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_edit_product
@@ -2346,6 +2445,11 @@ msgid "Entity"
 msgstr "Entità"
 
 #. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
+msgid "Entity Type"
+msgstr "Tipo Entità"
+
+#. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_logging__type
 #, python-format
@@ -2415,6 +2519,14 @@ msgstr "Eseguito"
 #, python-format
 msgid "Executes Background Upload"
 msgstr "Esegue Caricamento in secondo piano"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Execution Stopped."
+msgstr "Esecuzione Arrestata."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -3067,6 +3179,11 @@ msgid "Knowledge Upload Report"
 msgstr "Report Conoscenza del Caricamento"
 
 #. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
+msgid "Last 2 Weeks"
+msgstr "Ultime due settimane"
+
+#. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom____last_update
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom_line____last_update
 #: model:ir.model.fields,field_description:pdm.field_pdm_product_product_pdf____last_update
@@ -3186,11 +3303,6 @@ msgid "Last Updated on"
 msgstr "Ultimo aggiornamento il"
 
 #. module: pdm
-#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
-msgid "Last Week"
-msgstr "Ultima Settimana"
-
-#. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_docbom_search
@@ -3208,11 +3320,15 @@ msgstr "Più Recenti"
 #: model_terms:ir.ui.view,arch_db:pdm.plm_config_settings_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_docbom_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
 #: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_description_search
 msgid "Latest 7 Days"
 msgstr "Ultimi 7 Giorni"
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
+msgid "Latest Week"
+msgstr "Ultima Settimana"
 
 #. module: pdm
 #: code:addons/pdm/models/extend_entities.py:0
@@ -3354,6 +3470,27 @@ msgstr "Mantiene la lista di apertura"
 #, python-format
 msgid "Manage Product workflow linked to Documents"
 msgstr "Gestire workflow di Prodotto collegato a quello dei Documenti"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeCopyBoMProd
+#, python-format
+msgid "Manage copy of the BoM linked to Product"
+msgstr "Gestire copia della distinta collegata al prodotto"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeCopyBoMRoute
+#, python-format
+msgid "Manage copy of the Routing linked to BoM"
+msgstr "Gestire copia del Ciclo collegato alla distinta"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeResetTmRoute
+#, python-format
+msgid "Manage reset of the timing registered on Routing"
+msgstr "Gestire azzeramento dei tempi registrati sul Ciclo"
 
 #. module: pdm
 #: model:ir.model.fields.selection,name:pdm.selection__mrp_bom_line__type__normal
@@ -3870,12 +4007,6 @@ msgstr "Tipo di operazione"
 #, python-format
 msgid "Operation Type."
 msgstr "Tipo Operazione"
-
-#. module: pdm
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
-#, python-format
-msgid "Operations"
-msgstr "Operazioni"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -4688,6 +4819,7 @@ msgstr "Risultati trovati"
 #: model_terms:ir.ui.view,arch_db:pdm.mrp_bom_tree_view_where
 #: model_terms:ir.ui.view,arch_db:pdm.mrp_part_tree_view_where
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_tree_structure
+#: model_terms:ir.ui.view,arch_db:pdm.report_mrp_bom
 #, python-format
 msgid "Revision"
 msgstr "Revisione"
@@ -5037,6 +5169,7 @@ msgstr "Anteprime statica"
 #: model_terms:ir.ui.view,arch_db:pdm.mrp_part_tree_view_where
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_tree_structure
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.report_mrp_bom
 #, python-format
 msgid "Status"
 msgstr "Stato"
@@ -5148,6 +5281,25 @@ msgstr "L'oggetto del database a cui verrà assegnato questo allegato."
 #, python-format
 msgid "The document %s - %s has not checked-in"
 msgstr "Il documento %s - %s non è in check-in"
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid ""
+"The document is newer than stored on Odoo.\n"
+"Remove from PWS and download it again."
+msgstr "Il documento è più nuovo di quello immagazzinato in Odoo.\n"
+"Cancellalo dal PWS e scaricalo ancora."
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "The document is not checked-in."
+msgstr "Il documento non è in check-in"
 
 #. module: pdm
 #: model:ir.model.constraint,message:pdm.constraint_plm_checkout_documentid
@@ -5719,9 +5871,6 @@ msgstr "In attesa della connessione/sincronizzazione col Server."
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
-#: code:addons/pdm/models/base_client.py:0
-#: code:addons/pdm/models/base_client.py:0
-#: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Warning"
 msgstr "Attenzione"
@@ -6056,13 +6205,6 @@ msgstr "non è più recente di quello caricato sul server."
 #, python-format
 msgid "logged on Odoo server"
 msgstr "loggato sul server Odoo"
-
-#. module: pdm
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
-#, python-format
-msgid "minutes"
-msgstr "minuti"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
