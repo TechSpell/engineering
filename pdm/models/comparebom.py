@@ -158,19 +158,17 @@ class plm_compare_bom(osv.osv.osv_memory):
         if (len(anotinb)<1 and len(bnotina)<1):
             return False
         
-        id3 = data_obj._get_id( openerpModule, 'plm_visualize_diff_form')
-        if id3:
-            id3 = data_obj.browse( id3).res_id
-
+        view_name = "{}.plm_visualize_diff_form".format(openerpModule)
+ 
         ctx={'active_id':ids[0],'active_ids':ids, 'active_model':"plm.compare.bom"}
         return {
             'domain': [],
             'name': _('Differences on BoMs'),
             'view_type': 'form',
-            'view_mode': 'tree,form',
+            'view_mode': 'form',
             'res_model': 'plm.compare.bom',
             'res_id': ids[0],
-            'views': [(id3,'form')],
+            'view_id': self.env.ref(view_name).id,
             'type': 'ir.actions.act_window',
          }
  
