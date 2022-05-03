@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 13.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-18 14:19+0000\n"
-"PO-Revision-Date: 2021-07-18 14:19+0000\n"
+"POT-Creation-Date: 2022-05-03 15:34+0000\n"
+"PO-Revision-Date: 2022-05-03 15:34+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -297,6 +297,24 @@ msgstr ""
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeCopyBoMProd
+#, python-format
+msgid ""
+"Allows to copy the 'normal' Bom related to Product performing a New "
+"Revision. Default = False."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeCopyBoMRoute
+#, python-format
+msgid ""
+"Allows to copy the Routing related to Bom performing a New Revision. Default"
+" = False."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_duplicatedrowsinbom
 #, python-format
 msgid "Allows to duplicate product rows editing a BoM. Default = True."
@@ -324,6 +342,15 @@ msgstr ""
 #, python-format
 msgid ""
 "Allows to manage Product workflow moving based on Document capabilities. "
+"Default = False."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeResetTmRoute
+#, python-format
+msgid ""
+"Allows to reset the timing registered on Routing performing a New Revision. "
 "Default = False."
 msgstr ""
 
@@ -1442,6 +1469,14 @@ msgstr ""
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
+msgid ""
+"Current document could be in a status different from 'Draft', not writable.\n"
+"Please, check the status before to perform Upload again."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
 msgid "Current document has Checked-In."
 msgstr ""
 
@@ -1673,6 +1708,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__description
 #: model_terms:ir.ui.view,arch_db:pdm.bom_structure_template
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_form
+#: model_terms:ir.ui.view,arch_db:pdm.report_mrp_bom
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_description
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_description_search
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_edit_product
@@ -2400,6 +2436,14 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Executes Background Upload"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Execution Stopped."
 msgstr ""
 
 #. module: pdm
@@ -3321,6 +3365,27 @@ msgid "Manage Product workflow linked to Documents"
 msgstr ""
 
 #. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeCopyBoMProd
+#, python-format
+msgid "Manage copy of the BoM linked to Product"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeCopyBoMRoute
+#, python-format
+msgid "Manage copy of the Routing linked to BoM"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeResetTmRoute
+#, python-format
+msgid "Manage reset of the timing registered on Routing"
+msgstr ""
+
+#. module: pdm
 #: model:ir.model.fields.selection,name:pdm.selection__mrp_bom_line__type__normal
 #: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id1__normal
 #: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id2__normal
@@ -3824,12 +3889,6 @@ msgstr ""
 #: model:ir.model.fields,help:pdm.field_plm_logging__op_type
 #, python-format
 msgid "Operation Type."
-msgstr ""
-
-#. module: pdm
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
-#, python-format
-msgid "Operations"
 msgstr ""
 
 #. module: pdm
@@ -4642,6 +4701,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pdm.mrp_bom_tree_view_where
 #: model_terms:ir.ui.view,arch_db:pdm.mrp_part_tree_view_where
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_tree_structure
+#: model_terms:ir.ui.view,arch_db:pdm.report_mrp_bom
 #, python-format
 msgid "Revision"
 msgstr ""
@@ -4985,6 +5045,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pdm.mrp_part_tree_view_where
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_tree_structure
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.report_mrp_bom
 #, python-format
 msgid "Status"
 msgstr ""
@@ -5097,6 +5158,24 @@ msgstr ""
 #: code:addons/pdm/models/document.py:0
 #, python-format
 msgid "The document %s - %s has not checked-in"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid ""
+"The document is newer than stored on Odoo.\n"
+"Remove from PWS and download it again."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "The document is not checked-in."
 msgstr ""
 
 #. module: pdm
@@ -5616,11 +5695,18 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
-#: code:addons/pdm/models/base_client.py:0
-#: code:addons/pdm/models/base_client.py:0
-#: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Warning"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model.fields,field_description:pdm.field_plm_document__website_message_ids
+msgid "Website Messages"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model.fields,help:pdm.field_plm_document__website_message_ids
+msgid "Website communication history"
 msgstr ""
 
 #. module: pdm
@@ -5900,13 +5986,6 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "logged on Odoo server"
-msgstr ""
-
-#. module: pdm
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
-#, python-format
-msgid "minutes"
 msgstr ""
 
 #. module: pdm
