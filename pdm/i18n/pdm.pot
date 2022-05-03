@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 14.0\n"
+"Project-Id-Version: Odoo Server 15.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-16 12:55+0000\n"
-"PO-Revision-Date: 2021-07-16 12:55+0000\n"
+"POT-Creation-Date: 2022-05-03 14:38+0000\n"
+"PO-Revision-Date: 2022-05-03 14:38+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -297,6 +297,24 @@ msgstr ""
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeCopyBoMProd
+#, python-format
+msgid ""
+"Allows to copy the 'normal' Bom related to Product performing a New "
+"Revision. Default = False."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeCopyBoMRoute
+#, python-format
+msgid ""
+"Allows to copy the Routing related to Bom performing a New Revision. Default"
+" = False."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_duplicatedrowsinbom
 #, python-format
 msgid "Allows to duplicate product rows editing a BoM. Default = True."
@@ -324,6 +342,15 @@ msgstr ""
 #, python-format
 msgid ""
 "Allows to manage Product workflow moving based on Document capabilities. "
+"Default = False."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeResetTmRoute
+#, python-format
+msgid ""
+"Allows to reset the timing registered on Routing performing a New Revision. "
 "Default = False."
 msgstr ""
 
@@ -763,6 +790,33 @@ msgid "Changed"
 msgstr ""
 
 #. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed Last Week"
+msgstr ""
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed Today"
+msgstr ""
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed Yesterday"
+msgstr ""
+
+#. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
 msgid "Changed by"
 msgstr ""
@@ -775,6 +829,37 @@ msgstr ""
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
 msgid "Changed by me"
+msgstr ""
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed last week"
+msgstr ""
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+msgid "Changed latest week"
+msgstr ""
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed today"
+msgstr ""
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
+#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
+msgid "Changed yesterday"
 msgstr ""
 
 #. module: pdm
@@ -791,7 +876,6 @@ msgid "Check Operations"
 msgstr ""
 
 #. module: pdm
-#: model:ir.actions.act_window,name:pdm.act_plm_check_wf
 #: model_terms:ir.ui.view,arch_db:pdm.plm_check_wf_form_view
 msgid "Check Workflow"
 msgstr ""
@@ -1278,7 +1362,7 @@ msgstr ""
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
-msgid "Created last week"
+msgid "Created last two weeks"
 msgstr ""
 
 #. module: pdm
@@ -1289,10 +1373,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pdm.plm_config_settings_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_docbom_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
 #: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_description_search
 msgid "Created latest 7 Days"
+msgstr ""
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
+msgid "Created latest week"
 msgstr ""
 
 #. module: pdm
@@ -1408,6 +1496,14 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Current document"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid ""
+"Current document could be in a status different from 'Draft', not writable.\n"
+"Please, check the status before to perform Upload again."
 msgstr ""
 
 #. module: pdm
@@ -1644,6 +1740,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__description
 #: model_terms:ir.ui.view,arch_db:pdm.bom_structure_template
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_form
+#: model_terms:ir.ui.view,arch_db:pdm.report_mrp_bom
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_description
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_description_search
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_edit_product
@@ -1741,9 +1838,6 @@ msgid "Discharge"
 msgstr ""
 
 #. module: pdm
-#: model:ir.model.fields,field_description:pdm.field_mrp_bom__display_name
-#: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__display_name
-#: model:ir.model.fields,field_description:pdm.field_pdm_product_product_pdf__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__display_name
@@ -1763,25 +1857,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_plm_material__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__display_name
-#: model:ir.model.fields,field_description:pdm.field_product_product__display_name
-#: model:ir.model.fields,field_description:pdm.field_product_template__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_mrp_report_bom_structure__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_all_product_product_pdf__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all_sum__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_flat__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_leaves__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one_sum__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_checkout_pdf__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_pdf__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_structure__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_where_used__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_one_product_product_pdf__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_product_product_pdf__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_bom_header__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_all__display_name
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_one__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component_year__display_name
@@ -1789,7 +1864,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_wall__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_files_partner__display_name
-#: model:ir.model.fields,field_description:pdm.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -2280,6 +2354,11 @@ msgid "Entity"
 msgstr ""
 
 #. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
+msgid "Entity Type"
+msgstr ""
+
+#. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_logging__type
 #, python-format
@@ -2348,6 +2427,14 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Executes Background Upload"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Execution Stopped."
 msgstr ""
 
 #. module: pdm
@@ -2569,11 +2656,6 @@ msgid "Followers"
 msgstr ""
 
 #. module: pdm
-#: model:ir.model.fields,field_description:pdm.field_plm_document__message_channel_ids
-msgid "Followers (Channels)"
-msgstr ""
-
-#. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__message_partner_ids
 msgid "Followers (Partners)"
 msgstr ""
@@ -2670,6 +2752,11 @@ msgid "Group Operations By..."
 msgstr ""
 
 #. module: pdm
+#: model:ir.model.fields,field_description:pdm.field_plm_document__has_message
+msgid "Has Message"
+msgstr ""
+
+#. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_checkout__hostname
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__hostname
@@ -2682,9 +2769,6 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
-#: model:ir.model.fields,field_description:pdm.field_mrp_bom__id
-#: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__id
-#: model:ir.model.fields,field_description:pdm.field_pdm_product_product_pdf__id
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__id
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__id
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__id
@@ -2704,25 +2788,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_plm_material__id
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__id
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__id
-#: model:ir.model.fields,field_description:pdm.field_product_product__id
-#: model:ir.model.fields,field_description:pdm.field_product_template__id
-#: model:ir.model.fields,field_description:pdm.field_report_mrp_report_bom_structure__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_all_product_product_pdf__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all_sum__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_flat__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_leaves__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one_sum__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_checkout_pdf__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_pdf__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_structure__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_where_used__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_one_product_product_pdf__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_product_product_pdf__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_bom_header__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_all__id
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_one__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component_year__id
@@ -2730,7 +2795,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_wall__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_files_partner__id
-#: model:ir.model.fields,field_description:pdm.field_res_config_settings__id
 #, python-format
 msgid "ID"
 msgstr ""
@@ -2986,9 +3050,11 @@ msgid "Knowledge Upload Report"
 msgstr ""
 
 #. module: pdm
-#: model:ir.model.fields,field_description:pdm.field_mrp_bom____last_update
-#: model:ir.model.fields,field_description:pdm.field_mrp_bom_line____last_update
-#: model:ir.model.fields,field_description:pdm.field_pdm_product_product_pdf____last_update
+#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
+msgid "Last 2 Weeks"
+msgstr ""
+
+#. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom____last_update
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc____last_update
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document____last_update
@@ -3008,25 +3074,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_plm_material____last_update
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom____last_update
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary____last_update
-#: model:ir.model.fields,field_description:pdm.field_product_product____last_update
-#: model:ir.model.fields,field_description:pdm.field_product_template____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_mrp_report_bom_structure____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_all_product_product_pdf____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all_sum____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_flat____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_leaves____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one_sum____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_checkout_pdf____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_pdf____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_structure____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_where_used____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_one_product_product_pdf____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_product_product_pdf____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_bom_header____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_all____last_update
-#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_one____last_update
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board____last_update
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component____last_update
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component_year____last_update
@@ -3034,7 +3081,6 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user____last_update
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_wall____last_update
 #: model:ir.model.fields,field_description:pdm.field_report_plm_files_partner____last_update
-#: model:ir.model.fields,field_description:pdm.field_res_config_settings____last_update
 msgid "Last Modified on"
 msgstr ""
 
@@ -3105,11 +3151,6 @@ msgid "Last Updated on"
 msgstr ""
 
 #. module: pdm
-#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
-msgid "Last Week"
-msgstr ""
-
-#. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_docbom_search
@@ -3127,10 +3168,14 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pdm.plm_config_settings_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_docbom_search
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
 #: model_terms:ir.ui.view,arch_db:pdm.view_mrp_bom_filter_inherit
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_description_search
 msgid "Latest 7 Days"
+msgstr ""
+
+#. module: pdm
+#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
+msgid "Latest Week"
 msgstr ""
 
 #. module: pdm
@@ -3272,6 +3317,27 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mangeWFDocByProd
 #, python-format
 msgid "Manage Product workflow linked to Documents"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeCopyBoMProd
+#, python-format
+msgid "Manage copy of the BoM linked to Product"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeCopyBoMRoute
+#, python-format
+msgid "Manage copy of the Routing linked to BoM"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeResetTmRoute
+#, python-format
+msgid "Manage reset of the timing registered on Routing"
 msgstr ""
 
 #. module: pdm
@@ -3781,12 +3847,6 @@ msgid "Operation Type."
 msgstr ""
 
 #. module: pdm
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
-#, python-format
-msgid "Operations"
-msgstr ""
-
-#. module: pdm
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Optional Parameters"
@@ -4114,13 +4174,13 @@ msgid "Print Attached PDF Drawings"
 msgstr ""
 
 #. module: pdm
-#: model:ir.actions.report,name:pdm.report_pdm_all_product_product_pdf
+#: model:ir.actions.report,name:pdm.report_pdm_one_product_product_pdf
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_kanban
 msgid "Print Bom All Levels PDF Drawings"
 msgstr ""
 
 #. module: pdm
-#: model:ir.actions.report,name:pdm.report_pdm_one_product_product_pdf
+#: model:ir.actions.report,name:pdm.report_pdm_all_product_product_pdf
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_kanban
 msgid "Print Bom One Level PDF Drawings"
 msgstr ""
@@ -4596,6 +4656,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pdm.mrp_bom_tree_view_where
 #: model_terms:ir.ui.view,arch_db:pdm.mrp_part_tree_view_where
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_tree_structure
+#: model_terms:ir.ui.view,arch_db:pdm.report_mrp_bom
 #, python-format
 msgid "Revision"
 msgstr ""
@@ -4941,6 +5002,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:pdm.mrp_part_tree_view_where
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_tree_structure
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
+#: model_terms:ir.ui.view,arch_db:pdm.report_mrp_bom
 #, python-format
 msgid "Status"
 msgstr ""
@@ -5048,6 +5110,24 @@ msgstr ""
 #: code:addons/pdm/models/document.py:0
 #, python-format
 msgid "The document %s - %s has not checked-in"
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid ""
+"The document is newer than stored on Odoo.\n"
+"Remove from PWS and download it again."
+msgstr ""
+
+#. module: pdm
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "The document is not checked-in."
 msgstr ""
 
 #. module: pdm
@@ -5566,9 +5646,6 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
-#: code:addons/pdm/models/base_client.py:0
-#: code:addons/pdm/models/base_client.py:0
-#: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Warning"
 msgstr ""
@@ -5860,13 +5937,6 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "logged on Odoo server"
-msgstr ""
-
-#. module: pdm
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
-#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
-#, python-format
-msgid "minutes"
 msgstr ""
 
 #. module: pdm
