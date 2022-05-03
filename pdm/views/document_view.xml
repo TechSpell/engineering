@@ -26,7 +26,7 @@
 	               <group colspan="4" col="4" name="DocData">
 	 					<group colspan="4" col="4">
 		 					<group colspan="2" col="2">
-			                    <field name="name" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
+			                    <field name="name" select="1" attrs="{'readonly':['|',('state','!=','draft'),('is_integration','in',[True,1])]}" colspan="2"/>
 			                    <field name="revisionid" readonly="True" colspan="2"/>
 			                    <field name="minorrevision" readonly="True" colspan="2"/>
 		                    </group>
