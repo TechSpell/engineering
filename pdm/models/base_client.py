@@ -882,6 +882,7 @@ class plm_config_settings(models.Model):
             'blindUpload18':        _("Error"),
             'blindUpload19':        _("Warning"),
             'blindUpload20':        _("Information"),
+            'blindUpload21':        _("Current document could be in a status different from 'Draft', not writable.\nPlease, check the status before to perform Upload again."),
             'closingMessage00':     _("Error"),
 
             'internalProcess00':    _("Requested file"),
