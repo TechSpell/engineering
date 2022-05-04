@@ -1250,17 +1250,17 @@ class plm_document(models.Model):
     def _get_checkout_name(self):
         for doc_id in self:
             chechRes = self.getCheckedOut(doc_id.id, None)
-            self.checkout_user = ''
+            doc_id.checkout_user = ''
             if chechRes:
-                self.checkout_user = str(chechRes[2])
+                doc_id.checkout_user = str(chechRes[2])
                 
         
     def _is_checkout(self):
         for doc_id in self:
             chechRes = self.getCheckedOut(doc_id.id, None)
-            self.is_checkout = False
+            doc_id.is_checkout = False
             if chechRes:
-                self.is_checkout = True
+                doc_id.is_checkout = True
                 
     
     #   Overridden methods for this entity
