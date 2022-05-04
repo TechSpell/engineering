@@ -847,6 +847,7 @@ class plm_document(models.Model):
             for fieldName in list(set(document.keys()).difference(set(modelFields))):
                 del (document[fieldName])
             document['is_integration']=True
+            document['public']=True
             if not existingID:
                 logging.debug("[SaveOrUpdate] Document {name} is creating.".format(name=document['name']))
                 objectItem=self.with_context({'internal_writing':True}).create(document)
@@ -1250,21 +1251,22 @@ class plm_document(models.Model):
         for doc_id in self:
             doc_id.file_size_mb = float(doc_id.file_size) / (1024.0 * 1024.0)
 
-    @api.one
-    def _get_checkout_state(self):
-        chechRes = self.getCheckedOut(self.id, None)
-        if chechRes:
-            self.checkout_user = str(chechRes[2])
-        else:
-            self.checkout_user = ''
-        
-    @api.one
+    @api.multi
+    def _get_checkout_name(self):
+        for doc_id in self:
+            chechRes = self.getCheckedOut(doc_id.id, None)
+            doc_id.checkout_user = ''
+            if chechRes:
+                doc_id.checkout_user = str(chechRes[2])
+                
+    @api.multi
     def _is_checkout(self):
-        chechRes = self.getCheckedOut(self.id, None)
-        if chechRes:
-            self.is_checkout = True
-        else:
-            self.is_checkout = False
+        for doc_id in self:
+            chechRes = self.getCheckedOut(doc_id.id, None)
+            doc_id.is_checkout = False
+            if chechRes:
+                doc_id.is_checkout = True
+                
     
     #   Overridden methods for this entity
  
@@ -1434,7 +1436,7 @@ class plm_document(models.Model):
     printout        =   fields.Binary   (string='Printout Content', help="Print PDF content.")
     preview         =   fields.Binary   (string='Preview Content', help="Static preview.")
     state           =   fields.Selection(USED_STATES,string='Status', help="The status of the document.", readonly="True", required=True, default='draft')
-    checkout_user   =   fields.Char(string="Checked-Out to", compute=_get_checkout_state)
+    checkout_user   =   fields.Char(string="Checked-Out to", compute=_get_checkout_name)
     is_checkout     =   fields.Boolean(string='Is Checked-Out', compute=_is_checkout, store=False)
     is_integration  =   fields.Boolean(string="Is from integration", default=False)
 
