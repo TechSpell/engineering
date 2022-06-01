@@ -1602,9 +1602,11 @@ class plm_document(models.Model):
     
             kind = 'HiTree'  # Get Hierarchical tree relations due to children
             modArray = self._explodedocs(oid, [kind], listed_models)
+            modArray.append(oid)
             for item in modArray:
                 kind = 'LyTree'  # Get relations due to layout connected
                 docArray.extend(self._relateddocs(item, [kind], listed_documents))
+                docArray.extend(self._explodedocs(item, [kind], listed_documents))
                 kind = 'SdTree'  # Get relations due to service files connected
                 othArray.extend(self._explodedocs(item, [kind], listed_documents))
                 
