@@ -32,7 +32,7 @@ from odoo.exceptions import UserError
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                     move_workflow, wf_message_post, isVoid, isAdministrator, isWritable, isReleased, \
-                    isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime
+                    isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime, getUserDelta
 
 
 # USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
@@ -502,7 +502,7 @@ class plm_component(models.Model):
             else:
                 existingID=part['componentID']
  
-            lastupdate=datetime.strptime(str(part['_lastupdate']),'%Y-%m-%d %H:%M:%S') if ('_lastupdate' in part) else datetime.now()
+            lastupdate=datetime.strptime(str(part['_lastupdate']),'%Y-%m-%d %H:%M:%S') if ('_lastupdate' in part) else (datetime.now()+getUserDelta(self))
             for fieldName in list(set(part.keys()).difference(set(modelFields))):
                 del (part[fieldName])
             if not existingID:
