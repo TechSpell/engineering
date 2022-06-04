@@ -74,7 +74,7 @@ class plm_component(models.Model):
                     "state"                 :{"changed":"", "enabled":False, "mandatory":False,  "default":"draft",                              },   
                     "tmp_material"          :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",                                   },   
                     "tmp_surface"           :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40,                     },   
-                    "weight"                :{"changed":"", "enabled":True,  "mandatory":False,  "default": 0.0,                                 },   
+                    "weight"                :{"changed":"", "enabled":True,  "mandatory":False,  "default": 0.0, "computed": True,               },   
                     "engineering_material"  :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",                                   },   
                     "engineering_surface"   :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40,                     },   
                     "description"           :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40, "multiline": True,  },   

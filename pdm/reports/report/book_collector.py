@@ -55,7 +55,7 @@ def getDocumentStream(docRepository,objDoc):
 
 def packDocuments(docRepository,documents,bookCollector):
     """
-        pack the documenta for paper size
+        pack the documents for paper size
     """
     packed=[]
     output0 = [] 
