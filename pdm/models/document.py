@@ -38,7 +38,7 @@ from odoo.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                         move_workflow, wf_message_post, isVoid, isAdministrator, isIntegratorUser, isReleased, \
-                        isObsoleted, isUnderModify, isAnyReleased, isDraft, isWritable, getUpdTime
+                        isObsoleted, isUnderModify, isAnyReleased, isDraft, isWritable, getUpdTime, getUserDelta
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
@@ -846,7 +846,7 @@ class plm_document(models.Model):
                 if(document['CADComponentID'] in ['ROOTCFG',]):
                     autocheckout=False                      # Managed as SolidEdge cfg files.
 
-            lastupdate=datetime.strptime(str(document['_lastupdate']),'%Y-%m-%d %H:%M:%S') if ('_lastupdate' in document) else datetime.now()
+            lastupdate=datetime.strptime(str(document['_lastupdate']),'%Y-%m-%d %H:%M:%S') if ('_lastupdate' in document) else (datetime.now()+getUserDelta(self))
             for fieldName in list(set(document.keys()).difference(set(modelFields))):
                 del (document[fieldName])
             document['is_integration']=True
