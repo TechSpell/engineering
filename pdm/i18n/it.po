@@ -320,7 +320,9 @@ msgstr ""
 msgid ""
 "Allows to copy the 'normal' Bom related to Product performing a New "
 "Revision. Default = False."
-msgstr "Permette di copiare la distinta 'normale" collegata ad un prodotto eseguendo una Nuova Revisione. Predefinito = Falso."
+msgstr ""
+"Permette di copiare la distinta 'normale' collegata ad un prodotto eseguendo una Nuova Revisione."
+"Predefinito = Falso."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -329,7 +331,9 @@ msgstr "Permette di copiare la distinta 'normale" collegata ad un prodotto esegu
 msgid ""
 "Allows to copy the Routing related to Bom performing a New Revision. Default"
 " = False."
-msgstr "Permette di copiare il Ciclo collegato ad una distinta Eseguendo una Nuova Revisione. Predefinito = Falso."
+msgstr ""
+"Permette di copiare il Ciclo collegato ad una distinta Eseguendo una Nuova Revisione. "
+"Predefinito = Falso."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -367,7 +371,7 @@ msgid ""
 "Default = False."
 msgstr ""
 "Permette di gestire il workflow del Prodotto muovendolo in base alla "
-"capacità del Documento correlato. Default = False."
+"capacità del Documento correlato. Predefinito = Falso."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -376,7 +380,9 @@ msgstr ""
 msgid ""
 "Allows to reset the timing registered on Routing performing a New Revision. "
 "Default = False."
-msgstr "Permette di azzerare i contatori registrati sul Ciclo eseguendo una Nuova Revisione. Predefinito = Falso."
+msgstr ""
+"Permette di azzerare i contatori registrati sul Ciclo eseguendo una Nuova Revisione. "
+"Predefinito = Falso."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -1507,8 +1513,9 @@ msgstr "Documento corrente"
 msgid ""
 "Current document could be in a status different from 'Draft', not writable.\n"
 "Please, check the status before to perform Upload again."
-msgstr "Il documento corrente potrebbe essere in uno stato diverso da 'Bozza', non scrivibile."
-"Si prega di controllare lo stato prima di eseguire il Caricamneto di nuovo."
+msgstr ""
+"Il documento corrente potrebbe essere in uno stato diverso da 'Bozza', non scrivibile."
+"Si prega di controllare lo stato prima di eseguire il Caricamento di nuovo."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -5268,7 +5275,8 @@ msgstr "Il documento %s - %s non è in check-in"
 msgid ""
 "The document is newer than stored on Odoo.\n"
 "Remove from PWS and download it again."
-msgstr "Il documento è più nuovo di quello immagazzinato in Odoo.\n"
+msgstr ""
+"Il documento è più nuovo di quello immagazzinato in Odoo.\n"
 "Cancellalo dal PWS e scaricalo ancora."
 
 #. module: pdm
