@@ -296,7 +296,7 @@ msgstr "Permetti di assegnare in automatico le posizioni prodotto editando una D
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeCopyBoMProd
 #, python-format
 msgid "Allows to copy the 'normal' Bom related to Product performing a New Revision. Default = False."
-msgstr "Permette di copiare la distinta 'normale" collegata ad un prodotto eseguendo una Nuova Revisione. Predefinito = Falso."
+msgstr "Permette di copiare la distinta 'normale' collegata ad un prodotto eseguendo una Nuova Revisione. Predefinito = Falso."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:78
