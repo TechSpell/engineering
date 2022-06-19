@@ -4508,7 +4508,7 @@ msgstr "Documento padre collegato"
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_base_form
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_form
 msgid "Release Component"
-msgstr "Rilasciare Prosotto"
+msgstr "Rilasciare Prodotto"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_form
