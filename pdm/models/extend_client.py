@@ -271,7 +271,7 @@ class plm_document(models.Model):
         properties['name'].update(                                          # Entity field to consider as P/N
             {"code": {
                 "entity"        : "plm.doculist",                           # Entity where list values to choose
-                "field"         : "name",                                   # Field to use evaluating P/N
+                "field"         : "engineering_code",                       # Field to use evaluating P/N
 #                 "alias"         : "alter_code",                             # Other field which writing value
 #                 "showcolumns"   : ["name", "description", "sequence"],      # Entity fields to show on ListCtrl
                     } 
