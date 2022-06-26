@@ -678,7 +678,7 @@ msgstr "Distinte"
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom_itemnum
 #, python-format
 msgid "CAD Item Position"
-msgstr "Posizione Parte CAD"
+msgstr "Pos."
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom_line_itemlbl
@@ -1031,7 +1031,7 @@ msgstr "Confrontare Distinte"
 #. module: pdm
 #: model:ir.ui.view,arch_db:pdm.view_plm_compare_bom
 msgid "Compare selected BoMs"
-msgstr "contronta le distinte selezionate "
+msgstr "Confronta le distinte selezionate"
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:901
