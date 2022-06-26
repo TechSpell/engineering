@@ -33,10 +33,9 @@ from odoo  import models, fields, api, _, osv
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import odoo.tools.config as tools_config
 
-from .common import getIDs, getCleanList, isAdministrator, packDictionary, unpackDictionary, \
+from .common import getCleanList, isAdministrator, packDictionary, unpackDictionary, \
                     getCleanValue, getCleanBytesDictionary, getCleanBytesList, getUser, streamPDF, \
                     getMachineStorage, getUserDelta
-                    
 
 
 class plm_config_settings(models.Model):
