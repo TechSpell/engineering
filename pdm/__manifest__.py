@@ -28,6 +28,7 @@
     'version': '1.0.0',
     'author': 'Didotech srl',
     'website': 'http://www.didotech.com',
+#    'live_test_url': 'http://www.didotech.com',
     'support': 'support@didotech.com',
     'category': 'Document Management',
     'sequence': 10,
