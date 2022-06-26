@@ -277,7 +277,7 @@ class plm_missing_bom(osv.osv.osv_memory):
     part_id     =   fields.Many2one ('product.product', _('Part'),     index=True,  ondelete='cascade')
     revision    =   fields.Integer  (related="part_id.engineering_revision",string=_("Revision"),           store=False)
     description =   fields.Text     (related="part_id.description",         string=_("Description"),        store=False)
-    itemnum     =   fields.Integer  (related="bom_idrow.itemnum",           string=_("CAD Item Position"),  store=False)
+    itemnum     =   fields.Integer  (related="bom_idrow.itemnum",           string=_("Pos."),               store=False)
     itemqty     =   fields.Float    (related="bom_idrow.product_qty",       string=_("Quantity"),           store=False)
     reason      =   fields.Char     (string=_("Difference"),                size=32)
     
@@ -294,7 +294,7 @@ class plm_adding_bom(osv.osv.osv_memory):
     part_id         =   fields.Many2one ('product.product', _('Part'),     index=True, ondelete='cascade')
     revision        =   fields.Integer  (related="part_id.engineering_revision",    string=_("Revision"),          store=False)
     description     =   fields.Text     (related="part_id.description",             string=_("Description"),       store=False)
-    itemnum         =   fields.Integer  (related="bom_idrow.itemnum",               string=_("CAD Item Position"), store=False)
+    itemnum         =   fields.Integer  (related="bom_idrow.itemnum",               string=_("Pos."),              store=False)
     itemqty         =   fields.Float    (related="bom_idrow.product_qty",           string=_("Quantity"),          store=False)
     reason          =   fields.Char     (string=_("Difference"),                    size=32)
 
