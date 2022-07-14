@@ -24,9 +24,12 @@
 #
 ##############################################################################
 
+import os, stat
 import socket
 import logging
 import datetime
+import csv, json
+import itertools
 from xml.etree.ElementTree import fromstring
 
 from odoo  import models, fields, api, _, osv
@@ -979,6 +982,7 @@ class plm_config_settings(models.Model):
                 'SAVEOPENSETTINGS':          {'label': _("Save settings used for Open Documents"), 'tooltip': _("This option allows to store settings used in Component or Document Open and Import interfaces. Default is False.")},
                 'PERMANENTLIST':             {'label': _("Maintains opening list"), 'tooltip': _("This option allows to store latest opened document name. Default is False.")},
                 'FORCESAVE':                 {'label': _("Force to execute upload Document"), 'tooltip': _("This option allows to force uploading a file also if seems changed. Default is False.")},
+                'PERFORMANCE_CONNECTION':    {'label': _("Performance connection"),  "tooltip": _("Align up local data using maximum performance. Option not usable on servers in which PostgreSQL is not configurable. Default is False.")},
                 },
  
             'componentDialog':      {
@@ -1169,93 +1173,93 @@ class plm_config_settings(models.Model):
         quick_tables=[['ext_document','document'],['ext_checkout','checkout']]
         columns = {
                 'document':{
-                          'id' : {'label':_('ID'), 'visible':True, 'pos':1},
-                          'name' : {'label':_('Document Name'), 'visible':True, 'pos':2},
-                          'revisionid' : {'label':_('Revision'), 'visible':True, 'pos':3},
-                          'minorrevision' : {'label':_('Minor Revision'), 'visible':True, 'pos':4},
-                          'state' :  {'label':_('Status'), 'visible':True, 'pos':5},
-                          'created' :  {'label':_('Creator'), 'visible':True, 'pos':6},
-                          'create_date' :  {'label':_('Created'), 'visible':True, 'pos':7},
-                          'changed' :  {'label':_('Modified by'), 'visible':True, 'pos':8},
-                          'write_date' :  {'label':_('Changed'), 'visible':True, 'pos':9},
-                          'checkedout' :  {'label':_('Checked-Out by'), 'visible':True, 'pos':10},
-                          'filename' :  {'label':_('File Name'), 'visible':True, 'pos':11},
-                          'preview' :  {'label':_('Preview'), 'visible':False, 'pos':12},
+                          'id' : {'label':_('ID'), 'visible':True, 'kind':'int', 'pos':1},
+                          'name' : {'label':_('Document Name'), 'visible':True, 'kind':'char', 'pos':2},
+                          'revisionid' : {'label':_('Revision'), 'visible':True, 'kind':'int', 'pos':3},
+                          'minorrevision' : {'label':_('Minor Revision'), 'visible':True, 'kind':'char', 'pos':4},
+                          'state' :  {'label':_('Status'), 'visible':True, 'kind':'char', 'pos':5},
+                          'created' :  {'label':_('Creator'), 'visible':True, 'kind':'char', 'pos':6},
+                          'create_date' :  {'label':_('Created'), 'visible':True, 'kind':'date', 'pos':7},
+                          'changed' :  {'label':_('Modified by'), 'visible':True, 'kind':'char', 'pos':8},
+                          'write_date' :  {'label':_('Changed'), 'visible':True, 'kind':'date', 'pos':9},
+                          'checkedout' :  {'label':_('Checked-Out by'), 'visible':True, 'kind':'char', 'pos':10},
+                          'filename' :  {'label':_('File Name'), 'visible':True, 'kind':'char', 'pos':11},
+                          'preview' :  {'label':_('Preview'), 'visible':False, 'kind':'bin', 'pos':12},
                           },
                 
                 'component':{
-                          'id' : {'label':_('ID'), 'visible':True, 'pos':1},
-                          'tmpl_id' : {'label':_('Template ID'), 'visible':False, 'pos':2},
-                          'name' : {'label':_('Product Name'), 'visible':True, 'pos':3},
-                          'engineering_code' : {'label':_('Engineering Code'), 'visible':True, 'pos':4},
-                          'engineering_revision' : {'label':_('Revision'), 'visible':True, 'pos':5},
-                          'state' :  {'label':_('Status'), 'visible':True, 'pos':6},
-                          'description' : {'label':_('Description'), 'visible':True, 'pos':7},
-                          'created' :  {'label':_('Creator'), 'visible':True, 'pos':8},
-                          'create_date' :  {'label':_('Created'), 'visible':True, 'pos':9},
-                          'changed' :  {'label':_('Modified by'), 'visible':True, 'pos':10},
-                          'write_date' :  {'label':_('Modified'), 'visible':True, 'pos':11},
+                          'id' : {'label':_('ID'), 'visible':True, 'kind':'int', 'pos':1},
+                          'tmpl_id' : {'label':_('Template ID'), 'visible':False, 'kind':'int', 'pos':2},
+                          'name' : {'label':_('Product Name'), 'visible':True, 'kind':'char', 'pos':3},
+                          'engineering_code' : {'label':_('Engineering Code'), 'visible':True, 'kind':'char', 'pos':4},
+                          'engineering_revision' : {'label':_('Revision'), 'visible':True, 'kind':'int', 'pos':5},
+                          'state' :  {'label':_('Status'), 'visible':True, 'kind':'char', 'pos':6},
+                          'description' : {'label':_('Description'), 'visible':True, 'kind':'char', 'pos':7},
+                          'created' :  {'label':_('Creator'), 'visible':True, 'kind':'char', 'pos':8},
+                          'create_date' :  {'label':_('Created'), 'visible':True, 'kind':'date', 'pos':9},
+                          'changed' :  {'label':_('Modified by'), 'visible':True, 'kind':'char', 'pos':10},
+                          'write_date' :  {'label':_('Modified'), 'visible':True, 'kind':'date', 'pos':11},
                           },
 
                 'mrpbom':{
-                            'id' : {'label':_('Father ID'), 'visible':True, 'pos':1},
-                            'father id' : {'label':_('Father ID'), 'visible':False, 'pos':2},
-                            'child_id' : {'label':_('Child ID'), 'visible':False, 'pos':3},
-                            'father' : {'label':_('Assembly Name'), 'visible':True, 'pos':4},
-                            'father_code' : {'label':_('Engineering Code'), 'visible':True, 'pos':5},
-                            'father_rv' : {'label':_('Revision'), 'visible':True, 'pos':6},
-                            'father_desc' : {'label':_('Description'), 'visible':True, 'pos':7},
-                            'child' : {'label':_('Product Name'), 'visible':True, 'pos':8},
-                            'child_code' : {'label':_('Engineering Code'), 'visible':True, 'pos':9},
-                            'child_rv' : {'label':_('Revision'), 'visible':True, 'pos':10},
-                            'child_desc' : {'label':_('Description'), 'visible':True, 'pos':11},
-                            'created' :  {'label':_('Creator'), 'visible':True, 'pos':12},
-                            'create_date' :  {'label':_('Created'), 'visible':True, 'pos':13},
-                            'changed' :  {'label':_('Modified by'), 'visible':True, 'pos':14},
-                            'write_date' :  {'label':_('Modified'), 'visible':True, 'pos':15},
+                            'id' : {'label':_('Father ID'), 'visible':True, 'kind':'int', 'pos':1},
+                            'father_id' : {'label':_('Father ID'), 'visible':False, 'kind':'int', 'pos':2},
+                            'child_id' : {'label':_('Child ID'), 'visible':False, 'kind':'int', 'pos':3},
+                            'father' : {'label':_('Assembly Name'), 'visible':True, 'kind':'char', 'pos':4},
+                            'father_code' : {'label':_('Engineering Code'), 'visible':True, 'kind':'char', 'pos':5},
+                            'father_rv' : {'label':_('Revision'), 'visible':True, 'kind':'int', 'pos':6},
+                            'father_desc' : {'label':_('Description'), 'visible':True, 'kind':'char', 'pos':7},
+                            'child' : {'label':_('Product Name'), 'visible':True, 'kind':'char', 'pos':8},
+                            'child_code' : {'label':_('Engineering Code'), 'visible':True, 'kind':'char', 'pos':9},
+                            'child_rv' : {'label':_('Revision'), 'visible':True, 'kind':'int', 'pos':10},
+                            'child_desc' : {'label':_('Description'), 'visible':True, 'kind':'char', 'pos':11},
+                            'created' :  {'label':_('Creator'), 'visible':True, 'kind':'char', 'pos':12},
+                            'create_date' :  {'label':_('Created'), 'visible':True, 'kind':'date', 'pos':13},
+                            'changed' :  {'label':_('Modified by'), 'visible':True, 'kind':'char', 'pos':14},
+                            'write_date' :  {'label':_('Modified'), 'visible':True, 'kind':'date', 'pos':15},
                             },
                 
                 'docbom':{
-                            'id' : {'label':_('Father ID'), 'visible':True, 'pos':1},
-                            'father_id' : {'label':_('Father ID'), 'visible':False, 'pos':2},
-                            'child_id' : {'label':_('Child ID'), 'visible':False, 'pos':3},
-                            'father' : {'label':_('Father Document'), 'visible':True, 'pos':4},
-                            'father_rv' : {'label':_('Revision'), 'visible':True, 'pos':5},
-                            'father_min' : {'label':_('Minor Revision'), 'visible':True, 'pos':6},
-                            'father_file' : {'label':_('Father File'), 'visible':True, 'pos':7},
-                            'kind' : {'label':_('Kind Relation'), 'visible':True, 'pos':8},
-                            'child' : {'label':_('Child Document'), 'visible':False, 'pos':9},
-                            'child_rv' : {'label':_('Revision'), 'visible':True, 'pos':10},
-                            'child_min' : {'label':_('Minor Revision'), 'visible':True, 'pos':11},
-                            'child_file' : {'label':_('Child File'), 'visible':True, 'pos':12},
-                            'created' :  {'label':_('Creator'), 'visible':True, 'pos':13},
-                            'create_date' :  {'label':_('Created'), 'visible':False, 'pos':14},
+                            'id' : {'label':_('Father ID'), 'visible':True, 'kind':'int', 'pos':1},
+                            'father_id' : {'label':_('Father ID'), 'visible':False, 'kind':'int', 'pos':2},
+                            'child_id' : {'label':_('Child ID'), 'visible':False, 'kind':'int', 'pos':3},
+                            'father' : {'label':_('Father Document'), 'visible':True, 'kind':'char', 'pos':4},
+                            'father_rv' : {'label':_('Revision'), 'visible':True, 'kind':'int', 'pos':5},
+                            'father_min' : {'label':_('Minor Revision'), 'visible':True, 'kind':'char', 'pos':6},
+                            'father_file' : {'label':_('Father File'), 'visible':True, 'kind':'char', 'pos':7},
+                            'kind' : {'label':_('Kind Relation'), 'visible':True, 'kind':'char', 'pos':8},
+                            'child' : {'label':_('Child Document'), 'visible':False, 'kind':'char', 'pos':9},
+                            'child_rv' : {'label':_('Revision'), 'visible':True, 'kind':'int', 'pos':10},
+                            'child_min' : {'label':_('Minor Revision'), 'visible':True, 'kind':'char', 'pos':11},
+                            'child_file' : {'label':_('Child File'), 'visible':True, 'kind':'char', 'pos':12},
+                            'created' :  {'label':_('Creator'), 'visible':True, 'kind':'char', 'pos':13},
+                            'create_date' :  {'label':_('Created'), 'visible':False, 'kind':'date', 'pos':14},
                            },
 
                 'linkdoc':{
-                            'id' : {'label':_('Father ID'), 'visible':True, 'pos':1},
-                            'component_id' : {'label':_('Component ID'), 'visible':False, 'pos':2},
-                            'document_id' : {'label':_('Document ID'), 'visible':False, 'pos':3},
-                            'component' : {'label':_('Component'), 'visible':True, 'pos':4},                             
-                            'code' : {'label':_('Component Code'), 'visible':True, 'pos':5},
-                            'component_rv' : {'label':_('Component Revision'), 'visible':True, 'pos':6},
-                            'document' : {'label':_('Document'), 'visible':True, 'pos':7},
-                            'document_rv' : {'label':_('Document Revision'), 'visible':True, 'pos':8},
-                            'document_min' : {'label':_('Document Minor Revision'), 'visible':True, 'pos':9},
-                            'create_date' :  {'label':_('Created'), 'visible':False, 'pos':10},
+                            'id' : {'label':_('Father ID'), 'visible':True, 'kind':'int', 'pos':1},
+                            'component_id' : {'label':_('Component ID'), 'visible':False, 'kind':'int', 'pos':2},
+                            'document_id' : {'label':_('Document ID'), 'visible':False, 'kind':'int', 'pos':3},
+                            'component' : {'label':_('Component'), 'visible':True, 'kind':'char', 'pos':4},                             
+                            'code' : {'label':_('Component Code'), 'visible':True, 'kind':'char', 'pos':5},
+                            'component_rv' : {'label':_('Component Revision'), 'visible':True, 'kind':'int', 'pos':6},
+                            'document' : {'label':_('Document'), 'visible':True, 'kind':'char', 'pos':7},
+                            'document_rv' : {'label':_('Document Revision'), 'visible':True, 'kind':'int', 'pos':8},
+                            'document_min' : {'label':_('Document Minor Revision'), 'visible':True, 'kind':'char', 'pos':9},
+                            'create_date' :  {'label':_('Created'), 'visible':False, 'kind':'date', 'pos':10},
                            },
 
                  'checkout':{
-                            'id' : {'label':_('Internal ID'), 'visible':False, 'pos':1},
-                            'document_id' : {'label':_('ID'), 'visible':True, 'pos':2},
-                            'create_date' :  {'label':_('Created'), 'visible':False, 'pos':3},
-                            'document' : {'label':_('Document'), 'visible':True, 'pos':4},
-                            'document_rv' : {'label':_('Document Revision'), 'visible':True, 'pos':5},
-                            'document_min' : {'label':_('Document Minor Revision'), 'visible':True, 'pos':6},
-                            'user' : {'label':_('Checked-Out by'), 'visible':True, 'pos':7},                             
-                            'host' : {'label':_('Hostname'), 'visible':True, 'pos':8},
-                            'path' : {'label':_('Directory'), 'visible':True, 'pos':9},
-                            'filename' : {'label':_('FileName'), 'visible':True, 'pos':10},
+                            'id' : {'label':_('Internal ID'), 'visible':False, 'kind':'int', 'pos':1},
+                            'document_id' : {'label':_('ID'), 'visible':True, 'kind':'int', 'pos':2},
+                            'create_date' :  {'label':_('Created'), 'visible':False, 'kind':'date', 'pos':3},
+                            'document' : {'label':_('Document'), 'visible':True, 'kind':'char', 'pos':4},
+                            'document_rv' : {'label':_('Document Revision'), 'visible':True, 'kind':'int', 'pos':5},
+                            'document_min' : {'label':_('Document Minor Revision'), 'visible':True, 'kind':'char', 'pos':6},
+                            'user' : {'label':_('Checked-Out by'), 'visible':True, 'kind':'char', 'pos':7},                             
+                            'host' : {'label':_('Hostname'), 'visible':True, 'kind':'char', 'pos':8},
+                            'path' : {'label':_('Directory'), 'visible':True, 'kind':'char', 'pos':9},
+                            'filename' : {'label':_('FileName'), 'visible':True, 'kind':'char', 'pos':10},
                            },
                 }
                    
@@ -1272,6 +1276,132 @@ class plm_config_settings(models.Model):
 #         cr.execute("REFRESH MATERIALIZED VIEW ext_document")
 #         logging.debug("Refreshing Materialized Views: End.")
         return False
+
+    def getFieldsData(self, tablename):
+        """
+            Gets field names as list and as string.
+            Used in GetTableData method, to collect field names
+            for each required table.
+        """
+        fieldNames = ""
+        tables, _, columns = self.getColumnViews()
+        dictTables = {k: v for k, v in tables}
+        table = dictTables[tablename]
+        colListed = columns[table]
+        fieldnames = colListed.keys()
+        for fieldname in fieldnames:
+            if (colListed[fieldname].get('kind', False) == 'bin'):
+                fieldNames += "encode({name}, 'hex') as {name},".format(name=fieldname)
+            else:
+                fieldNames += "{},".format(fieldname)
+        fNames = fieldNames[:len(fieldNames)-1]
+        return fieldnames, fNames
+
+    @api.model_cr
+    def setExecute(self, query):
+        """
+            Executes query.
+        """
+        cr = self._cr
+        cr.execute(query)
+
+    @api.model_cr
+    def getExecute(self, query):
+        """
+            Executes query returning values.
+        """
+        cr = self._cr
+        cr.execute(query)
+        ids = cr.fetchall()
+        return list(itertools.chain(*ids))    
+
+        
+    def getTableFileName(self, tablename):
+        d0 = datetime.datetime(2000, 1, 1)
+        d1 = datetime.datetime.now()
+        midmod = (d1-d0).total_seconds()
+        return "/tmp/{table}-{uid}-{midmod}.csv".format(table=tablename, uid=self._uid, midmod=midmod)
+
+    @api.model
+    def GetTableData(self, request="", default=None):
+        """
+            Gets views data for external Clients.
+            Not optimized, usable for Odoo.sh servers, in which
+            no Postgresql customization is possible.
+        """
+        tablename, = request
+        fieldnames, fieldNames = self.getFieldsData(tablename)
+        tmp_file = self.getTableFileName(tablename)
+        select = "SELECT {fieldNames} from {table}".format(table=tablename, fieldNames=fieldNames)
+        if tablename == 'ext_checkout':
+            select = "SELECT * from {table}".format(table=tablename)
+
+        ret = self.getQueryRes(tmp_file, select)
+
+        return ret
+
+    def getQueryRes(self, tmp_file, select):
+        """
+            Executes query choosen putting output on temporary csv file.
+            Returns a json serialized string of dictionaries.
+        """
+        ret = ""
+
+        csvfile=open(tmp_file, 'w')
+        csvfile.close()
+        if os.path.exists(tmp_file):
+            os.chmod(tmp_file, 0o666)
+
+        query = "COPY ({select}) TO '{tmp_file}' DELIMITER ';' CSV HEADER;".format(select=select, tmp_file=tmp_file)
+        self.setExecute(query) 
+
+        with open('{tmp_file}'.format(tmp_file=tmp_file), 'r') as csvfile:
+            reader = csv.DictReader(csvfile, delimiter=';')
+            lines = [ row for row in reader ]
+            ret = json.dumps( lines )
+        csvfile.close()
+        
+        if os.path.exists(tmp_file):
+            os.unlink(tmp_file)
+        return ret
+
+    @api.model
+    def GetUpdateTableData(self, request=[], default=None):
+        """
+            Gets views data for external Clients.
+            Optimized, usable for Odoo.sh servers, in which
+            no Postgresql customization is possible.
+            Returns created and changed lines in table.
+        """
+        retCre = ""
+        retChg = ""
+        retId = []
+        select = ""
+        tablename, create_date = request
+        fieldnames, fieldNames = self.getFieldsData(tablename)
+        tmp_file = self.getTableFileName(tablename)
+        base_select = "SELECT {fieldNames} from {table}".format(table=tablename, fieldNames=fieldNames)
+        if tablename == 'ext_checkout':
+            base_select = "SELECT * from {table}".format(table=tablename)
+        write_date = create_date if (create_date and ('write_date' in fieldnames)) else False
+
+        if create_date:
+            select = base_select + " WHERE create_date >= '{date}'".format(date=create_date)
+
+        if select:
+            retCre = self.getQueryRes(tmp_file, select)
+            select = ""
+
+        if write_date:
+            select = base_select + " WHERE write_date >= '{write_date}' AND create_date < write_date".format(write_date=write_date)
+
+        if select:
+            retChg = self.getQueryRes(tmp_file, select)
+            select = ""
+        
+        retId = self.getExecute("SELECT id from {table}".format(table=tablename))
+
+        return (retCre, retChg, retId)
 
     @api.model_cr
     def init(self):
