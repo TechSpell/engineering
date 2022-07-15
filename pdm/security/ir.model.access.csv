@@ -54,7 +54,6 @@ group_plm_integrationuser,access_iu_plm_doculist,plm_doculist,plm.doculist,1,1,0
 group_plm_integrationuser,access_iu_plm_email_thread,mail_thread,mail.thread,1,1,1,0
 group_plm_validationuser,access_vl_plm_logging,plm_logging,plm.logging,1,1,1,0
 group_plm_validationuser,access_vl_plm_checkout,plm_checkout,plm.checkout,1,1,1,0
-group_plm_validationuser,access_vl_plm_config_settings,plm_config_settings,plm.config.settings,1,1,1,0
 group_plm_validationuser,access_vl_plm_component_document_rel,plm_component_document_rel,plm.component.document.rel,1,1,1,0
 group_plm_validationuser,access_vl_plm_document_relation,plm_document_relation,plm.document.relation,1,1,1,0
 group_plm_validationuser,access_vl_product_product,product_product,product.product,1,1,1,0
