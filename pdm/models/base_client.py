@@ -1318,7 +1318,8 @@ class plm_config_settings(models.Model):
         d0 = datetime.datetime(2000, 1, 1)
         d1 = datetime.datetime.now()
         midmod = (d1-d0).total_seconds()
-        return "/tmp/{table}-{uid}-{midmod}.csv".format(table=tablename, uid=self._uid, midmod=midmod)
+        base_dir = tools_config.get('data_dir', os.path.join(tools_config['root_path'], 'filestore'))
+        return "{base}/{table}-{uid}-{midmod}.csv".format(base=base_dir, table=tablename, uid=self._uid, midmod=midmod)
 
     @api.model
     def GetTableData(self, request="", default=None):
@@ -1684,4 +1685,3 @@ class plm_mail(models.Model):
 
         else:
             logging.warning("SendFSCheck : No receivers configured.")
-          
