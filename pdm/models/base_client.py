@@ -1255,7 +1255,7 @@ class plm_config_settings(models.Model):
                             'document' : {'label':_('Document'), 'visible':True, 'kind':'char', 'pos':4},
                             'document_rv' : {'label':_('Document Revision'), 'visible':True, 'kind':'int', 'pos':5},
                             'document_min' : {'label':_('Document Minor Revision'), 'visible':True, 'kind':'char', 'pos':6},
-                            'user' : {'label':_('Checked-Out by'), 'visible':True, 'kind':'char', 'pos':7},                             
+                            'user' : {'label':_('Checked-Out by'), 'visible':True, 'kind':'char', 'alias':'checkuser', 'pos':7},                             
                             'host' : {'label':_('Hostname'), 'visible':True, 'kind':'char', 'pos':8},
                             'path' : {'label':_('Directory'), 'visible':True, 'kind':'char', 'pos':9},
                             'filename' : {'label':_('FileName'), 'visible':True, 'kind':'char', 'pos':10},
@@ -1268,7 +1268,7 @@ class plm_config_settings(models.Model):
         """
             Refreshes Materialized Views.
         """
-        cr = self.env.cr
+#         cr = self.env.cr
 #         logging.debug("Refreshing Materialized Views: Start.")
 #         cr.execute("REFRESH MATERIALIZED VIEW ext_component")
 #         cr.execute("REFRESH MATERIALIZED VIEW ext_document")
@@ -1288,8 +1288,13 @@ class plm_config_settings(models.Model):
         colListed = columns[table]
         fieldnames = colListed.keys()
         for fieldname in fieldnames:
-            if (colListed[fieldname].get('kind', False) == 'bin'):
+            values = colListed[fieldname]
+            if values.get('alias', False):
+                fieldname = values['alias']
+            if (values.get('kind', False) == 'bin'):
                 fieldNames += "encode({name}, 'hex') as {name},".format(name=fieldname)
+            elif (values.get('kind', False) == 'date'):
+                fieldNames += "TO_CHAR({name}, 'YYYY-MM-DD HH24:MI:SS') as {name},".format(name=fieldname)
             else:
                 fieldNames += "{},".format(fieldname)
         fNames = fieldNames[:len(fieldNames)-1]
@@ -1302,6 +1307,14 @@ class plm_config_settings(models.Model):
         cr = self.env.cr
         cr.execute(query)
 
+    def getExecuteQuery(self, query):
+        """
+            Executes query returning values.
+        """
+        cr = self.env.cr
+        cr.execute(query)
+        return cr.fetchall()
+ 
     def getExecute(self, query):
         """
             Executes query returning values.
@@ -1328,12 +1341,8 @@ class plm_config_settings(models.Model):
         """
         tablename, = request
         fieldnames, fieldNames = self.getFieldsData(tablename)
-        tmp_file = self.getTableFileName(tablename)
         select = "SELECT {fieldNames} from {table}".format(table=tablename, fieldNames=fieldNames)
-        if tablename == 'ext_checkout':
-            select = "SELECT * from {table}".format(table=tablename)
-
-        ret = self.getQueryRes(tmp_file, select)
+        ret = self.getQueryResult(fieldnames, select)
 
         return ret
 
@@ -1362,6 +1371,17 @@ class plm_config_settings(models.Model):
             os.unlink(tmp_file)
         return ret
 
+    def getQueryResult(self, fieldnames, query):
+        """
+            Executes query choosen putting output on temporary csv file.
+            Returns a json serialized string of dictionaries.
+        """
+        lines = []
+        for line in self.getExecuteQuery(query):
+            lines.append(dict(zip(fieldnames, line)))
+        ret = json.dumps( lines )      
+        return ret
+
     @api.model
     def GetUpdateTableData(self, request=[], default=None):
         """
@@ -1376,24 +1396,21 @@ class plm_config_settings(models.Model):
         select = ""
         tablename, create_date = request
         fieldnames, fieldNames = self.getFieldsData(tablename)
-        tmp_file = self.getTableFileName(tablename)
         base_select = "SELECT {fieldNames} from {table}".format(table=tablename, fieldNames=fieldNames)
-        if tablename == 'ext_checkout':
-            base_select = "SELECT * from {table}".format(table=tablename)
         write_date = create_date if (create_date and ('write_date' in fieldnames)) else False
 
         if create_date:
             select = base_select + " WHERE create_date >= '{date}'".format(date=create_date)
 
         if select:
-            retCre = self.getQueryRes(tmp_file, select)
+            retCre = self.getQueryResult(fieldnames, select)
             select = ""
 
         if write_date:
             select = base_select + " WHERE write_date >= '{write_date}' AND create_date < write_date".format(write_date=write_date)
 
         if select:
-            retChg = self.getQueryRes(tmp_file, select)
+            retChg = self.getQueryResult(fieldnames, select)
             select = ""
         
         retId = self.getExecute("SELECT id from {table}".format(table=tablename))
@@ -1576,7 +1593,7 @@ class plm_config_settings(models.Model):
         cr.execute(
             """
             CREATE OR REPLACE VIEW ext_checkout AS (
-                SELECT b.id, b.create_date, c.login as user, a.id as document_id, a.name as document, a.revisionid as document_rv,a.minorrevision as document_min, b.hostname as host, b.hostpws as path, a.filename as filename
+                SELECT b.id, b.create_date, c.login as user, c.login as checkuser, a.id as document_id, a.name as document, a.revisionid as document_rv,a.minorrevision as document_min, b.hostname as host, b.hostpws as path, a.filename as filename
                     FROM ext_document a, plm_checkout b, res_users c
                     WHERE
                         a.id IN
