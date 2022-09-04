@@ -1443,7 +1443,7 @@ class plm_config_settings(models.Model):
         cr.execute(
             """
             CREATE OR REPLACE VIEW ext_document AS (
-                SELECT a.id, a.name, a.revisionid, a.minorrevision, d.login as created, a.state, a.create_date, d.login as changed, a.write_date, c.login as checkedout, a.datas_fname as filename, a.preview 
+                SELECT a.id, a.name, a.revisionid, a.minorrevision, d.login as created, a.state, a.create_date, e.login as changed, a.write_date, c.login as checkedout, a.datas_fname as filename, a.preview 
                     FROM plm_document a LEFT JOIN plm_checkout b on a.id=b.documentid LEFT JOIN res_users c on c.id=b.userid, res_users d, res_users e
                     WHERE
                          a.id IN
