@@ -34,12 +34,14 @@ from .common import usefulInfos, emptyDocument, moduleName
 thisModuleName=moduleName()
 
 
-class report_plm_document(models.AbstractModel):
-    _name = 'report.%s.document_pdf' %(thisModuleName)
-    _description = 'Report PDF Document'
+class plm_document(models.Model):
+    _inherit = 'plm.document'
 
     @api.model
-    def get_pdf_content(self, documents=None):
+    def getPDFbyDocuments(self, documents=None):
+        """
+            Returns pdf byte content of requested documents
+        """
         ret = emptyDocument
         if len(documents)>0:
             docRepository, bookCollector = usefulInfos(self.env)
@@ -48,9 +50,14 @@ class report_plm_document(models.AbstractModel):
                 ret=documentContent[0]
         return ret
 
+
+class report_plm_document(models.AbstractModel):
+    _name = 'report.%s.document_pdf' %(thisModuleName)
+    _description = 'Report PDF Document'
+
     @api.model
     def render_qweb_pdf(self, documents=None, data=None):
-        content = self.get_pdf_content(documents)
+        content = self.env['plm.document'].getPDFbyDocuments(documents)
         byteString = b"data:application/pdf;base64," + base64.encodebytes(content)
         return byteString.decode('UTF-8')
 
