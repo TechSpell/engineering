@@ -35,24 +35,25 @@ from .common import usefulInfos, getLinkedDocument, emptyDocument, moduleName
 
 thisModuleName=moduleName()
 
-class report_plm_component(models.AbstractModel):
-    _name='%s.product_product_pdf' %(thisModuleName)
-    _description = "Base PDF Report Component"
+class plm_component(models.AbstractModel):
+    _inherit='product.product'
 
     @api.model
-    def render_qweb_pdf(self, products=None, level=0, checkState=False, data=None):
+    def getPDFbyProducts(self, level=0, checkState=False):
+        """
+            Returns pdf byte content of related documents
+        """
         documents = []
         processed=[]
         content = emptyDocument()
         docRepository, bookCollector = usefulInfos(self.env)
-        productObjType=self.env['product.product']
-
-        for product in products:
+ 
+        for product in self:
             if not(product.name  in processed):
                 documents.extend(getLinkedDocument(product, checkState))
                 processed.append(product.name)
                 if level > -1:
-                    for childProduct in productObjType.browse(product._getChildrenBom(product, level)):
+                    for childProduct in self.browse(product._getChildrenBom(product, level)):
                         if not(childProduct.name  in processed):
                             documents.extend(getLinkedDocument(childProduct, checkState))
                             processed.append(product.name)
@@ -61,7 +62,17 @@ class report_plm_component(models.AbstractModel):
             documentContent=packDocuments(docRepository, documents, bookCollector)
             if len(documentContent)>0:
                 content=documentContent[0]
-                
+        return content       
+
+class report_plm_component(models.AbstractModel):
+    _name='%s.product_product_pdf' %(thisModuleName)
+    _description = "Base PDF Report Component"
+
+    @api.model
+    def render_qweb_pdf(self, products=None, level=0, checkState=False, data=None):
+        content = emptyDocument()
+        if products:
+            content = products.getPDFbyProducts(level=0, checkState=False)                
         byteString = b"data:application/pdf;base64," + base64.encodebytes(content)
         return byteString.decode('UTF-8')
 
