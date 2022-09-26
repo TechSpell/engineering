@@ -83,8 +83,6 @@ def _createtemplate():
         logging.error("File '{name}' is not writable: it will use default reports.".format(name=fileName))
         logging.debug("Exception raised was: {msg}.".format(msg=msg))
 
-_createtemplate()
-
 ###############################################################################################################à
 
 
