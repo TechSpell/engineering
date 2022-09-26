@@ -1956,9 +1956,10 @@ class plm_document_relation(models.Model):
             feed=False
             for fth_id in self.search([('parent_id', '=', idd),('link_kind', '=', 'HiTree')]):
                 feed=True
-                for line_id in self.search([('child_id', '=', idd),('parent_id', '=', fth_id.child_id.id),('link_kind', '=', 'LyTree')]):
-                    feed=False
-                ret=ret|feed
+                if fth_id.child_id:
+                    for line_id in self.search([('child_id', '=', idd),('parent_id', '=', fth_id.child_id.id),('link_kind', '=', 'LyTree')]):
+                        feed=False
+                    ret=ret|feed
                 if ret:
                     break
         return ret
