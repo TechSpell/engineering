@@ -969,6 +969,7 @@ class plm_component(models.Model):
         """
             Executes on cascade to children products the required workflow operations.
         """
+        objId = False
         full_ids=[]
         status=operationParams['status'] 
         action=operationParams['action']
@@ -977,19 +978,21 @@ class plm_component(models.Model):
         includeStatuses=operationParams['includeStatuses']
         
         stopFlag,allIDs=self._get_recursive_parts(ids, excludeStatuses, includeStatuses)
-        self._action_ondocuments(allIDs,docaction, status)
         if action:
-            idMoves=move_workflow(self, allIDs, action, status)
-            self.logging_workflow(idMoves, action, status)
-            objId=self.browse(allIDs).with_context({'internal_writing':True}).write(default)
-            if objId:
-                wf_message_post(self, allIDs, body='Status moved to: {status}.'.format(status=status))
+            idMoves = move_workflow(self, allIDs, action, status)
+            if idMoves:
+                self._action_ondocuments(idMoves,docaction, status)
+                self.logging_workflow(idMoves, action, status)
+                objId = self.browse(idMoves).with_context({'internal_writing':True}).write(default)
+                if objId:
+                    wf_message_post(self, idMoves, body='Status moved to: {status}.'.format(status=status))
         return objId
 
     def _action_to_release(self, ids, excludeStatuses, includeStatuses):
         """
              Action to be executed for Released state
         """
+        objId = False
         full_ids = []
         last_ids=[]
         status='released'
@@ -1008,20 +1011,22 @@ class plm_component(models.Model):
             if objObsolete and objObsolete.id:
                 last_ids.append(objObsolete.id)
         
-        idMoves=move_workflow(self, last_ids, 'obsolete', 'obsoleted')
-        self.logging_workflow(idMoves, 'obsolete', 'obsoleted')
-        self._action_ondocuments(last_ids, 'obsolete', 'obsoleted')
-
-        self._action_ondocuments(allIDs, action, status)
-        for currId in allProdObjs:
-            if not (currId.id in ids):
-                full_ids.append(currId.id)
-
-        idMoves=move_workflow(self, allIDs, action, status)
-        self.logging_workflow(idMoves, action, status)
-        objId=self.browse(idMoves).with_context({'internal_writing':True}).write(default)
-        if objId and idMoves:
-            wf_message_post(self, allIDs, body='Status moved to: {status}.'.format(status=status))
+        idMyMoves=move_workflow(self, allIDs, action, status)
+        if idMyMoves:
+            idMoves=move_workflow(self, last_ids, 'obsolete', 'obsoleted')
+            if idMoves:
+                self.logging_workflow(idMoves, 'obsolete', 'obsoleted')
+                self._action_ondocuments(idMoves, 'obsolete', 'obsoleted')
+        
+            self._action_ondocuments(idMyMoves, action, status)
+            for currId in allProdObjs:
+                if not (currId.id in ids):
+                    full_ids.append(currId.id)
+    
+            self.logging_workflow(idMyMoves, action, status)
+            objId=self.browse(idMyMoves).with_context({'internal_writing':True}).write(default)
+            if objId and idMyMoves:
+                wf_message_post(self, idMyMoves, body='Status moved to: {status}.'.format(status=status))
         return objId
 
     #######################################################################################################################################33
