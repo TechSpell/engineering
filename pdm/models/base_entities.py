@@ -500,6 +500,7 @@ class plm_relation(models.Model):
         """
         ret=False
         listedParent=[]
+        productType = self.env['product.product']
         bomLType=self.env['mrp.bom.line']
         modelFields=self.env['plm.config.settings'].GetFieldsModel(bomLType._name)
         docType=self.env['plm.document']
@@ -510,7 +511,7 @@ class plm_relation(models.Model):
             """
             bl_to_delete = bomLType
             if not parentID==None:
-                if isWritable(self.env['product.product'], parentID):
+                if isWritable(productType, parentID):
                     for bom_id in self.search([('type','=','ebom'),('product_id','=',parentID)]):
                         if not sourceID==None and sourceID:
                             all_ids = docType.GetAllPreviousIds(sourceID)
@@ -567,7 +568,6 @@ class plm_relation(models.Model):
                 Gets the father of relation ( parent side in mrp.bom )
             """
             ret=False
-            productType = self.env['product.product']
             if partID and isWritable(productType, partID):
                 try:
                     objTempl=productType.getTemplateItem(partID)
@@ -597,34 +597,36 @@ class plm_relation(models.Model):
             """
             ret=False
             if bomID and partID:
-                try:
-                    flag = True
-                    res={
-                         'type': kindBom,
-                         'product_id': partID,
-                         'bom_id': bomID,
-                         }
-                    if sourceID:
-                        res.update({'source_id': sourceID})
-                        flag = docType.IsCheckedOutForMe(sourceID)
- 
-                    if flag:
-                        if args!=None and isinstance(args, dict):
-                            for arg in args.keys():
-                                if arg in modelFields:
-                                    res.update({arg : args[arg]})
-                        if ('product_qty' in res):
-                            if isinstance(res['product_qty'], float) and (res['product_qty']<1e-6):
-                                res.update({'product_qty': 1.0})
-                        objectItem=bomLType.with_context({'internal_writing':True,'internal_process':True}).create(res)
-                        if objectItem:
-                            ret=objectItem
-                except Exception as msg:
-                    logging.error("[saveChild] :  Unable to create a relation for part '{name}' with source ({src})."\
-                                  .format(name=name, src=sourceID))
-                    logging.error("Exception raised was : {msg}.".format(msg=msg))
+                product_id=productType.browse(partID)
+                if product_id and product_id.active:
+                    try:
+                        flag = True
+                        res={
+                             'type': kindBom,
+                             'product_id': partID,
+                             'bom_id': bomID,
+                             }
+                        if sourceID:
+                            res.update({'source_id': sourceID})
+                            flag = docType.IsCheckedOutForMe(sourceID)
+     
+                        if flag:
+                            if args!=None and isinstance(args, dict):
+                                for arg in args.keys():
+                                    if arg in modelFields:
+                                        res.update({arg : args[arg]})
+                            if ('product_qty' in res):
+                                if isinstance(res['product_qty'], float) and (res['product_qty']<1e-6):
+                                    res.update({'product_qty': 1.0})
+                            objectItem=bomLType.with_context({'internal_writing':True,'internal_process':True}).create(res)
+                            if objectItem:
+                                ret=objectItem
+                    except Exception as msg:
+                        logging.error("[saveChild] :  Unable to create a relation for part '{name}' with source ({src})."\
+                                      .format(name=name, src=sourceID))
+                        logging.error("Exception raised was : {msg}.".format(msg=msg))
             return ret
-        
+
         if relations: # no relation to save 
             parentName, parentID, _, _, _, _=relations[0]
             toCleanRelations(relations)
