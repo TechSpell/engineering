@@ -990,7 +990,6 @@ class plm_component(models.Model):
         """
              Action to be executed for Released state
         """
-        objId = False
         full_ids = []
         last_ids=[]
         status='released'

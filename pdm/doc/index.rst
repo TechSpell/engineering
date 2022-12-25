@@ -32,12 +32,14 @@ Standard Description and Material or Finishing allow to standardize data, insert
         * AutoCAD 2013 (and above except 2014)
         * UG NX 10  (and above)
         * Catia V.5
+        * BricsCAD V.20 - 21
         
 * Server Requirements :
 	* PostgreSQL 9.6 or above
 	
 * Client Requirements :
     * Windows 10
+    * Windows 11
 
 
 Server Installation
@@ -76,7 +78,7 @@ Client Installation
 
 Client containing CAD integrations is available to download on SourceForge public repository “**https://sourceforge.net/projects/libreplm/files/Client**”.
 This is an usual Windows installer and requires Windows 10 or above. Download installer on your CAD workstation and run it "as Administrator". 
-In order to obtain a version covering Windows 7, please ask it to Didotech srl, writing a mail to "info@didotech.com"
+In order to obtain a version covering Windows 7 or 8, please ask it to Didotech srl, writing a mail to "info@didotech.com"
 
 
 Support

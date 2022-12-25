@@ -4,9 +4,9 @@
 #    ServerPLM, Open Source Product Lifcycle Management System    
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
-#    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2020-2022 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2022-05-28
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -67,8 +67,9 @@ Supported Editors :
         * Inventor 2011 (and above except 2014)
         * SolidEdge ST3 (and above)
         * AutoCAD 2013 (and above except 2014)
-        * UG NX 10  (and above)
+        * Siemens NX 10  (and above)
         * Catia V.5
+        * BricsCAD V.20 - 21
        
     """,
     'data': [

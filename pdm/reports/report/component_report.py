@@ -37,6 +37,7 @@ thisModuleName=moduleName()
 
 class plm_component(models.AbstractModel):
     _inherit='product.product'
+    _description = "Get PDF Attached to Component"
 
     @api.model
     def getPDFbyProducts(self, level=0, checkState=False):

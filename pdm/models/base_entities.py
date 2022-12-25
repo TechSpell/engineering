@@ -615,7 +615,7 @@ class plm_relation(models.Model):
                                       .format(name=name, src=sourceID))
                         logging.error("Exception raised was : {msg}.".format(msg=msg))
             return ret
-
+        
         if relations: # no relation to save 
             parentName, parentID, _, _, _, _=relations[0]
             toCleanRelations(relations)
@@ -869,9 +869,6 @@ class plm_relation(models.Model):
             if item:
                 ret=ret | item
         return ret
-
-plm_relation()
-
 
 class plm_material(models.Model):
     _name = "plm.material"

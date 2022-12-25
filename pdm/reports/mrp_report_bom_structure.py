@@ -24,6 +24,8 @@
 #
 ##############################################################################
 
+import json
+
 from odoo import api, models, _
 from odoo.tools import float_round
 
@@ -61,13 +63,13 @@ class ReportBomStructure(models.AbstractModel):
         self._add_engineering_data(components)
         return components, total
 
-    def _get_pdf_line(self, bom_id, product_id=False, qty=1, child_bom_ids=[], unfolded=False):
-        data = super(ReportBomStructure, self)._get_pdf_line(bom_id, product_id, qty, child_bom_ids, unfolded)
+    def _get_pdf_line(self, bom_id, product_id=False, qty=1, unfolded_ids=None, unfolded=False):
+        data = super(ReportBomStructure, self)._get_pdf_line(bom_id, product_id, qty, unfolded_ids, unfolded)
         self._add_engineering_data(data['lines'])
         return data
 
-    def _get_operation_line(self, product, bom, qty, level):
-        data = super(ReportBomStructure, self)._get_operation_line(product, bom, qty, level)
+    def _get_operation_line(self, product, bom, qty, level, index):
+        data = super(ReportBomStructure, self)._get_operation_line(product, bom, qty, level, index)
         self._add_engineering_void_data(data)
         return data
  
@@ -75,6 +77,9 @@ class ReportBomStructure(models.AbstractModel):
     def _get_report_values(self, docids, data=None):
         data['childs']=False
         data['quantity']=1
+        if data.get('unfolded_ids'):
+            if not list(set(json.loads(data.get('unfolded_ids')))):
+                data.pop('unfolded_ids')
         return super(ReportBomStructure, self)._get_report_values(docids, data)
 
 ### OVERRIDDEN STANDARD METHODS 
