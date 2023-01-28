@@ -101,6 +101,7 @@
                                     <field name="opt_editreleasedbom" />
                                     <field name="opt_obsoletedinbom"  />
                                     <field name="opt_duplicatedrowsinbom" />
+                                    <field name="opt_archivedinbom"  />
                                     <field name="opt_autonumbersinbom" />
                                     <field name="opt_autostepinbom" />
                                     <field name="opt_autotypeinbom" />

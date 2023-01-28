@@ -24,6 +24,7 @@
 #
 ##############################################################################
 
+
 from odoo import models, fields, api, _, osv
 from odoo.exceptions import UserError
 
