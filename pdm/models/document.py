@@ -982,7 +982,7 @@ class plm_document(models.Model):
              }
         self._insertlog(ids, note=note)
 
-    def _action_onrelateddocuments(self, ids, default={}, action="", status="", checkact=False):
+    def _action_onrelateddocuments(self, ids, default={}, action="", status="", checkact=False, includeStatuses=[]):
         """
             Move workflow on documents related to given ones.
         """
@@ -996,7 +996,10 @@ class plm_document(models.Model):
         if allIDs:
             tmpIDs=[]
             for idd in allIDs:
+                document_id = self.browse(idd)
                 if checkact and not self.ischecked_in(idd):
+                    continue
+                if includeStatuses and not(document_id.state in includeStatuses):
                     continue
                 tmpIDs.append(idd)
             idMoves=move_workflow(self, tmpIDs, action, status)
@@ -1061,20 +1064,21 @@ class plm_document(models.Model):
                    'writable': True,
                    'state': status
                    }
+        includeStatuses = ['confirmed', 'uploaded', 'transmitted']
         operationParams = {
                             'status': status,
                             'statusName': _('Draft'),
                             'action': action,
                             'docaction': 'draft',
                             'excludeStatuses': ['draft', 'released', 'undermodify', 'obsoleted'],
-                            'includeStatuses': ['confirmed', 'uploaded', 'transmitted'],
+                            'includeStatuses': includeStatuses,
                             'default': default,
                             'doc_default': doc_default,
                             }
         if options.get('opt_showWFanalysis', False):
             return self.action_check_workflow(operationParams)
         else:
-            return self._action_onrelateddocuments(self._ids, doc_default, action, status)
+            return self._action_onrelateddocuments(self._ids, doc_default, action, status, includeStatuses=includeStatuses)
 
     def action_correct(self):
         """
@@ -1091,20 +1095,21 @@ class plm_document(models.Model):
                    'writable': True,
                    'state': status
                    }
+        includeStatuses = ['confirmed', 'uploaded']
         operationParams = {
                             'status': status,
                             'statusName': _('Draft'),
                             'action': action,
                             'docaction': 'correct',
                             'excludeStatuses': ['draft', 'released', 'undermodify', 'obsoleted'],
-                            'includeStatuses': ['confirmed', 'uploaded'],
+                            'includeStatuses': includeStatuses,
                             'default': default,
                             'doc_default': doc_default,
                             }
         if options.get('opt_showWFanalysis', False):
             return self.action_check_workflow(operationParams)
         else:
-            return self._action_onrelateddocuments(self._ids, doc_default, action, status)
+            return self._action_onrelateddocuments(self._ids, doc_default, action, status, includeStatuses=includeStatuses)
 
     def action_confirm(self):
         """
@@ -1122,13 +1127,14 @@ class plm_document(models.Model):
                    'writable': False,
                    'state': status
                    }
+        includeStatuses = ['draft']
         operationParams = {
                             'status': status,
                             'statusName': _('Confirmed'),
                             'action': action,
                             'docaction': 'confirm',
                             'excludeStatuses': ['confirmed', 'released', 'undermodify', 'obsoleted'],
-                            'includeStatuses': ['draft'],
+                            'includeStatuses': includeStatuses,
                             'default': default,
                             'doc_default': doc_default,
                             }
@@ -1137,7 +1143,7 @@ class plm_document(models.Model):
         else:
             ids=self._ids
             if self.ischecked_in(ids):
-                ret = self._action_onrelateddocuments(ids, doc_default, action, status, checkact=True)
+                ret = self._action_onrelateddocuments(ids, doc_default, action, status, checkact=True, includeStatuses=includeStatuses)
             else:
                 move_workflow(self, ids, 'correct')
         return ret
@@ -1157,13 +1163,14 @@ class plm_document(models.Model):
                    'writable': False,
                    'state': status
                    }
+        includeStatuses = ['confirmed']
         operationParams = {
                             'status': status,
                             'statusName': _('Released'),
                             'action': action,
                             'docaction': 'release',
                             'excludeStatuses': ['released', 'undermodify', 'obsoleted'],
-                            'includeStatuses': ['confirmed'],
+                            'includeStatuses': includeStatuses,
                             'default': default,
                             'doc_default': doc_default,
                             }
@@ -1173,10 +1180,12 @@ class plm_document(models.Model):
             ids=self._ids
             for oldObject in self.browse(ids):
                 for last_id in self._getbyaltminorevision(oldObject):
-                    move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
+                    if last_id.state in ['released', 'undermodify']:
+                        move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
                 for last_id in self._getbyrevision(oldObject.name, oldObject.revisionid - 1):
-                    move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
-            return self._action_onrelateddocuments(ids, doc_default, action, status, checkact=True)
+                    if last_id.state in ['released', 'undermodify']:
+                        move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
+            return self._action_onrelateddocuments(ids, doc_default, action, status, checkact=True, includeStatuses=includeStatuses)
 
     def action_obsolete(self):
         """
@@ -1266,7 +1275,7 @@ class plm_document(models.Model):
     #   Overridden methods for this entity
  
     def _get_filestore(self):
-        dms_Root_Path = tools_config.get('document_path', os.path.join(tools_config['root_path'], 'filestore'))
+        dms_Root_Path = tools_config.get('document_path', os.path.join(tools_config['data_dir'], 'filestore'))
         return os.path.join(dms_Root_Path, self.env.cr.dbname)
 
     def copy(self, default={}):

@@ -27,7 +27,7 @@
 import os
 from odoo import models, fields, api, _, osv
 
-from .common import ORIBOMTYPES, BOMTYPES, moduleName
+from .common import moduleName
 
 openerpModule=moduleName()
 
@@ -46,12 +46,12 @@ class plm_compare_bom(osv.osv.osv_memory):
     
     name          = fields.Char       (                                         string=_('Part Number'),          size=64)
     bom_id1       = fields.Many2one   ('mrp.bom',                   index=True, string=_('BoM 1'), required=True, ondelete='cascade')
-    type_id1      = fields.Selection  (ORIBOMTYPES+BOMTYPES,                    string=_('BoM Type'))
+    type_id1      = fields.Selection  (related="bom_id1.type",                  string=_('BoM Type'))
     part_id1      = fields.Many2one   ('product.product', 'Part',   index=True,                                   ondelete='cascade')
     revision1     = fields.Integer    (related="part_id1.engineering_revision", string=_("Revision"),             store=False)
     description1  = fields.Text       (related="part_id1.description",          string=_("Description"),          store=False)
     bom_id2       = fields.Many2one   ('mrp.bom',                   index=True, string=_('BoM 2'), required=True, ondelete='cascade')
-    type_id2      = fields.Selection  (ORIBOMTYPES+BOMTYPES,                    string=_('BoM Type'))
+    type_id2      = fields.Selection  (related="bom_id2.type",                  string=_('BoM Type'))
     part_id2      = fields.Many2one   ('product.product', 'Part',   index=True,                                   ondelete='cascade')
     revision2     = fields.Integer    (related="part_id2.engineering_revision", string=_("Revision"),             store=False)
     description2  = fields.Text       (related="part_id2.description",          string=_("Description"),          store=False)

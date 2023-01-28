@@ -67,20 +67,20 @@ class plm_component(models.Model):
             Defines the property set to be used
         """
         properties = {
-                    "name"                  :{"changed":"", "enabled":True,  "mandatory":True,   "default":"",   "limit":40,                     },   
-                    "engineering_code"      :{"changed":"", "enabled":True,  "mandatory":True,   "default":"",   "limit":40,                     },   
-                    "engineering_revision"  :{"changed":"", "enabled":False, "mandatory":True,   "default":0 ,                                   },   
-                    "std_description"       :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40,                     },   
-                    "state"                 :{"changed":"", "enabled":False, "mandatory":False,  "default":"draft",                              },   
-                    "tmp_material"          :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",                                   },   
-                    "tmp_surface"           :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40,                     },   
-                    "weight"                :{"changed":"", "enabled":True,  "mandatory":False,  "default": 0.0, "computed": True,               },   
-                    "engineering_material"  :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",                                   },   
-                    "engineering_surface"   :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40,                     },   
-                    "description"           :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40, "multiline": True,  },   
-                    "description_sale"      :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40, "multiline": True,  },   
-                    "description_purchase"  :{"changed":"", "enabled":True,  "mandatory":False,  "default":"",   "limit":40, "multiline": True,  },   
-                    "linkeddocuments"       :{"changed":"", "enabled":True,  "mandatory":False,  "default":0,                "viewonly":True,    },   
+                    "name"                  :{"changed":"", "enabled":True,  "mandatory":True,              "default":"",   "limit":40,                     },   
+                    "engineering_code"      :{"changed":"", "enabled":True,  "mandatory":True,   "pos":  1, "default":"",   "limit":40,  "format":"upper",                  },   
+                    "engineering_revision"  :{"changed":"", "enabled":False, "mandatory":True,   "pos":  2, "default":1 ,                                                   },   
+                    "std_description"       :{"changed":"", "enabled":True,  "mandatory":False,             "default":"",   "limit":40,                     },   
+                    "state"                 :{"changed":"", "enabled":False, "mandatory":False,             "default":"draft",                              },   
+                    "tmp_material"          :{"changed":"", "enabled":True,  "mandatory":False,             "default":"",                                   },   
+                    "tmp_surface"           :{"changed":"", "enabled":True,  "mandatory":False,             "default":"",   "limit":40,                     },   
+                    "weight"                :{"changed":"", "enabled":False, "mandatory":False,  "pos":  4, "default": 0.0, "computed": True,                               },   
+                    "engineering_material"  :{"changed":"", "enabled":True,  "mandatory":False,             "default":"",                                   },   
+                    "engineering_surface"   :{"changed":"", "enabled":True,  "mandatory":False,             "default":"",   "limit":40,                     },   
+                    "description"           :{"changed":"", "enabled":True,  "mandatory":True,   "pos":  3, "default":"",   "limit":40, "format":"upper", "multiline": True,},   
+                    "description_sale"      :{"changed":"", "enabled":True,  "mandatory":False,             "default":"",   "limit":40, "multiline": True,  },   
+                    "description_purchase"  :{"changed":"", "enabled":True,  "mandatory":False,             "default":"",   "limit":40, "multiline": True,  },   
+                    "linkeddocuments"       :{"changed":"", "enabled":True,  "mandatory":False,             "default":0,                "viewonly":True,    },   
                      }                       # ========================================= User Setup ============================================== #   
         #   Defines code rules when needed:
         properties['name'].update(                                          # Entity field to consider as P/N
