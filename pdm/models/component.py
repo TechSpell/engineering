@@ -79,7 +79,11 @@ class plm_component(models.Model):
         return ret
 
     def _getbyrevision(self, name, revision):
-        return self.search([('engineering_code', '=', name), ('engineering_revision', '=', revision)])
+        return self.search([
+                ('active', 'in', [True,False]),
+                ('engineering_code', '=', name),
+                ('engineering_revision', '=', revision)
+            ])
 
 #     def _getExplodedBom(self, ids, level=0, currlevel=0):
 #         """
@@ -134,7 +138,10 @@ class plm_component(models.Model):
     def getFromTemplateID(self, oid):
         ret=False
         if oid:
-            for prodItem in self.search([('product_tmpl_id', '=', oid)]):
+            for prodItem in self.search([
+                        ('active', 'in', [True,False]),
+                        ('product_tmpl_id', '=', oid)
+                    ]):
                 ret=prodItem
                 break
         return ret
@@ -152,7 +159,10 @@ class plm_component(models.Model):
     def on_change_name(self, oid, name=False, engineering_code=False):
         
         if name:
-            results = self.search([('name', '=', name)])
+            results = self.search([
+                    ('active', 'in', [True,False]),
+                    ('name', '=', name)
+                ])
             if len(results) > 0:
                 raise UserError(_("Update Part Error.\n\nPart {} already exists.\nClose with OK to reuse, with Cancel to discharge.".format(name)))
             if not engineering_code:
@@ -246,7 +256,20 @@ class plm_component(models.Model):
         return packDictionary(self.read(getCleanList(ids), attribNames))
 
     @api.model
-    def GetStdPartName(self, vals):
+    def BookPartNames(self, vals=[], default=None):
+        """
+            Books and returns a series of P/N.
+        """
+        ret = {}
+        indexes, entID, objectName = vals
+        values = [entID, objectName]
+        for idx in indexes:
+            partNo = self.GetStdPartName(values)
+            ret.update({idx : partNo})
+        return packDictionary(ret)
+
+    @api.model
+    def GetStdPartName(self, vals=[], default=None):
         """
             Gets new P/N reading from entity chosen (taking it from new index on sequence).
         """
@@ -272,7 +295,10 @@ class plm_component(models.Model):
             while ret=="":
                 chkname=self.env['ir.sequence'].browse(seqID.id)._next()
                 count+=1
-                criteria=[('name', '=', chkname)]
+                criteria=[
+                        ('active', 'in', [True,False]), 
+                        ('name', '=', chkname)
+                    ]
                 partIds = self.search(criteria)
                 if (partIds==None) or (len(partIds)==0):
                     ret=chkname
@@ -290,12 +316,14 @@ class plm_component(models.Model):
         ids = []
         
         for request in vals:
+            criteria = []
             partName, _, updateDate = request
             if updateDate:
                 criteria=[('engineering_code', '=', partName), ('write_date', '>', updateDate)]
             else:
                 criteria=[('engineering_code', '=', partName)]
-    
+
+            criteria += [('active', 'in', [True,False])]
             partIds = self.search(criteria, order='engineering_revision')
             if len(partIds) > 0:
                 ids.append(partIds[len(partIds) - 1].id)
@@ -309,6 +337,7 @@ class plm_component(models.Model):
         idd = False
         
         partName, partRev, _ = request
+        criteria = []
 #         partName, partRev, updateDate = request
 #         if updateDate:
 #             if partRev:
@@ -325,7 +354,7 @@ class plm_component(models.Model):
             criteria=[('engineering_code', '=', partName), ('engineering_revision', '=', partRev)]
         else:
             criteria=[('engineering_code', '=', partName)]
-
+        criteria += [('active', 'in', [True,False])]
         partIds = self.search(criteria, order='engineering_revision')
         if len(partIds) > 0:
             idd=partIds[len(partIds) - 1].id
@@ -425,6 +454,7 @@ class plm_component(models.Model):
             if part['engineering_code'] in listedParts:
                 continue
 
+            criteria = []
             if ('engineering_code' in part) and ('engineering_revision' in part):
                 criteria = [
                       ('engineering_code', '=', part['engineering_code']),
@@ -435,6 +465,7 @@ class plm_component(models.Model):
                         ('engineering_code', '=', part['engineering_code'])
                     ]
                     order='engineering_revision'
+            criteria += [('active', 'in', [True,False])]
             existingIDs = self.search( criteria, order=order )
             if existingIDs:
                 ids=sorted(existingIDs.ids)
@@ -495,6 +526,7 @@ class plm_component(models.Model):
                         ('engineering_code', '=', part['engineering_code']) 
                     ]
                     order = 'engineering_revision'
+                criteria += [('active', 'in', [True,False])]
                 existingIDs = self.search( criteria, order=order)
                 if existingIDs:
                     ids=sorted(existingIDs.ids)
@@ -545,6 +577,8 @@ class plm_component(models.Model):
             return expData
         if 'engineering_revision' in queryFilter:
             del queryFilter['engineering_revision']
+        if not('active' in queryFilter):
+            queryFilter += [('active', 'in', [True,False])]
         allIDs = self.search(queryFilter, order='engineering_revision')
         if len(allIDs) > 0:
             objId = allIDs[len(allIDs) - 1]
@@ -697,7 +731,7 @@ class plm_component(models.Model):
         wf_message_post(self, ids, body='Created Normal Bom.')
         return False
 
-    def _action_ondocuments(self, ids, action, status):
+    def _action_ondocuments(self, ids, action, status, includeStatuses=[]):
         """
             Moves workflow on documents having the same state of component 
         """
@@ -709,8 +743,11 @@ class plm_component(models.Model):
             for oldObject in self.browse(ids):
                 for document in oldObject.linkeddocuments:
                     if (document.id not in docIDs):
-                        if documentType.ischecked_in(document.id):
-                            docIDs.append(document.id)
+                        if not documentType.ischecked_in(document.id):
+                            continue
+                        if includeStatuses and not document.state in includeStatuses:
+                            continue
+                        docIDs.append(document.id)
             idMoves=move_workflow(documentType, docIDs, action, status)
             documentType.logging_workflow(idMoves, action, status)
         return docIDs
@@ -977,7 +1014,6 @@ class plm_component(models.Model):
             Executes on cascade to children products the required workflow operations.
         """
         objId = False
-        full_ids=[]
         status=operationParams['status'] 
         action=operationParams['action']
         docaction=operationParams['docaction']
@@ -988,7 +1024,7 @@ class plm_component(models.Model):
         if action:
             idMoves = move_workflow(self, allIDs, action, status)
             if idMoves:
-                self._action_ondocuments(idMoves,docaction, status)
+                self._action_ondocuments(idMoves,docaction, status, includeStatuses)
                 self.logging_workflow(idMoves, action, status)
                 objId = self.browse(idMoves).with_context({'internal_writing':True}).write(default)
                 if objId:
@@ -1023,9 +1059,9 @@ class plm_component(models.Model):
             idMoves=move_workflow(self, last_ids, 'obsolete', 'obsoleted')
             if idMoves:
                 self.logging_workflow(idMoves, 'obsolete', 'obsoleted')
-                self._action_ondocuments(idMoves, 'obsolete', 'obsoleted')
+                self._action_ondocuments(idMoves, 'obsolete', 'obsoleted', ['released', 'undermodify'])
         
-            self._action_ondocuments(idMyMoves, action, status)
+            self._action_ondocuments(idMyMoves, action, status, includeStatuses)
             for currId in allProdObjs:
                 if not (currId.id in ids):
                     full_ids.append(currId.id)
@@ -1046,9 +1082,11 @@ class plm_component(models.Model):
         if vals and vals.get('name', False):
             if (vals.get('engineering_code', False)==False) or (vals['engineering_code'] == ''):
                 vals['engineering_code'] = vals['name']
-            criteria = ['|',
-                        ('name', '=', vals['name']),
-                        ('engineering_code', '=', vals['engineering_code']),
+            criteria = [
+                ('active', 'in', [True,False]),
+                '|',
+                ('name', '=', vals['name']),
+                ('engineering_code', '=', vals['engineering_code']),
             ]
             existingIDs = self.search(criteria,
                                       order='engineering_revision')
@@ -1137,7 +1175,10 @@ class plm_component(models.Model):
             previous_name = self.browse(oid).name
             new_name=default.get('name', 'Copy of %s'%previous_name)
             if 'name' in default:
-                tmpIds = self.search([('name', 'like', new_name)])
+                tmpIds = self.search([
+                    ('name', 'like', new_name),
+                    ('active', 'in', [True,False]),
+                ])
                 if len(tmpIds) > 0:
                     new_name = '%s (%s)' % (new_name, len(tmpIds) + 1)
                 default.update({
@@ -1203,8 +1244,9 @@ class plm_component(models.Model):
                     continue            # Apply unlink only if have respected rules.
     
                 existingIDs = self.with_context({'no_move_documents':True}).search([
-                                    ('engineering_code', '=', checkObj.engineering_code),
-                                    ('engineering_revision', '=', checkObj.engineering_revision - 1)])
+                        ('active', 'in', [True,False]),
+                        ('engineering_code', '=', checkObj.engineering_code),
+                        ('engineering_revision', '=', checkObj.engineering_revision - 1)])
                 if len(existingIDs) > 0:
                     obsoletedIds=[]
                     undermodifyIds=[]

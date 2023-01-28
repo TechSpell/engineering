@@ -31,7 +31,7 @@ from odoo import models, fields, api, _, osv
 from odoo.exceptions import UserError
 import odoo.addons.decimal_precision as dp
 
-from .common import ORIBOMTYPES, BOMTYPES, getListIDs, getCleanList, getListedDatas, isOldReleased, \
+from .common import BOMTYPES, BOMTYPES, getListIDs, getCleanList, getListedDatas, isOldReleased, \
                     isAdministrator, isDraft, isAnyReleased, isReleased, isWritable
                     
 
@@ -178,7 +178,7 @@ class plm_relation_line(models.Model):
     
     create_date = fields.Datetime   (                       string='Creation Date',    readonly=True)
     source_id   = fields.Many2one   ('plm.document',        string='Source Document',  readonly=True,  index=True, ondelete='no action', help="This is the document object that declares this BoM.")
-    type        = fields.Selection  (ORIBOMTYPES+BOMTYPES,  string='BoM Type',         required=True,  help=HELP)
+    type        = fields.Selection  (related="bom_id.type", string='BoM Type',         required=True,  store=True, help=HELP)
     itemnum     = fields.Integer    (                       string='CAD Item Position',                help="This is the item reference position into the CAD document that declares this BoM.")
     itemlbl     = fields.Char       (                       string='Cad Item Position Label', size=64, help="This is the item reference position into the CAD document that declares this BoM (As literal).")
 
@@ -499,10 +499,12 @@ class plm_relation(models.Model):
         """
         ret=False
         listedParent=[]
+        options=self.env['plm.config.settings'].GetOptions()
         productType = self.env['product.product']
         bomLType=self.env['mrp.bom.line']
         modelFields=self.env['plm.config.settings'].GetFieldsModel(bomLType._name)
         docType=self.env['plm.document']
+        opt_archivedinbom = options.get('opt_archivedinbom', False)
 
         def cleanStructure(parentID=None, sourceID=None):
             """
@@ -576,8 +578,11 @@ class plm_relation(models.Model):
                          'product_tmpl_id': objTempl.id,
                          }
                                              
-                    criteria=[('product_tmpl_id','=',res['product_tmpl_id']),
-                              ('type','=',res['type'])]
+                    criteria=[
+                        ('product_tmpl_id','=',res['product_tmpl_id']),
+                        ('type','=',res['type']),
+                        ('active', 'in', [True,False]),
+                    ]
                     ids=self.search(criteria)
                     if ids:
                         ret=ids[0].id                   # Gets Existing one
@@ -597,33 +602,38 @@ class plm_relation(models.Model):
             ret=False
             if bomID and partID:
                 product_id=productType.browse(partID)
-                if product_id and product_id.active:
-                    try:
-                        flag = True
-                        res={
-                             'type': kindBom,
-                             'product_id': partID,
-                             'bom_id': bomID,
-                             }
-                        if sourceID:
-                            res.update({'source_id': sourceID})
-                            flag = docType.IsCheckedOutForMe(sourceID)
-     
-                        if flag:
-                            if args!=None and isinstance(args, dict):
-                                for arg in args.keys():
-                                    if arg in modelFields:
-                                        res.update({arg : args[arg]})
-                            if ('product_qty' in res):
-                                if isinstance(res['product_qty'], float) and (res['product_qty']<1e-6):
-                                    res.update({'product_qty': 1.0})
-                            objectItem=bomLType.with_context({'internal_writing':True,'internal_process':True}).create(res)
-                            if objectItem:
-                                ret=objectItem
-                    except Exception as msg:
-                        logging.error("[saveChild] :  Unable to create a relation for part '{name}' with source ({src})."\
-                                      .format(name=name, src=sourceID))
-                        logging.error("Exception raised was : {msg}.".format(msg=msg))
+                if product_id:
+                    check =  product_id.active if not opt_archivedinbom else product_id.active in [True,False]
+                    if check:
+                        try:
+                            flag = True
+                            res={
+                                 'type': kindBom,
+                                 'product_id': partID,
+                                 'bom_id': bomID,
+                                 }
+                            if sourceID:
+                                res.update({'source_id': sourceID})
+                                flag = docType.IsCheckedOutForMe(sourceID)
+         
+                            if flag:
+                                if args!=None and isinstance(args, dict):
+                                    for arg in args.keys():
+                                        if arg in modelFields:
+                                            res.update({arg : args[arg]})
+                                if ('product_qty' in res):
+                                    if isinstance(res['product_qty'], float) and (res['product_qty']<1e-6):
+                                        res.update({'product_qty': 1.0})
+                                objectItem=bomLType.with_context({'internal_writing':True,'internal_process':True}).create(res)
+                                if objectItem:
+                                    objectItem.write({'type': kindBom})
+                                    ret=objectItem
+                        except Exception as msg:
+                            logging.error("[saveChild] :  Unable to create a relation for part '{name}' with source ({src})."\
+                                          .format(name=name, src=sourceID))
+                            logging.error("Exception raised was : {msg}.".format(msg=msg))
+                    else:
+                        logging.info("Unable to create a relation for child '{name}' because archived.".format(name=name))
             return ret
 
         if relations: # no relation to save 
