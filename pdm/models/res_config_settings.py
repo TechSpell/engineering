@@ -2,6 +2,7 @@
 ##############################################################################
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
+#    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
 #    

@@ -70,6 +70,7 @@ class plm_config_settings(models.Model):
     opt_editbom             =   fields.Boolean(_("Edit BoM not in 'draft'"),                            help=_("Allows to edit BoM if product is not in 'Draft' status. Default = False."))
     opt_editreleasedbom     =   fields.Boolean(_("Edit BoM in 'released'"),                             help=_("Allows to edit BoM if product is in 'Released' status. Default = False."))
     opt_obsoletedinbom      =   fields.Boolean(_("Allow Obsoleted in BoM"),                             help=_("Allow Obsoleted products releasing a BoM. Default = False."),                                       default = False)
+    opt_archivedinbom       =   fields.Boolean(_("Allow Archived in BoM"),                              help=_("Allow to use archived products uploading a BoM from Client. Default = False."),                                       default = False)
     opt_duplicatedrowsinbom =   fields.Boolean(_("Allow rows duplicated in BoM"),                       help=_("Allows to duplicate product rows editing a BoM. Default = True."),                                  default = True)
     opt_autonumbersinbom    =   fields.Boolean(_("Allow to assign automatic positions in BoM"),         help=_("Allows to assign automatically item positions editing a BoM. Default = False."))
     opt_autostepinbom       =   fields.Integer(_("Assign step to automatic positions in BoM"),          help=_("Allows to use this step assigning item positions, editing a BoM. Default = 5."),                    default = 5)
@@ -696,6 +697,7 @@ class plm_config_settings(models.Model):
             'CheckOut':         _('Check-Out current document'),
             'Upload':           _('Upload current document'),
             'EditParts':        _('Edit Part & Document Data'),
+            'EditMultiParts':   _('Edit Multiple Parts Data'),
             'EditDocuments':    _('Edit only Document Data'),
             'AssignDocName':    _('Assign Document Data to 2D layout'),
             'DocumentOpen':     _('Open a Document'),
@@ -840,6 +842,10 @@ class plm_config_settings(models.Model):
             'clone00':              _("Performing Clone..."),
             'editParts00':          _("This is a 2D Layout, it's not allowed to use 'EditParts'.\nUse 'AssigndocName' instead 'EditParts' to assign document data."),
             'editParts01':          _("Information"),
+            'editMultiParts00':     _("Collecting data for Edit Multi Parts evaluation."),
+            'editMultiParts01':     _("Opening interface for Edit Multi Parts."),
+            'editMultiParts02':     _("Applying data to multiple Parts edited."),
+            'editMultiParts03':     _("Functionality not yet available in this editor."),
             'saveCurDocument00':    _("Assigning properties to current document..."),
             'getNewDocumentName00': _("Acquiring a new Document Name..."),
             'assignDocName00':      _("Assigning properties to current document..."),
@@ -1049,6 +1055,23 @@ class plm_config_settings(models.Model):
                 'filtersappd':               _("Filters applied"),
                  },
 
+            'globalEditing': {
+                'TITLE':         {'title': _("Edit multiple for Parts"), 'pageTitle': _("Edit Parts")},
+                'online':        _("Online Uploading"),
+                'all':           _("All"),
+                'allowed':       _("Allowed"),
+                'requested':     _("Requested"),
+                'choose_all':    _("Select All"),
+                'deselect_all':  _("Deselect All"),
+                'book_pn':       _("Book P/N"),
+                'cancel':        _("Cancel"),
+                'ok':            _("OK"),
+                'ttip01':        _("Documents contained in current one."),
+                'ttip09':        _("Select all lines in table."),
+                'ttip10':        _("Choose rule to assign P/N to products."),
+                'contained':     _("Products to Edit"),
+                },
+
             'openRelDialog':      {
                 'TITLE':                     {'title': _("Choose a Document"), 'pageTitle': _("Choose a Document")},
                 'document':                  _("Document"),
@@ -1118,6 +1141,7 @@ class plm_config_settings(models.Model):
                 'CheckOut':         _('Check-Out'),
                 'Upload':           _('Upload'),
                 'EditParts':        _('Part Data'),
+                'EditMultiParts':   _('Multi Parts Data'),
                 'EditDocuments':    _('Document Data'),
                 'AssignDocName':    _('Assign Layout Data'),
                 'DocumentOpen':     _('Open Document'),
@@ -1677,7 +1701,7 @@ class plm_mail(models.Model):
         """
         receivers=self.receivers
         if receivers:
-            opt_repository = tools_config.get('document_path', "/srv/filestore")
+            opt_repository = tools_config.get('document_path', tools_config['data_dir'])
             directory=repository if repository else opt_repository
             partner_obj = self.env['res.partner']
             mail_obj = self.env['mail.mail']

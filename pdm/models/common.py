@@ -211,6 +211,7 @@ def move_workflow(entity, idEntities, transition_name="", final_status=""):
             for entity_id in entity_ids:
                 entity_id.with_context({'internal_writing':True}).write( {'state': final_status})
                 entity_id.logging_workflow(entity_id.id, transition_name, final_status)
+            ret=entity_ids.ids
     return ret
 
 
