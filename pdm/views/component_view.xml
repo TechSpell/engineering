@@ -197,7 +197,7 @@
 	                      <field name="name" on_change="on_change_name(name,engineering_code)" attrs="{'readonly':[('state','=','released')]}"/>
 	                 </group>
 	                 <notebook colspan="4">
-	               		<page string="Engineering Infos">
+	               		<page string="Engineering Infos" name="engineering_infos">
 	                   		<group colspan="4" col="4" string="Part Number Area" name="PNArea">
 	                     		<group colspan="4" col="4">
 	                      			<field name="engineering_code" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
@@ -281,7 +281,7 @@
 	                      <field name="name" on_change="on_change_name(name,engineering_code)"/>
 	                 </group>
 	                 <notebook colspan="4">
-	           			<page string="Engineering Infos">
+	           			<page string="Engineering Infos" name="engineering_infos">
 	                   		<group colspan="8" col="8" string="Part Number Area" name="PNArea">
 	                     		<group colspan="4" col="4">
 	                      			<field name="engineering_code" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
