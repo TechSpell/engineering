@@ -279,8 +279,9 @@ class plm_config_settings(models.Model):
         ret=""
         ids=request
         if ids:
-            documents = self.env['plm.document'].browse(ids)
-            ret=self.env['report.pdm.document_pdf'].get_pdf_content(documents)
+            docType = self.env['plm.document']
+            documents = docType.browse(ids)
+            ret = docType.getPDFbyDocuments(documents)
         return streamPDF(ret)
 
     @api.model
