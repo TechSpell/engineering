@@ -178,7 +178,7 @@ class plm_relation_line(models.Model):
     
     create_date = fields.Datetime   (                       string='Creation Date',    readonly=True)
     source_id   = fields.Many2one   ('plm.document',        string='Source Document',  readonly=True,  index=True, ondelete='no action', help="This is the document object that declares this BoM.")
-    type        = fields.Selection  (related="bom_id.type", string='BoM Type',         required=True,  default=True,  store=True, help=HELP)
+    type        = fields.Selection  (related="bom_id.type", string='BoM Type',         required=True,  store=True, help=HELP, default='normal')
     itemnum     = fields.Integer    (                       string='CAD Item Position',                help="This is the item reference position into the CAD document that declares this BoM.")
     itemlbl     = fields.Char       (                       string='Cad Item Position Label', size=64, help="This is the item reference position into the CAD document that declares this BoM (As literal).")
 
@@ -252,7 +252,7 @@ class plm_relation(models.Model):
     _packed = []
     
     create_date = fields.Datetime   (string='Creation Date', readonly=True)
-    type        = fields.Selection  (selection_add=BOMTYPES, string='BoM Type', required=True, default=True, help=HELP)
+    type        = fields.Selection  (selection_add=BOMTYPES, ondelete=BOMMODES, default='normal')
     weight      = fields.Float      (string='Weight', digits=dp.get_precision('Stock Weight'), help="The BoM net weight in Kg.")
 
     _defaults = {
