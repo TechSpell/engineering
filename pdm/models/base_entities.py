@@ -30,7 +30,7 @@ from datetime import datetime
 from odoo import models, fields, api, _, osv
 from odoo.exceptions import UserError
 
-from .common import BOMTYPES, BOMTYPES, getListIDs, getCleanList, getListedDatas, isOldReleased, \
+from .common import BOMTYPES, BOMMODES, getListIDs, getCleanList, getListedDatas, isOldReleased, \
                     isAdministrator, isDraft, isAnyReleased, isReleased, isWritable
                     
 
