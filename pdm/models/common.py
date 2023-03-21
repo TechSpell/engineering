@@ -34,6 +34,7 @@ from datetime import timedelta
 from odoo import  SUPERUSER_ID, _
 
 BOMTYPES=[('ebom','Engineering BoM'),('spbom','Spare BoM')]
+BOMMODES={'ebom': 'cascade', 'spbom': 'cascade'}
 ORIBOMTYPES=[('normal','Manufacture this product'),('phantom','Kit')]
 
 def normalize(value):
