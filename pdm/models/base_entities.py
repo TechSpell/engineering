@@ -30,7 +30,7 @@ from datetime import datetime
 from odoo import models, fields, api, _, osv
 from odoo.exceptions import UserError
 
-from .common import BOMTYPES, BOMMODES, getListIDs, getCleanList, getListedDatas, isOldReleased, \
+from .common import BOMTYPES, getListIDs, getCleanList, getListedDatas, isOldReleased, \
                     isAdministrator, isDraft, isAnyReleased, isReleased, isWritable
                     
 
@@ -250,7 +250,7 @@ class plm_relation(models.Model):
     _packed = []
     
     create_date = fields.Datetime   (string='Creation Date', readonly=True)
-    type        = fields.Selection  (selection_add=BOMTYPES, ondelete=BOMMODES, default='normal')
+    type        = fields.Selection  (selection_add=BOMTYPES, default='normal')
     weight      = fields.Float      (string='Weight', digits='Stock Weight', help="The BoM net weight in Kg.")
 
     _defaults = {
