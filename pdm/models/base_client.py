@@ -1078,6 +1078,7 @@ class plm_config_settings(models.Model):
                 'TITLE':                     {'title': _("Choose a Document"), 'pageTitle': _("Choose a Document")},
                 'document':                  _("Document"),
                 'revision':                  _("Revision"),
+                'minor':                     _("Minor"),
                 'checkedto':                 _("Checked-Out By"),
                 'created':                   _("Create Date"),
                 'changed':                   _("Change Date"),
