@@ -157,7 +157,8 @@ class plm_document(models.Model):
             if objDoc and hasattr(objDoc, 'name'):
                 docIds = self.search([('name', '=', objDoc.name),
                                       ('type', '=', 'binary')], order='revisionid, minorrevision' )
-                result.append(docIds[len(docIds) - 1].id)
+                if len(docIds)>0:
+                    result.append(docIds[len(docIds) - 1].id)
         return getCleanList(result)
 
     def _data_get_files(self, ids, listedFiles=([], []), forceFlag=False):
