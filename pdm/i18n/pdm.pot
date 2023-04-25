@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 15.0\n"
+"Project-Id-Version: Odoo Server 16.0+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-05-03 14:38+0000\n"
-"PO-Revision-Date: 2022-05-03 14:38+0000\n"
+"POT-Creation-Date: 2023-04-25 09:15+0000\n"
+"PO-Revision-Date: 2023-04-25 09:15+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,6 +16,7 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -24,6 +25,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -70,6 +72,7 @@ msgid "<span>View</span>"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -77,12 +80,14 @@ msgid "About"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "About Client"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "About Ringer"
@@ -94,6 +99,7 @@ msgid "Access Token"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Acquiring a new Document Name..."
@@ -105,12 +111,14 @@ msgid "Action Needed"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Actions"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__activated_id
 #, python-format
@@ -118,6 +126,7 @@ msgid "Activated PLM client"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Activation"
@@ -130,6 +139,7 @@ msgid "Activities"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -166,6 +176,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Additions"
@@ -177,12 +188,24 @@ msgid "Advanced Workflow Management"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid ""
+"Align up local data using maximum performance. Option not usable on servers "
+"in which PostgreSQL is not configurable. Default is False."
+msgstr ""
+
+#. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "All"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -190,6 +213,15 @@ msgid "All Updated"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_archivedinbom
+#, python-format
+msgid "Allow Archived in BoM"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_obsoletedinbom
 #, python-format
@@ -197,6 +229,7 @@ msgid "Allow Obsoleted in BoM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_obsoletedinbom
 #, python-format
@@ -204,6 +237,7 @@ msgid "Allow Obsoleted products releasing a BoM. Default = False."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_duplicatedrowsinbom
 #, python-format
@@ -211,6 +245,7 @@ msgid "Allow rows duplicated in BoM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_autonumbersinbom
 #, python-format
@@ -218,6 +253,7 @@ msgid "Allow to assign automatic positions in BoM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,help:pdm.field_plm_description__fmtend
 #, python-format
@@ -227,6 +263,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: code:addons/pdm/models/descriptions.py:0
 #: code:addons/pdm/models/descriptions.py:0
@@ -240,6 +277,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,help:pdm.field_product_product__std_umc1
 #, python-format
@@ -247,6 +285,7 @@ msgid "Allow to specifiy a unit measure for the first feature."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,help:pdm.field_product_product__std_umc2
 #, python-format
@@ -254,6 +293,7 @@ msgid "Allow to specifiy a unit measure for the second feature."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,help:pdm.field_product_product__std_umc3
 #, python-format
@@ -261,6 +301,7 @@ msgid "Allow to specifiy a unit measure for the third feature."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: code:addons/pdm/models/descriptions.py:0
 #: code:addons/pdm/models/descriptions.py:0
@@ -272,12 +313,24 @@ msgid "Allow to specify a unit measure or a label for the feature."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_archivedinbom
+#, python-format
+msgid ""
+"Allow to use archived products uploading a BoM from Client. Default = False."
+msgstr ""
+
+#. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Allowed"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_showWFanalysis
 #, python-format
@@ -287,6 +340,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_autonumbersinbom
 #, python-format
@@ -296,6 +350,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeCopyBoMProd
 #, python-format
@@ -305,6 +360,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeCopyBoMRoute
 #, python-format
@@ -314,6 +370,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_duplicatedrowsinbom
 #, python-format
@@ -321,6 +378,7 @@ msgid "Allows to duplicate product rows editing a BoM. Default = True."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_editreleasedbom
 #, python-format
@@ -329,6 +387,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_editbom
 #, python-format
@@ -337,6 +396,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mangeWFDocByProd
 #, python-format
@@ -346,6 +406,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_mgeResetTmRoute
 #, python-format
@@ -355,6 +416,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_autotypeinbom
 #, python-format
@@ -364,6 +426,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_autostepinbom
 #, python-format
@@ -373,12 +436,14 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Analysis before to perform Upload"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -386,6 +451,7 @@ msgid "Analysis on document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -395,6 +461,13 @@ msgstr ""
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_check_wf_form_view
 msgid "Apply workflow changes"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Applying data to multiple Parts edited."
 msgstr ""
 
 #. module: pdm
@@ -436,6 +509,7 @@ msgid "Are you sure you want to restore this document?"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -443,24 +517,28 @@ msgid "As Saved"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Assembly Name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Assign Document Data to 2D layout"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Assign Layout Data"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_autotypeinbom
 #, python-format
@@ -468,6 +546,7 @@ msgid "Assign automatically types in BoM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_autostepinbom
 #, python-format
@@ -475,6 +554,7 @@ msgid "Assign step to automatic positions in BoM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,help:pdm.field_plm_description__sequence
 #, python-format
@@ -483,6 +563,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,help:pdm.field_product_product__std_value1
 #, python-format
@@ -490,6 +571,7 @@ msgid "Assign value to the first characteristic."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,help:pdm.field_product_product__std_value2
@@ -499,12 +581,14 @@ msgid "Assign value to the second characteristic."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Assigning document Name..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -523,6 +607,7 @@ msgid "Attachment Count"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model_terms:ir.ui.view,arch_db:pdm.plm_check_wf_form_view
 #, python-format
@@ -537,6 +622,7 @@ msgid "August"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Automatic Document P/N from Product"
@@ -573,13 +659,13 @@ msgid "BOM Only Leaves Summarized"
 msgstr ""
 
 #. module: pdm
-#: model_terms:ir.ui.view,arch_db:pdm.bom_structure_template
-msgid "BOM Structure"
+#: model:ir.model,name:pdm.model_report_mrp_report_bom_structure
+msgid "BOM Overview Report"
 msgstr ""
 
 #. module: pdm
-#: model:ir.model,name:pdm.model_report_mrp_report_bom_structure
-msgid "BOM Structure Report"
+#: model_terms:ir.ui.view,arch_db:pdm.bom_structure_template
+msgid "BOM Structure"
 msgstr ""
 
 #. module: pdm
@@ -626,6 +712,7 @@ msgid "Bill of Material Line"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_entities.py:0
 #: code:addons/pdm/models/sparebom.py:0
 #: model_terms:ir.ui.view,arch_db:pdm.mrp_part_tree_view_where
@@ -635,6 +722,7 @@ msgid "Bill of Materials"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0
 #: code:addons/pdm/models/comparebom.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__bom_id
@@ -644,6 +732,7 @@ msgid "BoM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__bom_id1
 #, python-format
@@ -651,6 +740,7 @@ msgid "BoM 1"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__bom_id2
 #, python-format
@@ -658,6 +748,7 @@ msgid "BoM 2"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__anotinb
 #, python-format
@@ -681,6 +772,7 @@ msgid "BoM Hierarchy"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0
 #: code:addons/pdm/models/comparebom.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__bom_idrow
@@ -690,6 +782,7 @@ msgid "BoM Line"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__bnotina
 #, python-format
@@ -717,6 +810,7 @@ msgid "BoM Relations in Bom 2"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0
 #: code:addons/pdm/models/comparebom.py:0
 #: model:ir.model.fields,field_description:pdm.field_mrp_bom__type
@@ -733,12 +827,21 @@ msgid "Boms"
 msgstr ""
 
 #. module: pdm
-#: code:addons/pdm/models/comparebom.py:0
-#: code:addons/pdm/models/comparebom.py:0
-#: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__itemnum
-#: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__itemnum
-#: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__itemnum
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
 #, python-format
+msgid "Book P/N"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
+#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
+#, python-format
+msgid "Byproducts"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__itemnum
 msgid "CAD Item Position"
 msgstr ""
 
@@ -748,6 +851,8 @@ msgid "Cad Item Position Label"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -764,6 +869,7 @@ msgid "Cancel"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -771,18 +877,21 @@ msgid "Cannot execute Upload. Missing filename"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Cannot execute Upload. Status doesn't allow uploading."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Change Date"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model_terms:ir.ui.view,arch_db:pdm.plm_document_form
 #, python-format
@@ -865,11 +974,11 @@ msgstr ""
 #. module: pdm
 #: model:ir.actions.server,name:pdm.ir_cron_pdm_mail_action_ir_actions_server
 #: model:ir.cron,cron_name:pdm.ir_cron_pdm_mail_action
-#: model:ir.cron,name:pdm.ir_cron_pdm_mail_action
 msgid "Check File System Dimensions"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Check Operations"
@@ -881,6 +990,7 @@ msgid "Check Workflow"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/workflow_analysis.py:0
 #: code:addons/pdm/models/workflow_analysis.py:0
 #, python-format
@@ -888,6 +998,7 @@ msgid "Check Workflow moving to \"{}\""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -895,6 +1006,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -905,18 +1017,21 @@ msgid "Check-In"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Check-In Paused"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Check-In current document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -934,12 +1049,14 @@ msgid "Check-Out Data"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Check-Out Paused"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Check-Out current document"
@@ -951,12 +1068,14 @@ msgid "CheckOut User"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_entities.py:0
 #, python-format
 msgid "Checked In"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_entities.py:0
 #, python-format
 msgid "Checked Out"
@@ -968,6 +1087,7 @@ msgid "Checked-Out"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Checked-Out By"
@@ -998,6 +1118,7 @@ msgid "Checked-Out To"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -1040,18 +1161,21 @@ msgid "Child"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Child Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Child File"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -1064,6 +1188,7 @@ msgid "Child Preview"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extend_entities.py:0
 #: code:addons/pdm/models/extend_entities.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__choice
@@ -1073,6 +1198,7 @@ msgid "Choice"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/sparebom.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__bom_tmpl
 #, python-format
@@ -1080,10 +1206,18 @@ msgid "Choose a BoM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Choose a Document"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Choose rule to assign P/N to products."
 msgstr ""
 
 #. module: pdm
@@ -1097,6 +1231,7 @@ msgid "Choose the Part Number rule."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_editor
 #, python-format
@@ -1104,18 +1239,21 @@ msgid "Client Editor Name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Client Options"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Clone"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Clone Part and Document from current one"
@@ -1127,12 +1265,21 @@ msgid "Code List"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Collected data."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Collecting data for Edit Multi Parts evaluation."
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Collecting data for Upload evaluation."
@@ -1155,12 +1302,14 @@ msgid "Compare selected BoMs"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Completed upload of"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -1170,12 +1319,14 @@ msgid "Completing operations..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Component"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Component Code"
@@ -1187,6 +1338,7 @@ msgid "Component Document Relations"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Component ID"
@@ -1200,12 +1352,14 @@ msgid "Component Name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Component Revision"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_entities.py:0
 #: model:ir.model.constraint,message:pdm.constraint_plm_component_document_rel_relation_unique
 #, python-format
@@ -1239,6 +1393,7 @@ msgid "Confirm Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/component.py:0 code:addons/pdm/models/document.py:0
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__count_component_confirmed
 #: model:ir.model.fields.selection,name:pdm.selection__plm_document__state__confirmed
@@ -1251,12 +1406,14 @@ msgid "Confirmed"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Connection Parameters"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Contains"
@@ -1274,12 +1431,14 @@ msgid "Correct Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Counted files"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Create Date"
@@ -1298,6 +1457,7 @@ msgid "Create Spare BoM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -1444,6 +1604,7 @@ msgid "Creating a Product New Revision"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/sparebom.py:0
 #, python-format
 msgid ""
@@ -1469,6 +1630,7 @@ msgid "Creation of Spare BoM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -1480,6 +1642,7 @@ msgid "Creator"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -1487,18 +1650,21 @@ msgid "Criteria"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_entities.py:0
 #, python-format
 msgid "Current Bill of Material of product isn't modifiable."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Current document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -1507,18 +1673,21 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Current document has Checked-In."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Current document has Checked-Out."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -1528,30 +1697,35 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Current document has been recursively Checked-In."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Current document has been recursively Checked-Out."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Current document has not Checked-In."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Current document has not Checked-Out."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -1561,18 +1735,21 @@ msgid "Current document has not Uploaded."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Current document has not been recursively Checked-In."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Current document has not been recursively Checked-Out."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -1582,6 +1759,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -1589,6 +1767,7 @@ msgid "Current document is already Checked-In."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -1596,6 +1775,7 @@ msgid "Current document is not Checked-In."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -1607,6 +1787,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -1614,6 +1795,7 @@ msgid "Current document will be uploaded to server."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "DB Name"
@@ -1625,6 +1807,7 @@ msgid "Data"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Data package [MB]"
@@ -1643,6 +1826,7 @@ msgid "Date"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/component.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__create_date
 #: model:ir.model.fields,field_description:pdm.field_product_product__create_date
@@ -1653,6 +1837,7 @@ msgid "Date Created"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/component.py:0
 #: model:ir.model.fields,field_description:pdm.field_product_product__write_date
 #, python-format
@@ -1673,18 +1858,21 @@ msgid "December"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Default Configuration Name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Deferred Open"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -1693,6 +1881,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -1702,6 +1891,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -1709,12 +1899,14 @@ msgid "Deferring Upload..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Derive Operations"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -1749,6 +1941,7 @@ msgid "Description"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__description_en
 #, python-format
@@ -1761,6 +1954,7 @@ msgid "Description of Document Number Rule."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_logging__op_note
 #, python-format
@@ -1783,6 +1977,13 @@ msgid "Descriptions"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Deselect All"
+msgstr ""
+
+#. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_finishing__name
 #: model:ir.model.fields,field_description:pdm.field_plm_material__name
 msgid "Designation"
@@ -1794,6 +1995,7 @@ msgid "Dictionaries"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0
 #: code:addons/pdm/models/comparebom.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__reason
@@ -1808,12 +2010,14 @@ msgid "Differences Between BoMs"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0
 #, python-format
 msgid "Differences on BoMs"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -1822,6 +2026,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__directory
 #, python-format
@@ -1829,6 +2034,7 @@ msgid "Directory"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extend_entities.py:0
 #: code:addons/pdm/models/extend_entities.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__discharge
@@ -1873,6 +2079,7 @@ msgid "Docs"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -1903,12 +2110,14 @@ msgid "Document Code List"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Document Data"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/document.py:0
 #, python-format
 msgid ""
@@ -1917,12 +2126,14 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Document ID"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -1930,6 +2141,7 @@ msgid "Document Minor Revision"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model_terms:ir.ui.view,arch_db:pdm.plm_backupdoc_search
 #, python-format
@@ -1959,6 +2171,7 @@ msgid "Document Numbers Rules"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Document Operations"
@@ -1977,6 +2190,7 @@ msgid "Document Relations"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -1997,6 +2211,7 @@ msgid "Document Structure PDF Report"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -2009,6 +2224,7 @@ msgid "Document Where Used"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -2016,6 +2232,7 @@ msgid "Document changed locally and checked-out."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -2023,6 +2240,7 @@ msgid "Document changed locally but Upload has denied because checked-in."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -2032,12 +2250,14 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Document checked-out to a different user."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/workflow_analysis.py:0
 #: code:addons/pdm/models/workflow_analysis.py:0
 #, python-format
@@ -2045,6 +2265,7 @@ msgid "Document is Checked-Out to: {}."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/workflow_analysis.py:0
 #: code:addons/pdm/models/workflow_analysis.py:0
 #, python-format
@@ -2052,12 +2273,14 @@ msgid "Document is not in allowable status."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Document managed as attached."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -2073,12 +2296,14 @@ msgid "Documents"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Documents Contained"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Documents Related"
@@ -2090,6 +2315,8 @@ msgid "Documents Revised"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Documents contained in current one."
@@ -2117,12 +2344,14 @@ msgid "Documents related as fathers"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Documents related to current one."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extend_entities.py:0
 #: model:ir.model,name:pdm.model_plm_check_document
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__docu_ids
@@ -2131,12 +2360,14 @@ msgid "Documents to be checked"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Doesn't Contain"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__domain_id
 #, python-format
@@ -2144,6 +2375,7 @@ msgid "Domain Name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -2151,6 +2383,7 @@ msgid "Download files updated to latest revision or as saved."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -2161,6 +2394,7 @@ msgid "Downloading document..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/component.py:0 code:addons/pdm/models/component.py:0
 #: code:addons/pdm/models/document.py:0 code:addons/pdm/models/document.py:0
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__count_component_draft
@@ -2183,6 +2417,7 @@ msgid "Drawings marked here will be used printing Spare Part Manual report."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_editreleasedbom
 #, python-format
@@ -2190,6 +2425,7 @@ msgid "Edit BoM in 'released'"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_editbom
 #, python-format
@@ -2197,24 +2433,28 @@ msgid "Edit BoM not in 'draft'"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Edit Comment"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Edit Data"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Edit Document Comment"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/document.py:0
 #, python-format
 msgid ""
@@ -2224,6 +2464,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/document.py:0
 #, python-format
 msgid ""
@@ -2233,18 +2474,42 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Edit Multiple Parts Data"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Edit Part & Document Data"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Edit Parts"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Edit multiple for Parts"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Edit only Document Data"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_node
 #, python-format
@@ -2252,6 +2517,7 @@ msgid "Editor Machine name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_os_arch
 #, python-format
@@ -2259,6 +2525,7 @@ msgid "Editor OS architecture"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_os
 #, python-format
@@ -2266,6 +2533,7 @@ msgid "Editor OS name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_os_rel
 #, python-format
@@ -2273,6 +2541,7 @@ msgid "Editor OS release"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_os_ver
 #, python-format
@@ -2280,6 +2549,7 @@ msgid "Editor OS version"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "End Report"
@@ -2299,9 +2569,6 @@ msgstr ""
 
 #. module: pdm
 #: model:ir.model.fields.selection,name:pdm.selection__mrp_bom__type__ebom
-#: model:ir.model.fields.selection,name:pdm.selection__mrp_bom_line__type__ebom
-#: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id1__ebom
-#: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id2__ebom
 msgid "Engineering BoM"
 msgstr ""
 
@@ -2311,6 +2578,7 @@ msgid "Engineering BoMs"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -2359,6 +2627,7 @@ msgid "Entity Type"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_logging__type
 #, python-format
@@ -2366,6 +2635,7 @@ msgid "Entity Type."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_logging__name
 #, python-format
@@ -2373,12 +2643,14 @@ msgid "Entity name."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Equal"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -2392,12 +2664,14 @@ msgid "Error"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Error assigning new file name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extend_entities.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__executable
 #, python-format
@@ -2405,18 +2679,21 @@ msgid "Executable"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Execute Login on Database"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Execute all check-out operations as allowed."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extend_entities.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__executed
 #, python-format
@@ -2424,12 +2701,14 @@ msgid "Executed"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Executes Background Upload"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -2438,12 +2717,14 @@ msgid "Execution Stopped."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Exit"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__expire_date
@@ -2453,18 +2734,21 @@ msgid "Expiration Date"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Expire Date"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Explosion"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extconnections/dataconnector.py:0
 #: code:addons/pdm/models/extconnections/dataconnector.py:0
 #: code:addons/pdm/models/extconnections/dataconnector.py:0
@@ -2476,6 +2760,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extconnections/dataconnector.py:0
 #, python-format
 msgid ""
@@ -2485,6 +2770,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extconnections/dataconnector.py:0
 #, python-format
 msgid ""
@@ -2494,18 +2780,21 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Father Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Father File"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -2523,6 +2812,7 @@ msgid "February"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__file
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__datas_fname
@@ -2537,6 +2827,7 @@ msgid "File Content"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "File Name"
@@ -2561,6 +2852,7 @@ msgid "File Size [kB]"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_logging__file
 #, python-format
@@ -2573,12 +2865,14 @@ msgid "File name has to be unique!"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "File package number"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "FileName"
@@ -2605,6 +2899,7 @@ msgid "Files details by Users"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -2612,18 +2907,21 @@ msgid "Filter Conditions"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Filter on documents 'Allowed' to be uploaded."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Filter on documents 'Requested' to be uploaded but not yet allowed."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -2632,6 +2930,7 @@ msgid "Filters"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -2661,6 +2960,7 @@ msgid "Followers (Partners)"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -2668,24 +2968,28 @@ msgid "Force Download in PWS"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Force Refresh"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Force to assign Document P/N"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Force to execute upload Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__fmt1
 #, python-format
@@ -2693,6 +2997,7 @@ msgid "Format Feature 1"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__fmt2
 #, python-format
@@ -2700,6 +3005,7 @@ msgid "Format Feature 2"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__fmt3
 #, python-format
@@ -2707,6 +3013,7 @@ msgid "Format Feature 3"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__fmtend
 #, python-format
@@ -2714,9 +3021,22 @@ msgid "Format Feature Composed"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Functionality not yet available in this editor."
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "General"
+msgstr ""
+
+#. module: pdm
+#: model:ir.model,name:pdm.model_product_product
+msgid "Get PDF Attached to Component"
 msgstr ""
 
 #. module: pdm
@@ -2726,12 +3046,14 @@ msgid "Gives the sequence order when displaying a list of product categories."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Greater"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Greater Equal"
@@ -2757,6 +3079,7 @@ msgid "Has Message"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_checkout__hostname
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__hostname
@@ -2766,6 +3089,7 @@ msgid "Hostname"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -2801,7 +3125,6 @@ msgstr ""
 
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_document__message_needaction
-#: model:ir.model.fields,help:pdm.field_plm_document__message_unread
 msgid "If checked, new messages require your attention."
 msgstr ""
 
@@ -2812,24 +3135,28 @@ msgid "If checked, some messages have a delivery error."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Import Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Import a Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Import a Document searching by Component"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Import by Component"
@@ -2842,12 +3169,14 @@ msgid "Indexed Content"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Info"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -2868,12 +3197,14 @@ msgid "Information"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Insert the Server Name."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__plm_service_id
 #, python-format
@@ -2882,36 +3213,42 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Insert the database Name."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Insert the password"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Insert the port number."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Insert the protocol"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Insert the user account"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Insert your Activation Code as provided by Didotech."
@@ -2928,6 +3265,7 @@ msgid "Installed Options"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Internal ID"
@@ -2944,12 +3282,14 @@ msgid "Is Follower"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Is Not Null"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Is Null"
@@ -2966,6 +3306,7 @@ msgid "Is public document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -3004,6 +3345,7 @@ msgid "Kind"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Kind Relation"
@@ -3015,6 +3357,7 @@ msgid "Kind of Link"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_kind
 #, python-format
@@ -3022,6 +3365,7 @@ msgid "Kind of license"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_kind
 #, python-format
@@ -3031,19 +3375,14 @@ msgid ""
 msgstr ""
 
 #. module: pdm
-#: model:ir.model.fields.selection,name:pdm.selection__mrp_bom_line__type__phantom
-#: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id1__phantom
-#: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id2__phantom
-msgid "Kit"
-msgstr ""
-
-#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Knowledge Upload"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Knowledge Upload Report"
@@ -3179,6 +3518,7 @@ msgid "Latest Week"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extend_entities.py:0
 #: code:addons/pdm/models/extend_entities.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__level
@@ -3188,24 +3528,28 @@ msgid "Level"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "LibrePLM Client is not Activated"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "LibrePLM Embedded Client"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "LibrePLM Embedded Client Not Activated"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "License"
@@ -3223,6 +3567,7 @@ msgid "LifeCycle Status"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Like"
@@ -3258,6 +3603,7 @@ msgid "Linked Parts"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__activated_id
 #, python-format
@@ -3265,6 +3611,7 @@ msgid "Listed activated Client."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__domain_id
 #, python-format
@@ -3272,6 +3619,7 @@ msgid "Listed domain name."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__node_id
 #, python-format
@@ -3279,6 +3627,7 @@ msgid "Listed registered Client."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Local part."
@@ -3295,6 +3644,7 @@ msgid "Logged Activities"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -3307,12 +3657,14 @@ msgid "Main Attachment"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Maintains opening list"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mangeWFDocByProd
 #, python-format
@@ -3320,6 +3672,7 @@ msgid "Manage Product workflow linked to Documents"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeCopyBoMProd
 #, python-format
@@ -3327,6 +3680,7 @@ msgid "Manage copy of the BoM linked to Product"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeCopyBoMRoute
 #, python-format
@@ -3334,17 +3688,11 @@ msgid "Manage copy of the Routing linked to BoM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_mgeResetTmRoute
 #, python-format
 msgid "Manage reset of the timing registered on Routing"
-msgstr ""
-
-#. module: pdm
-#: model:ir.model.fields.selection,name:pdm.selection__mrp_bom_line__type__normal
-#: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id1__normal
-#: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id2__normal
-msgid "Manufacture this product"
 msgstr ""
 
 #. module: pdm
@@ -3390,6 +3738,14 @@ msgid "Mime Type"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Minor"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -3406,6 +3762,7 @@ msgid "Minor Revision"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: model_terms:ir.ui.view,arch_db:pdm.view_plm_edit_document
@@ -3420,6 +3777,7 @@ msgid "Modified Date"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -3455,6 +3813,14 @@ msgid "Moving to Check-Out"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Multi Parts Data"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -3470,6 +3836,7 @@ msgid "Name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -3478,6 +3845,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/reports/component_kanban.py:0
 #: code:addons/pdm/reports/component_kanban.py:0
 #: code:addons/pdm/reports/component_kanban.py:0
@@ -3487,12 +3855,14 @@ msgid "New Component"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "New Document Revision"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "New Minor Document Revision"
@@ -3507,12 +3877,14 @@ msgid "New Revision"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "New Revision of Part and Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_entities.py:0
 #: code:addons/pdm/models/base_entities.py:0
 #, python-format
@@ -3520,6 +3892,7 @@ msgid "New Revisions"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -3529,6 +3902,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -3538,6 +3912,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -3577,6 +3952,7 @@ msgid "Normalized features formatting"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__unitab
 #, python-format
@@ -3589,6 +3965,7 @@ msgid "Normative reference"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extend_entities.py:0
 #: code:addons/pdm/models/extend_entities.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__notallowalble
@@ -3598,18 +3975,21 @@ msgid "Not Allowalble"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Not Equal"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Not Like"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__name
 #, python-format
@@ -3622,6 +4002,7 @@ msgid "Note to help selection"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extend_entities.py:0
 #: code:addons/pdm/models/extend_entities.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__reason
@@ -3633,6 +4014,7 @@ msgid "Notes"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -3667,6 +4049,7 @@ msgid "Number of errors"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -3685,11 +4068,8 @@ msgid "Number of messages with delivery error"
 msgstr ""
 
 #. module: pdm
-#: model:ir.model.fields,help:pdm.field_plm_document__message_unread_counter
-msgid "Number of unread messages"
-msgstr ""
-
-#. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -3698,6 +4078,7 @@ msgid "OK"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_os_arch
 #, python-format
@@ -3705,6 +4086,7 @@ msgid "OS architecture"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_node
 #, python-format
@@ -3712,6 +4094,7 @@ msgid "OS machine name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_os
 #, python-format
@@ -3719,6 +4102,7 @@ msgid "OS name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_os_rel
 #, python-format
@@ -3726,6 +4110,7 @@ msgid "OS release"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__active_os_ver
 #, python-format
@@ -3733,6 +4118,7 @@ msgid "OS version"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/component.py:0 code:addons/pdm/models/document.py:0
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__count_component_obsoleted
 #: model:ir.model.fields.selection,name:pdm.selection__plm_document__state__obsoleted
@@ -3756,48 +4142,57 @@ msgid "One (or more) Product or Document is not movable."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Online Uploading"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Open Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Open Documents related to current one"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Open Related"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Open a Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Open a Document searching by Component"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Open by Component"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -3805,6 +4200,7 @@ msgid "Opened in session"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -3812,6 +4208,14 @@ msgid "Opening Options"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Opening interface for Edit Multi Parts."
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__op_date
 #, python-format
@@ -3819,6 +4223,7 @@ msgid "Operation Date"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_logging__op_date
 #, python-format
@@ -3826,6 +4231,7 @@ msgid "Operation Date."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__op_note
 #, python-format
@@ -3833,6 +4239,7 @@ msgid "Operation Note"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__op_type
 #, python-format
@@ -3840,6 +4247,7 @@ msgid "Operation Type"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_logging__op_type
 #, python-format
@@ -3847,12 +4255,21 @@ msgid "Operation Type."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
+#, python-format
+msgid "Operations"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Optional Parameters"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -3864,6 +4281,7 @@ msgid "Options"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Options and User Settings"
@@ -3918,24 +4336,28 @@ msgid "PWS Directory"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "PageBoy Tray Servant Started"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "PageBoy Tray Servant has failed"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "PageBoy Tray Servant is Starting Up"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "PageBoy Tray Servant is Syncronizing"
@@ -3952,6 +4374,7 @@ msgid "Parent Preview"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0
 #: code:addons/pdm/models/comparebom.py:0
 #: code:addons/pdm/models/extend_entities.py:0
@@ -3965,12 +4388,14 @@ msgid "Part"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Part Data"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0 code:addons/pdm/models/sparebom.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_codelist__name
 #: model:ir.model.fields,field_description:pdm.field_plm_compare_bom__name
@@ -4000,6 +4425,7 @@ msgid "Part Number Rules"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_entities.py:0
 #: model:ir.model.constraint,message:pdm.constraint_product_template_partnumber_uniq
 #, python-format
@@ -4018,6 +4444,7 @@ msgid "Part Relations"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4025,6 +4452,7 @@ msgid "Part without a proper Document Minor Revision."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4032,6 +4460,7 @@ msgid "Part without a proper Document Name."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4039,6 +4468,7 @@ msgid "Part without a proper Document Revision."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4046,6 +4476,7 @@ msgid "Part without a proper Product Part Number."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4058,30 +4489,42 @@ msgid "Partner"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Password"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Performance connection"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Performing Check-In..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Performing Check-Out..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Performing Clone..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -4090,12 +4533,14 @@ msgid "Performing New Revision..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Performing Recursive Check-In..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Performing Recursive Check-Out..."
@@ -4107,9 +4552,20 @@ msgid "Physical Document Location"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Port No"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/comparebom.py:0
+#: code:addons/pdm/models/comparebom.py:0
+#: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__itemnum
+#: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__itemnum
+#, python-format
+msgid "Pos."
 msgstr ""
 
 #. module: pdm
@@ -4118,6 +4574,7 @@ msgid "Position"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4125,6 +4582,7 @@ msgid "Preloaded filter name."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -4135,6 +4593,7 @@ msgid "Preparing Download..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4142,12 +4601,14 @@ msgid "Preparing Upload..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Preparing to Assign Document Name..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__child_preview
 #: model:ir.model.fields,field_description:pdm.field_plm_document_relation__parent_preview
@@ -4201,6 +4662,7 @@ msgid "Print Pdf"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Print Report"
@@ -4224,12 +4686,14 @@ msgid "Print Spare Parts Manual One Level"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Print a report on text file."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4243,14 +4707,16 @@ msgid "Printout Content"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Processing Requests"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extend_entities.py:0
-#: model:ir.model,name:pdm.model_product_product
+#: model:ir.model,name:pdm.model_product_template
 #: model:ir.model.fields,field_description:pdm.field_plm_check_product__name
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
 #, python-format
@@ -4258,6 +4724,7 @@ msgid "Product"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4265,7 +4732,6 @@ msgid "Product Name"
 msgstr ""
 
 #. module: pdm
-#: model:ir.model,name:pdm.model_product_template
 #: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
 msgid "Product Template"
 msgstr ""
@@ -4283,6 +4749,14 @@ msgid "Products involved"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Products to Edit"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extend_entities.py:0
 #: model:ir.model,name:pdm.model_plm_check_product
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__part_ids
@@ -4291,6 +4765,7 @@ msgid "Products to be checked"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Protocol"
@@ -4303,18 +4778,21 @@ msgid "Purchase Description"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Purge Checked-In files from PWS"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Purge files"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/comparebom.py:0
 #: code:addons/pdm/models/comparebom.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__itemqty
@@ -4325,6 +4803,7 @@ msgid "Quantity"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4339,6 +4818,7 @@ msgid "Raw Material"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_entities.py:0
 #: code:addons/pdm/models/base_entities.py:0
 #: model:ir.model.constraint,message:pdm.constraint_plm_finishing_name_uniq
@@ -4354,30 +4834,35 @@ msgid "Raw material for current product, only description for titleblock."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Ready to Process"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Recursive Check-In"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Recursive Check-In Paused"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Recursive Check-In from current document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Recursive Check-Out Paused"
@@ -4395,6 +4880,7 @@ msgid "Reference"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -4406,12 +4892,14 @@ msgid "Refreshing Data..."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Refused"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__node_id
 #, python-format
@@ -4419,6 +4907,7 @@ msgid "Registered PLM client"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/reports/component_kanban.py:0
 #: code:addons/pdm/reports/component_kanban.py:0
 #: code:addons/pdm/reports/component_kanban.py:0
@@ -4436,12 +4925,14 @@ msgid "Related Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/reports/component_kanban.py:0
 #, python-format
 msgid "Related Documents"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__userid
 #: model:ir.model.fields,field_description:pdm.field_plm_checkout__userid
@@ -4451,6 +4942,7 @@ msgid "Related User"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_logging__userid
 #, python-format
@@ -4479,6 +4971,7 @@ msgid "Release Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/component.py:0 code:addons/pdm/models/component.py:0
 #: code:addons/pdm/models/document.py:0 code:addons/pdm/models/document.py:0
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__count_component_released
@@ -4493,6 +4986,7 @@ msgid "Released"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4500,6 +4994,7 @@ msgid "Reload"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Remove all filters."
@@ -4566,12 +5061,15 @@ msgid "Report Spare Bom One Level"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Requested"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Requested file"
@@ -4613,6 +5111,7 @@ msgid "Restore Selected Document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4620,6 +5119,7 @@ msgid "Results found"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -4668,6 +5168,7 @@ msgid "Revision Index"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_logging__revision
 #, python-format
@@ -4686,6 +5187,7 @@ msgid "Sale Description"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4693,12 +5195,14 @@ msgid "Save"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Save settings used for Open Documents"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4717,6 +5221,7 @@ msgid "Search on Document Relations"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.ui.menu,name:pdm.menu_documents
@@ -4735,6 +5240,7 @@ msgid "Search on Normal Bill of Materials"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -4744,6 +5250,13 @@ msgstr ""
 #. module: pdm
 #: model:ir.ui.menu,name:pdm.menu_relation_spare
 msgid "Search on Spare Bill of Materials"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Select All"
 msgstr ""
 
 #. module: pdm
@@ -4757,10 +5270,18 @@ msgid "Select Products to move"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/sparebom.py:0
 #: model:ir.model.fields,help:pdm.field_plm_description__bom_tmpl
 #, python-format
 msgid "Select a  BoM as template to drive building Spare BoM."
+msgstr ""
+
+#. module: pdm
+#. odoo-python
+#: code:addons/pdm/models/base_client.py:0
+#, python-format
+msgid "Select all lines in table."
 msgstr ""
 
 #. module: pdm
@@ -4769,6 +5290,7 @@ msgid "Select raw material for current product"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,help:pdm.field_product_product__std_description
 #, python-format
@@ -4788,6 +5310,7 @@ msgid "September"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__sequence
 #: model:ir.model.fields,field_description:pdm.field_plm_finishing__sequence
@@ -4803,30 +5326,35 @@ msgid "Sequence Rule"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Servant"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Server Login"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Server Name"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Server doesn't answer or network has errors."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -4835,12 +5363,14 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Server is Unreachable"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__plm_service_id
 #: model_terms:ir.ui.view,arch_db:pdm.view_add_service_id
@@ -4861,6 +5391,7 @@ msgid "Show Document Relation"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_showWFanalysis
 #, python-format
@@ -4868,30 +5399,35 @@ msgid "Show workflow Analysis before to move"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Smaller"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Smaller Equal"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Some issue accessing to Document Data."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Some issue accessing to Knowledge interface."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Some issue accessing to Part Data."
@@ -4915,9 +5451,6 @@ msgstr ""
 
 #. module: pdm
 #: model:ir.model.fields.selection,name:pdm.selection__mrp_bom__type__spbom
-#: model:ir.model.fields.selection,name:pdm.selection__mrp_bom_line__type__spbom
-#: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id1__spbom
-#: model:ir.model.fields.selection,name:pdm.selection__plm_compare_bom__type_id2__spbom
 msgid "Spare BoM"
 msgstr ""
 
@@ -4942,6 +5475,7 @@ msgid "Specific Options"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,help:pdm.field_plm_description__unitab
 #, python-format
@@ -4951,6 +5485,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__description
@@ -4983,6 +5518,7 @@ msgid "Static preview."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/extend_entities.py:0
@@ -5008,6 +5544,7 @@ msgid "Status"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/document.py:0
 #, python-format
 msgid ""
@@ -5026,6 +5563,7 @@ msgid "Stored filename."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Successfully Saved."
@@ -5068,6 +5606,7 @@ msgid "Technical feature label and formatting"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_entities.py:0
 #, python-format
 msgid "Temp"
@@ -5079,6 +5618,7 @@ msgid "Template BOM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Template ID"
@@ -5095,6 +5635,7 @@ msgid "The BoM net weight in Kg."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/document.py:0
 #: model:ir.model.constraint,message:pdm.constraint_plm_document_relation_relation_uniq
 #, python-format
@@ -5107,12 +5648,14 @@ msgid "The database object this attachment will be attached to."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/document.py:0
 #, python-format
 msgid "The document %s - %s has not checked-in"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -5123,6 +5666,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -5172,6 +5716,7 @@ msgid "The status of the product in its LifeCycle."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5187,6 +5732,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5222,6 +5768,7 @@ msgid "This is the sequence object related to this P/N rule."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5230,6 +5777,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5238,6 +5786,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5245,6 +5794,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5253,6 +5803,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5261,6 +5812,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5274,6 +5826,7 @@ msgid "This wizard will allow to compare two Bill of Materials."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5289,6 +5842,7 @@ msgid "TitleBlock Informations"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -5296,6 +5850,7 @@ msgid "To Refuse"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -5303,6 +5858,7 @@ msgid "To Update"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -5310,6 +5866,7 @@ msgid "To Upload"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -5332,12 +5889,14 @@ msgid "Today"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Tray Application to assist background operations."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_document__type
 #: model:ir.model.fields,field_description:pdm.field_plm_logging__type
@@ -5347,6 +5906,7 @@ msgid "Type"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__umc1
@@ -5356,6 +5916,7 @@ msgid "UM / Feature 1"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__umc2
@@ -5365,6 +5926,7 @@ msgid "UM / Feature 2"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_description__umc3
@@ -5379,6 +5941,7 @@ msgid "URL"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/document.py:0
 #, python-format
 msgid ""
@@ -5388,6 +5951,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/document.py:0
 #, python-format
 msgid ""
@@ -5396,6 +5960,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/document.py:0 code:addons/pdm/models/document.py:0
 #, python-format
 msgid ""
@@ -5404,6 +5969,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/document.py:0
 #, python-format
 msgid ""
@@ -5428,16 +5994,7 @@ msgid "Unit of Measure"
 msgstr ""
 
 #. module: pdm
-#: model:ir.model.fields,field_description:pdm.field_plm_document__message_unread
-msgid "Unread Messages"
-msgstr ""
-
-#. module: pdm
-#: model:ir.model.fields,field_description:pdm.field_plm_document__message_unread_counter
-msgid "Unread Messages Counter"
-msgstr ""
-
-#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/component.py:0
 #, python-format
 msgid ""
@@ -5453,6 +6010,7 @@ msgid "Update revisions"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -5461,12 +6019,14 @@ msgid "Upload"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Upload current document"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -5476,12 +6036,14 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Upload stopped"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5490,6 +6052,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -5499,6 +6062,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5507,6 +6071,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -5516,18 +6081,21 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Upload to DB"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/component.py:0 code:addons/pdm/models/document.py:0
 #, python-format
 msgid "Uploaded"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Uploaded documents"
@@ -5555,6 +6123,7 @@ msgid "Use latest product revisions evaluating new BoM."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__active_editor
 #, python-format
@@ -5572,6 +6141,7 @@ msgid "Used for Spare"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__user
@@ -5588,6 +6158,7 @@ msgid "Users that did not inserted documents since one month"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
@@ -5595,6 +6166,7 @@ msgid "Value"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_product_product__std_value1
 #, python-format
@@ -5602,6 +6174,7 @@ msgid "Value 1"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_product_product__std_value2
 #, python-format
@@ -5609,6 +6182,7 @@ msgid "Value 2"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/descriptions.py:0
 #: model:ir.model.fields,field_description:pdm.field_product_product__std_value3
 #, python-format
@@ -5626,18 +6200,21 @@ msgid "Visualize BoM"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Wait for initial upload [seconds]"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Waiting for connection/syncronization to Server."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -5673,6 +6250,7 @@ msgid "Weight Net"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Where Used"
@@ -5689,6 +6267,7 @@ msgid "WorkFlow Actions"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/component.py:0
 #, python-format
 msgid ""
@@ -5698,6 +6277,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/extend_entities.py:0
 #: code:addons/pdm/models/extend_entities.py:0
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__temp_id
@@ -5707,6 +6287,7 @@ msgid "Workflow Check"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Would you continue?"
@@ -5744,6 +6325,7 @@ msgid "Yesterday"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5752,12 +6334,14 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "You are cloning a layout with 3D model not yet saved."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5766,6 +6350,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5774,6 +6359,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5782,6 +6368,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5790,6 +6377,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5798,6 +6386,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5806,6 +6395,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5814,6 +6404,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5822,6 +6413,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5830,6 +6422,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5839,6 +6432,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5847,6 +6441,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5862,6 +6457,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5870,6 +6466,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
 #: code:addons/pdm/models/base_client.py:0
@@ -5882,6 +6479,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5890,6 +6488,7 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid ""
@@ -5898,84 +6497,106 @@ msgid ""
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "You cannot upload changes"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Your PLM Client is not activated."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "already exists"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "description"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "is not logged on server"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "is not newer of the one already uploaded to server"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "logged on Odoo server"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
+#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
+#: code:addons/pdm/reports/mrp_report_bom_structure.py:0
+#, python-format
+msgid "minutes"
+msgstr ""
+
+#. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "not"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "on host"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/workflow_analysis.py:0
 #, python-format
 msgid "one of linked Documents is not checked-In."
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "was modified and you are going to upload data to server"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "was modified but it has Checked-Out to user"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "was uploaded successfully on server"
 msgstr ""
 
 #. module: pdm
+#. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "with user"
