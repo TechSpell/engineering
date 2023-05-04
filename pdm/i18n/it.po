@@ -9,10 +9,11 @@ msgstr ""
 "POT-Creation-Date: 2023-04-25 09:15+0000\n"
 "PO-Revision-Date: 2023-04-25 09:15+0000\n"
 "Last-Translator: \n"
-"Language-Team: \n"
+"Language-Team: Italian \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
+"Language: it\n"
 "Plural-Forms: \n"
 
 #. module: pdm
@@ -35,7 +36,7 @@ msgid ""
 "Would you continue?"
 msgstr ""
 "\n"
-"Wuoi continuare?"
+"Vuoi continuare?"
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__nbr
@@ -177,7 +178,8 @@ msgstr "Aggiungi un ID Servizio"
 #: model_terms:ir.ui.view,arch_db:pdm.view_add_workflow
 msgid ""
 "Add workflow management to PLM module, managing processes and signatures"
-msgstr "Aggiungi Gestione del Flusso di Lavoro al modulo PLM, gestendo processi e firme."
+msgstr ""
+"Aggiungi Gestione del Flusso di Lavoro al modulo PLM, gestendo processi e firme."
 
 #. module: pdm
 #. odoo-python
@@ -232,7 +234,7 @@ msgstr "Consenti 'Archiviati' in Distinta"
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_obsoletedinbom
 #, python-format
 msgid "Allow Obsoleted in BoM"
-msgstr "Consenti 'Obsoleti" in Distinta"
+msgstr "Consenti 'Obsoleti' in Distinta"
 
 #. module: pdm
 #. odoo-python
@@ -405,7 +407,7 @@ msgstr "Consente di duplicare le righe di Prodotto modificando una Distinta."
 msgid ""
 "Allows to edit BoM if product is in 'Released' status. Default = False."
 msgstr ""
-"Consente di modificare una Distinta se il Prodotto è in stato "Rilasciato". "
+"Consente di modificare una Distinta se il Prodotto è in stato 'Rilasciato'. "
 "Predefinito = Falso."
 
 #. module: pdm
@@ -1060,7 +1062,7 @@ msgstr "Check-In Arrestato"
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Check-In current document"
-msgstr "Check-In docuemnto corrente"
+msgstr "Check-In documento corrente"
 
 #. module: pdm
 #. odoo-python
@@ -2072,7 +2074,7 @@ msgstr "Differenze tra Distinte"
 #, python-format
 msgid ""
 "Dimensions (in MegaBytes) to automatically decide downloading of files from "
-"server. Used with 'Deferred Open."
+"server. Used with 'Deferred Open'."
 msgstr ""
 "Dimensioni (in MegaBytes) per determinare automaticamente lo scarico di files "
 "dal server. Usato with 'Apri Differito'."
@@ -2991,7 +2993,7 @@ msgstr "Filtro su Documenti 'Ammessi' ad essere Caricati."
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "Filter on documents 'Requested' to be uploaded but not yet allowed."
-msgstr ""Filtro su Documenti 'Richiesti' ma non ancora 'Ammessi' ad essere Caricati."
+msgstr "Filtro su Documenti 'Richiesti' ma non ancora 'Ammessi' ad essere Caricati."
 
 #. module: pdm
 #. odoo-python
@@ -4338,8 +4340,8 @@ msgstr "Tipo Operazione"
 #: code:addons/pdm/models/base_client.py:0
 #: model:ir.model.fields,help:pdm.field_plm_logging__op_type
 #, python-format
+msgid "Operation Type"
 msgstr "Tipo Operazione"
-msgstr ""
 
 #. module: pdm
 #. odoo-python
@@ -6164,7 +6166,7 @@ msgid ""
 "Upload interface object is not running.\n"
 "Please, restart the O.S. then try to perform Upload again."
 msgstr ""
-"Il softwaew che gestisce il caricamento 'nascosto' non sta girando.\n"
+"Il software che gestisce il caricamento 'nascosto' non sta girando.\n"
 "Per piacere, riavvia il S.O. e poi riprova ad eseguire il Caricamento di nuovo."
 
 #. module: pdm
@@ -6260,7 +6262,7 @@ msgstr ""
 "Usa una distinta 'fantasma' nelle ricghe di materi prime che devono essere "
 "automaticamnete calcolate da un ordine di produzione e non una per livello."
 "Se imposti 'phantom/Set' a livello padre della distinta sarà considerata come "
-"un kit: i prodotti saranno rimpiazzati dai componenti tra l' ordne di vendita "
+"un kit: i prodotti saranno rimpiazzati dai componenti tra l' ordine di vendita "
 "ed il prelievo senza passare per un ordine di produzione."
 "La distinta di 'Produzione' genererà un ordine di produzione per livello."
 
@@ -6644,7 +6646,7 @@ msgid ""
 "You have to execute 'New Document Revision' instead."
 msgstr ""
 "Non puoi eseguire una 'Nuova Revisione' su un documento di tipo Tavola 2D.\n"
-"Devi invece eseguire 'Nuova Revisione Documento."
+"Devi invece eseguire 'Nuova Revisione Documento'."
 
 #. module: pdm
 #. odoo-python
