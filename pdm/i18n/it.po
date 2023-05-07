@@ -5220,7 +5220,8 @@ msgstr "Il documento %s - %s non è in check-in"
 msgid ""
 "The document is newer than stored on Odoo.\n"
 "Remove from PWS and download it again."
-sgstr "Il documento è più nuovo di quello immagazzinato in Odoo.\n"
+msgstr ""
+"Il documento è più nuovo di quello immagazzinato in Odoo.\n"
 "Cancellalo dal PWS e scaricalo ancora."
 
 #. module: pdm
@@ -5280,7 +5281,7 @@ msgid ""
 "Use 'AssigndocName' instead 'EditParts' to assign document data."
 msgstr ""
 "Utilizza 'AssigndocName' invece di 'EditParts' per assegnare i dati del "
-"docuemnto."
+"documento."
 
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_product_product__engineering_code
@@ -5304,8 +5305,7 @@ msgstr ""
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_mrp_bom_line__source_id
 msgid "This is the document object that declares this BoM."
-msgstr ""
-"Questo è il documento che dichiara questa parte di distinta materiali."
+msgstr "Questo è il documento che dichiara questa parte di distinta materiali."
 
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_mrp_bom_line__itemlbl
@@ -5705,9 +5705,7 @@ msgstr ""
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_temporary__revflag
 msgid "Use latest product revisions evaluating new BoM."
-msgstr ""
-"Utilizzare le più recenti revisioni di prodotto calcolando la nuova "
-"distinta."
+msgstr "Utilizzare le più recenti revisioni di prodotto calcolando la nuova distinta."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
@@ -5915,9 +5913,7 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 #, python-format
 msgid "You are cloning a layout with 3D model not yet saved."
-msgstr ""
-"Stai cercando di clonare un layout il cui modello 3D non è ancora stato "
-"caricato nel DB."
+msgstr "Stai cercando di clonare un layout il cui modello 3D non è ancora stato caricato nel DB."
 
 #. module: pdm
 #: code:addons/pdm/models/base_client.py:0
