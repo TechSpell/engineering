@@ -69,7 +69,7 @@ class plm_component(models.Model):
         properties = {
                     "name"                  :{"changed":"", "enabled":True,  "mandatory":True,              "default":"",   "limit":40,                     },   
                     "engineering_code"      :{"changed":"", "enabled":True,  "mandatory":True,   "pos":  1, "default":"",   "limit":40,  "format":"upper",                  },   
-                    "engineering_revision"  :{"changed":"", "enabled":False, "mandatory":True,   "pos":  2, "default":1 ,                                                   },   
+                    "engineering_revision"  :{"changed":"", "enabled":False, "mandatory":True,   "pos":  2, "default":0 ,                                                   },   
                     "std_description"       :{"changed":"", "enabled":True,  "mandatory":False,             "default":"",   "limit":40,                     },   
                     "state"                 :{"changed":"", "enabled":False, "mandatory":False,             "default":"draft",                              },   
                     "tmp_material"          :{"changed":"", "enabled":True,  "mandatory":False,             "default":"",                                   },   
