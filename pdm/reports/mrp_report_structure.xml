@@ -28,13 +28,13 @@
     <template id="report_mrp_bom_pdf_line" name="enhance_report_mrp_bom_pdf_line" inherit_id="mrp.report_mrp_bom_pdf_line">
          <xpath expr="//td[@name='td_mrp_code']" position="after">
              <td>
-                <span> <a><t t-esc="l['engineering_revision']"/></a> </span>
+                <span> <a><t t-esc="l['prod_revi']"/></a> </span>
              </td>
              <td>
-                <span> <a><t t-esc="l['state']"/></a> </span>
+                <span> <a><t t-esc="l['prod_stat']"/></a> </span>
              </td>
              <td>
-                <span> <a><t t-esc="l['description']"/></a> </span>
+                <span> <a><t t-esc="l['prod_desc']"/></a> </span>
              </td>
          </xpath>
     </template>

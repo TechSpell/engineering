@@ -24,25 +24,25 @@
 #
 ##############################################################################
 
+import re
 import json
 
 from odoo import api, models, _
 from odoo.tools import float_round
+
+def remove_html_tags(text):
+    """Remove html tags from a string"""
+    clean = re.compile('<.*?>')
+    return re.sub(clean, '', text)
 
 class ReportBomStructure(models.AbstractModel):
     _inherit = 'report.mrp.report_bom_structure'
 
     def _add_engineering_data(self, components):
         for line in components:
-            line['prod_desc'] = ""
-            line['prod_revi'] = ""
-            line['prod_stat'] = ""
-            prod_id = line.get('prod_id')
-            if prod_id:
-                prod_id = self.env['product.product'].browse(prod_id)
-                line['prod_desc'] = prod_id.description
-                line['prod_revi'] = prod_id.engineering_revision
-                line['prod_stat'] = prod_id.state
+            line['prod_desc'] = line.get('description',"")
+            line['prod_revi'] = line.get('engineering_revision',"")
+            line['prod_stat'] = line.get('state',"")
 
         return True
 
@@ -51,9 +51,9 @@ class ReportBomStructure(models.AbstractModel):
             Maintains coherence column showing data.
         """
         for line in operations:
-            line['desc'] = ""
-            line['revi'] = ""
-            line['stat'] = ""
+            line['description'] = ""
+            line['engineering_revision'] = ""
+            line['state'] = ""
         return operations
    
 ### OVERRIDDEN STANDARD METHODS 
@@ -245,6 +245,8 @@ class ReportBomStructure(models.AbstractModel):
             # Useless to compute quantities_info if it's not going to be used later on
             quantities_info = self._get_quantities_info(product, bom.product_uom_id, parent_bom, product_info)
 
+        description = remove_html_tags(product.description or bom.product_tmpl_id.description)
+        status = product.state or bom.product_tmpl_id.state
         bom_report_line = {
             'index': index,
             'bom': bom,
@@ -257,8 +259,8 @@ class ReportBomStructure(models.AbstractModel):
             'base_bom_line_qty': bom_line.product_qty if bom_line else False,  # bom_line isn't defined only for the top-level product
             'name': product.display_name or bom.product_tmpl_id.display_name,
             'engineering_revision': product.engineering_revision or bom.product_tmpl_id.engineering_revision,
-            'state': product.state or bom.product_tmpl_id.state,
-            'description': product.description or bom.product_tmpl_id.description,
+            'state': status,
+            'description': description,
             'uom': bom.product_uom_id if bom else product.uom_id,
             'uom_name': bom.product_uom_id.name if bom else product.uom_id.name,
             'route_type': route_info.get('route_type', ''),

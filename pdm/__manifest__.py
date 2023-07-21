@@ -111,6 +111,11 @@ Supported Editors :
              'reports/mrp_report_structure.xml',
              'data/scheduled_action.xml',
        ],
+    'assets': {
+            'web.assets_backend': [
+                'pdm/static/src/**/*',
+            ],
+        },
     'demo': [
         ],
     'test': [
