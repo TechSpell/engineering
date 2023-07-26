@@ -83,6 +83,7 @@ class ReportBomStructure(models.AbstractModel):
         if not self.env.context.get('minimized', False):
             attachment_ids = self.env['mrp.document'].search(['|', '&', ('res_model', '=', 'product.product'), ('res_id', '=', bom_line.product_id.id),
                                                               '&', ('res_model', '=', 'product.template'), ('res_id', '=', bom_line.product_id.product_tmpl_id.id)]).ids
+        description = remove_html_tags(bom_line.product_id.description)
 
         return {
             'type': 'component',
@@ -102,7 +103,7 @@ class ReportBomStructure(models.AbstractModel):
             'base_bom_line_qty': bom_line.product_qty,
             'engineering_revision': bom_line.product_id.engineering_revision,
             'state': bom_line.product_id.state,
-            'description': bom_line.product_id.description,
+            'description': description,
             'uom': bom_line.product_uom_id,
             'uom_name': bom_line.product_uom_id.name,
             'prod_cost': rounded_price,
@@ -128,6 +129,7 @@ class ReportBomStructure(models.AbstractModel):
         for bom_line in bom_lines:
             line_unfolded = ('bom_' + str(bom_line['index'])) in unfolded_ids
             line_visible = level == 1 or unfolded or parent_unfolded
+            description = remove_html_tags(bom_line['description'])
             lines.append({
                 'bom_id': bom_line['bom_id'],
                 'name': bom_line['name'],
@@ -138,7 +140,7 @@ class ReportBomStructure(models.AbstractModel):
                 'producible_qty': bom_line.get('producible_qty', False),
                 'engineering_revision': bom_line['engineering_revision'],
                 'state': bom_line['state'],
-                'description': bom_line['description'],
+                'description': description,
                 'uom': bom_line['uom_name'],
                 'prod_cost': bom_line['prod_cost'],
                 'bom_cost': bom_line['bom_cost'],
