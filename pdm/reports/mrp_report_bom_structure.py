@@ -32,8 +32,11 @@ from odoo.tools import float_round
 
 def remove_html_tags(text):
     """Remove html tags from a string"""
-    clean = re.compile('<.*?>')
-    return re.sub(clean, '', text)
+    ret = ""
+    if isinstance(text, (str, bytes)):
+        clean = re.compile('<.*?>')
+        ret = re.sub(clean, '', text)
+    return ret
 
 class ReportBomStructure(models.AbstractModel):
     _inherit = 'report.mrp.report_bom_structure'
