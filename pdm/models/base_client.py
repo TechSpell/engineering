@@ -1325,32 +1325,7 @@ class plm_config_settings(models.Model):
                 fieldNames += "{},".format(fieldname)
         fNames = fieldNames[:len(fieldNames)-1]
         return fieldnames, fNames
-
-    def setExecute(self, query):
-        """
-            Executes query.
-        """
-        cr = self.env.cr
-        cr.execute(query)
-
-    def getExecuteQuery(self, query):
-        """
-            Executes query returning values.
-        """
-        cr = self.env.cr
-        cr.execute(query)
-        return cr.fetchall()
- 
-    def getExecute(self, query):
-        """
-            Executes query returning values.
-        """
-        cr = self.env.cr
-        cr.execute(query)
-        ids = cr.fetchall()
-        return list(itertools.chain(*ids))    
-
-        
+         
     def getTableFileName(self, tablename):
         d0 = datetime.datetime(2000, 1, 1)
         d1 = datetime.datetime.now()
@@ -1366,9 +1341,15 @@ class plm_config_settings(models.Model):
             no Postgresql customization is possible.
         """
         tablename, = request
+        cr = self.env.cr
         fieldnames, fieldNames = self.getFieldsData(tablename)
         select = "SELECT {fieldNames} from {table}".format(table=tablename, fieldNames=fieldNames)
-        ret = self.getQueryResult(fieldnames, select)
+        lines = []
+        cr.execute(select)
+        results = cr.fetchall()
+        for line in results:
+            lines.append(dict(zip(fieldnames, line)))
+        ret = json.dumps( lines )  
 
         return ret
 
@@ -1378,14 +1359,14 @@ class plm_config_settings(models.Model):
             Returns a json serialized string of dictionaries.
         """
         ret = ""
-
+        cr = self.env.cr
         csvfile=open(tmp_file, 'w')
         csvfile.close()
         if os.path.exists(tmp_file):
             os.chmod(tmp_file, 0o666)
 
         query = "COPY ({select}) TO '{tmp_file}' DELIMITER ';' CSV HEADER;".format(select=select, tmp_file=tmp_file)
-        self.setExecute(query) 
+        cr.execute(query)
 
         with open('{tmp_file}'.format(tmp_file=tmp_file), 'r') as csvfile:
             reader = csv.DictReader(csvfile, delimiter=';')
@@ -1395,17 +1376,6 @@ class plm_config_settings(models.Model):
         
         if os.path.exists(tmp_file):
             os.unlink(tmp_file)
-        return ret
-
-    def getQueryResult(self, fieldnames, query):
-        """
-            Executes query choosen putting output on temporary csv file.
-            Returns a json serialized string of dictionaries.
-        """
-        lines = []
-        for line in self.getExecuteQuery(query):
-            lines.append(dict(zip(fieldnames, line)))
-        ret = json.dumps( lines )      
         return ret
 
     @api.model
@@ -1418,8 +1388,8 @@ class plm_config_settings(models.Model):
         """
         retCre = ""
         retChg = ""
-        retId = []
         select = ""
+        cr = self.env.cr
         tablename, create_date = request
         fieldnames, fieldNames = self.getFieldsData(tablename)
         base_select = "SELECT {fieldNames} from {table}".format(table=tablename, fieldNames=fieldNames)
@@ -1429,17 +1399,30 @@ class plm_config_settings(models.Model):
             select = base_select + " WHERE create_date >= '{date}'".format(date=create_date)
 
         if select:
-            retCre = self.getQueryResult(fieldnames, select)
+            lines = []
+            cr.execute(select)
+            results = cr.fetchall()
+            for line in results:
+                lines.append(dict(zip(fieldnames, line)))
+            retCre = json.dumps( lines )  
             select = ""
 
         if write_date:
             select = base_select + " WHERE write_date >= '{write_date}' AND create_date < write_date".format(write_date=write_date)
 
         if select:
-            retChg = self.getQueryResult(fieldnames, select)
+            lines = []
+            cr.execute(select)
+            results = cr.fetchall()
+            for line in results:
+                lines.append(dict(zip(fieldnames, line)))
+            retChg = json.dumps( lines )  
             select = ""
         
-        retId = self.getExecute("SELECT id from {table}".format(table=tablename))
+        query = "SELECT id from {table}".format(table=tablename)
+        cr.execute(query)
+        ids = cr.fetchall()
+        retId = list(itertools.chain(*ids))    
 
         return (retCre, retChg, retId)
 
