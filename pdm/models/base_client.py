@@ -1369,7 +1369,7 @@ class plm_config_settings(models.Model):
         cr = self.env.cr
         tablename, tmp_create_date = request
         date_creation = datetime.datetime.strptime(tmp_create_date, DEFAULT_SERVER_DATETIME_FORMAT)
-        create_date = date_creation.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+        create_date = date_creation.strftime(DEFAULT_SERVER_DATETIME_FORMAT)   # sanitize date
         fieldnames, fieldNames = self.getFieldsData(tablename)
         base_select = "SELECT {fieldNames} from {table}".format(table=tablename, fieldNames=fieldNames)
         write_date = create_date if (create_date and ('write_date' in fieldnames)) else False
