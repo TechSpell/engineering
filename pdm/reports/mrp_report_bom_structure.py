@@ -92,6 +92,7 @@ class ReportBomStructure(models.AbstractModel):
             'type': 'component',
             'index': index,
             'bom_id': False,
+            'bom_type': bom_line.type if bom_line else False,
             'bom_line_id': bom_line.id if bom_line else False,
             'product': bom_line.product_id,
             'product_id': bom_line.product_id.id,
@@ -137,6 +138,7 @@ class ReportBomStructure(models.AbstractModel):
             lines.append({
                 'bom_id': bom_line['bom_id'],
                 'bom_line_id': bom_line['bom_line_id'],
+                'bom_type': bom_line['bom_type'],
                 'type': bom_line['type'],
                 'quantity': bom_line['quantity'],
                 'quantity_available': bom_line['quantity_available'],
@@ -259,6 +261,7 @@ class ReportBomStructure(models.AbstractModel):
             'bom_id': bom and bom.id or False,
             'bom_line_id': bom_line.id if bom_line else False,
             'bom_code': bom and bom.code or False,
+            'bom_type': bom.type if bom else False,
             'type': 'bom',
             'quantity': current_quantity,
             'quantity_available': quantities_info.get('free_qty', 0),
@@ -302,8 +305,14 @@ class ReportBomStructure(models.AbstractModel):
             if product and line._skip_bom_line(product):
                 continue
             line_quantity = (current_quantity / (bom.product_qty or 1.0)) * line.product_qty
-            if line.child_bom_id:
-                component = self.with_context(parent_product_id=product.id)._get_bom_data(line.child_bom_id, warehouse, line.product_id, line_quantity, bom_line=line, level=level + 1, parent_bom=bom,
+            criteria = [
+                ('product_tmpl_id', '=', line.product_tmpl_id.id),
+                ('type', '=', bom.type),
+                ('active', '=', True)
+            ]
+            idBom = self.env['mrp.bom'].search(criteria, limit=1)
+            if idBom:
+                component = self.with_context(parent_product_id=product.id)._get_bom_data(idBom, warehouse, line.product_id, line_quantity, bom_line=line, level=level + 1, parent_bom=bom,
                                                                                           index=new_index, product_info=product_info, ignore_stock=ignore_stock)
             else:
                 component = self.with_context(parent_product_id=product.id)._get_component_data(bom, warehouse, line, line_quantity, level + 1, new_index, product_info, ignore_stock)
