@@ -1353,31 +1353,6 @@ class plm_config_settings(models.Model):
 
         return ret
 
-    def getQueryRes(self, tmp_file, select):
-        """
-            Executes query choosen putting output on temporary csv file.
-            Returns a json serialized string of dictionaries.
-        """
-        ret = ""
-        cr = self.env.cr
-        csvfile=open(tmp_file, 'w')
-        csvfile.close()
-        if os.path.exists(tmp_file):
-            os.chmod(tmp_file, 0o666)
-
-        query = "COPY ({select}) TO '{tmp_file}' DELIMITER ';' CSV HEADER;".format(select=select, tmp_file=tmp_file)
-        cr.execute(query)
-
-        with open('{tmp_file}'.format(tmp_file=tmp_file), 'r') as csvfile:
-            reader = csv.DictReader(csvfile, delimiter=';')
-            lines = [ row for row in reader ]
-            ret = json.dumps( lines )
-        csvfile.close()
-        
-        if os.path.exists(tmp_file):
-            os.unlink(tmp_file)
-        return ret
-
     @api.model
     def GetUpdateTableData(self, request=[], default=None):
         """
@@ -1390,7 +1365,9 @@ class plm_config_settings(models.Model):
         retChg = ""
         select = ""
         cr = self.env.cr
-        tablename, create_date = request
+        tablename, tmp_create_date = request
+        date_creation = datetime.datetime.strptime(tmp_create_date, DEFAULT_SERVER_DATETIME_FORMAT)
+        create_date = date_creation.strftime(DEFAULT_SERVER_DATETIME_FORMAT)   # sanitize date
         fieldnames, fieldNames = self.getFieldsData(tablename)
         base_select = "SELECT {fieldNames} from {table}".format(table=tablename, fieldNames=fieldNames)
         write_date = create_date if (create_date and ('write_date' in fieldnames)) else False
