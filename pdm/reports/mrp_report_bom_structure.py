@@ -87,6 +87,8 @@ class ReportBomStructure(models.AbstractModel):
             attachment_ids = self.env['mrp.document'].search(['|', '&', ('res_model', '=', 'product.product'), ('res_id', '=', bom_line.product_id.id),
                                                               '&', ('res_model', '=', 'product.template'), ('res_id', '=', bom_line.product_id.product_tmpl_id.id)]).ids
         description = remove_html_tags(bom_line.product_id.description)
+        status_dict = dict(bom_line.product_id.product_tmpl_id._fields['state'].selection)
+        product_state = status_dict[bom_line.product_id.state]
 
         return {
             'type': 'component',
@@ -107,7 +109,7 @@ class ReportBomStructure(models.AbstractModel):
             'quantity_on_hand': quantities_info.get('on_hand_qty', 0),
             'base_bom_line_qty': bom_line.product_qty,
             'engineering_revision': bom_line.product_id.engineering_revision,
-            'state': bom_line.product_id.state,
+            'state': product_state,
             'description': description,
             'uom': bom_line.product_uom_id,
             'uom_name': bom_line.product_uom_id.name,
@@ -228,8 +230,8 @@ class ReportBomStructure(models.AbstractModel):
 
         company = bom.company_id or self.env.company
         current_quantity = line_qty
-        if bom_line:
-            current_quantity = bom_line.product_uom_id._compute_quantity(line_qty, bom.product_uom_id) or 0
+#         if bom_line:
+#             current_quantity = bom_line.product_uom_id._compute_quantity(line_qty, bom.product_uom_id) or 0
 
         prod_cost = 0
         attachment_ids = []
@@ -254,7 +256,8 @@ class ReportBomStructure(models.AbstractModel):
             quantities_info = self._get_quantities_info(product, bom.product_uom_id, parent_bom, product_info)
 
         description = remove_html_tags(product.description or bom.product_tmpl_id.description)
-        status = product.state or bom.product_tmpl_id.state
+        status_dict = dict(bom.product_tmpl_id._fields['state'].selection)
+        product_state = status_dict[product.state]
         bom_report_line = {
             'index': index,
             'bom': bom,
@@ -269,7 +272,7 @@ class ReportBomStructure(models.AbstractModel):
             'base_bom_line_qty': bom_line.product_qty if bom_line else False,  # bom_line isn't defined only for the top-level product
             'name': product.display_name or bom.product_tmpl_id.display_name,
             'engineering_revision': product.engineering_revision or bom.product_tmpl_id.engineering_revision,
-            'state': status,
+            'state': product_state,
             'description': description,
             'uom': bom.product_uom_id if bom else product.uom_id,
             'uom_name': bom.product_uom_id.name if bom else product.uom_id.name,
@@ -304,7 +307,8 @@ class ReportBomStructure(models.AbstractModel):
             new_index = f"{index}{component_index}"
             if product and line._skip_bom_line(product):
                 continue
-            line_quantity = (current_quantity / (bom.product_qty or 1.0)) * line.product_qty
+#             line_quantity = (current_quantity / (bom.product_qty or 1.0)) * line.product_qty
+            line_quantity = line.product_qty
             criteria = [
                 ('product_tmpl_id', '=', line.product_tmpl_id.id),
                 ('type', '=', bom.type),
