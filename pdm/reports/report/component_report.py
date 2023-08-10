@@ -40,13 +40,13 @@ class plm_component(models.AbstractModel):
     _description = "Get PDF Attached to Component"
 
     @api.model
-    def getPDFbyProducts(self, level=0, checkState=False):
+    def getRawPDFbyProducts(self, level=0, checkState=False):
         """
             Returns pdf byte content of related documents
         """
+        documentContent=["",""]
         documents = []
         processed=[]
-        content = emptyDocument()
         docRepository, bookCollector = usefulInfos(self.env)
  
         for product in self:
@@ -61,8 +61,14 @@ class plm_component(models.AbstractModel):
                             
         if len(documents)>0:
             documentContent=packDocuments(docRepository, documents, bookCollector)
-            if len(documentContent)>0:
-                content=documentContent[0]
+        return documentContent
+
+    @api.model
+    def getPDFbyProducts(self, level=0, checkState=False):
+        content = emptyDocument()
+        documentContent = self.getRawPDFbyProducts(self, level=level, checkState=checkState)
+        if len(documentContent)>0:
+            content=documentContent[0]
         return content       
 
 class report_plm_component(models.AbstractModel):
