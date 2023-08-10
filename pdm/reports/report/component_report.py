@@ -66,7 +66,7 @@ class plm_component(models.AbstractModel):
     @api.model
     def getPDFbyProducts(self, level=0, checkState=False):
         content = emptyDocument()
-        documentContent = self.getRawPDFbyProducts(self, level=level, checkState=checkState)
+        documentContent = self.getRawPDFbyProducts(level=level, checkState=checkState)
         if len(documentContent)>0:
             content=documentContent[0]
         return content       
