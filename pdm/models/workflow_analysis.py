@@ -113,8 +113,8 @@ class plm_component(models.Model):
         options=self.env['plm.config.settings'].GetOptions()
 
         tempType = self.env["plm.temporary"]
-        product_ids = productType = self.env['product.product']
-        document_ids = documentType = self.env['plm.document']
+        product_ids = self.env['product.product']
+        document_ids = self.env['plm.document']
         part_ids = checkProductType = self.env["plm.check.product"]
         docu_ids = checkDocumentType = self.env["plm.check.document"]
         manageByDoc = options.get('opt_mangeWFDocByProd', False)
@@ -205,7 +205,8 @@ class plm_component(models.Model):
         if product_ids:
             if (action == 'release'):
                 for product_id in self:
-                    for last_id in self._getbyrevision(product_id.engineering_code, product_id.engineering_revision - 1):
+                    last_id=self._getlatestbyrevision(product_id.engineering_code, product_id.engineering_revision)
+                    if last_id:
                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
             move_workflow(self, product_ids.ids, action, status)
             self.logging_workflow(product_ids.ids, action, status)
@@ -226,7 +227,7 @@ class plm_document(models.Model):
         includeStatuses=operationParams['includeStatuses']
 
         tempType = self.env["plm.temporary"]
-        document_ids = documentType = self.env['plm.document']
+        document_ids = self.env['plm.document']
         docu_ids = checkDocumentType = self.env["plm.check.document"]
         
         for document_id in self:
@@ -301,7 +302,8 @@ class plm_document(models.Model):
                 for document_id in self:
                     for last_id in self._getbyaltminorevision(document_id):
                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
-                    for last_id in self._getbyrevision(document_id.name, document_id.revisionid - 1):
+                    last_id=self._getlatestbyrevision(document_id.name, document_id.revisionid)
+                    if last_id:
                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
             elif (action in ['obsolete','reactivate']):
                 movement = False
