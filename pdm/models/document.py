@@ -1182,7 +1182,6 @@ class plm_document(models.Model):
                 for last_id in self._getbyaltminorevision(oldObject):
                     if last_id.state in ['released', 'undermodify']:
                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
-#                 for last_id in self._getbyrevision(oldObject.name, oldObject.revisionid - 1):
                 last_id = self._getlatestbyrevision(oldObject.name, oldObject.revisionid)
                 if last_id and last_id.state in ['released', 'undermodify']:
                     move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
@@ -1404,7 +1403,6 @@ class plm_document(models.Model):
                 existingIDs = []
                 for last_id in self._getprevminorevision(checkObj):
                     existingIDs.append(last_id.id)
-#                 for last_id in self._getbyrevision(checkObj.name, checkObj.revisionid - 1):
                 last_id = self._getlatestbyrevision(checkObj.name, checkObj.revisionid)
                 if last_id:
                     existingIDs.append(last_id.id)

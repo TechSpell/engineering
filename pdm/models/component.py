@@ -423,7 +423,6 @@ class plm_component(models.Model):
                          }
                     self._insertlog(oldObject.id, note=note)
                     newIndex = self._getNewIndex(oldObject, oldObject.engineering_revision)
-#                     newIndex = int(oldObject.engineering_revision) + 1
                     default = {
                                 'engineering_writable': False,
                                 'state': 'undermodify',
@@ -1063,7 +1062,6 @@ class plm_component(models.Model):
             raise UserError(_("WorkFlow Error.\n\nOne or more parts cannot be released."))
         allProdObjs = self.browse(allIDs)
         for oldObject in allProdObjs:
-#             objObsolete=self._getbyrevision(oldObject.engineering_code, oldObject.engineering_revision - 1)
             objObsolete=self._getlatestbyrevision(oldObject.engineering_code, oldObject.engineering_revision)
             if objObsolete and objObsolete.id:
                 last_ids.append(objObsolete.id)
@@ -1259,21 +1257,6 @@ class plm_component(models.Model):
                     move_workflow (self, [existingID.id], 'reactivate', 'released')
                 elif isUnderModify(self, existingID.id):
                     move_workflow (self, [existingID.id], 'reactivate', 'released')
-#                 existingIDs = self.with_context({'no_move_documents':True}).search([
-#                         ('active', 'in', [True,False]),
-#                         ('engineering_code', '=', checkObj.engineering_code),
-#                         ('engineering_revision', '=', checkObj.engineering_revision - 1)])
-#                 if len(existingIDs) > 0:
-#                     obsoletedIds=[]
-#                     undermodifyIds=[]
-#                     for existID in getListIDs(existingIDs):
-#                         if isObsoleted(self, existID.id):
-#                             obsoletedIds.append(existID.id)
-#                         elif isUnderModify(self, existID.id):
-#                             undermodifyIds.append(existID.id)
-#                     move_workflow (self, obsoletedIds, 'reactivate', 'released')
-#                     if undermodifyIds:
-#                         move_workflow (self, undermodifyIds, 'reactivate', 'released')
 
                 note={
                         'type': 'unlink object',
