@@ -38,7 +38,8 @@ from odoo.tools import config as tools_config
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                         move_workflow, wf_message_post, isVoid, isAdministrator, isIntegratorUser, isReleased, \
-                        isObsoleted, isUnderModify, isAnyReleased, isDraft, isWritable, getUpdTime, getUserDelta
+                        isObsoleted, isUnderModify, isAnyReleased, isDraft, isWritable, getUpdTime, getUserDelta, \
+                        getInteger
 
 # To be adequated to plm.component class states
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
@@ -567,16 +568,15 @@ class plm_document(models.Model):
                             'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
                          }
                     self._insertlog(oldObject.id, note=note)
-#                     docsignal=get_signal_workflow(oldObject, 'undermodify')
                     move_workflow(self, [oldObject.id], 'modify', 'undermodify')
-                    newIndex=int(oldObject.revisionid) + 1
+                    newIndex = self._getNewIndex(oldObject, oldObject.revisionid)
                     default = {
                                 'name': oldObject.name,
                                 'revisionid': newIndex,
                                 'minorrevision':"A",
                                 'writable': True,
                                 'state': 'draft',
-                                'linkedcomponents': [(5)],  # Clean attached products for new revision object
+                                'linkedcomponents': [(5,)],  # Clean attached products for new revision object
                                }
                     tmpID = oldObject.with_context(thisContext).copy(default)
                     if tmpID!=None:
@@ -616,7 +616,6 @@ class plm_document(models.Model):
                             'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
                          }
                     self._insertlog(oldObject.id, note=note)
-#                     docsignal=get_signal_workflow(oldObject, 'undermodify')
                     move_workflow(self, [oldObject.id], 'modify', 'undermodify')
                     newminor=getnewminor(oldObject.minorrevision)
                     default={
@@ -1185,9 +1184,9 @@ class plm_document(models.Model):
                 for last_id in self._getbyaltminorevision(oldObject):
                     if last_id.state in ['released', 'undermodify']:
                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
-                for last_id in self._getbyrevision(oldObject.name, oldObject.revisionid - 1):
-                    if last_id.state in ['released', 'undermodify']:
-                        move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
+                last_id = self._getlatestbyrevision(oldObject.name, oldObject.revisionid)
+                if last_id and last_id.state in ['released', 'undermodify']:
+                    move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
             return self._action_onrelateddocuments(ids, doc_default, action, status, checkact=True, includeStatuses=includeStatuses)
 
     @api.multi
@@ -1412,7 +1411,8 @@ class plm_document(models.Model):
                 existingIDs = []
                 for last_id in self._getprevminorevision(checkObj):
                     existingIDs.append(last_id.id)
-                for last_id in self._getbyrevision(checkObj.name, checkObj.revisionid - 1):
+                last_id = self._getlatestbyrevision(checkObj.name, checkObj.revisionid)
+                if last_id:
                     existingIDs.append(last_id.id)
 
                 if len(existingIDs) > 0:
@@ -1717,6 +1717,24 @@ class plm_document(models.Model):
         """
         uiUser = self.env['res.users'].browse(oid)
         return uiUser.name
+
+    def _getlatestbyrevision(self, name, revision):
+        criteria = [
+                ('name', '=', name),
+                ('revisionid', '<', revision)
+            ]
+        order='revisionid desc'
+        return self.search(criteria, order=order, limit=1)
+
+    def _getNewIndex(self, oldObject, revision=0):
+        revision = getInteger(revision) + 1
+        criteria = [
+                ('name', '=', oldObject.name),
+                ('revisionid', '>=', revision)
+            ]
+        if self.search(criteria, limit=1):
+            revision = self._getNewIndex(oldObject, revision)
+        return revision
 
     def _getbyrevision(self, name, revision):
         
