@@ -32,8 +32,8 @@ from odoo.exceptions import UserError
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
                     move_workflow, wf_message_post, isVoid, isAdministrator, isWritable, isReleased, \
-                    isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime, getUserDelta
-
+                    isObsoleted, isUnderModify, isAnyReleased, isDraft, getUpdTime, getUserDelta, \
+                    getInteger
 
 # USED_STATES=[('draft','Draft'),('confirmed','Confirmed'),('released','Released'),('undermodify','UnderModify'),('obsoleted','Obsoleted')]
 # STATEFORRELEASE=['confirmed']
@@ -78,6 +78,26 @@ class plm_component(models.Model):
                     ret=True
         return ret
 
+    def _getlatestbyrevision(self, name, revision):
+        criteria = [
+                ('active', '=', True),
+                ('engineering_code', '=', name),
+                ('engineering_revision', '<', revision)
+            ]
+        order='engineering_revision desc'
+        return self.search(criteria, order=order, limit=1)
+
+    def _getNewIndex(self, oldObject, revision=0):
+        revision = getInteger(revision) + 1
+        criteria = [
+                ('active', 'in', [True,False]),
+                ('engineering_code', '=', oldObject.engineering_code),
+                ('engineering_revision', '>=', revision)
+            ]
+        if self.search(criteria):
+            revision = self._getNewIndex(oldObject, revision)
+        return revision
+                    
     def _getbyrevision(self, name, revision):
         return self.search([
                 ('active', 'in', [True,False]),
@@ -402,7 +422,8 @@ class plm_component(models.Model):
                             'reason': "Creating new revision for '{old}'.".format(old=oldObject.name),
                          }
                     self._insertlog(oldObject.id, note=note)
-                    newIndex = int(oldObject.engineering_revision) + 1
+                    newIndex = self._getNewIndex(oldObject, oldObject.engineering_revision)
+#                     newIndex = int(oldObject.engineering_revision) + 1
                     default = {
                                 'engineering_writable': False,
                                 'state': 'undermodify',
@@ -1042,7 +1063,8 @@ class plm_component(models.Model):
             raise UserError(_("WorkFlow Error.\n\nOne or more parts cannot be released."))
         allProdObjs = self.browse(allIDs)
         for oldObject in allProdObjs:
-            objObsolete=self._getbyrevision(oldObject.engineering_code, oldObject.engineering_revision - 1)
+#             objObsolete=self._getbyrevision(oldObject.engineering_code, oldObject.engineering_revision - 1)
+            objObsolete=self._getlatestbyrevision(oldObject.engineering_code, oldObject.engineering_revision)
             if objObsolete and objObsolete.id:
                 last_ids.append(objObsolete.id)
         
@@ -1232,21 +1254,26 @@ class plm_component(models.Model):
                 if not checkApply:
                     continue            # Apply unlink only if have respected rules.
     
-                existingIDs = self.with_context({'no_move_documents':True}).search([
-                        ('active', 'in', [True,False]),
-                        ('engineering_code', '=', checkObj.engineering_code),
-                        ('engineering_revision', '=', checkObj.engineering_revision - 1)])
-                if len(existingIDs) > 0:
-                    obsoletedIds=[]
-                    undermodifyIds=[]
-                    for existID in getListIDs(existingIDs):
-                        if isObsoleted(self, existID.id):
-                            obsoletedIds.append(existID.id)
-                        elif isUnderModify(self, existID.id):
-                            undermodifyIds.append(existID.id)
-                    move_workflow (self, obsoletedIds, 'reactivate', 'released')
-                    if undermodifyIds:
-                        move_workflow (self, undermodifyIds, 'reactivate', 'released')
+                existingID=self._getlatestbyrevision(checkObj.engineering_code, checkObj.engineering_revision)
+                if isObsoleted(self, existingID.id):
+                    move_workflow (self, [existingID.id], 'reactivate', 'released')
+                elif isUnderModify(self, existingID.id):
+                    move_workflow (self, [existingID.id], 'reactivate', 'released')
+#                 existingIDs = self.with_context({'no_move_documents':True}).search([
+#                         ('active', 'in', [True,False]),
+#                         ('engineering_code', '=', checkObj.engineering_code),
+#                         ('engineering_revision', '=', checkObj.engineering_revision - 1)])
+#                 if len(existingIDs) > 0:
+#                     obsoletedIds=[]
+#                     undermodifyIds=[]
+#                     for existID in getListIDs(existingIDs):
+#                         if isObsoleted(self, existID.id):
+#                             obsoletedIds.append(existID.id)
+#                         elif isUnderModify(self, existID.id):
+#                             undermodifyIds.append(existID.id)
+#                     move_workflow (self, obsoletedIds, 'reactivate', 'released')
+#                     if undermodifyIds:
+#                         move_workflow (self, undermodifyIds, 'reactivate', 'released')
 
                 note={
                         'type': 'unlink object',

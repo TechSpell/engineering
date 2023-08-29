@@ -205,8 +205,11 @@ class plm_component(models.Model):
         if product_ids:
             if (action == 'release'):
                 for product_id in self:
-                    for last_id in self._getbyrevision(product_id.engineering_code, product_id.engineering_revision - 1):
+                    last_id=self._getlatestbyrevision(product_id.engineering_code, product_id.engineering_revision)
+                    if last_id:
                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
+#                     for last_id in self._getbyrevision(product_id.engineering_code, product_id.engineering_revision - 1):
+#                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
             move_workflow(self, product_ids.ids, action, status)
             self.logging_workflow(product_ids.ids, action, status)
             product_ids.with_context({'internal_writing':True}).write(default)
@@ -301,8 +304,11 @@ class plm_document(models.Model):
                 for document_id in self:
                     for last_id in self._getbyaltminorevision(document_id):
                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
-                    for last_id in self._getbyrevision(document_id.name, document_id.revisionid - 1):
+                    last_id=self._getlatestbyrevision(document_id.name, document_id.revisionid)
+                    if last_id:
                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
+#                     for last_id in self._getbyrevision(document_id.name, document_id.revisionid - 1):
+#                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
             elif (action in ['obsolete','reactivate']):
                 movement = False
                 self.logging_workflow(document_ids.ids, action, status)
