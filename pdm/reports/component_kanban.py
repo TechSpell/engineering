@@ -53,7 +53,8 @@ class ComponentDashboard(models.Model):
 
     @api.multi
     def get_related_boms(self):
-        return self.env['mrp.bom'].search([('product_tmpl_id', '=', self.product_tmpl_id.id)])
+        product_tmpl_ids = self.mapped('product_tmpl_id')
+        return self.env['mrp.bom'].search([('product_tmpl_id', 'in', product_tmpl_ids.ids)])
 
     @api.multi
     def get_related_docs(self):
