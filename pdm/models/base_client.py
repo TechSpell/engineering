@@ -618,6 +618,10 @@ class plm_config_settings(models.Model):
                             row_data.append(objectID[columnName].name)
 #                         else:
 #                             row_data.append(objectID[columnName].id)
+                    elif (typeFields[columnName].type in ["html"]):
+                        tmp_value="{}".format(objectID[columnName]).replace('<p>','').replace('</p>','')
+                        dict_data.update({ columnName: tmp_value })
+                        row_data.append(tmp_value)
                     else:
                         dict_data.update({ columnName: objectID[columnName] })
                         row_data.append(objectID[columnName])
@@ -664,6 +668,9 @@ class plm_config_settings(models.Model):
                                         })
                     tmp_props['value']=related
 
+                elif (typeFields[keyName].type in ["html"]):
+                    tmp_props['value']="{}".format(objectID[keyName]).replace('<p>','').replace('</p>','')
+                
                 properties[keyName]=tmp_props
 
             properties['_serverupdate']={
