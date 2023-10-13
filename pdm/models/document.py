@@ -551,6 +551,34 @@ class plm_document(models.Model):
         return ret
 
     @api.model
+    def GetDocumentAndProductRelated(self, request=[], default=None):
+        """
+            Get Product related to this document
+        """
+        docproperties = {}
+        properties = {}
+        product_id = None
+        document_id = None
+        ids, latest, editor, docNames, propNames=request
+        prodType=self.env['product.product']
+        for document_id in self.browse(getListIDs(ids)):
+            for linked_product_id in document_id.linkedcomponents:
+                if latest:
+                    product_ids=prodType.GetLatestIds( [(linked_product_id.name, False, False)] )
+                    if product_ids and len(product_ids)>0:
+                        product_id=prodType.browse(product_ids[0])
+                else:
+                    product_id=linked_product_id
+                break
+        if document_id:
+            docproperties = self.env['plm.config.settings'].GetValuesByID((document_id, editor, docNames))
+        if product_id:
+            properties = self.env['plm.config.settings'].GetValuesByID((product_id, editor, propNames))
+            
+        ret = (properties,docproperties)
+        return ret
+
+    @api.model
     def NewRevision(self, request):
         """
             Creates a new revision of the document
