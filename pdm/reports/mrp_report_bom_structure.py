@@ -75,7 +75,7 @@ class ReportBomStructure(models.AbstractModel):
     def _get_bom_lines(self, bom, bom_quantity, product, line_id, level):
         components = []
         total = 0
-        for line in bom.bom_line_ids:
+        for line in bom.bom_line_ids.sorted(key=lambda r: r.id):
             line_quantity = (bom_quantity / (bom.product_qty or 1.0)) * line.product_qty
             if line._skip_bom_line(product):
                 continue
