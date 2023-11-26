@@ -10,13 +10,13 @@
             <form string="Document"  version="7.0">
                <header name="WFArea">
                 	<button name="action_release" string="Release Document" type="object" class="oe_highlight"  
-                 		attrs="{'invisible': ['|',('is_checkout','=',True), ('state','not in',['confirmed'])]}" 
+                 		readonly="is_checkout == True or state not in ['confirmed']" 
                  		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser,pdm.group_plm_validationuser" />
                 	<button name="action_correct" string="Correct Document" type="object" 
-                  		attrs="{'invisible': ['|',('is_checkout','=',True), ('state','not in',['confirmed'])]}" 
-               		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser,pdm.group_plm_validationuser" />
+                  		invisible="is_checkout == True or state not in ['confirmed']" 
+                  		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser,pdm.group_plm_validationuser" />
                 	<button name="action_confirm" string="Confirm Document" type="object" class="oe_highlight"  
-                 		attrs="{'invisible': ['|',('is_checkout','=',True), ('state','not in',['draft'])]}" 
+                 		invisible="is_checkout == True or state not in ['draft']" 
                 		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser,pdm.group_plm_validationuser" />
                 	<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
                </header>
@@ -24,7 +24,7 @@
 	               <group colspan="4" col="4" name="DocData">
 	 					<group colspan="4" col="4">
 		 					<group colspan="2" col="2">
-			                    <field name="name" select="1" attrs="{'readonly':['|',('state','!=','draft'),('is_integration','in',[True,1])]}" colspan="2"/>
+			                    <field name="name" select="1" readonly="is_integration in [True,1] or state not in ['draft']" colspan="2"/>
 			                    <field name="revisionid" readonly="True" colspan="2"/>
 			                    <field name="minorrevision" readonly="True" colspan="2"/>
 		                    </group>
@@ -40,16 +40,16 @@
 	                	<group col="4" colspan="4" name="Attachment">
 		                	<group col="2" colspan="2">
 		                		<group col="2" colspan="2" name="FileData">
-			                        <group colspan="2" attrs="{'invisible':[('type','=','url')]}">
+			                        <group colspan="2" invisible="type == 'url'">
 			                            <field name="datas" filename="datas_fname" 
-        	                                attrs="{'invisible':[('datas_fname','not in',[False,'']),('is_integration','in',[True,1])],
-        	                                		'readonly':['|',('state','!=','draft'),('is_integration','in',[True,1])]}"
+        	                                invisible="datas_fname not in [False,''] and is_integration in [True,1]"
+        	                                readonly="state not in ['draft'] or is_integration in [True,1]"
 			                            	groups="pdm.group_plm_admin,pdm.group_plm_integrationuser" />
 			                            <field name="datas_fname" select="1" 
-			                            attrs="{'readonly':['|',('state','!=','draft'),('is_integration','in',[True,1])]}"/>
+			                            readonly="state not in ['draft'] or is_integration in [True,1]"/>
 			                            <field name="file_size_mb" />
 			                        </group>
-			                        <group colspan="2" attrs="{'invisible':[('type','=','binary')]}">
+			                        <group colspan="2" invisible="type == 'binary'">
 			                            <field name="url" widget="url"/>
 			                        </group>
 			                        <field name="type" invisible="True"/>
@@ -64,7 +64,7 @@
 			                            <field name="write_date" readonly="1" />
 			                        </group>
 			                        <group string="Checked-Out" colspan="2"
-			                        	attrs="{'invisible': [('is_checkout','=',False)]}">
+			                            invisible="is_checkout == False">
 			                            <field name="checkout_user"  readonly="1" />
 			                        </group>
 		                        </group>
@@ -142,7 +142,7 @@
             	<filter name="today" string="Today" separator="1"
                      	domain="[('create_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('create_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
                      	help="Created today"/>
-           		<separator orientation="vertical"/>
+           		<separator/>
                	<filter name="chglatestweek" string="Changed Last Week" separator="1"
                        	domain="[('write_date','&lt;=', (datetime.date.today()).strftime('%%Y-%%m-%%d')),('write_date','&gt;=',(datetime.date.today()-datetime.timedelta(weeks=1)).strftime('%%Y-%%m-%%d'))]"
                       	help="Changed latest week"/>
@@ -152,11 +152,11 @@
             	<filter name="chgtoday" string="Changed Today" separator="1"
                      	domain="[('write_date','&lt;=', datetime.date.today().strftime('%%Y-%%m-%%d')),('write_date','&gt;=',datetime.date.today().strftime('%%Y-%%m-%%d'))]"
                      	help="Changed today"/>
-           		<separator orientation="vertical"/>
-                <filter name="create_uid" domain="[('create_uid','=',uid)]" help="Created by me"/>
-                <filter name="write_uid"  domain="[('write_uid','=',uid)]"  help="Changed by me"/>
-           		<separator orientation="vertical"/>
- 				<filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+           		<separator/>
+                <filter name="create_uid" domain="[('create_uid','=', uid)]" help="Created by me"/>
+                <filter name="write_uid"  domain="[('write_uid','=', uid)]"  help="Changed by me"/>
+           		<separator/>
+ 				<filter name="confirmed" string="Confirmed" domain="[('state', 'in', ['confirmed'])]"/>
 				<filter name="released"  string="Released"  domain="[('state', 'in', ['released','undermodify'])]"/>
 				<filter name="latest"    string="Latest"    domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
             	<group expand="0" string="Group By...">
@@ -216,7 +216,7 @@
         <field name="arch" type="xml">
             <form string="Document">
             	<group colspan="8" col="8">
-                    <field name="name" colspan="4" select="1" attrs="{'readonly':[('state','!=','draft')]}"/>
+                    <field name="name" colspan="4" select="1" readonly="state not in ['draft']"/>
                     <field name="revisionid" readonly="True"/>
                 	<field name="minorrevision" readonly="True"/>
               	</group>
@@ -232,13 +232,13 @@
                         <separator string="Data" colspan="2"/>
                         <field name="type"/>
                         <newline/>
-                        <group col="2" colspan="2" attrs="{'invisible':[('type','=','url')]}">
-                            <field name="datas" filename="datas_fname" 
-                                attrs="{'invisible':[('datas_fname','not in',[False,''])]}"
+                        <group col="2" colspan="2" invisible = "type == 'url'">
+                            <field name="datas" filename="datas_fname"
+                                readonly="datas_fname not in [False,'']"
                             	groups="pdm.group_plm_admin,pdm.group_plm_integrationuser"/>
                             <field name="datas_fname" select="1"/>
                         </group>
-                        <group col="2" colspan="2" attrs="{'invisible':[('type','=','binary')]}">
+                        <group col="2" colspan="2" invisible = "type == 'binary'">
                             <field name="url" widget="url"/>
                         </group>
                         <group col="2" colspan="2">

@@ -131,9 +131,10 @@ class plm_component(models.Model):
             return bufferdata
         for bomid in component.product_tmpl_id.bom_ids:
             for bomline in bomid.bom_line_ids:
-                children=self._getChildrenBom(bomline.product_id, level, currlevel+1)
-                bufferdata.extend(children)
                 bufferdata.append(bomline.product_id.id)
+                if level == 1:
+                    children=self._getChildrenBom(bomline.product_id, level, currlevel+1)
+                    bufferdata.extend(children)
         result.extend(bufferdata)
         return getCleanList(result)
 

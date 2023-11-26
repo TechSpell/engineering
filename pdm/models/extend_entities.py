@@ -297,7 +297,7 @@ class plm_document_relation(models.Model):
     father_line_ids     =   fields.Many2many('plm.document.relation', compute=_get_fathers_lines,    string="Documents related as fathers",  store=False)
 
 
-class plm_check_product(osv.osv.osv_memory):
+class plm_check_product(models.TransientModel):
     _name = "plm.check.product"
     _description = "Products to be checked"
     
@@ -314,7 +314,7 @@ class plm_check_product(osv.osv.osv_memory):
     notallowalble   =   fields.Boolean  (string=_("Not Allowalble"),                default=False                          )
 
 
-class plm_check_document(osv.osv.osv_memory):
+class plm_check_document(models.TransientModel):
     _name = "plm.check.document"
     _description = "Documents to be checked"
     
@@ -332,7 +332,7 @@ class plm_check_document(osv.osv.osv_memory):
     notallowalble   =   fields.Boolean  (string=_("Not Allowalble"),            default=False                              )
 
 
-class plm_temporary(osv.osv.osv_memory):
+class plm_temporary(models.TransientModel):
     _inherit = "plm.temporary"
 
     def _check_part_compute(self):

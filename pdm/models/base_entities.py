@@ -49,7 +49,7 @@ HELP+="The normal BoM will generate one production order per BoM level."
 class plm_component(models.Model):
     _inherit = 'product.template'
 
-    state                   =   fields.Selection    (USED_STATES, string='Status',           readonly="True",         default='draft',       help="The status of the product in its LifeCycle.")
+    state                   =   fields.Selection    (USED_STATES, string='Status',           readonly=True,           default='draft',       help="The status of the product in its LifeCycle.")
     engineering_code        =   fields.Char         (             string='Part Number',      size=64,                                        help="This is engineering reference to manage a different P/N from item Name.")
     engineering_revision    =   fields.Integer      (             string='Revision',                   required=True, default=0,             help="The revision of the product.")
     engineering_writable    =   fields.Boolean      (             string='Writable',                                  default=True)
@@ -923,7 +923,7 @@ class plm_doculist(models.Model):
     sequence_id = fields.Many2one  ('ir.sequence',  string='Sequence Rule',   index=True,help="This is the sequence object related to this P/N rule.")
 
 
-class plm_temporary(osv.osv.osv_memory):
+class plm_temporary(models.TransientModel):
     _name = "plm.temporary"
     _description = "Temporary Class"
 

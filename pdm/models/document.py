@@ -1490,7 +1490,7 @@ class plm_document(models.Model):
     datas           =   fields.Binary   (string='File Content', inverse='_data_set', compute='_data_get', attachment=True)
     printout        =   fields.Binary   (string='Printout Content', help="Print PDF content.", attachment=False)
     preview         =   fields.Binary   (string='Preview Content', help="Static preview.", attachment=False)
-    state           =   fields.Selection(USED_STATES,string='Status', help="The status of the document.", readonly="True", default='draft')
+    state           =   fields.Selection(USED_STATES,string='Status', help="The status of the document.", readonly=True, default='draft')
     checkout_user   =   fields.Char(string="Checked-Out to", compute=_get_checkout_name)
     is_checkout     =   fields.Boolean(string='Is Checked-Out', compute=_is_checkout, store=False)
     is_integration  =   fields.Boolean(string="Is from integration", default=False)
@@ -1926,7 +1926,7 @@ class plm_document_relation(models.Model):
     configuration   =   fields.Char     (                string='Configuration Name',                    size=1024)
     link_kind       =   fields.Char     (                string='Kind of Link',                          size=64, required=True)
     create_date     =   fields.Datetime (                string='Date Created',                          readonly=True)
-    userid          =   fields.Many2one ('res.users',    string='CheckOut User',           index=True,   readonly="True")
+    userid          =   fields.Many2one ('res.users',    string='CheckOut User',           index=True,   readonly=True)
     
     _defaults = {
         'link_kind': lambda *a: 'HiTree',
@@ -2143,7 +2143,7 @@ class plm_backupdoc(models.Model):
         return ret            
 
 
-class plm_temporary(osv.osv.osv_memory):
+class plm_temporary(models.TransientModel):
     _inherit = "plm.temporary"
 
     ##  Specialized Actions callable interactively

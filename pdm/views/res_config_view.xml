@@ -78,13 +78,13 @@
         <form string="Installed"  version="7.0">
               <sheet>
                   <group colspan="4" col="2">
-                      <field name="plm_service_id" attrs="{'readonly': True }"/>
+                      <field name="plm_service_id" readonly="1"/>
                   </group>
                   <notebook>
                       <page string="Specific Options">
                           <group colspan="4" col="4">
-                              <field name="activated_id"  attrs="{'invisible': True }" /> 
-                              <group colspan="4" col="4" attrs="{'invisible':[('activated_id','=',False)]}">
+                              <field name="activated_id"  invisible="1" /> 
+                              <group colspan="4" col="4" invisible="activated_id == False">
                                     <field name="active_editor" /> 
                                     <field name="active_os"  />
                                     <field name="active_node"/>   
@@ -96,7 +96,7 @@
                                     <field name="node_id"  />
                                     <field name="active_kind" />
                               </group>
-                              <group colspan="4" col="4" attrs="{'invisible':[('activated_id','!=',False)]}">
+                              <group colspan="4" col="4" invisible="activated_id == False">
                                     <field name="opt_editbom" />
                                     <field name="opt_editreleasedbom" />
                                     <field name="opt_obsoletedinbom"  />
@@ -106,10 +106,10 @@
                                     <field name="opt_autostepinbom" />
                                     <field name="opt_autotypeinbom" />
                                     <field name="opt_showWFanalysis"  />
-                                    <field name="opt_mangeWFDocByProd" attrs="{'invisible':[('opt_showWFanalysis','=',False)]}" />
+                                    <field name="opt_mangeWFDocByProd" invisible="opt_showWFanalysis == False" />
                                     <field name="opt_mgeCopyBoMProd" />
-                                    <field name="opt_mgeCopyBoMRoute" attrs="{'invisible':[('opt_mgeCopyBoMProd','=',False)]}" />
-                                    <field name="opt_mgeResetTmRoute" attrs="{'invisible':['|',('opt_mgeCopyBoMRoute','=',False),('opt_mgeCopyBoMProd','=',False)]}" />
+                                    <field name="opt_mgeCopyBoMRoute" invisible="opt_mgeCopyBoMProd == False" />
+                                    <field name="opt_mgeResetTmRoute" invisible="opt_mgeCopyBoMRoute == False or opt_mgeCopyBoMProd == False" />
                               </group>
                           </group>
                        </page>
@@ -119,6 +119,7 @@
         </field>
     </record>  
 
+<!--
     <record id="view_add_workflow" model="ir.ui.view">
         <field name="name">res.config.settings.view.form.inherit.pdm</field>
         <field name="model">res.config.settings</field>
@@ -145,6 +146,7 @@
             </xpath>
         </field>
     </record>
+-->
 
 <!-- View Actions -->
 
@@ -164,6 +166,7 @@
         <field name="view_id" ref="view_add_service_id"/>
     </record>
 
+<!--
     <record model="ir.actions.act_window" id="action_add_workflow">
         <field name="name">Add Workflow</field>
         <field name="res_model">res.config.settings</field>
@@ -173,7 +176,7 @@
         <field name="context">{'module' : 'pdm'}</field>
         <field name="view_id" ref="view_add_workflow"/>
      </record>
-
+-->
 <!-- View Actions -->
 
 <!-- Menu Items -->
@@ -195,12 +198,13 @@
 			sequence="20" 
 			parent="plm_menu_options"/>
 
+<!--
     <menuitem name="Add Workflow" 
 			action="action_add_workflow"
 			id="menu_add_workflow"
 			sequence="30" 
 			parent="plm_menu_options"/>
-
+-->
 <!-- Menu Items -->
 
     </data>

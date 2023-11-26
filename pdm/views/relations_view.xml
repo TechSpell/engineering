@@ -2,7 +2,6 @@
 <odoo>
 	<data>
 
-  
 <!-- View customization on MRP -->
 
         <record id="plm_bom_tree_view" model="ir.ui.view">
@@ -20,7 +19,6 @@
           		</field>
         	</field>
         </record>
-
 
         <record id="plm_bom_search" model="ir.ui.view">
             <field name="name">plm.relation.search</field>
@@ -198,62 +196,6 @@
 		            </xpath>
                 </data>
 	        </field>
-        </record>
-
-<!-- Tree Structure Where Used on Product -->
-
-        <record id="mrp_part_tree_view_where" model="ir.ui.view">
-            <field name="name">mrp.part.tree.where</field>
-            <field name="model">product.product</field>
-            <field name="field_parent">father_part_ids</field>
-            <field name="arch" type="xml">
-                <tree string="Bill of Materials">
-                    <field name="name" string="Component Name"/>
-                    <field name="engineering_revision" string="Revision"/>
-                    <field name="state" string="Status"/>
-                    <field name="description"/>
-                </tree>
-            </field>
-        </record>
-  
- <!-- Tree Structure Views on MRP -->
- 
-        <record id="mrp_bom_tree_view_where" model="ir.ui.view">
-            <field name="name">mrp.bom.tree.where</field>
-            <field name="model">mrp.bom</field>
-            <field name="field_parent">father_complete_ids</field>
-            <field name="arch" type="xml">
-                <tree string="Where Used Bill of Materials">
-                    <field name="product_id" string="Component Name"/>
-                    <field name="code" string="BoM Name"/>
-                    <field name="engineering_revision" string="Revision"/>
-                    <field name="state" string="Status"/>
-                    <field name="description"/>
-                    <field name="product_qty"/>
-                    <field name="weight"/>
-                    <field name="create_date" select="True"/>
-                    <field name="type"/>
-                </tree>
-            </field>
-        </record>
-
-         <record id="plm_bom_tree_structure" model="ir.ui.view">
-            <field name="name">plm.bom.tree</field>
-            <field name="model">mrp.bom.line</field>
-            <field name="field_parent">child_line_ids</field>
-            <field name="arch" type="xml">
-                <tree string="Bill of Materials">
-                    <field name="itemnum" string="Position"/>
-                    <field name="product_id" string="Component Name"/>
-                    <field name="engineering_revision" string="Revision"/>
-                    <field name="state" string="Status"/>
-                    <field name="description"/>
-                    <field name="product_qty"/>
-                    <field name="weight"/>
-                    <field name="create_date" select="True"/>
-                    <field name="type"/>
-                </tree>
-            </field>
         </record>
 
 <!-- Redefines action opening views on MRP -->

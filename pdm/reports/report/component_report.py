@@ -40,13 +40,13 @@ class plm_component(models.AbstractModel):
     _description = "Get PDF Attached to Component"
 
     @api.model
-    def getRawPDFbyProducts(self, level=0, checkState=False):
+    def getPDFbyProducts(self, level=0, checkState=False):
         """
             Returns pdf byte content of related documents
         """
-        documentContent=["",""]
         documents = []
         processed=[]
+        content = emptyDocument()
         docRepository, bookCollector = usefulInfos(self.env)
  
         for product in self:
@@ -61,14 +61,8 @@ class plm_component(models.AbstractModel):
                             
         if len(documents)>0:
             documentContent=packDocuments(docRepository, documents, bookCollector)
-        return documentContent
-
-    @api.model
-    def getPDFbyProducts(self, level=0, checkState=False):
-        content = emptyDocument()
-        documentContent = self.getRawPDFbyProducts(level=level, checkState=checkState)
-        if len(documentContent)>0:
-            content=documentContent[0]
+            if len(documentContent)>0:
+                content=documentContent[0]
         return content       
 
 class report_plm_component(models.AbstractModel):
@@ -94,11 +88,6 @@ class ReportProductPdf(report_plm_component):
     _template='%s.product_product_pdf' %(thisModuleName)
     _name = "report.%s" %(_template)
 
-
-class ReportOneLevelProductPdf(report_plm_component):
-    _template='%s.one_product_product_pdf' %(thisModuleName)
-    _name = "report.%s" %(_template)
-
     @api.model
     def _render_qweb_pdf(self, products=None, level=0, checkState=False, data=None):
         content = emptyDocument()
@@ -107,10 +96,22 @@ class ReportOneLevelProductPdf(report_plm_component):
         byteString = b"data:application/pdf;base64," + base64.encodebytes(content)
         return byteString.decode('UTF-8')
 
+class ReportOneLevelProductPdf(report_plm_component):
+    _template='%s.one_product_product_pdf' %(thisModuleName)
+    _name = "report.%s" %(_template)
+
+
 class ReportAllLevelProductPdf(report_plm_component):
     _template='%s.all_product_product_pdf' %(thisModuleName)
     _name = "report.%s" %(_template)
 
+    @api.model
+    def _render_qweb_pdf(self, products=None, level=0, checkState=False, data=None):
+        content = emptyDocument()
+        if products:
+            content = products.getPDFbyProducts(level=1, checkState=False)                
+        byteString = b"data:application/pdf;base64," + base64.encodebytes(content)
+        return byteString.decode('UTF-8')
 
 class ReportSpareProductPdf(report_plm_component):
     _template='%s.spare_pdf_all' %(thisModuleName)

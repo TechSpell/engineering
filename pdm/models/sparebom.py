@@ -29,7 +29,7 @@ from odoo.exceptions import UserError
 
 RETDMESSAGE=''
 
-class plm_temporary(osv.osv.osv_memory):
+class plm_temporary(models.TransientModel):
     _inherit = "plm.temporary"
 
     name          = fields.Char       (  string=_('Part Number'), size=64)

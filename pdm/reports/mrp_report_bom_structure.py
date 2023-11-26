@@ -62,7 +62,7 @@ class ReportBomStructure(models.AbstractModel):
 ### OVERRIDDEN STANDARD METHODS 
 
     @api.model
-    def _get_component_data(self, parent_bom, warehouse, bom_line, line_quantity, level, index, product_info, ignore_stock=False):
+    def _get_component_data(self, parent_bom, parent_product, warehouse, bom_line, line_quantity, level, index, product_info, ignore_stock=False):
         company = parent_bom.company_id or self.env.company
         key = bom_line.product_id.id
         if key not in product_info:
@@ -73,7 +73,7 @@ class ReportBomStructure(models.AbstractModel):
 
         bom_key = parent_bom.id
         if not product_info[key].get(bom_key):
-            product_info[key][bom_key] = self.with_context(product_info=product_info, parent_bom=parent_bom)._get_resupply_route_info(warehouse, bom_line.product_id, line_quantity)
+            product_info[key][bom_key] = self.with_context(product_info=product_info, parent_bom=parent_bom)._get_resupply_route_info(warehouse, bom_line.product_id, line_quantity, product_info)
         route_info = product_info[key].get(bom_key, {})
 
         quantities_info = {}
@@ -87,8 +87,6 @@ class ReportBomStructure(models.AbstractModel):
             attachment_ids = self.env['mrp.document'].search(['|', '&', ('res_model', '=', 'product.product'), ('res_id', '=', bom_line.product_id.id),
                                                               '&', ('res_model', '=', 'product.template'), ('res_id', '=', bom_line.product_id.product_tmpl_id.id)]).ids
         description = remove_html_tags(bom_line.product_id.description)
-        status_dict = dict(bom_line.product_id.product_tmpl_id._fields['state'].selection)
-        product_state = status_dict[bom_line.product_id.state]
 
         return {
             'type': 'component',
@@ -109,7 +107,7 @@ class ReportBomStructure(models.AbstractModel):
             'quantity_on_hand': quantities_info.get('on_hand_qty', 0),
             'base_bom_line_qty': bom_line.product_qty,
             'engineering_revision': bom_line.product_id.engineering_revision,
-            'state': product_state,
+            'state': bom_line.product_id.state,
             'description': description,
             'uom': bom_line.product_uom_id,
             'uom_name': bom_line.product_uom_id.name,
@@ -142,6 +140,7 @@ class ReportBomStructure(models.AbstractModel):
                 'bom_line_id': bom_line['bom_line_id'],
                 'bom_type': bom_line['bom_type'],
                 'type': bom_line['type'],
+                'name': bom_line['name'],
                 'quantity': bom_line['quantity'],
                 'quantity_available': bom_line['quantity_available'],
                 'quantity_on_hand': bom_line['quantity_on_hand'],
@@ -210,7 +209,7 @@ class ReportBomStructure(models.AbstractModel):
         return lines
 
     @api.model
-    def _get_bom_data(self, bom, warehouse, product=False, line_qty=False, bom_line=False, level=0, parent_bom=False, index=0, product_info=False, ignore_stock=False):
+    def _get_bom_data(self, bom, warehouse, product=False, line_qty=False, bom_line=False, level=0, parent_bom=False, parent_product=False, index=0, product_info=False, ignore_stock=False):
         """ Gets recursively the BoM and all its subassemblies and computes availibility estimations for each component and their disponibility in stock.
             Accepts specific keys in context that will affect the data computed :
             - 'minimized': Will cut all data not required to compute availability estimations.
@@ -230,8 +229,8 @@ class ReportBomStructure(models.AbstractModel):
 
         company = bom.company_id or self.env.company
         current_quantity = line_qty
-#         if bom_line:
-#             current_quantity = bom_line.product_uom_id._compute_quantity(line_qty, bom.product_uom_id) or 0
+        if bom_line:
+            current_quantity = bom_line.product_uom_id._compute_quantity(line_qty, bom.product_uom_id) or 0
 
         prod_cost = 0
         attachment_ids = []
@@ -248,7 +247,7 @@ class ReportBomStructure(models.AbstractModel):
 
         bom_key = bom.id
         if not product_info[key].get(bom_key):
-            product_info[key][bom_key] = self.with_context(product_info=product_info, parent_bom=parent_bom)._get_resupply_route_info(warehouse, product, current_quantity, bom)
+            product_info[key][bom_key] = self.with_context(product_info=product_info, parent_bom=parent_bom)._get_resupply_route_info(warehouse, product, current_quantity, product_info, bom)
         route_info = product_info[key].get(bom_key, {})
         quantities_info = {}
         if not ignore_stock:
@@ -256,8 +255,7 @@ class ReportBomStructure(models.AbstractModel):
             quantities_info = self._get_quantities_info(product, bom.product_uom_id, parent_bom, product_info)
 
         description = remove_html_tags(product.description or bom.product_tmpl_id.description)
-        status_dict = dict(bom.product_tmpl_id._fields['state'].selection)
-        product_state = status_dict[product.state]
+        status = product.state or bom.product_tmpl_id.state
         bom_report_line = {
             'index': index,
             'bom': bom,
@@ -272,7 +270,7 @@ class ReportBomStructure(models.AbstractModel):
             'base_bom_line_qty': bom_line.product_qty if bom_line else False,  # bom_line isn't defined only for the top-level product
             'name': product.display_name or bom.product_tmpl_id.display_name,
             'engineering_revision': product.engineering_revision or bom.product_tmpl_id.engineering_revision,
-            'state': product_state,
+            'state': status,
             'description': description,
             'uom': bom.product_uom_id if bom else product.uom_id,
             'uom_name': bom.product_uom_id.name if bom else product.uom_id.name,
@@ -307,8 +305,7 @@ class ReportBomStructure(models.AbstractModel):
             new_index = f"{index}{component_index}"
             if product and line._skip_bom_line(product):
                 continue
-#             line_quantity = (current_quantity / (bom.product_qty or 1.0)) * line.product_qty
-            line_quantity = line.product_qty
+            line_quantity = (current_quantity / (bom.product_qty or 1.0)) * line.product_qty
             criteria = [
                 ('product_tmpl_id', '=', line.product_tmpl_id.id),
                 ('type', '=', bom.type),
@@ -319,7 +316,7 @@ class ReportBomStructure(models.AbstractModel):
                 component = self.with_context(parent_product_id=product.id)._get_bom_data(idBom, warehouse, line.product_id, line_quantity, bom_line=line, level=level + 1, parent_bom=bom,
                                                                                           index=new_index, product_info=product_info, ignore_stock=ignore_stock)
             else:
-                component = self.with_context(parent_product_id=product.id)._get_component_data(bom, warehouse, line, line_quantity, level + 1, new_index, product_info, ignore_stock)
+                component = self.with_context(parent_product_id=product.id)._get_component_data(bom, product.id, warehouse, line, line_quantity, level + 1, new_index, product_info, ignore_stock)
             components.append(component)
             bom_report_line['bom_cost'] += component['bom_cost']
         bom_report_line['components'] = components

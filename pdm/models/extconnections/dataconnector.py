@@ -50,7 +50,7 @@ _LOCALLANGS = {
 
 ###
 
-class plm_temporary(osv.osv.osv_memory):
+class plm_temporary(models.TransientModel):
     _inherit = "plm.temporary"
 
     ##  Specialized Actions callable interactively

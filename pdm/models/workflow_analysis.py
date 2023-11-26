@@ -335,7 +335,7 @@ class plm_document(models.Model):
                 ret += docLink.child_id
         return ret
 
-class plm_temporary(osv.osv.osv_memory):
+class plm_temporary(models.TransientModel):
     _inherit = "plm.temporary"
 
     def action_workflow_apply(self):

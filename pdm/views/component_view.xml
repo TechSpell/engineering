@@ -75,11 +75,11 @@
 	        <field name="arch" type="xml">
 				<xpath expr="//sheet" position="before">
 	             	<header name="WFArea" >
-	                	<button name="action_release" states="confirmed" string="Release Component" type="object" class="oe_highlight" 
+	                	<button name="action_release" invisible="state !='confirmed'" string="Release Component" type="object" class="oe_highlight" 
 	                		groups="pdm.group_plm_admin,pdm.group_plm_validationuser" />
-	                	<button name="action_correct" states="confirmed" string="Correct Component" type="object" 
+	                	<button name="action_correct" invisible="state !='confirmed'" string="Correct Component" type="object" 
 	                		groups="pdm.group_plm_admin,pdm.group_plm_integrationuser" />
-	                	<button name="action_confirm" states="draft" string="Confirm Component" type="object" class="oe_highlight"
+	                	<button name="action_confirm" invisible="state !='draft'" string="Confirm Component" type="object" class="oe_highlight"
 							groups="pdm.group_plm_admin,pdm.group_plm_integrationuser"/>
 	               		<field name="state" widget="statusbar" statusbar_visible="draft,confirmed,released" statusbar_colors='{"undermodify":"red","obsoleted":"red"}' />
 		            </header>
@@ -89,7 +89,7 @@
 	                <page string="Engineering Infos" name="engineering_infos">
 	                    <group colspan="4" col="4" string="Part Number Area">
 	                        <group colspan="4" col="4" name="PNArea">
-	                            <field name="engineering_code" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
+	                            <field name="engineering_code" select="1" readonly="state != 'draft'" colspan="2"/>
 	                            <field name="engineering_revision" readonly="True" colspan="2"/>
 	                 			<field colspan="4" col="4" name="description"/>
 	                        </group>
@@ -100,19 +100,19 @@
 								<group colspan="4" col="4" name="DescArea">
 									<separator string="Standard Description" colspan="4"/>
 								    <group col="4" colspan="2">
-								        <field name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)" attrs="{'readonly':[('state','=','released')]}"/>
+								        <field name="std_description" nolabel="1" on_change="on_change_stddesc(std_description)" readonly="state == 'released'"/>
 								    </group>
 	                        	</group>
 	                            <group colspan="4" col="4" name="TechSpec">
 	                            	<separator string="Technical Specifications" colspan="4"/>
-	                                <field name="tmp_material" attrs="{'readonly':[('state','=','released')]}" on_change="on_change_tmpmater(tmp_material)"/>
-	                                <field name="tmp_surface"  attrs="{'readonly':[('state','=','released')]}" on_change="on_change_tmpsurface(tmp_surface)"/>
+	                                <field name="tmp_material" readonly="state == 'released'" on_change="on_change_tmpmater(tmp_material)"/>
+	                                <field name="tmp_surface"  readonly="state == 'released'" on_change="on_change_tmpsurface(tmp_surface)"/>
 	                        	</group>
 	                        </group>
 	                        <group colspan="4" col="4" name="TBlock">
 	                            <separator string="TitleBlock Informations" colspan="4"/>
-	                            <field name="engineering_material" attrs="{'readonly':[('state','=','released')]}"/>
-	                            <field name="engineering_surface" attrs="{'readonly':[('state','=','released')]}"/>
+	                            <field name="engineering_material" readonly="state == 'released'"/>
+	                            <field name="engineering_surface" readonly="state == 'released'"/>
 	                            <newline/>
 	                        </group>
 	                    </sheet>
@@ -194,13 +194,13 @@
 	        <field name="arch" type="xml">
 	             <form string="Engineering Product">
 	                 <group colspan="4" col="2">
-	                      <field name="name" on_change="on_change_name(name,engineering_code)" attrs="{'readonly':[('state','=','released')]}"/>
+	                      <field name="name" on_change="on_change_name(name,engineering_code)" readonly="state == 'released'"/>
 	                 </group>
 	                 <notebook colspan="4">
 	               		<page string="Engineering Infos" name="engineering_infos">
 	                   		<group colspan="4" col="4" string="Part Number Area" name="PNArea">
 	                     		<group colspan="4" col="4">
-	                      			<field name="engineering_code" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
+	                      			<field name="engineering_code" select="1" readonly="state != 'draft'" colspan="2"/>
 	                       			<field name="engineering_revision" readonly="True" colspan="2"/>
 	                   			</group>
 	                   		</group>
@@ -212,11 +212,11 @@
 			                    </group>
 		                     	<group col="2" colspan="2">
 		     	             		<separator colspan="2" string="WorkFlow Actions"/>
-			                        <button name="release" states="confirmed" string="Release Component" 
+			                        <button name="release" invisible="state !='confirmed'" string="Release Component" 
 			                        	groups="pdm.group_plm_admin,pdm.group_plm_validationuser" />
-			                        <button name="correct" states="confirmed" string="Correct Component" 
+			                        <button name="correct" invisible="state !='confirmed'" string="Correct Component" 
 			                        	groups="pdm.group_plm_admin,pdm.group_plm_integrationuser" />
-			                        <button name="confirm" states="draft" string="Confirm Component" 
+			                        <button name="confirm" invisible="state !='draft'" string="Confirm Component" 
 			                        	groups="pdm.group_plm_admin,pdm.group_plm_integrationuser" />
 		                     	</group>
 		                     </group>
@@ -225,30 +225,30 @@
 								<group colspan="4" col="4" name="DescArea">
 									<separator string="Standard Description" colspan="4"/>
 								    <group col="1" colspan="4">
-								        <field name="std_description" attrs="{'readonly':[('state','=','released')]}" nolabel="1" on_change="on_change_stddesc(std_description)"/>
+								        <field name="std_description" readonly="state == 'released'" nolabel="1" on_change="on_change_stddesc(std_description)"/>
 								    </group>
 	                        	</group>
 	                    		<group colspan="4" col="4" name="TechSpec">
-	                   				<field name="tmp_material" 	attrs="{'readonly':[('state','=','released')]}" colspan="2" on_change="on_change_tmpmater(tmp_material)"/>
-	                 				<field name="tmp_surface" 	attrs="{'readonly':[('state','=','released')]}" colspan="2" on_change="on_change_tmpsurface(tmp_surface)"/>
+	                   				<field name="tmp_material" 	readonly="state == 'released'" colspan="2" on_change="on_change_tmpmater(tmp_material)"/>
+	                 				<field name="tmp_surface" 	readonly="state == 'released'" colspan="2" on_change="on_change_tmpsurface(tmp_surface)"/>
 	                     		</group>
 	                    		<group colspan="4" col="4">
 		 	                        <group colspan="2" col="2" name="Weight">
 			                     		<separator string="Weight" />
-			                            <field digits="(14, 3)" name="weight" attrs="{'readonly':[('state','=','released')]}"/>
+			                            <field digits="(14, 3)" name="weight" readonly="state == 'released'"/>
 		                      		</group>
 		 	                        <group colspan="2" col="2" name="uom">
 			                          	<separator string="Unit of Measure" colspan="2"/>
-			                            <field name="uom_id" 	attrs="{'readonly':[('state','=','released')]}" on_change="onchange_uom(uom_id,uom_po_id)"/>
-			                            <field name="uom_po_id" attrs="{'readonly':[('state','=','released')]}" />
+			                            <field name="uom_id" 	readonly="state == 'released'" on_change="onchange_uom(uom_id,uom_po_id)"/>
+			                            <field name="uom_po_id" readonly="state == 'released'" />
 		  	                        </group>
 	  	                        </group>
 	                 	    </group>
 	                    	<group colspan="4" col="4">
 	                    		<group colspan="4" col="4" name="TBlock">
 		                            <separator string="TitleBlock Informations" colspan="4"/>
-		                   			<field name="engineering_material" 	attrs="{'readonly':[('state','=','released')]}" colspan="2"/>
-	                				<field name="engineering_surface" 	attrs="{'readonly':[('state','=','released')]}" colspan="2"/>
+		                   			<field name="engineering_material" 	readonly="state == 'released'" colspan="2"/>
+	                				<field name="engineering_surface" 	readonly="state == 'released'" colspan="2"/>
 	                     		</group>
 	                 		</group>
 	                   </page>
@@ -284,7 +284,7 @@
 	           			<page string="Engineering Infos" name="engineering_infos">
 	                   		<group colspan="8" col="8" string="Part Number Area" name="PNArea">
 	                     		<group colspan="4" col="4">
-	                      			<field name="engineering_code" select="1" attrs="{'readonly':[('state','!=','draft')]}" colspan="2"/>
+	                      			<field name="engineering_code" select="1" readonly="state != 'draft'" colspan="2"/>
 	                       			<field name="engineering_revision" readonly="True" colspan="2"/>
 	                   			</group>
 	                    		<newline/>
@@ -295,7 +295,7 @@
 								<group colspan="4" col="4" name="DescArea">
 									<separator string="Standard Description" colspan="4"/>
 								    <group col="4" colspan="2">
-								        <field name="std_description" attrs="{'readonly':[('state','=','released')]}"  nolabel="1" on_change="on_change_stddesc(std_description)"/>
+								        <field name="std_description" readonly="state == 'released'"  nolabel="1" on_change="on_change_stddesc(std_description)"/>
 								    </group>
 	                        	</group>
 	                    		<group colspan="4" col="4"  name="TechSpec">

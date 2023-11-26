@@ -67,7 +67,7 @@ def packDocuments(docRepository,documents,bookCollector):
         if document.type=='binary':
             if not document.id in packed:
                 status=_(document.state)
-                if (status) and (status.lower() in ['obsoleted']):
+                if (status.lower() in ['obsoleted']):
                     continue
                 Flag=False 
                 if document.printout:
