@@ -645,6 +645,8 @@ class plm_relation(models.Model):
                 criteria.append(('type', '=', typebom))
             if self.env['mrp.bom.line'].search(criteria):
                 ret=ret|True
+        else:
+            ret = True
         return ret
 
     @api.model
@@ -730,10 +732,12 @@ class plm_relation(models.Model):
                 bomLines=vals.get('bom_line_ids',[])
                 if bomLines:
                     theseLines=[]                
-                    for status, value, bom_line in bomLines:
-                        thisLine=self.checkcreation( bom_line, newIDs)
-                        if thisLine:
-                            theseLines.append([status, value, thisLine])
+                    for bomLine in bomLines:
+                        if (len(bomLine) == 3):
+                            status, value, bom_line = bomLine
+                            thisLine=self.checkcreation( bom_line, newIDs)
+                            if thisLine:
+                                theseLines.append([status, value, thisLine])
                     vals['bom_line_ids']=theseLines
                 ret=vals
             else:
@@ -741,16 +745,19 @@ class plm_relation(models.Model):
         return ret
 
     def validatecreation(self, fatherID, vals):
+        ret={}
         fatherIDs=[fatherID]
         bomLines=vals.get('bom_line_ids',[])
         if bomLines:
             theseLines=[]                
-            for operation, productID, bom_line in bomLines:
-                thisLine=self.checkcreation( bom_line, fatherIDs)
-                if thisLine:
-                    theseLines.append([operation, productID, thisLine])
+            for bomLine in bomLines:
+                if (len(bomLine) == 3):
+                    operation, productID, bom_line = bomLine
+                    thisLine=self.checkcreation( bom_line, fatherIDs)
+                    if thisLine:
+                        theseLines.append([operation, productID, thisLine])
             vals['bom_line_ids']=theseLines
-        ret=vals
+            ret=vals
         return ret
 
     def validatechanges(self, bomID, vals):
@@ -759,16 +766,18 @@ class plm_relation(models.Model):
             fatherIDs=[father.product_id.id]
             bomLines=vals.get('bom_line_ids',[])
             if bomLines:
-                theseLines=[]                
-                for operation, productID, bom_line in bomLines:
-                    if operation==0:
-                        thisLine=self.checkcreation( bom_line, fatherIDs)
-                        if thisLine:
-                            theseLines.append([operation, productID, thisLine])
-                    else:
-                        theseLines.append([operation, productID, bom_line])
-                vals['bom_line_ids']=theseLines
-            ret=vals
+                theseLines=[]           
+                for bomLine in bomLines:
+                    if (len(bomLine) == 3):
+                        operation, productID, bom_line = bomLine
+                        if operation==0:
+                            thisLine=self.checkcreation( bom_line, fatherIDs)
+                            if thisLine:
+                                theseLines.append([operation, productID, thisLine])
+                        else:
+                            theseLines.append([operation, productID, bom_line])
+                        vals['bom_line_ids']=theseLines
+        ret=vals
         return ret
 
     def logcreate(self, productID, vals):
@@ -866,6 +875,9 @@ class plm_relation(models.Model):
                     if not checkApply:
                         continue            # Apply unlink only if have respected rules.
                     processIds.append(bomID)
+                else:
+                    processIds.append(bomID)
+            processIds=self.browse(processIds)
         else:
             processIds=self.browse(getListIDs(ids))
         note={
