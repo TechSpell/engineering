@@ -577,7 +577,7 @@ class plm_relation(models.Model):
                     if ids:
                         ret=ids[0].id                   # Gets Existing one
                     else:
-                        objectItem=self.create(res)     # Creates a new one
+                        objectItem=self.with_context({'internal_writing':True,'internal_process':True}).create(res)     # Creates a new one
                         if objectItem:
                             ret=objectItem.id
                 except Exception as msg:
@@ -804,13 +804,23 @@ class plm_relation(models.Model):
                 prodItem=self.env['product.product'].getFromTemplateID( templID)
                 if prodItem:
                     productID=prodItem.id
-            result=self.validatecreation(productID, vals)
-            if result:
+            check1 = self._context.get('internal_writing', False)
+            check2 = self._context.get('internal_process', False)
+            if check1 and check2:
                 try:
                     self.logcreate(productID, vals)
-                    ret=super(plm_relation,self).create(result)
+                    ret=super(plm_relation,self).create(vals)
                 except Exception as ex:
-                    raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, result))
+                    raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, vals))
+            else:
+                # Manual creation
+                result=self.validatecreation(productID, vals)
+                if result:
+                    try:
+                        self.logcreate(productID, vals)
+                        ret=super(plm_relation,self).create(result)
+                    except Exception as ex:
+                        raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, result))
         return ret
 
     def write(self, vals):
@@ -877,7 +887,6 @@ class plm_relation(models.Model):
                     processIds.append(bomID)
                 else:
                     processIds.append(bomID)
-            processIds=self.browse(processIds)
         else:
             processIds=self.browse(getListIDs(ids))
         note={
