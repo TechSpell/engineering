@@ -792,9 +792,10 @@ class plm_relation(models.Model):
             productID=vals.get('product_id',False)
             if not productID:
                 templID=vals.get('product_tmpl_id',False)
-                prodItem=self.env['product.product'].getFromTemplateID( templID)
+                prodItem=self.env['product.product'].getFromTemplateID(templID)
                 if prodItem:
                     productID=prodItem.id
+                    vals['product_id']=prodItem.id
             result=self.validatecreation(productID, vals)
             if result:
                 try:
