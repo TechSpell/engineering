@@ -49,7 +49,7 @@ HELP+="The normal BoM will generate one production order per BoM level."
 class plm_component(models.Model):
     _inherit = 'product.template'
 
-    state                   =   fields.Selection    (USED_STATES, string='Status',           readonly="True",         default='draft',       help="The status of the product in its LifeCycle.")
+    state                   =   fields.Selection    (USED_STATES, string='Status',           readonly=True,           default='draft',       help="The status of the product in its LifeCycle.")
     engineering_code        =   fields.Char         (             string='Part Number',      size=64,                                        help="This is engineering reference to manage a different P/N from item Name.")
     engineering_revision    =   fields.Integer      (             string='Revision',                   required=True, default=0,             help="The revision of the product.")
     engineering_writable    =   fields.Boolean      (             string='Writable',                                  default=True)
@@ -577,7 +577,7 @@ class plm_relation(models.Model):
                     if ids:
                         ret=ids[0].id                   # Gets Existing one
                     else:
-                        objectItem=self.create(res)     # Creates a new one
+                        objectItem=self.with_context({'internal_writing':True,'internal_process':True}).create(res)     # Creates a new one
                         if objectItem:
                             ret=objectItem.id
                 except Exception as msg:
@@ -645,6 +645,8 @@ class plm_relation(models.Model):
                 criteria.append(('type', '=', typebom))
             if self.env['mrp.bom.line'].search(criteria):
                 ret=ret|True
+        else:
+            ret = True
         return ret
 
     @api.model
@@ -730,10 +732,12 @@ class plm_relation(models.Model):
                 bomLines=vals.get('bom_line_ids',[])
                 if bomLines:
                     theseLines=[]                
-                    for status, value, bom_line in bomLines:
-                        thisLine=self.checkcreation( bom_line, newIDs)
-                        if thisLine:
-                            theseLines.append([status, value, thisLine])
+                    for bomLine in bomLines:
+                        if (len(bomLine) == 3):
+                            status, value, bom_line = bomLine
+                            thisLine=self.checkcreation( bom_line, newIDs)
+                            if thisLine:
+                                theseLines.append([status, value, thisLine])
                     vals['bom_line_ids']=theseLines
                 ret=vals
             else:
@@ -741,16 +745,19 @@ class plm_relation(models.Model):
         return ret
 
     def validatecreation(self, fatherID, vals):
+        ret={}
         fatherIDs=[fatherID]
         bomLines=vals.get('bom_line_ids',[])
         if bomLines:
             theseLines=[]                
-            for operation, productID, bom_line in bomLines:
-                thisLine=self.checkcreation( bom_line, fatherIDs)
-                if thisLine:
-                    theseLines.append([operation, productID, thisLine])
+            for bomLine in bomLines:
+                if (len(bomLine) == 3):
+                    operation, productID, bom_line = bomLine
+                    thisLine=self.checkcreation( bom_line, fatherIDs)
+                    if thisLine:
+                        theseLines.append([operation, productID, thisLine])
             vals['bom_line_ids']=theseLines
-        ret=vals
+            ret=vals
         return ret
 
     def validatechanges(self, bomID, vals):
@@ -759,16 +766,18 @@ class plm_relation(models.Model):
             fatherIDs=[father.product_id.id]
             bomLines=vals.get('bom_line_ids',[])
             if bomLines:
-                theseLines=[]                
-                for operation, productID, bom_line in bomLines:
-                    if operation==0:
-                        thisLine=self.checkcreation( bom_line, fatherIDs)
-                        if thisLine:
-                            theseLines.append([operation, productID, thisLine])
-                    else:
-                        theseLines.append([operation, productID, bom_line])
-                vals['bom_line_ids']=theseLines
-            ret=vals
+                theseLines=[]           
+                for bomLine in bomLines:
+                    if (len(bomLine) == 3):
+                        operation, productID, bom_line = bomLine
+                        if operation==0:
+                            thisLine=self.checkcreation( bom_line, fatherIDs)
+                            if thisLine:
+                                theseLines.append([operation, productID, thisLine])
+                        else:
+                            theseLines.append([operation, productID, bom_line])
+                        vals['bom_line_ids']=theseLines
+        ret=vals
         return ret
 
     def logcreate(self, productID, vals):
@@ -792,16 +801,27 @@ class plm_relation(models.Model):
             productID=vals.get('product_id',False)
             if not productID:
                 templID=vals.get('product_tmpl_id',False)
-                prodItem=self.env['product.product'].getFromTemplateID( templID)
+                prodItem=self.env['product.product'].getFromTemplateID(templID)
                 if prodItem:
                     productID=prodItem.id
-            result=self.validatecreation(productID, vals)
-            if result:
+                    vals['product_id']=prodItem.id
+            check1 = self._context.get('internal_writing', False)
+            check2 = self._context.get('internal_process', False)
+            if check1 and check2:
                 try:
                     self.logcreate(productID, vals)
-                    ret=super(plm_relation,self).create(result)
+                    ret=super(plm_relation,self).create(vals)
                 except Exception as ex:
-                    raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, result))
+                    raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, vals))
+            else:
+                # Manual creation
+                result=self.validatecreation(productID, vals)
+                if result:
+                    try:
+                        self.logcreate(productID, vals)
+                        ret=super(plm_relation,self).create(result)
+                    except Exception as ex:
+                        raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, result))
         return ret
 
     def write(self, vals):
@@ -865,6 +885,8 @@ class plm_relation(models.Model):
 
                     if not checkApply:
                         continue            # Apply unlink only if have respected rules.
+                    processIds.append(bomID)
+                else:
                     processIds.append(bomID)
         else:
             processIds=self.browse(getListIDs(ids))
