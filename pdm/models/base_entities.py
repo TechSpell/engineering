@@ -801,9 +801,10 @@ class plm_relation(models.Model):
             productID=vals.get('product_id',False)
             if not productID:
                 templID=vals.get('product_tmpl_id',False)
-                prodItem=self.env['product.product'].getFromTemplateID( templID)
+                prodItem=self.env['product.product'].getFromTemplateID(templID)
                 if prodItem:
                     productID=prodItem.id
+                    vals['product_id']=prodItem.id
             check1 = self._context.get('internal_writing', False)
             check2 = self._context.get('internal_process', False)
             if check1 and check2:
