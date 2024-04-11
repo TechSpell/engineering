@@ -745,6 +745,9 @@ class plm_relation(models.Model):
         return ret
 
     def validatecreation(self, fatherID, vals):
+        """
+            Checks if a Bom is creable (no void Boms, no circular recursions.
+        """
         ret={}
         fatherIDs=[fatherID]
         bomLines=vals.get('bom_line_ids',[])
@@ -808,13 +811,15 @@ class plm_relation(models.Model):
             check1 = self._context.get('internal_writing', False)
             check2 = self._context.get('internal_process', False)
             if check1 and check2:
+                # To create a void bom, like by code it should be used context clues.
                 try:
                     self.logcreate(productID, vals)
                     ret=super(plm_relation,self).create(vals)
                 except Exception as ex:
                     raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, vals))
             else:
-                # Manual creation
+                # Manual creation: avoided creation with no lines,
+                # so to avoid to create void BoMs.
                 result=self.validatecreation(productID, vals)
                 if result:
                     try:
