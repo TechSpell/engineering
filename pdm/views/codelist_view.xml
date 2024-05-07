@@ -7,8 +7,8 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Part Number Rule">
-                <group colspan="4" col="6">
-                    <field name="name" select="1" colspan="4"/>
+                <group colspan="2" col="2">
+                    <field name="name" select="1"/>
                     <field name="description" select="1" />
                     <field name="sequence_id"/>
                 </group>
