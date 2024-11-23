@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -52,8 +53,7 @@ class ReportBomStructure(models.AbstractModel):
         return operations              
                                        
 ### OVERRIDDEN STANDARD METHODS        
-                                       
-    @api.model                         
+                                                                
     def _get_component_data(self, parent_bom, parent_product, warehouse, bom_line, line_quantity, level, index, product_info, ignore_stock=False):
         component =  super(ReportBomStructure, self)._get_component_data(parent_bom, parent_product, warehouse, bom_line, line_quantity, level, index, product_info, ignore_stock=ignore_stock)
         product_id = component.get('product', False)
@@ -68,8 +68,7 @@ class ReportBomStructure(models.AbstractModel):
             component['state'] = product_id.state
             component['description'] = description
         return component               
-                                       
-    @api.model                         
+                                                                
     def _get_bom_data(self, bom, warehouse, product=False, line_qty=False, bom_line=False, level=0, parent_bom=False, parent_product=False, index=0, product_info=False, ignore_stock=False):
         component = super(ReportBomStructure, self)._get_bom_data(bom, warehouse, product=product, line_qty=line_qty, bom_line=bom_line, level=level, parent_bom=parent_bom, parent_product=parent_product, index=0, product_info=product_info, ignore_stock=ignore_stock)
         product_id = component.get('product', False)
@@ -84,8 +83,7 @@ class ReportBomStructure(models.AbstractModel):
             component['state'] = product_id.state
             component['description'] = description
         return component               
-                                       
-    @api.model                         
+                                                                
     def _get_bom_array_lines(self, data, level, unfolded_ids, unfolded, parent_unfolded=True):
         bom_lines = data['components'] 
         lines = []                     
@@ -174,7 +172,6 @@ class ReportBomStructure(models.AbstractModel):
         self._add_engineering_void_data(data)
         return data
  
-    @api.model
     def _get_report_values(self, docids, data=None):
         data['childs']=False
         data['quantity']=1

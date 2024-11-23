@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-21
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -224,7 +225,7 @@ def wf_message_post(entity, ids=[], body=""):
     """
     if not (body==""):
         for objItem in entity.browse(ids):
-            objItem.message_post(body=_(body))
+            objItem.message_post(body=body)
 
 def getString(txtValue="", lower=False, upper=False, capitalize=False):
     ret=""

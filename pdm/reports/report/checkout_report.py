@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -39,7 +40,6 @@ class report_plm_checkout(models.AbstractModel):
     _name = "report.%s" %(_template)
     _description = "Base Report Checkout"
 
-    @api.model
     def _render_qweb_pdf(self, checkouts=None, data=None):
         documents = []
         processed=[]
@@ -58,7 +58,6 @@ class report_plm_checkout(models.AbstractModel):
         byteString = b"data:application/pdf;base64," + base64.encodebytes(content)
         return byteString.decode('UTF-8')
 
-    @api.model
     def _get_report_values(self, docids, data=None):
         checkouts = self.env['plm.checkout'].browse(docids)
         return {'docs': checkouts,

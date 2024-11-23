@@ -3,8 +3,9 @@
 #
 #    ServerPLM, Open Source Product Lifcycle Management System    
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2021-02-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -34,7 +35,6 @@ from .common import move_workflow, wf_message_post
 class plm_component(models.Model):
     _inherit = 'product.product'
 
-    @api.model
     def _getNewChildrenBom(self, level=0, currlevel=0):
         """
             Returns a flat list of each child, listed once, in a Bom ( level = 0 one level only, level = 1 all levels)
@@ -50,7 +50,6 @@ class plm_component(models.Model):
         return result
 
     ##  Work Flow Internal Methods
-    @api.model
     def _get_new_recursive_parts(self, excludeStatuses, includeStatuses, release=False):
         """
            Gets all ids related to current one as children
@@ -73,7 +72,6 @@ class plm_component(models.Model):
         return product_ids
 
     @property
-    @api.model
     def check_linked_documents(self):
         """
             Gets linked documents, (all or checked-in).
@@ -86,7 +84,6 @@ class plm_component(models.Model):
                     break
         return ret
 
-    @api.model
     def _get_linked_documents(self, checked_in=False):
         """
             Gets linked documents, (all or checked-in).
@@ -103,7 +100,6 @@ class plm_component(models.Model):
         return document_ids
 
     ##  Specialized Actions callable interactively
-    @api.model
     def action_check_workflow(self, operationParams):
         """
             Create a new Spare BoM if doesn't exist (action callable from views)
@@ -124,7 +120,7 @@ class plm_component(models.Model):
             document_ids = product_ids._get_linked_documents(checked_in=False)
         
             if product_ids or document_ids:
-                name_operation = _('Check Workflow moving to "{}"'.format(operationParams["statusName"]))
+                name_operation = 'Check Workflow moving to "{}"'.format(operationParams["statusName"])
                 tmp_id = tempType.create({'name': name_operation})
                 if tmp_id:
                     context = dict(self.env.context or {})
@@ -143,7 +139,7 @@ class plm_component(models.Model):
                                 discharge = True
                                 values.update({
                                     'discharge': True,
-                                    'reason': _('one of linked Documents is not checked-In.'),
+                                    'reason': 'one of linked Documents is not checked-In.',
                                     })
                         values.update({
                             'choice': not discharge,
@@ -162,12 +158,12 @@ class plm_component(models.Model):
                             if document_id.state in excludeStatuses or not(document_id.state in includeStatuses):
                                 values.update({
                                     'notallowalble': discharge,
-                                    'reason': _('Document is not in allowable status.'),
+                                    'reason': 'Document is not in allowable status.',
                                     })
                             elif document_id.is_checkout:
                                 values.update({
                                     'discharge': discharge,
-                                    'reason': _('Document is Checked-Out to: {}.'.format(document_id.checkout_user)),
+                                    'reason': 'Document is Checked-Out to: {}.'.format(document_id.checkout_user),
                                     })
                         values.update({
                             'choice': not discharge,
@@ -188,7 +184,6 @@ class plm_component(models.Model):
                         'context': context,
                     }
 
-    @api.model
     def apply_workflow_action(self, operationParams):
         """
             Action to be executed to complete workflow operations.
@@ -218,7 +213,6 @@ class plm_component(models.Model):
 class plm_document(models.Model):
     _inherit = 'plm.document'
 
-    @api.model
     def action_check_workflow(self, operationParams):
         """
             Create a new Spare BoM if doesn't exist (action callable from views)
@@ -236,7 +230,7 @@ class plm_document(models.Model):
         if document_ids:
             document_ids += document_ids.getRelatedDocuments()
             
-            name_operation = _('Check Workflow moving to "{}"'.format(operationParams["statusName"]))
+            name_operation = 'Check Workflow moving to "{}"'.format(operationParams["statusName"])
             tmp_id = tempType.create({'name': name_operation})
             if tmp_id:
                 context = dict(self.env.context or {})
@@ -256,12 +250,12 @@ class plm_document(models.Model):
                         if document_id.state in excludeStatuses or not(document_id.state in includeStatuses):
                             values.update({
                                 'notallowalble': discharge,
-                                'reason': _('Document is not in allowable status.'),
+                                'reason': 'Document is not in allowable status.',
                                 })
                         elif document_id.is_checkout:
                             values.update({
                                 'discharge': discharge,
-                                'reason': _('Document is Checked-Out to: {}.'.format(document_id.checkout_user)),
+                                'reason': 'Document is Checked-Out to: {}.'.format(document_id.checkout_user),
                                 })
                     values.update({
                         'choice': not discharge,
@@ -282,7 +276,6 @@ class plm_document(models.Model):
                     'context': context,
                 }
 
-    @api.model
     def apply_workflow_action(self, operationParams):
         """
             Action to be executed to complete workflow operations.
@@ -318,7 +311,6 @@ class plm_document(models.Model):
                 wf_message_post(self, document_ids.ids, body='Status moved to: {status}.'.format(status=status))
         return document_ids
 
-    @api.model
     def getRelatedDocuments(self):
         """
             Action to be executed to complete workflow operations.

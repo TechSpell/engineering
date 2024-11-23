@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -37,7 +38,6 @@ thisModuleName=moduleName()
 class plm_document(models.Model):
     _inherit = 'plm.document'
 
-    @api.model
     def getPDFbyDocuments(self, documents=None):
         """
             Returns pdf byte content of requested documents
@@ -55,13 +55,11 @@ class report_plm_document(models.AbstractModel):
     _name = 'report.%s.document_pdf' %(thisModuleName)
     _description = 'Report PDF Document'
 
-    @api.model
     def _render_qweb_pdf(self, documents=None, data=None):
         content = self.env['plm.document'].getPDFbyDocuments(documents)
         byteString = b"data:application/pdf;base64," + base64.encodebytes(content)
         return byteString.decode('UTF-8')
 
-    @api.model
     def _get_report_values(self, docids, data=None):
         documents = self.env['plm.document'].browse(docids)
         return {'docs': documents,
@@ -73,7 +71,6 @@ class report_document_structure(models.AbstractModel):
     _name='report.%s' %(_template)
     _description = "Document Structure PDF Report"
 
-    @api.model
     def get_structure(self, docids):
         children=[]
         docRels=self.env['plm.document.relation'].search([('parent_id', 'in', docids._ids),('link_kind', '=', 'HiTree')])
@@ -102,12 +99,10 @@ class report_document_structure(models.AbstractModel):
 
         return getLevelObjects(myObject, level+1)
 
-    @api.model
     def _get_report_values(self, docids, data=None):
         return {'docs': self.env['plm.document'].browse(docids),
                 'get_children': self.get_children}
 
-    @api.model
     def render_html(self, docids, data=None):
         report_obj = self.env['report']
         report_obj._get_report_from_name(self._template)
@@ -126,7 +121,6 @@ class report_document_where_used(models.AbstractModel):
     _name='report.%s' %(_template)
     _description = "Document Structure PDF Report"
 
-    @api.model
     def get_where_used(self, docids):
         fathers=[]
         docRels=self.env['plm.document.relation'].search([('child_id', 'in', docids._ids),('link_kind', '=', 'HiTree')])
@@ -155,12 +149,10 @@ class report_document_where_used(models.AbstractModel):
 
         return getLevelObjects(myObject, level+1)
 
-    @api.model
     def _get_report_values(self, docids, data=None):
         return {'docs': self.env['plm.document'].browse(docids),
                 'get_children': self.get_fathers}
 
-    @api.model
     def render_html(self, docids, data=None):
         report_obj = self.env['report']
         report_obj._get_report_from_name(self._template)

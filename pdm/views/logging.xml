@@ -5,7 +5,6 @@
     <record model="ir.ui.view" id="plm_logging_search">
         <field name="name">plm.logging.search</field>
         <field name="model">plm.logging</field>
-        <field name="type">search</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Log Registrations">
@@ -46,10 +45,9 @@
     <record model="ir.ui.view" id="plm_logging_tree">
         <field name="name">plm.logging.tree</field>
         <field name="model">plm.logging</field>
-        <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Activities" create="false">
+            <list string="Activities" create="false">
                 <field name="name" select="1"/>
                 <field name="revision" select="1"/>
                 <field name="file" select="1"/>
@@ -58,7 +56,7 @@
                 <field name="op_note" select="1"/>
                 <field name="op_date" select="1"/>
                 <field name="userid" select="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -66,7 +64,7 @@
         <field name="name">Activities</field>
         <field name="res_model">plm.logging</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="view_mode">tree</field>
+        <field name="view_mode">list</field>
         <field eval="False" name="filter"/>
         <field name="view_id" ref="plm_logging_tree"/>
         <field name="search_view_id" ref="plm_logging_search"/>

@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -66,9 +67,9 @@ class plm_temporary(models.TransientModel):
 
 
 # return {
-#               'name': _('Products'),
+#               'name': 'Products',
 #               'view_type': 'form',
-#               "view_mode": 'tree,form',
+#               "view_mode": 'list,form',
 #               'res_model': 'product.product',
 #               'type': 'ir.actions.act_window',
 #               'domain': "[]",
@@ -419,19 +420,19 @@ class plm_component(models.Model):
         if outputpath == None:
             return True
         if not os.path.exists(outputpath):
-            raise UserError(_("Export Data Error.\n\nRequested writing path '{}' doesn't exist.".format(outputpath)))
+            raise UserError("Export Data Error.\n\nRequested writing path '{}' doesn't exist.".format(outputpath))
             return False
 
         filename = os.path.join(outputpath, fname)
         if fixedformat and (partLengths and bomLengths):
             if not self._export_fixed(filename, anag_Data['labels'], anag_Data, False, partLengths, bomLengths,
                                       queueFiles['anagrafica']):
-                raise UserError(_("Export Data Error.\n\nNo Bom extraction files was generated, about entity '{}'.".format(fname)))
+                raise UserError("Export Data Error.\n\nNo Bom extraction files was generated, about entity '{}'.".format(fname))
                 return False
         else:
             if not self._export_csv(filename, anag_Data['labels'], anag_Data, True, delimiter, textQuoted,
                                     queueFiles['anagrafica']):
-                raise UserError(_("Export Data Error.\n\nWriting operations on file '{}' have failed.".format(filename)))
+                raise UserError("Export Data Error.\n\nWriting operations on file '{}' have failed.".format(filename))
                 return False
 
         ext_fields = ['parent', 'child']
@@ -453,12 +454,12 @@ class plm_component(models.Model):
 
                 if fixedformat and (partLengths and bomLengths):
                     if not self._export_fixed(filename, ext_fields, expData, False, partLengths, bomLengths):
-                        raise UserError(_("Export Data Error.\n\nNo Bom extraction files was generated, about entity '{}'.".format(fname)))
+                        raise UserError("Export Data Error.\n\nNo Bom extraction files was generated, about entity '{}'.".format(fname))
                         return False
                 else:
                     if not self._export_csv(filename, ext_fields, expData, True, delimiter, textQuoted,
                                             queueFiles['distinte']):
-                        raise UserError(_("Export Data Error.\n\nNo Bom extraction files was generated, about entity '{}'.".format(fname)))
+                        raise UserError("Export Data Error.\n\nNo Bom extraction files was generated, about entity '{}'.".format(fname))
                         return False
         return True
 

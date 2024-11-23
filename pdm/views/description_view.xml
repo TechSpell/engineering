@@ -5,7 +5,6 @@
     <record model="ir.ui.view" id="view_plm_description">
         <field name="name">plm.description.view</field>
         <field name="model">plm.description</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
              <form string="Description"  version="7.0">
              	<sheet>
@@ -60,10 +59,9 @@
     <record model="ir.ui.view" id="plm_view_description_tree">
         <field name="name">plm.view.description.tree</field>
         <field name="model">plm.description</field>
-        <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-        	<tree string="Descriptions">
+        	<list string="Descriptions">
         		<field name="name"/>
                	<field name="description"/>
                	<field name="description_en"/>
@@ -77,14 +75,13 @@
                 <field name="unitab"/>
                	<field name="sequence"/>
  	        	<field name="bom_tmpl"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record model="ir.ui.view" id="view_plm_description_search">
         <field name="name">plm.description.view</field>
         <field name="model">plm.description</field>
-        <field name="type">search</field>
         <field name="arch" type="xml">
  			<search string="Description">
 				<filter name="lastmonth" string="Last Month" separator="1"
@@ -110,7 +107,7 @@
         <field name="name">Descriptions</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">plm.description</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="view_id" ref="plm_view_description_tree"/>
     </record>
     
@@ -127,7 +124,6 @@
         <field name="name">plm.description.component</field>
         <field name="model">product.product</field>
         <field name="inherit_id" ref="pdm.plm_component_form"/>
-        <field name="type">form</field>
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
 			<group name="DescArea" colspan="4" col="4" position="replace">
@@ -153,7 +149,6 @@
         <field name="name">plm.description.base.component</field>
         <field name="model">product.product</field>
         <field name="inherit_id" ref="pdm.plm_component_base_form"/>
-        <field name="type">form</field>
         <field name="priority" eval="10"/>
         <field name="arch" type="xml">
 			<group name="DescArea" colspan="4" col="4" position="replace">

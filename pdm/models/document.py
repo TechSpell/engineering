@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -215,7 +216,7 @@ class plm_document(models.Model):
                 if not objDoc.store_fname:
                     value = objDoc.db_datas
                     if not value or len(value) < 1:
-                        raise UserError(_("Stored Document Error\nDocument '{}-{}' cannot be accessed.".format(objDoc.name,objDoc.revisionid)))
+                        raise UserError("Stored Document Error\nDocument '{}-{}' cannot be accessed.".format(objDoc.name,objDoc.revisionid))
                 else:
                     filestore = os.path.join(self._get_filestore(), objDoc.store_fname)
                     if os.path.exists(filestore):
@@ -364,7 +365,7 @@ class plm_document(models.Model):
             try:
                 os.makedirs(path)
             except:
-                raise UserError(_("Document Error\nPermission denied or directory '{}' cannot be created.".format(path)))
+                raise UserError("Document Error\nPermission denied or directory '{}' cannot be created.".format(path))
         flag = None
         # This can be improved
         for dirs in os.listdir(path):
@@ -384,7 +385,6 @@ class plm_document(models.Model):
         fobj.close()
         return (os.path.join(flag, filename), len(value))
 
-    @api.model
     def _iswritable(self):
         if self:
             checkState = ('draft')
@@ -437,7 +437,6 @@ class plm_document(models.Model):
                     break
         return ret
 
-    @api.model
     def _checkIn(self):
         """
             Executes Check-In on requested document
@@ -448,7 +447,6 @@ class plm_document(models.Model):
                 checkObj.with_context({'internal_writing':True}).unlink()
         return True
 
-    @api.model
     def _checkOut(self, hostName="", pwsPath=""):
         """
             Executes Check-In on requested document
@@ -836,7 +834,6 @@ class plm_document(models.Model):
             listedDocuments.append(document['name'])
         return packDictionary(retValues)
 
-
     @api.model
     def SaveOrUpdate(self, request=[], default=None):
         """
@@ -999,7 +996,7 @@ class plm_document(models.Model):
         for document in self.browse(getListIDs(ids)):
             if checkoutType.search([('documentid', '=', document.id)]):
                 logging.warning(
-                    _("The document %s - %s has not checked-in" % (str(document.name), str(document.revisionid))))
+                    "The document %s - %s has not checked-in" % (str(document.name), str(document.revisionid)))
                 return False
         return True
 
@@ -1061,7 +1058,7 @@ class plm_document(models.Model):
                    }
         operationParams = {
                             'status': status,
-                            'statusName': _('Uploaded'),
+                            'statusName': 'Uploaded',
                             'action': action,
                             'docaction': 'uploaddoc',
                             'excludeStatuses': ['uploaded', 'confirmed', 'released', 'undermodify', 'obsoleted'],
@@ -1095,7 +1092,7 @@ class plm_document(models.Model):
         includeStatuses = ['confirmed', 'uploaded', 'transmitted']
         operationParams = {
                             'status': status,
-                            'statusName': _('Draft'),
+                            'statusName': 'Draft',
                             'action': action,
                             'docaction': 'draft',
                             'excludeStatuses': ['draft', 'released', 'undermodify', 'obsoleted'],
@@ -1126,7 +1123,7 @@ class plm_document(models.Model):
         includeStatuses = ['confirmed', 'uploaded']
         operationParams = {
                             'status': status,
-                            'statusName': _('Draft'),
+                            'statusName': 'Draft',
                             'action': action,
                             'docaction': 'correct',
                             'excludeStatuses': ['draft', 'released', 'undermodify', 'obsoleted'],
@@ -1158,7 +1155,7 @@ class plm_document(models.Model):
         includeStatuses = ['draft']
         operationParams = {
                             'status': status,
-                            'statusName': _('Confirmed'),
+                            'statusName': 'Confirmed',
                             'action': action,
                             'docaction': 'confirm',
                             'excludeStatuses': ['confirmed', 'released', 'undermodify', 'obsoleted'],
@@ -1194,7 +1191,7 @@ class plm_document(models.Model):
         includeStatuses = ['confirmed']
         operationParams = {
                             'status': status,
-                            'statusName': _('Released'),
+                            'statusName': 'Released',
                             'action': action,
                             'docaction': 'release',
                             'excludeStatuses': ['released', 'undermodify', 'obsoleted'],
@@ -1232,7 +1229,7 @@ class plm_document(models.Model):
                    }
         operationParams = {
                             'status': status,
-                            'statusName': _('Obsoleted'),
+                            'statusName': 'Obsoleted',
                             'action': action,
                             'docaction': 'obsolete',
                             'excludeStatuses': ['draft', 'confirmed', 'obsoleted'],
@@ -1265,7 +1262,7 @@ class plm_document(models.Model):
                    }
         operationParams = {
                             'status': status,
-                            'statusName': _('Released'),
+                            'statusName': 'Released',
                             'action': action,
                             'docaction': 'reactivate',
                             'excludeStatuses': ['draft', 'confirmed', 'released'],
@@ -1349,7 +1346,7 @@ class plm_document(models.Model):
             wf_message_post(self, [newID.id], body='Copied starting from : {value}.'.format(value=previous_name))
         return newID
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals=None):
         ret=False
         
@@ -1395,11 +1392,11 @@ class plm_document(models.Model):
             if not check:
                 for docItem in self.browse(ids):
                     if not isDraft(self, docItem.id):
-                        raise UserError(_("Edit Entity Error.\n\nThe entity '{name}-{rev}' is in a status that does not allow you to make save action.".format(name=docItem.name,rev=docItem.revisionid)))
+                        raise UserError("Edit Entity Error.\n\nThe entity '{name}-{rev}' is in a status that does not allow you to make save action.".format(name=docItem.name,rev=docItem.revisionid))
                         ret=False
                         break
                     if not docItem.writable:
-                        raise UserError(_("Edit Entity Error.\n\nThe entity '{name}-{rev}' cannot be written.".format(name=docItem.name,rev=docItem.revisionid)))
+                        raise UserError("Edit Entity Error.\n\nThe entity '{name}-{rev}' cannot be written.".format(name=docItem.name,rev=docItem.revisionid))
                         break
             if ret:
                 self._insertlog(ids, changes=vals)
@@ -1612,8 +1609,7 @@ class plm_document(models.Model):
                 required=self.checkAllFiles([ getListIDs(ids), listedFiles, selection ], default=None)
                 wholeset=self.checkAllFiles([ getListIDs(ids), ([],[]), selection ],   default=None)
         return packDictionary([required,wholeset])
-        
-    @api.model
+
     def checkAllFiles(self, request, default=None):
         """
             Evaluate documents to return
@@ -1896,7 +1892,7 @@ class plm_checkout(models.Model):
             if not isAdmin and not isIntegratorUser(self):
                 logging.error(
                     "[unlink] : Unable to Check-In the required document.\n You aren't authorized in this context.")
-                raise UserError(_("Unable to Check-In the required document.\n\nYou aren't authorized in this context."))
+                raise UserError("Unable to Check-In the required document.\n\nYou aren't authorized in this context.")
         values = {'writable': False, }
         for checkObj in self.browse(getListIDs(ids)):
             if isAdmin or checkObj.userid.id==self._uid:
@@ -1933,7 +1929,7 @@ class plm_document_relation(models.Model):
         'userid': lambda *a: False,
     }
     _sql_constraints = [
-        ('relation_uniq', 'unique (parent_id,child_id,link_kind)', _('The Document Relation must be unique !'))
+        ('relation_uniq', 'unique (parent_id,child_id,link_kind)', 'The Document Relation must be unique !')
     ]
 
     @api.model
@@ -2117,7 +2113,7 @@ class plm_backupdoc(models.Model):
             if not isAdministrator(self):
                 logging.warning(
                     "unlink : Unable to remove the required documents. You aren't authorized in this context.")
-                raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
+                raise UserError("Unable to remove the required document.\n You aren't authorized in this context.")
         checkObjs = self.browse(ids)
         for checkObj in checkObjs:
             if not int(checkObj.documentid):
@@ -2136,7 +2132,7 @@ class plm_backupdoc(models.Model):
                         "unlink : Unable to remove the document (" + str(checkObj.documentid.name) + "-" + str(
                             checkObj.documentid.revisionid) + ") from backup set. You can't change writable flag.")
             else:    
-                raise UserError(_("Unable to remove the document '{}-{}' from backup set.\nIt isn't a backup file, it's original current one.".format(checkObj.documentid.name,checkObj.documentid.revisionid)))
+                raise UserError("Unable to remove the document '{}-{}' from backup set.\nIt isn't a backup file, it's original current one.".format(checkObj.documentid.name,checkObj.documentid.revisionid))
             if committed:
                 self.logging_operation(checkObj.documentid.id, 'Removed Backup Reference')
                 ret = super(plm_backupdoc, checkObj).unlink()
@@ -2158,7 +2154,7 @@ class plm_temporary(models.TransientModel):
             if not isAdministrator(self):
                 logging.warning(
                     "unlink : Unable to remove the required documents.\n You aren't authorized in this context.")
-                raise UserError(_("Unable to remove the required document.\n You aren't authorized in this context."))
+                raise UserError("Unable to remove the required document.\n You aren't authorized in this context.")
         backObj=backupdocType.browse(self._context['active_id'])
         if backObj and backObj.documentid:
             objDoc=backObj.documentid
@@ -2171,6 +2167,6 @@ class plm_temporary(models.TransientModel):
                     if not committed:
                         logging.warning("action_restore_document : Unable to restore the document (" + str(
                             backObj.documentid.name) + "-" + str(backObj.documentid.revisionid) + ") from backup set.")
-                        raise UserError(_("Unable to restore the document '{}-{}' from backup set.\nCheck if it's checked-in, before to retry.".format(backObj.documentid.name,backObj.documentid.revisionid)))
+                        raise UserError("Unable to restore the document '{}-{}' from backup set.\nCheck if it's checked-in, before to retry.".format(backObj.documentid.name,backObj.documentid.revisionid))
         return committed
 

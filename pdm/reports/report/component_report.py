@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -39,7 +40,6 @@ class plm_component(models.AbstractModel):
     _inherit='product.product'
     _description = "Get PDF Attached to Component"
 
-    @api.model
     def getPDFbyProducts(self, level=0, checkState=False):
         """
             Returns pdf byte content of related documents
@@ -69,7 +69,6 @@ class report_plm_component(models.AbstractModel):
     _name='%s.product_product_pdf' %(thisModuleName)
     _description = "Base PDF Report Component"
 
-    @api.model
     def _render_qweb_pdf(self, products=None, level=0, checkState=False, data=None):
         content = emptyDocument()
         if products:
@@ -77,7 +76,6 @@ class report_plm_component(models.AbstractModel):
         byteString = b"data:application/pdf;base64," + base64.encodebytes(content)
         return byteString.decode('UTF-8')
 
-    @api.model
     def _get_report_values(self, docids, data=None):
         products = self.env['product.product'].browse(docids)
         return {'docs': products,
@@ -88,7 +86,6 @@ class ReportProductPdf(report_plm_component):
     _template='%s.product_product_pdf' %(thisModuleName)
     _name = "report.%s" %(_template)
 
-    @api.model
     def _render_qweb_pdf(self, products=None, level=0, checkState=False, data=None):
         content = emptyDocument()
         if products:
@@ -105,7 +102,6 @@ class ReportAllLevelProductPdf(report_plm_component):
     _template='%s.all_product_product_pdf' %(thisModuleName)
     _name = "report.%s" %(_template)
 
-    @api.model
     def _render_qweb_pdf(self, products=None, level=0, checkState=False, data=None):
         content = emptyDocument()
         if products:

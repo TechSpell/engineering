@@ -4,10 +4,9 @@
 	    <record model="ir.ui.view" id="plm_component_tree">
 	        <field name="name">plm.component</field>
 	        <field name="model">product.product</field>
-	        <field name="type">tree</field>
 	        <field name="priority" eval="10"/>
 	        <field name="arch" type="xml">
-	            <tree string="Products">
+	            <list string="Products">
 	                <field name="name" select="True"/>
 	                <field name="engineering_code" select="True" />
 	                <field name="engineering_revision"/>
@@ -21,14 +20,13 @@
 	                <field name="std_value1"/>
 	                <field name="std_umc2"/>
 	                <field name="std_value2"/>
-	            </tree>
+	            </list>
 	        </field>
 	    </record>
 	
 	    <record model="ir.ui.view" id="plm_component_search">
 	        <field name="name">plm.component</field>
 	        <field name="model">product.product</field>
-	        <field name="type">search</field>
 	        <field name="priority" eval="10"/>
 	        <field name="arch" type="xml">
 				<search string="Products">
@@ -70,7 +68,6 @@
 	        <field name="name">plm.component</field>
 	        <field name="model">product.product</field>
 	        <field name="inherit_id" ref="product.product_normal_form_view"/>
-	        <field name="type">form</field>
 	        <field name="priority" eval="10"/>
 	        <field name="arch" type="xml">
 				<xpath expr="//sheet" position="before">
@@ -128,10 +125,9 @@
 	    <record model="ir.ui.view" id="plm_component_base_tree">
 	        <field name="name">plm.base.component</field>
 	        <field name="model">product.product</field>
-	        <field name="type">tree</field>
 	        <field name="priority" eval="15"/>
 	        <field name="arch" type="xml">
-	            <tree string="Engineering Products">
+	            <list string="Engineering Products">
 	                <field name="name" select="True"/>
 	                <field name="engineering_code" select="True"/>
 	                <field name="engineering_revision"/>
@@ -141,14 +137,13 @@
 	                <field name="engineering_material" select="True"/>
 	                <field name="engineering_surface" select="True"/>
 	                <field name="linkeddocuments" invisible="True"/>
-	            </tree>
+	            </list>
 	        </field>
 	    </record>  
 	               
 	    <record model="ir.ui.view" id="plm_component_base_search">
 	        <field name="name">plm.base.component.search</field>
 	        <field name="model">product.product</field>
-	        <field name="type">search</field>
 	        <field name="priority">15</field>
 	        <field name="arch" type="xml">
 			 	<search string="Engineering Products">
@@ -189,7 +184,6 @@
 	    <record model="ir.ui.view" id="plm_component_base_form">
 	        <field name="name">plm.base.component</field>
 	        <field name="model">product.product</field>
-	        <field name="type">form</field>
 	        <field name="priority" eval="15"/>
 	        <field name="arch" type="xml">
 	             <form string="Engineering Product">
@@ -273,7 +267,6 @@
 	    <record model="ir.ui.view" id="view_plm_edit_product">
 	        <field name="name">plm.edit.component</field>
 	        <field name="model">product.product</field>
-	        <field name="type">form</field>
 	        <field name="priority" eval="50"/>
 	        <field name="arch" type="xml">
 	             <form string="Engineering Product">
@@ -338,7 +331,7 @@
 	        <field name="name">Engineering Products</field>
 	        <field name="res_model">product.product</field>
         	<field name="type">ir.actions.act_window</field>
-	        <field name="view_mode">kanban,tree,form</field>
+	        <field name="view_mode">kanban,list,form</field>
 	        <field name="view_id" ref="plm_component_base_tree"/>
 	        <field name="context">{"search_default_latest":1}</field>      
 	    </record>
@@ -348,7 +341,6 @@
 	    <record id="plm_component_newrevision" model="ir.ui.view">
 	        <field name="name">plm.component.new_revision</field>
 	        <field name="model">plm.temporary</field>
-	        <field name="type">form</field>
 	        <field name="arch" type="xml">
 	        <form string="Creating a Product New Revision">
 				<field name="name" invisible="True"/>
@@ -441,7 +433,7 @@
 		     <field name="model">product.template</field>
 		     <field name="inherit_id" ref="product.product_template_search_view"/>
 		     <field name="arch" type="xml">
-		         <xpath expr="//filter[@name='consumable']" position="after">
+		         <xpath expr="//filter[@name='combo']" position="after">
 		             <separator/>
 					 <filter string="Latest" name="latest" domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
 		       		 <filter string="Released" name="released" domain="[('state', 'in', ['released','undermodify'])]"/>

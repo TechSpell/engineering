@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -44,25 +45,24 @@ class plm_compare_bom(models.TransientModel):
     _name = "plm.compare.bom"
     _description = "BoM Comparison"
     
-    name          = fields.Char       (                                         string=_('Part Number'),          size=64)
-    bom_id1       = fields.Many2one   ('mrp.bom',                   index=True, string=_('BoM 1'), required=True, ondelete='cascade')
-    type_id1      = fields.Selection  (related="bom_id1.type",                  string=_('BoM Type'))
+    name          = fields.Char       (                                         string='Part Number',          size=64)
+    bom_id1       = fields.Many2one   ('mrp.bom',                   index=True, string='BoM 1', required=True, ondelete='cascade')
+    type_id1      = fields.Selection  (related="bom_id1.type",                  string='BoM Type')
     part_id1      = fields.Many2one   ('product.product', 'Part',   index=True,                                   ondelete='cascade')
-    revision1     = fields.Integer    (related="part_id1.engineering_revision", string=_("Revision"),             store=False)
-    description1  = fields.Html       (related="part_id1.description",          string=_("Description"),          store=False)
-    bom_id2       = fields.Many2one   ('mrp.bom',                   index=True, string=_('BoM 2'), required=True, ondelete='cascade')
-    type_id2      = fields.Selection  (related="bom_id2.type",                  string=_('BoM Type'))
+    revision1     = fields.Integer    (related="part_id1.engineering_revision", string="Revision",             store=False)
+    description1  = fields.Html       (related="part_id1.description",          string="Description",          store=False)
+    bom_id2       = fields.Many2one   ('mrp.bom',                   index=True, string='BoM 2', required=True, ondelete='cascade')
+    type_id2      = fields.Selection  (related="bom_id2.type",                  string='BoM Type')
     part_id2      = fields.Many2one   ('product.product', 'Part',   index=True,                                   ondelete='cascade')
-    revision2     = fields.Integer    (related="part_id2.engineering_revision", string=_("Revision"),             store=False)
-    description2  = fields.Html       (related="part_id2.description",          string=_("Description"),          store=False)
-    anotinb       = fields.One2many   ('plm.adding.bom',  'bom_id', index=True, string=_('BoM Adding'))
-    bnotina       = fields.One2many   ('plm.missing.bom', 'bom_id', index=True, string=_('BoM Missing'))
+    revision2     = fields.Integer    (related="part_id2.engineering_revision", string="Revision",             store=False)
+    description2  = fields.Html       (related="part_id2.description",          string="Description",          store=False)
+    anotinb       = fields.One2many   ('plm.adding.bom',  'bom_id', index=True, string='BoM Adding')
+    bnotina       = fields.One2many   ('plm.missing.bom', 'bom_id', index=True, string='BoM Missing')
 
     _defaults = {
                  'name': 'x',
     }
 
-    @api.model
     def default_get(self, fields):
         """ To get default values for the object.
         @param fields: List of fields for which we want default values
@@ -163,7 +163,7 @@ class plm_compare_bom(models.TransientModel):
         ctx={'active_id':ids[0],'active_ids':ids, 'active_model':"plm.compare.bom"}
         return {
             'domain': [],
-            'name': _('Differences on BoMs'),
+            'name': 'Differences on BoMs',
             'view_type': 'form',
             'view_mode': 'form',
             'res_model': 'plm.compare.bom',
@@ -272,14 +272,14 @@ class plm_missing_bom(models.TransientModel):
     _name = "plm.missing.bom"
     _description = "BoM Missing Objects"
     
-    bom_id      =   fields.Many2one ('plm.compare.bom', _('BoM'),      index=True,  ondelete='cascade')
-    bom_idrow   =   fields.Many2one ('mrp.bom.line',    _('BoM Line'), index=True,  ondelete='cascade')
-    part_id     =   fields.Many2one ('product.product', _('Part'),     index=True,  ondelete='cascade')
-    revision    =   fields.Integer  (related="part_id.engineering_revision",string=_("Revision"),           store=False)
-    description =   fields.Html     (related="part_id.description",         string=_("Description"),        store=False)
-    itemnum     =   fields.Integer  (related="bom_idrow.itemnum",           string=_("Pos."),               store=False)
-    itemqty     =   fields.Float    (related="bom_idrow.product_qty",       string=_("Quantity"),           store=False)
-    reason      =   fields.Char     (string=_("Difference"),                size=32)
+    bom_id      =   fields.Many2one ('plm.compare.bom', 'BoM',      index=True,  ondelete='cascade')
+    bom_idrow   =   fields.Many2one ('mrp.bom.line',    'BoM Line', index=True,  ondelete='cascade')
+    part_id     =   fields.Many2one ('product.product', 'Part',     index=True,  ondelete='cascade')
+    revision    =   fields.Integer  (related="part_id.engineering_revision",string="Revision",           store=False)
+    description =   fields.Html     (related="part_id.description",         string="Description",        store=False)
+    itemnum     =   fields.Integer  (related="bom_idrow.itemnum",           string="Pos.",               store=False)
+    itemqty     =   fields.Float    (related="bom_idrow.product_qty",       string="Quantity",           store=False)
+    reason      =   fields.Char     (string="Difference",                size=32)
     
     _defaults = {
     }
@@ -289,14 +289,14 @@ class plm_adding_bom(models.TransientModel):
     _name = "plm.adding.bom"
     _description = "BoM Adding Objects"
     
-    bom_id          =   fields.Many2one ('plm.compare.bom', _('BoM'),      index=True, ondelete='cascade')
-    bom_idrow       =   fields.Many2one ('mrp.bom.line',    _('BoM Line'), index=True, ondelete='cascade')
-    part_id         =   fields.Many2one ('product.product', _('Part'),     index=True, ondelete='cascade')
-    revision        =   fields.Integer  (related="part_id.engineering_revision",    string=_("Revision"),          store=False)
-    description     =   fields.Html     (related="part_id.description",             string=_("Description"),       store=False)
-    itemnum         =   fields.Integer  (related="bom_idrow.itemnum",               string=_("Pos."),              store=False)
-    itemqty         =   fields.Float    (related="bom_idrow.product_qty",           string=_("Quantity"),          store=False)
-    reason          =   fields.Char     (string=_("Difference"),                    size=32)
+    bom_id          =   fields.Many2one ('plm.compare.bom', 'BoM',      index=True, ondelete='cascade')
+    bom_idrow       =   fields.Many2one ('mrp.bom.line',    'BoM Line', index=True, ondelete='cascade')
+    part_id         =   fields.Many2one ('product.product', 'Part',     index=True, ondelete='cascade')
+    revision        =   fields.Integer  (related="part_id.engineering_revision",    string="Revision",          store=False)
+    description     =   fields.Html     (related="part_id.description",             string="Description",       store=False)
+    itemnum         =   fields.Integer  (related="bom_idrow.itemnum",               string="Pos.",              store=False)
+    itemqty         =   fields.Float    (related="bom_idrow.product_qty",           string="Quantity",          store=False)
+    reason          =   fields.Char     (string="Difference",                    size=32)
 
     _defaults = {
     }

@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -59,7 +60,7 @@ class ComponentDashboard(models.Model):
     def common_open(self, name, model, view_mode='form', view_type='form', res_id=False, ctx={}, domain=[]):
         # <field name="domain">[('account_id','=', active_id)]</field>
         return {
-            'name': _(name),
+            'name': name,
             'type': 'ir.actions.act_window',
             'view_type': view_type,
             'view_mode': view_mode,
@@ -75,7 +76,7 @@ class ComponentDashboard(models.Model):
     
     def open_action(self):
 #         print 'Pressed open action'
-#         return self.common_open(_('New Component'), 'product.product', 'form', 'form', self.ids[0], self.env.context)
+#         return self.common_open('New Component', 'product.product', 'form', 'form', self.ids[0], self.env.context)
         return self.common_open(_('New Component'), 'product.product', 'form', 'form', self.ids, self.env.context)
     
     def create_component(self):
@@ -86,7 +87,7 @@ class ComponentDashboard(models.Model):
 #         print 'Open Normal Boms'
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids), ('type', '=', 'normal')]
-        return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
+        return self.common_open(_('Related Boms'), 'mrp.bom', 'list,form', 'form', boms.ids, self.env.context, domain)
     
     def open_engin_bom(self):
 #         print 'Open Engineering BoMs'
@@ -94,7 +95,7 @@ class ComponentDashboard(models.Model):
         for bomId in self.get_related_boms():
             boms.append(bomId.id)
         domain = [('id', 'in', boms), ('type', '=', 'ebom')]
-        return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms, self.env.context, domain)
+        return self.common_open(_('Related Boms'), 'mrp.bom', 'list,form', 'form', boms, self.env.context, domain)
     
     def open_spare_bom(self):
 #         print 'Open Spare Boms'
@@ -102,7 +103,7 @@ class ComponentDashboard(models.Model):
         for bomId in self.get_related_boms():
             boms.append(bomId.id)
         domain = [('id', 'in', boms), ('type', '=', 'spbom')]
-        return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms, self.env.context, domain)
+        return self.common_open(_('Related Boms'), 'mrp.bom', 'list,form', 'form', boms, self.env.context, domain)
     
     def open_new_component(self):
 #         print 'Open New Component'
@@ -111,13 +112,13 @@ class ComponentDashboard(models.Model):
     def open_related_docs_action(self):
         docs = self.get_related_docs()
         domain = [('id', 'in', docs.ids)]
-        return self.common_open(_('Related Documents'), 'plm.document', 'tree,form', 'form', docs.ids, self.env.context, domain)
+        return self.common_open(_('Related Documents'), 'plm.document', 'list,form', 'form', docs.ids, self.env.context, domain)
     
     def open_related_boms_action(self):
 #         print 'Open Related Boms'
         boms = self.get_related_boms()
         domain = [('id', 'in', boms.ids)]
-        return self.common_open(_('Related Boms'), 'mrp.bom', 'tree,form', 'form', boms.ids, self.env.context, domain)
+        return self.common_open(_('Related Boms'), 'mrp.bom', 'list,form', 'form', boms.ids, self.env.context, domain)
     
     def create_normal_bom(self):
 #         print 'Open Normal Boms'

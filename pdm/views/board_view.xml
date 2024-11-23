@@ -5,24 +5,22 @@
     <record model="ir.ui.view" id="view_component_status">
             <field name="name">report.plm_component.graph</field>
             <field name="model">report.plm_component</field>
-            <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="Component Status">
+                <list string="Component Status">
                     <field name="count_component_draft" />
                     <field name="count_component_confirmed" />
                     <field name="count_component_released" />
                     <field name="count_component_modified" />
                     <field name="count_component_obsoleted" />
-                </tree>
+                </list>
             </field>
     </record>
 
     <record model="ir.ui.view" id="view_document_status">
             <field name="name">report.plm_document.status</field>
             <field name="model">report.plm_document.user</field>
-            <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="Document Status">
+                <list string="Document Status">
                     <field name="year" invisible="1" />
                     <field name="month" invisible="1" />
                     <field name="docname" />
@@ -33,14 +31,13 @@
                     <field name="create_date" />
                     <field name="change_user" />
                     <field name="change_date" />
-                 </tree>
+                 </list>
             </field>
     </record>
 
     <record model="ir.ui.view" id="plm_document_user_search">
 		<field name="name">plm_document.user</field>
 		<field name="model">report.plm_document.user</field>
-		<field name="type">search</field>
 		<field name="priority" eval="1"/>
 		<field name="arch" type="xml">
 			<search string="Documents">
@@ -54,9 +51,8 @@
     <record model="ir.ui.view" id="view_checkedout_document">
             <field name="name">report.plm_checkout_board.status</field>
             <field name="model">report.plm_checkout.board</field>
-            <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="Documents Checked-Out">
+                <list string="Documents Checked-Out">
                     <field name="year" invisible="1" />
                     <field name="month" invisible="1" />
                     <field name="docname" />
@@ -65,14 +61,13 @@
                     <field name="hostname" />
                     <field name="user" invisible="1" />
                     <field name="create_date" />
-                 </tree>
+                 </list>
             </field>
     </record>
 
     <record model="ir.ui.view" id="plm_checkout_board_search">
 		<field name="name">plm_checkout.board</field>
 		<field name="model">report.plm_checkout.board</field>
-		<field name="type">search</field>
 		<field name="priority" eval="1"/>
 		<field name="arch" type="xml">
 			<search string="Documents">
@@ -86,7 +81,6 @@
     <record model="ir.ui.view" id="view_component_year">
             <field name="name">report.plm_component_year.graph</field>
             <field name="model">report.plm_component.year</field>
-            <field name="type">graph</field>
             <field name="arch" type="xml">
                 <graph string="Status by Year" type="bar">
                     <field name="state" type="row"/>
@@ -101,7 +95,6 @@
     <record model="ir.ui.view" id="plm_document_user_form">
         <field name="name">report.plm_document.status</field>
         <field name="model">report.plm_document.user</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Document" create="false" edit="false" >
               	<sheet>
@@ -138,7 +131,6 @@
     <record model="ir.ui.view" id="view_file_month">
             <field name="name">report.plm_document.user.graph</field>
             <field name="model">report.plm_document.file</field>
-            <field name="type">graph</field>
             <field name="arch" type="xml">
                 <graph string="Files by Month" type="bar">
                     <field name="month" type="row"/>
@@ -169,7 +161,7 @@
             <field name="res_model">report.plm_component</field>
             <field name="view_id" ref="view_component_status"></field>
         	<field name="type">ir.actions.act_window</field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">list</field>
         </record>
 
  
@@ -178,7 +170,7 @@
             <field name="res_model">report.plm_document.user</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_id" ref="view_document_status"></field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">list</field>
             <field name="context">{'group_by': ['year','month','user']}</field>
             <field name="search_view_id" ref="plm_document_user_search"/>
          </record>
@@ -188,7 +180,7 @@
             <field name="res_model">report.plm_checkout.board</field>
             <field name="type">ir.actions.act_window</field>
             <field name="view_id" ref="view_checkedout_document"></field>
-            <field name="view_mode">tree</field>
+            <field name="view_mode">list</field>
             <field name="context">{'group_by': ['year','month','user']}</field>
             <field name="search_view_id" ref="plm_checkout_board_search"/>
          </record>
@@ -197,20 +189,19 @@
         <record model="ir.ui.view" id="board_plm_manager_form">
             <field name="name">board.pdm.manager.form</field>
              <field name="model">board.board</field>
-             <field name="type">form</field>
              <field name="arch" type="xml">
                 <form string="Document board">
                      <board style="1-1" >
                      	<column>
                             <action string="Documents Summary"
                                 name="%(action_view_documents_custom)d"
-                                view_mode="tree,form"/>
+                                view_mode="list,form"/>
                             <action string="Components in Status"
                                 name="%(action_view_component_status)d"
-                                view_mode="tree"/>
+                                view_mode="list"/>
                             <action string="Checked-Out Documents"
                                 name="%(action_view_checkout_custom)d"
-                                view_mode="tree,form"/>
+                                view_mode="list,form"/>
 
                         </column>
                      	<column>

@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -58,7 +59,7 @@ class plm_component(models.Model):
     engineering_surface     =   fields.Char         (             string='Surface Finishing',size=128, required=False,                       help="Surface finishing for current product, only description for titleblock.")
 
     _sql_constraints = [
-        ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', _('Part Number has to be unique!'))
+        ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', 'Part Number has to be unique!')
     ]
 
     def init(self):
@@ -98,7 +99,7 @@ class plm_component(models.Model):
             ret=super(plm_component, self).write(vals)
         return ret
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         ret=False
         if vals:
@@ -117,7 +118,7 @@ class plm_component_document_rel(models.Model):
     _sql_constraints = [
         (
             'relation_unique', 'unique(component_id,document_id)',
-            _('Component and Document relation has to be unique !')),
+            'Component and Document relation has to be unique !'),
     ]
     
     @api.model
@@ -794,7 +795,7 @@ class plm_relation(models.Model):
             self.env['plm.logging'].create( values)
   
 #   Overridden methods for this entity
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         ret=False
         if vals:
@@ -834,7 +835,7 @@ class plm_relation(models.Model):
             check=self._context.get('internal_writing', False)
             bomIDs=getListIDs(ids)
             if not check and self.checkwrite( bomIDs):
-                raise UserError(_("Current Bill of Material of product isn't modifiable."))
+                raise UserError("Current Bill of Material of product isn't modifiable.")
 
             self._insertlog( bomIDs, changes=vals)
             result=self.validatechanges(bomIDs, vals)
@@ -910,7 +911,7 @@ class plm_material(models.Model):
     sequence     = fields.Integer  (string='Sequence',       help="Gives the sequence order when displaying a list of product categories.")
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
+        ('name_uniq', 'unique(name)', 'Raw Material has to be unique !'),
     ]
 
 
@@ -923,7 +924,7 @@ class plm_finishing(models.Model):
     sequence     = fields.Integer  (string='Sequence',       help="Gives the sequence order when displaying a list of product categories.")
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)', _('Raw Material has to be unique !')),
+        ('name_uniq', 'unique(name)', 'Raw Material has to be unique !'),
     ]
 
 
@@ -949,7 +950,7 @@ class plm_temporary(models.TransientModel):
     _name = "plm.temporary"
     _description = "Temporary Class"
 
-    name    =   fields.Char(_('Temp'), size=128)
+    name    =   fields.Char('Temp', size=128)
     revflag =   fields.Boolean('Update revisions', help='Use latest product revisions evaluating new BoM.', default=False)
 
     def action_create_normalBom(self):
@@ -963,9 +964,9 @@ class plm_temporary(models.TransientModel):
                 {"update_latest_revision": self.revflag}
                 ).create_normalBom_WF(self._context['active_ids'])
             ret={
-                'name': _('Bill of Materials'),
+                'name': 'Bill of Materials',
                 'view_type': 'form',
-                "view_mode": 'tree,form',
+                "view_mode": 'list,form',
                 'res_model': 'mrp.bom',
                 'type': 'ir.actions.act_window',
                 'domain': "[('product_id','in', [" + ','.join(map(str, self._context['active_ids'])) + "])]",
@@ -992,9 +993,9 @@ class plm_temporary(models.TransientModel):
                     revised.append(newID)
             if revised:
                 ret={
-                    'name': _('New Revisions'),
+                    'name': 'New Revisions',
                     'view_type': 'form',
-                    "view_mode": 'tree,form',
+                    "view_mode": 'list,form',
                     'res_model': active_model,
                     'type': 'ir.actions.act_window',
                     'domain': "[('id','in', [" + ','.join(map(str, revised)) + "])]",
@@ -1022,9 +1023,9 @@ class plm_temporary(models.TransientModel):
                     revised.append(newID)
             if revised:
                 ret={
-                    'name': _('New Revisions'),
+                    'name': 'New Revisions',
                     'view_type': 'form',
-                    "view_mode": 'tree,form',
+                    "view_mode": 'list,form',
                     'res_model': active_model,
                     'type': 'ir.actions.act_window',
                     'domain': "[('id','in', [" + ','.join(map(str, revised)) + "])]",
@@ -1049,9 +1050,9 @@ class plm_temporary(models.TransientModel):
             if doc_ids:
                 ret=objectType.CheckIn(doc_ids)
         ret={
-            'name': _('Checked In'),
+            'name': 'Checked In',
             'view_type': 'form',
-            "view_mode": 'tree,form',
+            "view_mode": 'list,form',
             'res_model': active_model,
             'type': 'ir.actions.act_window',
             'domain': "[]",
@@ -1076,9 +1077,9 @@ class plm_temporary(models.TransientModel):
             if doc_ids:
                 ret=objectType.CheckOut([doc_ids,"",""])                        
         ret={
-            'name': _('Checked Out'),
+            'name': 'Checked Out',
             'view_type': 'form',
-            "view_mode": 'tree,form',
+            "view_mode": 'list,form',
             'res_model': active_model,
             'type': 'ir.actions.act_window',
             'domain': "[]",

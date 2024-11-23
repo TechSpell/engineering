@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -181,13 +182,11 @@ class BomStructureAllReport(models.AbstractModel):
 
         return getLevelObjects(myObject,level+1)
 
-    @api.model
     def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}
 
-    @api.model
     def render_html(self, docids, data=None):
         report_obj = self.env['report']
         report = report_obj._get_report_from_name(self._template)
@@ -231,13 +230,11 @@ class BomStructureOneReport(models.AbstractModel):
 
         return getLevelObjects(myObject,level+1)
 
-    @api.model
     def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}
 
-    @api.model
     def render_html(self, docids, data=None):
         report_obj = self.env['report']
         report = report_obj._get_report_from_name(self._template)
@@ -301,13 +298,11 @@ class BomStructureAllSumReport(models.AbstractModel):
         result.extend(getLevelObjects(myObject,results,level+1))
         return result
 
-    @api.model
     def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}
 
-    @api.model
     def render_html(self, docids, data=None):
         report_obj = self.env['report']
         report = report_obj._get_report_from_name(self._template)
@@ -363,13 +358,11 @@ class BomStructureOneSumReport(models.AbstractModel):
 
         return result
 
-    @api.model
     def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}
 
-    @api.model
     def render_html(self, docids, data=None):
         report_obj = self.env['report']
         report = report_obj._get_report_from_name(self._template)
@@ -438,13 +431,11 @@ class BomStructureLeavesReport(models.AbstractModel):
         result.extend(getLevelObjects(myObject,results,listed,level+1))
         return result
 
-    @api.model
     def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}
 
-    @api.model
     def render_html(self, docids, data=None):
         report_obj = self.env['report']
         report = report_obj._get_report_from_name(self._template)
@@ -510,14 +501,12 @@ class BomStructureFlatReport(models.AbstractModel):
         results=summarizeBom(myObject,level+1,results)
         result.extend(getLevelObjects(myObject,results,listed,level+1))
         return result
-        
-    @api.model
+
     def _get_report_values(self, docids, data=None):
         return {'docs': self.env['mrp.bom'].browse(docids),
                 'bom_type': bom_type,
                 'get_children': self.get_children}
 
-    @api.model
     def render_html(self, docids, data=None):
         report_obj = self.env['report']
         report = report_obj._get_report_from_name(self._template)

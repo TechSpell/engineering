@@ -6,7 +6,6 @@
         <field name="name">plm.backupdoc.form</field>
         <field name="model">plm.backupdoc</field>
         <field name="priority" eval="1"/>
-        <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Backup Document" create="false" edit="false">
                <sheet>
@@ -42,7 +41,6 @@
     <record model="ir.ui.view" id="plm_backupdoc_search">
         <field name="name">plm.backupdoc.search</field>
         <field name="model">plm.backupdoc</field>
-        <field name="type">search</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
             <search string="Backup Document Set">
@@ -76,17 +74,16 @@
     <record model="ir.ui.view" id="plm_backupdoc_tree">
         <field name="name">plm.backupdoc.tree</field>
         <field name="model">plm.backupdoc</field>
-        <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Documents in Check-Out" create="false">
+            <list string="Documents in Check-Out" create="false">
                 <field name="userid" select="1"/>
                 <field name="create_date" select="1"/>
                 <field name="documentid" select="1"/>
                 <field name="revisionid" select="1"/>
                 <field name="minorrevision" select="1"/>
                 <field name="state" select="1"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -94,7 +91,7 @@
         <field name="name">Backup Data Set</field>
         <field name="res_model">plm.backupdoc</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field eval="False" name="filter"/>
         <field name="view_id" ref="plm_backupdoc_tree"/>
         <field name="search_view_id" ref="plm_backupdoc_search"/>
@@ -104,7 +101,6 @@
     <record id="restore_document_button_view" model="ir.ui.view">
         <field name="name">Restore Document</field>
         <field name="model">plm.temporary</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
         <form string="Restore Selected Document">
 			<field name="name" invisible="True"/>

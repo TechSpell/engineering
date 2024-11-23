@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -32,7 +33,7 @@ RETDMESSAGE=''
 class plm_temporary(models.TransientModel):
     _inherit = "plm.temporary"
 
-    name          = fields.Char       (  string=_('Part Number'), size=64)
+    name          = fields.Char       (  string='Part Number', size=64)
 
     ##  Specialized Actions callable interactively
     def action_create_spareBom(self):
@@ -54,16 +55,16 @@ class plm_temporary(models.TransientModel):
             criteria=[('product_tmpl_id','=',idd),('type','=','spbom'),('active','=',True)]
             objBoms=bomType.search( criteria )
             if objBoms:
-                raise UserError(_("Creating a new Spare BoM Error.\n\nBoM for Part {} already exists.".format(checkObj.name)))
+                raise UserError("Creating a new Spare BoM Error.\n\nBoM for Part {} already exists.".format(checkObj.name))
 
         productType.with_context(
                 {"update_latest_revision": self.revflag}
                 ).create_spareBom_WF(self._context['active_ids'])
 
         return {
-            'name': _('Bill of Materials'),
+            'name': 'Bill of Materials',
             'view_type': 'form',
-            "view_mode": 'tree,form',
+            "view_mode": 'list,form',
             'res_model': 'mrp.bom',
             'type': 'ir.actions.act_window',
             'domain': "[('product_id','in', [" + ','.join(map(str, self._context['active_ids'])) + "])]",
@@ -131,7 +132,7 @@ class plm_component(models.Model):
 class plm_description(models.Model):
     _inherit = "plm.description"
 
-    bom_tmpl    =   fields.Many2one('mrp.bom',_('Choose a BoM'), index=True, required=False, change_default=True, help=_("Select a  BoM as template to drive building Spare BoM."))
+    bom_tmpl    =   fields.Many2one('mrp.bom','Choose a BoM', index=True, required=False, change_default=True, help="Select a  BoM as template to drive building Spare BoM.")
 
     _defaults = {
         'bom_tmpl': lambda *a: False,

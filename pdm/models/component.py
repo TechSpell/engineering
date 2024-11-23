@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -43,8 +44,8 @@ class plm_component(models.Model):
     _name = 'product.product'
     _inherit = 'product.product'
 
-    create_date     =   fields.Datetime(_('Date Created'),     readonly=True)
-    write_date      =   fields.Datetime(_('Date Modified'),    readonly=True)
+    create_date     =   fields.Datetime('Date Created',     readonly=True)
+    write_date      =   fields.Datetime('Date Modified',    readonly=True)
 
     @property
     def _default_rev(self):
@@ -185,7 +186,7 @@ class plm_component(models.Model):
                     ('name', '=', name)
                 ])
             if len(results) > 0:
-                raise UserError(_("Update Part Error.\n\nPart {} already exists.\nClose with OK to reuse, with Cancel to discharge.".format(name)))
+                raise UserError("Update Part Error.\n\nPart {} already exists.\nClose with OK to reuse, with Cancel to discharge.".format(name))
             if not engineering_code:
                 return {'value': {'engineering_code': name}}
         return {}
@@ -405,7 +406,6 @@ class plm_component(models.Model):
                 break
         return ret
 
-    
     @api.model
     def NewRevision(self, ids=[], default=None):
         """
@@ -506,7 +506,6 @@ class plm_component(models.Model):
             listedParts.append(part['engineering_code'])
         return packDictionary(retValues)
 
-    
     @api.model
     def SaveOrUpdate(self, request=[], default=None):
         """
@@ -772,7 +771,6 @@ class plm_component(models.Model):
             documentType.logging_workflow(idMoves, action, status)
         return docIDs
 
-    @api.model
     def _iswritable(self):
         if self:
             checkState = ('draft')
@@ -789,7 +787,6 @@ class plm_component(models.Model):
                 return False
         return True
 
-    @api.model
     def ActionUpload(self, request=[], default=None):
         """
             Action to be executed after automatic upload
@@ -815,7 +812,7 @@ class plm_component(models.Model):
                    }
         operationParams = {
                             'status': status,
-                            'statusName': _('Uploaded'),
+                            'statusName': 'Uploaded',
                             'action': action,
                             'docaction': 'uploaddoc',
                             'excludeStatuses': ['uploaded', 'confirmed', 'transmitted','released', 'undermodify', 'obsoleted'],
@@ -847,7 +844,7 @@ class plm_component(models.Model):
                    }
         operationParams = {
                             'status': status,
-                            'statusName': _('Draft'),
+                            'statusName': 'Draft',
                             'action': action,
                             'docaction': 'draft',
                             'excludeStatuses': ['draft', 'released', 'undermodify', 'obsoleted'],
@@ -879,7 +876,7 @@ class plm_component(models.Model):
                    }
         operationParams = {
                             'status': status,
-                            'statusName': _('Confirmed'),
+                            'statusName': 'Confirmed',
                             'action': action,
                             'docaction': 'confirm',
                             'excludeStatuses': ['confirmed', 'transmitted', 'released', 'undermodify', 'obsoleted'],
@@ -911,7 +908,7 @@ class plm_component(models.Model):
                    }
         operationParams = {
                             'status': status,
-                            'statusName': _('Draft'),
+                            'statusName': 'Draft',
                             'action': action,
                             'docaction': 'correct',
                             'excludeStatuses': ['draft', 'transmitted', 'released', 'undermodify', 'obsoleted'],
@@ -942,7 +939,7 @@ class plm_component(models.Model):
         includeStatuses = ['confirmed']
         operationParams = {
                             'status': status,
-                            'statusName': _('Released'),
+                            'statusName': 'Released',
                             'action': action,
                             'docaction': 'release',
                             'excludeStatuses': excludeStatuses,
@@ -972,7 +969,7 @@ class plm_component(models.Model):
                    }
         operationParams = {
                             'status': status,
-                            'statusName': _('Obsoleted'),
+                            'statusName': 'Obsoleted',
                             'action': action,
                             'docaction': 'obsolete',
                             'excludeStatuses': ['draft', 'confirmed', 'transmitted', 'obsoleted'],
@@ -1002,7 +999,7 @@ class plm_component(models.Model):
                    }
         operationParams = {
                             'status': status,
-                            'statusName': _('Released'),
+                            'statusName': 'Released',
                             'action': action,
                             'docaction': 'reactivate',
                             'excludeStatuses': ['draft', 'confirmed', 'transmitted', 'released'],
@@ -1060,7 +1057,7 @@ class plm_component(models.Model):
         
         stopFlag, allIDs = self._get_recursive_parts(ids, excludeStatuses, includeStatuses, release=True)
         if len(allIDs) < 1 or stopFlag:
-            raise UserError(_("WorkFlow Error.\n\nOne or more parts cannot be released."))
+            raise UserError("WorkFlow Error.\n\nOne or more parts cannot be released.")
         allProdObjs = self.browse(allIDs)
         for oldObject in allProdObjs:
             objObsolete=self._getlatestbyrevision(oldObject.engineering_code, oldObject.engineering_revision)
@@ -1089,7 +1086,7 @@ class plm_component(models.Model):
 
     #   Overridden methods for this entity
 
-    @api.model
+    @api.model_create_multi
     def create(self, vals):
         ret=False
         if vals and vals.get('name', False):

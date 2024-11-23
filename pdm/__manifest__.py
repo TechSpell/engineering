@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2022 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2023-11-26
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -88,12 +89,9 @@ Supported Editors :
              'views/component_view.xml',
              'views/document_relations.xml',
              'views/relations_view.xml',
-             'views/description_sequence.xml',
              'views/description_view.xml',
              'views/sparebom_view.xml',            
-             'views/material_sequence.xml',
              'views/material_view.xml',
-             'views/finishing_sequence.xml',
              'views/finishing_view.xml',
              'views/codelist_view.xml',
              'views/doculist_view.xml',
@@ -110,6 +108,9 @@ Supported Editors :
              'reports/report/document_structure_templates.xml',
              'reports/mrp_report_structure.xml',
              'data/scheduled_action.xml',
+             'data/description_sequence.xml',
+             'data/finishing_sequence.xml',
+             'data/material_sequence.xml',
        ],
     'assets': {
             'web.assets_backend': [

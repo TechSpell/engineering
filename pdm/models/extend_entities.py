@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -136,7 +137,6 @@ class plm_relation(models.Model):
 
 #   Overridden methods for this entity
 
-#     @api.model
 #     def _bom_find(self, product_tmpl=None, product=None, picking_type=None, company_id=False, bomType='normal'):
 #         """ Finds BoM for particular product, picking and company """
 #         domain = ['&',('type', '=', bomType)]
@@ -301,35 +301,35 @@ class plm_check_product(models.TransientModel):
     _name = "plm.check.product"
     _description = "Products to be checked"
     
-    temp_id         =   fields.Many2one ('plm.temporary',   index=True,             string=_('Workflow Check'), ondelete='cascade')
-    part_id         =   fields.Many2one ('product.product', index=True,             string=_('Part'),           ondelete='cascade')
-    name            =   fields.Char     (related="part_id.name",                    string=_("Product"),        store=False)
-    revision        =   fields.Integer  (related="part_id.engineering_revision",    string=_("Revision"),       store=False)
-    status          =   fields.Selection(related="part_id.state",                   string=_("Status"),         store=False)
-    description     =   fields.Html     (related="part_id.description",             string=_("Description"),    store=False)
-    reason          =   fields.Char     (string=_("Notes"),                                                                )
-    level           =   fields.Integer  (string=_("Level"),                                                                )
-    choice          =   fields.Boolean  (string=_("Choice"),                                                               )
-    discharge       =   fields.Boolean  (string=_("Discharge"),                     default=False                          )
-    notallowalble   =   fields.Boolean  (string=_("Not Allowalble"),                default=False                          )
+    temp_id         =   fields.Many2one ('plm.temporary',   index=True,             string='Workflow Check', ondelete='cascade')
+    part_id         =   fields.Many2one ('product.product', index=True,             string='Part',           ondelete='cascade')
+    name            =   fields.Char     (related="part_id.name",                    string="Product",        store=False)
+    revision        =   fields.Integer  (related="part_id.engineering_revision",    string="Revision",       store=False)
+    status          =   fields.Selection(related="part_id.state",                   string="Status",         store=False)
+    description     =   fields.Html     (related="part_id.description",             string="Description",    store=False)
+    reason          =   fields.Char     (string="Notes",                                                                )
+    level           =   fields.Integer  (string="Level",                                                                )
+    choice          =   fields.Boolean  (string="Choice",                                                               )
+    discharge       =   fields.Boolean  (string="Discharge",                     default=False                          )
+    notallowalble   =   fields.Boolean  (string="Not Allowalble",                default=False                          )
 
 
 class plm_check_document(models.TransientModel):
     _name = "plm.check.document"
     _description = "Documents to be checked"
     
-    temp_id         =   fields.Many2one ('plm.temporary',   index=True,         string=_('Workflow Check'),     ondelete='cascade')
-    docu_id         =   fields.Many2one ('plm.document',    index=True,         string=_('Document'),           ondelete='cascade')
-    name            =   fields.Char     (related="docu_id.name",                string=_("Document"),           store=False)
-    revision        =   fields.Integer  (related="docu_id.revisionid",          string=_("Revision"),           store=False)
-    minor           =   fields.Char     (related="docu_id.minorrevision",       string=_("Minor Revision"),     store=False)
-    status          =   fields.Selection(related="docu_id.state",               string=_("Status"),             store=False)
-    description     =   fields.Text     (related="docu_id.description",         string=_("Description"),        store=False)
-    reason          =   fields.Char     (string=_("Notes"),                                                                )
-    level           =   fields.Integer  (string=_("Level"),                                                                )
-    choice          =   fields.Boolean  (string=_("Choice"),                                                               )
-    discharge       =   fields.Boolean  (string=_("Discharge"),                 default=False                              )
-    notallowalble   =   fields.Boolean  (string=_("Not Allowalble"),            default=False                              )
+    temp_id         =   fields.Many2one ('plm.temporary',   index=True,         string='Workflow Check',     ondelete='cascade')
+    docu_id         =   fields.Many2one ('plm.document',    index=True,         string='Document',           ondelete='cascade')
+    name            =   fields.Char     (related="docu_id.name",                string="Document",           store=False)
+    revision        =   fields.Integer  (related="docu_id.revisionid",          string="Revision",           store=False)
+    minor           =   fields.Char     (related="docu_id.minorrevision",       string="Minor Revision",     store=False)
+    status          =   fields.Selection(related="docu_id.state",               string="Status",             store=False)
+    description     =   fields.Text     (related="docu_id.description",         string="Description",        store=False)
+    reason          =   fields.Char     (string="Notes",                                                                )
+    level           =   fields.Integer  (string="Level",                                                                )
+    choice          =   fields.Boolean  (string="Choice",                                                               )
+    discharge       =   fields.Boolean  (string="Discharge",                 default=False                              )
+    notallowalble   =   fields.Boolean  (string="Not Allowalble",            default=False                              )
 
 
 class plm_temporary(models.TransientModel):
@@ -351,7 +351,7 @@ class plm_temporary(models.TransientModel):
                     break
             temp_id.executable = ret
 
-    part_ids        =   fields.One2many ('plm.check.product',  'temp_id', index=True, string=_('Products to be checked')   )
-    docu_ids        =   fields.One2many ('plm.check.document', 'temp_id', index=True, string=_('Documents to be checked')  )
-    executed        =   fields.Boolean  (string=_("Executed"),            default=False                                    )
-    executable      =   fields.Boolean  (string=_("Executable"),          default=True, compute = _check_part_compute      )
+    part_ids        =   fields.One2many ('plm.check.product',  'temp_id', index=True, string='Products to be checked'   )
+    docu_ids        =   fields.One2many ('plm.check.document', 'temp_id', index=True, string='Documents to be checked'  )
+    executed        =   fields.Boolean  (string="Executed",            default=False                                    )
+    executable      =   fields.Boolean  (string="Executable",          default=True, compute = _check_part_compute      )

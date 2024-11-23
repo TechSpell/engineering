@@ -23,10 +23,9 @@
 	    <record model="ir.ui.view" id="plm_config_settings_tree">
 	        <field name="name">plm.config.settings</field>
 	        <field name="model">plm.config.settings</field>
-	        <field name="type">tree</field>
 	        <field name="priority" eval="10"/>
 	        <field name="arch" type="xml">
-	            <tree string="Settings">
+	            <list string="Settings">
 	                <field name="plm_service_id" select="True"/>
 					<field name="activated_id" invisible="True" />  
 					<field name="active_editor" /> 
@@ -39,14 +38,13 @@
 					<field name="active_os_arch" />
 					<field name="node_id" invisible="True" />
 					<field name="active_kind" />
-				</tree>
+				</list>
 	        </field>
 	    </record>
 
 	    <record model="ir.ui.view" id="plm_config_settings_search">
 	        <field name="name">plm.config.settings</field>
 	        <field name="model">plm.config.settings</field>
-	        <field name="type">search</field>
 	        <field name="priority" eval="10"/>
 	        <field name="arch" type="xml">
 				<search string="Settings">
@@ -72,7 +70,6 @@
     <record model="ir.ui.view" id="plm_config_settings_form">
         <field name="name">plm.config.settings</field>
         <field name="model">plm.config.settings</field>
-        <field name="type">form</field>
         <field name="priority" eval="5"/>
         <field name="arch" type="xml">
         <form string="Installed"  version="7.0">
@@ -96,7 +93,7 @@
                                     <field name="node_id"  />
                                     <field name="active_kind" />
                               </group>
-                              <group colspan="4" col="4" invisible="activated_id != False">
+                              <group colspan="4" col="4" invisible="activated_id == False">
                                     <field name="opt_editbom" />
                                     <field name="opt_editreleasedbom" />
                                     <field name="opt_obsoletedinbom"  />
@@ -154,7 +151,7 @@
         <field name="name">Options</field>
         <field name="res_model">plm.config.settings</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="view_id" ref="plm_config_settings_tree"/>
      </record>
 

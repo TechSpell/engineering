@@ -5,7 +5,6 @@
         <field name="name">plm.document</field>
         <field name="model">plm.document</field>
         <field name="priority" eval="1"/>
-        <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Document"  version="7.0">
                <header name="WFArea">
@@ -103,10 +102,9 @@
     <record model="ir.ui.view" id="plm_document_tree">
         <field name="name">plm.document</field>
         <field name="model">plm.document</field>
-        <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-			<tree string="Documents">
+			<list string="Documents">
                 <field name="name" select="True"/>
                 <field name="revisionid" select="True"/>
                 <field name="minorrevision" select="True"/>
@@ -117,14 +115,13 @@
                 <field name="create_date" select="True"/>
                 <field name="write_uid" select="True"/>
                 <field name="write_date" select="True"/>
-         	</tree>
+         	</list>
          </field>
     </record>
 
     <record model="ir.ui.view" id="plm_document_search">
 		<field name="name">plm.document</field>
 		<field name="model">plm.document</field>
-		<field name="type">search</field>
 		<field name="priority" eval="1"/>
 		<field name="arch" type="xml">
 			<search string="Documents">
@@ -212,7 +209,6 @@
         <field name="name">plm.edit.document</field>
         <field name="model">plm.document</field>
         <field name="priority" eval="50"/>
-        <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Document">
             	<group colspan="8" col="8">
@@ -282,7 +278,7 @@
     	<field name="name">Documents</field>
      	<field name="res_model">plm.document</field>
         <field name="type">ir.actions.act_window</field>
-       	<field name="view_mode">tree,form</field> 
+       	<field name="view_mode">list,form</field> 
         <field name="context">{"search_default_latest":1}</field>      
     </record>
 
@@ -299,7 +295,6 @@
     <record id="plm_document_newrevision" model="ir.ui.view">
         <field name="name">plm.document.new_revision</field>
         <field name="model">plm.temporary</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
 	        <form string="Creating a Document New Revision">
 				<field name="name" invisible="True"/>
@@ -330,7 +325,6 @@
    <record id="plm_document_checkin" model="ir.ui.view">
         <field name="name">plm.document.checkin</field>
         <field name="model">plm.temporary</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
 	        <form string="Moving to Check-In">
 				<field name="name" invisible="True"/>
@@ -348,7 +342,7 @@
     	<field name="name">Check-In</field>
      	<field name="res_model">plm.temporary</field>
         <field name="binding_model_id" ref="model_plm_document"/>
-       	<field name="view_mode">tree,form</field> 
+       	<field name="view_mode">list,form</field> 
         <field name="view_id" ref="plm_document_checkin"/>
         <field name="context">{"search_default_latest":1}</field>      
         <field name="target">new</field>
@@ -358,7 +352,6 @@
     <record id="plm_document_checkout" model="ir.ui.view">
         <field name="name">plm.document.checkout</field>
         <field name="model">plm.temporary</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
 	        <form string="Moving to Check-Out">
 				<field name="name" invisible="True"/>

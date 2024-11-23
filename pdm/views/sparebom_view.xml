@@ -5,7 +5,6 @@
     <record id="plm_component_manage_sparebom" model="ir.ui.view">
         <field name="name">plm.relation.spare</field>
         <field name="model">plm.temporary</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
         <form string="Creation of Spare BoM">
         	<group>

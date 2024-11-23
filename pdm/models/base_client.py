@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -53,33 +54,33 @@ class plm_config_settings(models.Model):
     def cancel(self):
         pass
 
-    plm_service_id  =   fields.Char(_('Service ID'),            size=128,   help=_("Insert the Service ID and register your PLM module. Ask it to Didotech."))
-    activated_id    =   fields.Char(_('Activated PLM client'),  size=128,   help=_("Listed activated Client."))
-    active_editor   =   fields.Char(_('Client Editor Name'),    size=128,   help=_("Used Editor Name"))
-    active_node     =   fields.Char(_('OS machine name'),       size=128,   help=_("Editor Machine name"))
-    expire_date     =   fields.Datetime(_('Expiration Date'),               help=_("Expiration Date"))
-    active_os       =   fields.Char(_('OS name'),               size=128,   help=_("Editor OS name"))
-    active_os_rel   =   fields.Char(_('OS release'),            size=128,   help=_("Editor OS release"))
-    active_os_ver   =   fields.Char(_('OS version'),            size=128,   help=_("Editor OS version"))
-    active_os_arch  =   fields.Char(_('OS architecture'),       size=128,   help=_("Editor OS architecture"))
-    node_id         =   fields.Char(_('Registered PLM client'), size=128,   help=_("Listed registered Client."))
-    domain_id       =   fields.Char(_('Domain Name'),           size=128,   help=_("Listed domain name."))
-    active_kind     =   fields.Char(_('Kind of license'),       size=128,   help=_("Kind of license code ('node-locked' = Local individual license, 'domain-assigned' = Domain level license)."))
+    plm_service_id  =   fields.Char('Service ID',            size=128,   help="Insert the Service ID and register your PLM module. Ask it to Didotech.")
+    activated_id    =   fields.Char('Activated PLM client',  size=128,   help="Listed activated Client.")
+    active_editor   =   fields.Char('Client Editor Name',    size=128,   help="Used Editor Name")
+    active_node     =   fields.Char('OS machine name',       size=128,   help="Editor Machine name")
+    expire_date     =   fields.Datetime('Expiration Date',               help="Expiration Date")
+    active_os       =   fields.Char('OS name',               size=128,   help="Editor OS name")
+    active_os_rel   =   fields.Char('OS release',            size=128,   help="Editor OS release")
+    active_os_ver   =   fields.Char('OS version',            size=128,   help="Editor OS version")
+    active_os_arch  =   fields.Char('OS architecture',       size=128,   help="Editor OS architecture")
+    node_id         =   fields.Char('Registered PLM client', size=128,   help="Listed registered Client.")
+    domain_id       =   fields.Char('Domain Name',           size=128,   help="Listed domain name.")
+    active_kind     =   fields.Char('Kind of license',       size=128,   help="Kind of license code ('node-locked' = Local individual license, 'domain-assigned' = Domain level license).")
 
 #   Option fields managed for each Service ID
-    opt_editbom             =   fields.Boolean(_("Edit BoM not in 'draft'"),                            help=_("Allows to edit BoM if product is not in 'Draft' status. Default = False."))
-    opt_editreleasedbom     =   fields.Boolean(_("Edit BoM in 'released'"),                             help=_("Allows to edit BoM if product is in 'Released' status. Default = False."))
-    opt_obsoletedinbom      =   fields.Boolean(_("Allow Obsoleted in BoM"),                             help=_("Allow Obsoleted products releasing a BoM. Default = False."),                                       default = False)
-    opt_archivedinbom       =   fields.Boolean(_("Allow Archived in BoM"),                              help=_("Allow to use archived products uploading a BoM from Client. Default = False."),                                       default = False)
-    opt_duplicatedrowsinbom =   fields.Boolean(_("Allow rows duplicated in BoM"),                       help=_("Allows to duplicate product rows editing a BoM. Default = True."),                                  default = True)
-    opt_autonumbersinbom    =   fields.Boolean(_("Allow to assign automatic positions in BoM"),         help=_("Allows to assign automatically item positions editing a BoM. Default = False."))
-    opt_autostepinbom       =   fields.Integer(_("Assign step to automatic positions in BoM"),          help=_("Allows to use this step assigning item positions, editing a BoM. Default = 5."),                    default = 5)
-    opt_autotypeinbom       =   fields.Boolean(_("Assign automatically types in BoM"),                  help=_("Allows to use the same type of BoM in all new items, editing a BoM. Default = True."),              default = True)
-    opt_showWFanalysis      =   fields.Boolean(_("Show workflow Analysis before to move"),              help=_("Allows to analyze what will happen moving workflow for a Product/document. Default = False."),      default = False)
-    opt_mangeWFDocByProd    =   fields.Boolean(_("Manage Product workflow linked to Documents"),        help=_("Allows to manage Product workflow moving based on Document capabilities. Default = False."),        default = False)
-    opt_mgeCopyBoMProd      =   fields.Boolean(_("Manage copy of the BoM linked to Product"),           help=_("Allows to copy the 'normal' Bom related to Product performing a New Revision. Default = False."),   default = False)
-    opt_mgeCopyBoMRoute     =   fields.Boolean(_("Manage copy of the Routing linked to BoM"),           help=_("Allows to copy the Routing related to Bom performing a New Revision. Default = False."),            default = False)
-    opt_mgeResetTmRoute     =   fields.Boolean(_("Manage reset of the timing registered on Routing"),   help=_("Allows to reset the timing registered on Routing performing a New Revision. Default = False."),     default = False)
+    opt_editbom             =   fields.Boolean("Edit BoM not in 'draft'",                            help="Allows to edit BoM if product is not in 'Draft' status. Default = False.")
+    opt_editreleasedbom     =   fields.Boolean("Edit BoM in 'released'",                             help="Allows to edit BoM if product is in 'Released' status. Default = False.")
+    opt_obsoletedinbom      =   fields.Boolean("Allow Obsoleted in BoM",                             help="Allow Obsoleted products releasing a BoM. Default = False.",                                       default = False)
+    opt_archivedinbom       =   fields.Boolean("Allow Archived in BoM",                              help="Allow to use archived products uploading a BoM from Client. Default = False.",                                       default = False)
+    opt_duplicatedrowsinbom =   fields.Boolean("Allow rows duplicated in BoM",                       help="Allows to duplicate product rows editing a BoM. Default = True.",                                  default = True)
+    opt_autonumbersinbom    =   fields.Boolean("Allow to assign automatic positions in BoM",         help="Allows to assign automatically item positions editing a BoM. Default = False.")
+    opt_autostepinbom       =   fields.Integer("Assign step to automatic positions in BoM",          help="Allows to use this step assigning item positions, editing a BoM. Default = 5.",                    default = 5)
+    opt_autotypeinbom       =   fields.Boolean("Assign automatically types in BoM",                  help="Allows to use the same type of BoM in all new items, editing a BoM. Default = True.",              default = True)
+    opt_showWFanalysis      =   fields.Boolean("Show workflow Analysis before to move",              help="Allows to analyze what will happen moving workflow for a Product/document. Default = False.",      default = False)
+    opt_mangeWFDocByProd    =   fields.Boolean("Manage Product workflow linked to Documents",        help="Allows to manage Product workflow moving based on Document capabilities. Default = False.",        default = False)
+    opt_mgeCopyBoMProd      =   fields.Boolean("Manage copy of the BoM linked to Product",           help="Allows to copy the 'normal' Bom related to Product performing a New Revision. Default = False.",   default = False)
+    opt_mgeCopyBoMRoute     =   fields.Boolean("Manage copy of the Routing linked to BoM",           help="Allows to copy the Routing related to Bom performing a New Revision. Default = False.",            default = False)
+    opt_mgeResetTmRoute     =   fields.Boolean("Manage reset of the timing registered on Routing",   help="Allows to reset the timing registered on Routing performing a New Revision. Default = False.",     default = False)
 #   Option fields managed for each Service ID
 
     @api.model
@@ -337,7 +338,6 @@ class plm_config_settings(models.Model):
         """
         return packDictionary(self.sudo().getDataModel(request, default))
 
-    @api.model
     def getDataModel(self, request=None, default=None):
         """
             Get properties as assigned.
@@ -357,7 +357,6 @@ class plm_config_settings(models.Model):
                                                 ] })
         return retValues
 
-    @api.model
     def checkViewExistence(self, criteria=None):
         ret=None
         if criteria:
@@ -366,7 +365,6 @@ class plm_config_settings(models.Model):
                 break
         return ret
 
-    @api.model
     def getViewArchitecture(self, criteria=None):
         ret=None
         if criteria:
@@ -396,9 +394,9 @@ class plm_config_settings(models.Model):
         criteria=None
         viewName=request
         if viewName:
-            criteria=[('name','=','{}.inherit'.format(viewName)),('type','=','tree')]
+            criteria=[('name','=','{}.inherit'.format(viewName)),('type','=','list')]
             if not self.sudo().checkViewExistence(criteria):
-                criteria=[('name','=',viewName),('type','=','tree')]
+                criteria=[('name','=',viewName),('type','=','list')]
         return self.sudo().getViewArchitecture(criteria)
 
     @api.model
@@ -414,7 +412,7 @@ class plm_config_settings(models.Model):
         criteria=None
         modelName=request
         if modelName:
-            criteria=[('model','=',modelName),('type','=','tree')]
+            criteria=[('model','=',modelName),('type','=','list')]
         return self.sudo().getViewArchitecture(criteria)
 
     @api.model
@@ -631,7 +629,6 @@ class plm_config_settings(models.Model):
                 dictvalues.update({ "{}".format(objectID.id): dict_data })
         return values,dictvalues
 
-    
     def getValueProperties(self, userType=False, editor="", codeProperties={}, propNames=[]):
         """
             Get Properties (as dictionary) to be managed in editor.
@@ -1299,6 +1296,7 @@ class plm_config_settings(models.Model):
                    
         return tables, quick_tables, columns
     
+    @api.model
     def Refresh(self, request=None, default=None):
         """
             Refreshes Materialized Views.
@@ -1621,14 +1619,14 @@ class plm_logging(models.Model):
     _table = "plm_logging"
     _order = 'name'
 
-    name        = fields.Char     (             string=_('Name'),           size=64, help=_("Entity name."))
-    revision    = fields.Char     (             string=_('Revision'),       size=64, help=_("Revision involved."))
-    file        = fields.Char     (             string=_('File'),           size=64, help=_("File name (in case of documents)."))
-    type        = fields.Char     (             string=_('Type'),           size=64, help=_("Entity Type."))
-    op_type     = fields.Char     (             string=_('Operation Type'), size=64, help=_("Operation Type."))
-    op_note     = fields.Char     (             string=_('Operation Note'), size=64, help=_("Description of Operation."))
-    op_date     = fields.Datetime (             string=_('Operation Date'),          help=_("Operation Date."))
-    userid      = fields.Many2one ('res.users', string=_('Related User'), index=True,help=_("Related User."))
+    name        = fields.Char     (             string='Name',           size=64, help="Entity name.")
+    revision    = fields.Char     (             string='Revision',       size=64, help="Revision involved.")
+    file        = fields.Char     (             string='File',           size=64, help="File name (in case of documents).")
+    type        = fields.Char     (             string='Type',           size=64, help="Entity Type.")
+    op_type     = fields.Char     (             string='Operation Type', size=64, help="Operation Type.")
+    op_note     = fields.Char     (             string='Operation Note', size=64, help="Description of Operation.")
+    op_date     = fields.Datetime (             string='Operation Date',          help="Operation Date.")
+    userid      = fields.Many2one ('res.users', string='Related User', index=True,help="Related User.")
 
     #######################################################################################################################################33
 
@@ -1637,7 +1635,7 @@ class plm_logging(models.Model):
     def unlink(self):
         return False
 
-    @api.model
+    @api.model_create_multi
     def create(self, values={}):
         newID=False
         if values and values.get('name', False):

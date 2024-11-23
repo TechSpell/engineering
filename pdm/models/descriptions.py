@@ -5,8 +5,9 @@
 #    Copyright (C) 2011-2015 OmniaSolutions srl (<http://www.omniasolutions.eu>). All Rights Reserved
 #    Copyright (C) 2016-2020 Techspell srl (<http://www.techspell.eu>). All Rights Reserved
 #    Copyright (C) 2020-2021 Didotech srl (<http://www.didotech.com>). All Rights Reserved
+#    Copyright (C) 2024-2024 Codebeex srl (<http://www.codebeex.com>). All Rights Reserved
 #    
-#    Created on : 2018-03-01
+#    Created on : 2024-10-04
 #    Author : Fabio Colognesi
 #
 #    This program is free software: you can redistribute it and/or modify
@@ -34,18 +35,18 @@ class plm_description(models.Model):
     _name = "plm.description"
     _description = "Descriptions"
 
-    name            = fields.Char(_('Note to Description'), size=128)
-    description     = fields.Char(_('Standard Description'), size=128)
-    description_en  = fields.Char(_('Description English'), size=128)
-    umc1            = fields.Char(_('UM / Feature 1'), size=32,  help=_("Allow to specify a unit measure or a label for the feature."))
-    fmt1            = fields.Char(_('Format Feature 1'), size=32, help=_("Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."))
-    umc2            = fields.Char(_('UM / Feature 2'), size=32, help=_("Allow to specify a unit measure or a label for the feature."))
-    fmt2            = fields.Char(_('Format Feature 2'), size=32, help=_("Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."))
-    umc3            = fields.Char(_('UM / Feature 3'), size=32, help=_("Allow to specify a unit measure or a label for the feature."))
-    fmt3            = fields.Char(_('Format Feature 3'), size=32, help=_("Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value."))
-    fmtend          = fields.Char(_('Format Feature Composed'), size=32, help=_("Allow to represent a normalized composition of technical features : %s%s allows to build chained values."))
-    unitab          = fields.Char(_('Normative Rule'), size=32, help=_("Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description."))
-    sequence        = fields.Integer(_('Sequence'), help=_("Assign the sequence order when displaying a list of product categories."))
+    name            = fields.Char('Note to Description', size=128)
+    description     = fields.Char('Standard Description', size=128)
+    description_en  = fields.Char('Description English', size=128)
+    umc1            = fields.Char('UM / Feature 1', size=32,  help="Allow to specify a unit measure or a label for the feature.")
+    fmt1            = fields.Char('Format Feature 1', size=32, help="Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value.")
+    umc2            = fields.Char('UM / Feature 2', size=32, help="Allow to specify a unit measure or a label for the feature.")
+    fmt2            = fields.Char('Format Feature 2', size=32, help="Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value.")
+    umc3            = fields.Char('UM / Feature 3', size=32, help="Allow to specify a unit measure or a label for the feature.")
+    fmt3            = fields.Char('Format Feature 3', size=32, help="Allow to represent the measure: %s%s allow to build um and value, %s builds only value, none builds only value.")
+    fmtend          = fields.Char('Format Feature Composed', size=32, help="Allow to represent a normalized composition of technical features : %s%s allows to build chained values.")
+    unitab          = fields.Char('Normative Rule', size=32, help="Specify normative rule (UNI, ISO, DIN...). It will be queued to build the product description.")
+    sequence        = fields.Integer('Sequence', help="Assign the sequence order when displaying a list of product categories.")
 
     _defaults = {
         'description': lambda *a: False,
@@ -79,15 +80,15 @@ class plm_description(models.Model):
 class plm_component(models.Model):
     _inherit = 'product.product'
 
-    std_description     =   fields.Many2one('plm.description',_('Standard Description'), index=True, 
+    std_description     =   fields.Many2one('plm.description','Standard Description', index=True, 
                                             required=False, change_default=True, 
-                                            help=_("Select standard description for current product."))
-    std_umc1            =   fields.Char(_('UM / Feature 1'), size=32, help=_("Allow to specifiy a unit measure for the first feature."))
-    std_value1          =   fields.Float(_('Value 1'), help=_("Assign value to the first characteristic."))
-    std_umc2            =   fields.Char(_('UM / Feature 2'), size=32, help=_("Allow to specifiy a unit measure for the second feature."))
-    std_value2          =   fields.Float(_('Value 2'), help=_("Assign value to the second characteristic."))
-    std_umc3            =   fields.Char(_('UM / Feature 3'), size=32, help=_("Allow to specifiy a unit measure for the third feature."))
-    std_value3          =   fields.Float(_('Value 3'), help=_("Assign value to the second characteristic."))
+                                            help="Select standard description for current product.")
+    std_umc1            =   fields.Char('UM / Feature 1', size=32, help="Allow to specifiy a unit measure for the first feature.")
+    std_value1          =   fields.Float('Value 1', help="Assign value to the first characteristic.")
+    std_umc2            =   fields.Char('UM / Feature 2', size=32, help="Allow to specifiy a unit measure for the second feature.")
+    std_value2          =   fields.Float('Value 2', help="Assign value to the second characteristic.")
+    std_umc3            =   fields.Char('UM / Feature 3', size=32, help="Allow to specifiy a unit measure for the third feature.")
+    std_value3          =   fields.Float('Value 3', help="Assign value to the second characteristic.")
 
     _defaults = {
         'std_description': lambda *a: False,

@@ -4,11 +4,10 @@
     <record model="ir.ui.view" id="view_plm_doculist">
         <field name="name">plm.doculist.view</field>
         <field name="model">plm.doculist</field>
-        <field name="type">form</field>
         <field name="arch" type="xml">
             <form string="Document Number Rule">
-                <group colspan="2" col="2">
-                    <field name="name" select="1" />
+                <group colspan="4" col="6">
+                    <field name="name" select="1" colspan="4"/>
                     <field name="description" select="1" />
                     <field name="sequence_id"/>
                 </group>
@@ -19,14 +18,13 @@
     <record model="ir.ui.view" id="plm_view_doculist_tree">
         <field name="name">plm.view.doculist.tree</field>
         <field name="model">plm.doculist</field>
-        <field name="type">tree</field>
         <field name="priority" eval="1"/>
         <field name="arch" type="xml">
-            <tree string="Document Numbers Rules">
+            <list string="Document Numbers Rules">
                    <field name="name"/>
                    <field name="description"/>
                    <field name="sequence_id"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -34,7 +32,7 @@
         <field name="name">Document Number Rules</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">plm.doculist</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="view_id" ref="plm_view_doculist_tree"/>
     </record>
     
