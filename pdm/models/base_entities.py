@@ -278,7 +278,7 @@ class plm_relation(models.Model):
                         'userid': self._uid,
                         }
                 
-                objectItem=self.env['plm.logging'].create(values)
+                objectItem=self.env['plm.logging'].create([values])
                 if objectItem:
                     newID=objectItem
         return newID

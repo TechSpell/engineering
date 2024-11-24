@@ -65,7 +65,7 @@ class plm_component(models.Model):
                 op_type='change value'
                 op_note=self.env['plm.logging'].getchanges(objID, changes)
             if op_note:
-                values={
+                value={
                         'name': objID.name,
                         'revision': "{major}".format(major=objID.engineering_revision),
                         'type': self._name,
@@ -74,7 +74,7 @@ class plm_component(models.Model):
                         'op_date': datetime.now(),
                         'userid': self._uid,
                         }
-                objectItem=self.env['plm.logging'].create(values)
+                objectItem=self.env['plm.logging'].create([value])
                 if objectItem:
                     ret=True
         return ret
@@ -1130,7 +1130,7 @@ class plm_component(models.Model):
                                 'op_date': datetime.now(),
                                 'userid': self._uid,
                                 }
-                        self.env['plm.logging'].create(value)
+                        self.env['plm.logging'].create([value])
                 except Exception as ex:
                     raise Exception(" (%r). It has tried to create with values : (%r)." % (ex, vals))
             elif not(self.env.context.get('create_from_tmpl') == None):
@@ -1146,7 +1146,7 @@ class plm_component(models.Model):
                             'op_date': datetime.now(),
                             'userid': self._uid,
                             }
-                    self.env['plm.logging'].create(value)
+                    self.env['plm.logging'].create([value])
             else:
                 ret=super(plm_component, self).create([vals])
         return ret

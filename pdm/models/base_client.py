@@ -1635,14 +1635,15 @@ class plm_logging(models.Model):
     def unlink(self):
         return False
 
-    @api.model
-    def create(self, values={}):
+    @api.model_create_multi
+    def create(self, values=[{}]):
         newID=False
-        if values and values.get('name', False):
-            try:
-                newID=super(plm_logging, self).create(values)
-            except Exception as ex:
-                logging.error("(%r). It has tried to create with values : (%r)." % (ex, values))
+        for vals in values:
+            if vals and vals.get('name', False):
+                try:
+                    newID=super(plm_logging, self).create([vals])
+                except Exception as ex:
+                    logging.error("(%r). It has tried to create with values : (%r)." % (ex, vals))
         return newID
 
     def getchanges(self, objectID=None, values={}):

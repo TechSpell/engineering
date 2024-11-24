@@ -124,7 +124,7 @@ class plm_document(models.Model):
                 thischanges=dict(zip(changes.keys(),changes.values()))
                 op_note=self.env['plm.logging'].getchanges(objID, thischanges)
             if op_note:
-                values={
+                value={
                         'name': objID.name,
                         'revision': "{major}-{minor}".format(major=objID.revisionid,minor=objID.minorrevision),
                         'file': objID.datas_fname,
@@ -134,7 +134,7 @@ class plm_document(models.Model):
                         'op_date': datetime.now(),
                         'userid': self._uid,
                         }
-                objectItem=self.env['plm.logging'].create(values)
+                objectItem=self.env['plm.logging'].create([value])
                 if objectItem:
                     ret=True
         return ret
@@ -1821,7 +1821,7 @@ class plm_checkout(models.Model):
                 op_type="{type}".format(type=note['type'])
                 op_note="{reason}".format(reason=note['reason'])
             if op_note:
-                values={
+                value={
                         'name': objID.name,
                         'revision': "{major}-{minor}".format(major=objID.revisionid,minor=objID.minorrevision),
                         'file': objID.datas_fname,
@@ -1831,7 +1831,7 @@ class plm_checkout(models.Model):
                         'op_date': datetime.now(),
                         'userid': self._uid,
                         }
-                objectItem=self.env['plm.logging'].create(values)
+                objectItem=self.env['plm.logging'].create([values])
                 if objectItem:
                     ret=True
         return ret
@@ -2069,7 +2069,7 @@ class plm_backupdoc(models.Model):
                 op_type='change value'
                 op_note=self.env['plm.logging'].getchanges(objID, changes)
             if op_note:
-                values={
+                value={
                         'name': objID.name,
                         'revision': "{major}-{minor}".format(major=objID.revisionid,minor=objID.minorrevision),
                         'file': objID.datas_fname,
@@ -2079,7 +2079,7 @@ class plm_backupdoc(models.Model):
                         'op_date': datetime.now(),
                         'userid': self._uid,
                         }
-                objectItem=self.env['plm.logging'].create(values)
+                objectItem=self.env['plm.logging'].create([value])
                 if objectItem:
                     ret=True
         return ret
