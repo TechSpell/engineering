@@ -1087,40 +1087,57 @@ class plm_component(models.Model):
     #   Overridden methods for this entity
 
     @api.model_create_multi
-    def create(self, vals):
+    def create(self, values=[{}]):
         ret=False
-        if vals and vals.get('name', False):
-            if (vals.get('engineering_code', False)==False) or (vals['engineering_code'] == ''):
-                vals['engineering_code'] = vals['name']
-            criteria = [
-                ('active', 'in', [True,False]),
-                '|',
-                ('name', '=', vals['name']),
-                ('engineering_code', '=', vals['engineering_code']),
-            ]
-            existingIDs = self.search(criteria,
-                                      order='engineering_revision')
-            major = vals.get('engineering_revision', None)
-            major= self._default_rev if isVoid(major) else major
-            vals['engineering_revision'] = major
-
-            if existingIDs:
-                existingID = existingIDs[len(existingIDs) - 1]
-                if ('engineering_revision' in vals):
-                    existObj = existingID
-                    if existObj:
-                        if (vals['engineering_revision'] > existObj.engineering_revision):
-                            vals['name'] = existObj.name
-                        else:
-                            return existingID
-                else:
-                    return existingID
-
-            try:
-                objectItem=super(plm_component, self).create(vals)
+        for vals in values:
+            if vals and vals.get('name', False):
+                if (vals.get('engineering_code', False)==False) or (vals['engineering_code'] == ''):
+                    vals['engineering_code'] = vals['name']
+                criteria = [
+                    ('active', 'in', [True,False]),
+                    '|',
+                    ('name', '=', vals['name']),
+                    ('engineering_code', '=', vals['engineering_code']),
+                ]
+                existingIDs = self.search(criteria,
+                                          order='engineering_revision')
+                major = vals.get('engineering_revision', None)
+                major= self._default_rev if isVoid(major) else major
+                vals['engineering_revision'] = major
+    
+                if existingIDs:
+                    existingID = existingIDs[len(existingIDs) - 1]
+                    if ('engineering_revision' in vals):
+                        existObj = existingID
+                        if existObj:
+                            if (vals['engineering_revision'] > existObj.engineering_revision):
+                                vals['name'] = existObj.name
+                            else:
+                                return existingID
+                    else:
+                        return existingID
+    
+                try:
+                    objectItem=super(plm_component, self).create([vals])
+                    if objectItem:
+                        ret=objectItem                  # Returns the objectItem instead the id to be coherent
+                        value={
+                                'name': objectItem.name,
+                                'revision': objectItem.engineering_revision,
+                                'type': self._name,
+                                'op_type': 'creation',
+                                'op_note': 'Create new entity on database',
+                                'op_date': datetime.now(),
+                                'userid': self._uid,
+                                }
+                        self.env['plm.logging'].create(value)
+                except Exception as ex:
+                    raise Exception(" (%r). It has tried to create with values : (%r)." % (ex, vals))
+            elif not(self.env.context.get('create_from_tmpl') == None):
+                objectItem=super(plm_component, self).create([vals])
                 if objectItem:
                     ret=objectItem                  # Returns the objectItem instead the id to be coherent
-                    values={
+                    value={
                             'name': objectItem.name,
                             'revision': objectItem.engineering_revision,
                             'type': self._name,
@@ -1129,25 +1146,9 @@ class plm_component(models.Model):
                             'op_date': datetime.now(),
                             'userid': self._uid,
                             }
-                    self.env['plm.logging'].create(values)
-            except Exception as ex:
-                raise Exception(" (%r). It has tried to create with values : (%r)." % (ex, vals))
-        elif not(self.env.context.get('create_from_tmpl') == None):
-            objectItem=super(plm_component, self).create(vals)
-            if objectItem:
-                ret=objectItem                  # Returns the objectItem instead the id to be coherent
-                values={
-                        'name': objectItem.name,
-                        'revision': objectItem.engineering_revision,
-                        'type': self._name,
-                        'op_type': 'creation',
-                        'op_note': 'Create new entity on database',
-                        'op_date': datetime.now(),
-                        'userid': self._uid,
-                        }
-                self.env['plm.logging'].create(values)
-        else:
-            ret=super(plm_component, self).create(vals)
+                    self.env['plm.logging'].create(value)
+            else:
+                ret=super(plm_component, self).create([vals])
         return ret
 
     def write(self, vals):

@@ -1635,7 +1635,7 @@ class plm_logging(models.Model):
     def unlink(self):
         return False
 
-    @api.model_create_multi
+    @api.model
     def create(self, values={}):
         newID=False
         if values and values.get('name', False):

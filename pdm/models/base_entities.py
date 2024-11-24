@@ -100,12 +100,13 @@ class plm_component(models.Model):
         return ret
 
     @api.model_create_multi
-    def create(self, vals):
+    def create(self, values=[{}]):
         ret=False
-        if vals:
-            if not vals.get('engineering_code', '') and vals.get('name', ''):
-                vals['engineering_code'] = vals['name']
-            ret=super(plm_component, self.with_context(create_from_tmpl=False)).create(vals)
+        for vals in values:
+            if vals:
+                if not vals.get('engineering_code', '') and vals.get('name', ''):
+                    vals['engineering_code'] = vals['name']
+                ret=super(plm_component, self.with_context(create_from_tmpl=False)).create([vals])
         return ret
 
 class plm_component_document_rel(models.Model):
@@ -796,33 +797,34 @@ class plm_relation(models.Model):
   
 #   Overridden methods for this entity
     @api.model_create_multi
-    def create(self, vals):
+    def create(self, values=[{}]):
         ret=False
-        if vals:
-            productID=vals.get('product_id',False)
-            if not productID:
-                templID=vals.get('product_tmpl_id',False)
-                prodItem=self.env['product.product'].getFromTemplateID(templID)
-                if prodItem:
-                    productID=prodItem.id
-                    vals['product_id']=prodItem.id
-            check1 = self._context.get('internal_writing', False)
-            check2 = self._context.get('internal_process', False)
-            if check1 and check2:
-                try:
-                    self.logcreate(productID, vals)
-                    ret=super(plm_relation,self).create(vals)
-                except Exception as ex:
-                    raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, vals))
-            else:
-                # Manual creation
-                result=self.validatecreation(productID, vals)
-                if result:
+        for vals in values:
+            if vals:
+                productID=vals.get('product_id',False)
+                if not productID:
+                    templID=vals.get('product_tmpl_id',False)
+                    prodItem=self.env['product.product'].getFromTemplateID(templID)
+                    if prodItem:
+                        productID=prodItem.id
+                        vals['product_id']=prodItem.id
+                check1 = self._context.get('internal_writing', False)
+                check2 = self._context.get('internal_process', False)
+                if check1 and check2:
                     try:
                         self.logcreate(productID, vals)
-                        ret=super(plm_relation,self).create(result)
+                        ret=super(plm_relation,self).create([vals])
                     except Exception as ex:
-                        raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, result))
+                        raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, vals))
+                else:
+                    # Manual creation
+                    result=self.validatecreation(productID, vals)
+                    if result:
+                        try:
+                            self.logcreate(productID, vals)
+                            ret=super(plm_relation,self).create([result])
+                        except Exception as ex:
+                            raise Exception(" (%r). It has tried to create with values : (%r)."%(ex, result))
         return ret
 
     def write(self, vals):

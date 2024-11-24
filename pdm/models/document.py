@@ -1347,41 +1347,42 @@ class plm_document(models.Model):
         return newID
 
     @api.model_create_multi
-    def create(self, vals=None):
+    def create(self, values=[{}]):
         ret=False
         
-        if vals and vals.get('name', False):
-            existingID=self.getDocumentID(vals)
-            if existingID:
-                ret=self.browse(existingID)
-            else:
-                try:
-                    status=vals.get('state','draft')
-                    vals.update({'state': status})
-
-                    minor=vals.get('minorrevision', None)
-                    minor="A" if(isVoid(minor)) else minor
-                    vals['minorrevision']=minor
-                    major=vals.get('revisionid', None)
-                    major=self._default_rev if(isVoid(major)) else major
-                    vals['revisionid']=major
-                    
-                    objectItem=super(plm_document, self).create(vals)
-                    if objectItem:
-                        ret=objectItem                      # Returns the objectItem instead the id to be coherent
-                        values={
-                                'name': vals['name'],
-                                'revision': "{major}-{minor}".format(major=major,minor=minor),
-                                'file': vals['datas_fname'],
-                                'type': self._name,
-                                'op_type': 'creation',
-                                'op_note': 'Create new entity on database',
-                                'op_date': datetime.now(),
-                                'userid': self._uid,
-                                }
-                        self.env['plm.logging'].create(values)
-                except Exception as ex:
-                    logging.error("Exception {msg}. It has tried to create with values : {vals}.".format(msg=ex, vals=vals))
+        for vals in values:
+            if vals and vals.get('name', False):
+                existingID=self.getDocumentID(vals)
+                if existingID:
+                    ret=self.browse(existingID)
+                else:
+                    try:
+                        status=vals.get('state','draft')
+                        vals.update({'state': status})
+    
+                        minor=vals.get('minorrevision', None)
+                        minor="A" if(isVoid(minor)) else minor
+                        vals['minorrevision']=minor
+                        major=vals.get('revisionid', None)
+                        major=self._default_rev if(isVoid(major)) else major
+                        vals['revisionid']=major
+                        
+                        objectItem=super(plm_document, self).create([vals])
+                        if objectItem:
+                            ret=objectItem                      # Returns the objectItem instead the id to be coherent
+                            value={
+                                    'name': vals['name'],
+                                    'revision': "{major}-{minor}".format(major=major,minor=minor),
+                                    'file': vals['datas_fname'],
+                                    'type': self._name,
+                                    'op_type': 'creation',
+                                    'op_note': 'Create new entity on database',
+                                    'op_date': datetime.now(),
+                                    'userid': self._uid,
+                                    }
+                            self.env['plm.logging'].create(value)
+                    except Exception as ex:
+                        logging.error("Exception {msg}. It has tried to create with values : {vals}.".format(msg=ex, vals=vals))
         return ret
 
     def write(self, vals):
