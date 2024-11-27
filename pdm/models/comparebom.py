@@ -180,11 +180,11 @@ class plm_compare_bom(models.TransientModel):
         changesA=([],[],[],{},{})
         changesB=([],[],[],{},{})
  
-        fields=['name','engineering_revision']                   # Evaluate differences
-        boolfields=['name','itemnum','product_qty'] # Evaluate changes
+        fields=['name','engineering_revision']                  # Evaluate differences
+        boolfields=['name','itemnum','product_qty']             # Evaluate changes
 
         differs=self._differs_Bom( oid1, oid2, fields)
-        changes=self._differs_Bom( oid1, oid2, boolfields)
+        changes=self._changes_Bom( oid1, oid2, boolfields)
         if len(differs)<1 and len(changes)<1:
             return ((changesA,changesB),(changesA,changesB))
         
@@ -265,6 +265,65 @@ class plm_compare_bom(models.TransientModel):
             if not itemData in listData1:
                 BminusA[idList2[index]]=itemData
             index+=1
+        return ((idList1,objList1,objProd1,dictData1,AminusB),(idList2,objList2,objProd2,dictData2,BminusA))
+
+    def _changes_Bom(self, oid1=False, oid2=False, fields=[]):
+        """
+            Compare Boms examining changes on them.
+        """
+        defaults={}
+        if not oid1 or not oid2 or not fields:
+            return False
+        bomType=self.env['mrp.bom']
+
+        idList1,listData1,objList1,objProd1,dictData1=self._unpackData( oid1, fields)
+        idList2,listData2,objList2,objProd2,dictData2=self._unpackData( oid2, fields)
+        
+        prodInA = {}
+        prodInB = {}
+        
+        for item in listData1:
+            prod = item.get('name', False)
+            qty = item.get('product_qty', 0)
+            if prod:
+                this_one = prodInA.get(prod, 0)
+                if this_one:
+                    prodInA[prod] += qty
+                else:
+                    prodInA[prod] = qty
+
+        for item in listData2:
+            prod = item.get('name', False)
+            qty = item.get('product_qty', 0)
+            if prod:
+                this_one = prodInB.get(prod, 0)
+                if this_one:
+                    prodInB[prod] += qty
+                else:
+                    prodInB[prod] = qty
+
+        if not(prodInB == prodInA):
+            differences = []
+            common = set(prodInB.keys()).intersection(set(prodInA.keys()))
+            for name in common:
+                if not(prodInA[name]==prodInB[name]):
+                    differences.append(name)
+            index=0
+            counted=len(listData1)
+            AminusB={}
+            while index < counted:
+                itemData=listData1[index]
+                if itemData['name'] in differences:
+                    AminusB[idList1[index]]=itemData
+                index+=1
+            index=0
+            counted=len(listData2)
+            BminusA={}
+            while index < counted:
+                itemData=listData2[index]
+                if itemData['name'] in differences:
+                    BminusA[idList2[index]]=itemData
+                index+=1
         return ((idList1,objList1,objProd1,dictData1,AminusB),(idList2,objList2,objProd2,dictData2,BminusA))
 
 
