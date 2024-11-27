@@ -1380,7 +1380,7 @@ class plm_document(models.Model):
                                     'op_date': datetime.now(),
                                     'userid': self._uid,
                                     }
-                            self.env['plm.logging'].create(value)
+                            self.env['plm.logging'].create([value])
                     except Exception as ex:
                         logging.error("Exception {msg}. It has tried to create with values : {vals}.".format(msg=ex, vals=vals))
         return ret
@@ -1831,7 +1831,7 @@ class plm_checkout(models.Model):
                         'op_date': datetime.now(),
                         'userid': self._uid,
                         }
-                objectItem=self.env['plm.logging'].create([values])
+                objectItem=self.env['plm.logging'].create([value])
                 if objectItem:
                     ret=True
         return ret

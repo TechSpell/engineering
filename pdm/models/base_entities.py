@@ -268,7 +268,7 @@ class plm_relation(models.Model):
                 op_type='change value'
                 op_note=self.env['plm.logging'].getchanges( bomObject, changes)
             if op_note:
-                values={
+                value={
                         'name': bomObject.product_id.name,
                         'revision': "{major}".format(major=bomObject.product_id.engineering_revision),
                         'type': self._name,
@@ -278,7 +278,7 @@ class plm_relation(models.Model):
                         'userid': self._uid,
                         }
                 
-                objectItem=self.env['plm.logging'].create([values])
+                objectItem=self.env['plm.logging'].create([value])
                 if objectItem:
                     newID=objectItem
         return newID
@@ -784,7 +784,7 @@ class plm_relation(models.Model):
 
     def logcreate(self, productID, vals):
         for product in self.env['product.product'].browse( getListIDs(productID)):
-            values={
+            value={
                     'name': product.name,
                     'revision': product.engineering_revision,
                     'type': self._name,
@@ -793,7 +793,7 @@ class plm_relation(models.Model):
                     'op_date': datetime.now(),
                     'userid': self._uid,
                     }
-            self.env['plm.logging'].create( values)
+            self.env['plm.logging'].create([value])
   
 #   Overridden methods for this entity
     @api.model_create_multi
