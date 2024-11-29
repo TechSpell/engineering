@@ -204,9 +204,6 @@ class plm_component(models.Model):
                     if last_id:
                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
             move_workflow(self, product_ids.ids, action, status)
-            self.logging_workflow(product_ids.ids, action, status)
-            product_ids.with_context({'internal_writing':True}).write(default)
-            wf_message_post(self, product_ids.ids, body='Status moved to: {status}.'.format(status=status))
         return product_ids
 
 
@@ -300,15 +297,10 @@ class plm_document(models.Model):
                         move_workflow(self, last_id.id, 'obsolete', 'obsoleted')
             elif (action in ['obsolete','reactivate']):
                 movement = False
-                self.logging_workflow(document_ids.ids, action, status)
-                wf_message_post(self, document_ids.ids, body='Status moved to: {status}.'.format(status=status))
                 document_ids.with_context({'internal_writing':True}).write(default)
 
             if movement:
                 move_workflow(self, document_ids.ids, action, status)
-                self.logging_workflow(document_ids.ids, action, status)
-                document_ids.with_context({'internal_writing':True}).write(default)
-                wf_message_post(self, document_ids.ids, body='Status moved to: {status}.'.format(status=status))
         return document_ids
 
     def getRelatedDocuments(self):

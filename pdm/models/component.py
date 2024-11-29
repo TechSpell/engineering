@@ -768,7 +768,6 @@ class plm_component(models.Model):
                             continue
                         docIDs.append(document.id)
             idMoves=move_workflow(documentType, docIDs, action, status)
-            documentType.logging_workflow(idMoves, action, status)
         return docIDs
 
     def _iswritable(self):
@@ -1035,10 +1034,6 @@ class plm_component(models.Model):
             idMoves = move_workflow(self, allIDs, action, status)
             if idMoves:
                 self._action_ondocuments(idMoves,docaction, status, includeStatuses)
-                self.logging_workflow(idMoves, action, status)
-                objId = self.browse(idMoves).with_context({'internal_writing':True}).write(default)
-                if objId:
-                    wf_message_post(self, idMoves, body='Status moved to: {status}.'.format(status=status))
         return objId
 
     def _action_to_release(self, ids, excludeStatuses, includeStatuses):
@@ -1068,7 +1063,6 @@ class plm_component(models.Model):
         if idMyMoves:
             idMoves=move_workflow(self, last_ids, 'obsolete', 'obsoleted')
             if idMoves:
-                self.logging_workflow(idMoves, 'obsolete', 'obsoleted')
                 self._action_ondocuments(idMoves, 'obsolete', 'obsoleted', ['released', 'undermodify'])
         
             self._action_ondocuments(idMyMoves, action, status, includeStatuses)

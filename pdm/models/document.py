@@ -1028,8 +1028,6 @@ class plm_document(models.Model):
                     continue
                 tmpIDs.append(idd)
             idMoves=move_workflow(self, tmpIDs, action, status)
-            self.logging_workflow(idMoves, action, status)
-            wf_message_post(self, tmpIDs, body='Status moved to: {status}.'.format(status=status))
         return ret
  
     @api.model

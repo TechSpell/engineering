@@ -214,6 +214,8 @@ def move_workflow(entity, idEntities, transition_name="", final_status=""):
                 entity_id.with_context({'internal_writing':True}).write( {'state': final_status})
                 entity_id.logging_workflow(entity_id.id, transition_name, final_status)
             ret=entity_ids.ids
+        if ret:
+            wf_message_post(entity_id, ret, body='Status moved to: {status}.'.format(status=final_status))
     return ret
 
 
