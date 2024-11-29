@@ -91,10 +91,7 @@
 	                </page>
 	                </notebook>
                 </sheet>
-				<div class="oe_chatter">
-					<field name="message_follower_ids" widget="mail_followers" modifiers="{}"/>
-					<field name="message_ids" widget="mail_thread" modifiers="{}"/>
-				</div>
+				<chatter/>
             </form>
         </field>
     </record>
