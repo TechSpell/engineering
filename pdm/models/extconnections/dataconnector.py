@@ -160,7 +160,7 @@ class plm_component(models.Model):
                     'protocol': 'mssql+pymssql',
                     'user': 'dbamkro',
                     'password': 'dbamkro',
-                    'host': 'SQL2K8\SQLEXPRESS',
+                    'host': 'SQL2K8\\SQLEXPRESS',
                     'database': 'Makro',
                 },
 
