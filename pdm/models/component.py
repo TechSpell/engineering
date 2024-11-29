@@ -887,7 +887,6 @@ class plm_component(models.Model):
             return self.action_check_workflow(operationParams)
         else:
             ids=self._ids
-            self.logging_workflow(ids, action, status)
             return self._action_to_perform(ids, operationParams, default)
 
     def action_correct(self):
@@ -919,7 +918,6 @@ class plm_component(models.Model):
             return self.action_check_workflow(operationParams)
         else:
             ids=self._ids
-            self.logging_workflow(ids, action, status)
             return self._action_to_perform(ids, operationParams, default)
 
     def action_release(self):
@@ -1072,8 +1070,6 @@ class plm_component(models.Model):
     
             self.logging_workflow(idMyMoves, action, status)
             objId=self.browse(idMyMoves).with_context({'internal_writing':True}).write(default)
-            if objId and idMyMoves:
-                wf_message_post(self, idMyMoves, body='Status moved to: {status}.'.format(status=status))
         return objId
 
     #######################################################################################################################################33
