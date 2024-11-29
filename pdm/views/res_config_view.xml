@@ -93,7 +93,7 @@
                                     <field name="node_id"  />
                                     <field name="active_kind" />
                               </group>
-                              <group colspan="4" col="4" invisible="activated_id == False">
+                              <group colspan="4" col="4" invisible="activated_id != False">
                                     <field name="opt_editbom" />
                                     <field name="opt_editreleasedbom" />
                                     <field name="opt_obsoletedinbom"  />
