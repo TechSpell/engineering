@@ -27,9 +27,9 @@
 {
     'name': 'Engineering & Lifecycle Management',
     'version': '1.0.0',
-    'author': 'Didotech srl',
-    'website': 'http://www.didotech.com',
-    'support': 'support@didotech.com',
+    'author': 'Codebeex srl',
+    'website': 'http://www.codebeex.com',
+    'support': 'info@codebeex.com',
     'category': 'Document Management',
     'sequence': 10,
     'summary': 'PLM Engineering integration with main CAD editors',
