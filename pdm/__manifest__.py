@@ -68,9 +68,10 @@ Supported Editors :
         * Inventor 2011 (and above except 2014)
         * SolidEdge ST3 (and above)
         * AutoCAD 2013 (and above except 2014)
-        * Siemens NX 10  (and above)
+        * Siemens NX 10 (and above)
         * Catia V.5
-        * BricsCAD V.20 - 21
+        * BricsCAD V.20 - 22
+        * ZWCad 2023 - 2025
        
     """,
     'data': [
