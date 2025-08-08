@@ -281,6 +281,8 @@ class plm_compare_bom(models.TransientModel):
         
         prodInA = {}
         prodInB = {}
+        AminusB={}
+        BminusA={}
         
         for item in listData1:
             prod = item.get('name', False)
@@ -302,7 +304,7 @@ class plm_compare_bom(models.TransientModel):
                 else:
                     prodInB[prod] = qty
 
-        if not(prodInB == prodInA):
+        if not(prodInB == prodInA) or not (objProd1 == objProd2):
             differences = []
             common = set(prodInB.keys()).intersection(set(prodInA.keys()))
             for name in common:
@@ -310,7 +312,6 @@ class plm_compare_bom(models.TransientModel):
                     differences.append(name)
             index=0
             counted=len(listData1)
-            AminusB={}
             while index < counted:
                 itemData=listData1[index]
                 if itemData['name'] in differences:
@@ -318,7 +319,6 @@ class plm_compare_bom(models.TransientModel):
                 index+=1
             index=0
             counted=len(listData2)
-            BminusA={}
             while index < counted:
                 itemData=listData2[index]
                 if itemData['name'] in differences:
