@@ -270,33 +270,36 @@ class plm_document(models.Model):
         else:
             return True
 
-    def _explodedocs(self, oid, kinds, listed_documents=[], recursion=True):
+    def _explodedocs(self, oid, kinds, already_listed=[], recursion=True):
+        """
+            Returns children (recursively) of this document.
+        """
         result = []
-        if oid and not(oid in listed_documents):
+        if oid and not(oid in already_listed):
             
             documentRelation = self.env['plm.document.relation']
             for child in documentRelation.search([('parent_id', '=', oid), ('link_kind', 'in', kinds)]):
                 if recursion:
-                    listed_documents.append(oid)
-                    result.extend(self._explodedocs(child.child_id.id, kinds, listed_documents, recursion))
+                    already_listed.append(oid)
+                    result.extend(self._explodedocs(child.child_id.id, kinds, already_listed, recursion))
                 if child.child_id:
                     result.append(child.child_id.id)
         return result
 
-    def _relateddocs(self, oid, kinds, listed_documents=[], recursion=True):
+    def _relateddocs(self, oid, kinds, already_listed=[], recursion=True):
         """
             Returns fathers (recursively) of this document.
         """
         result = []
-        if not (oid in listed_documents):
+        if not (oid in already_listed):
             
             documentRelation = self.env['plm.document.relation']
             docRelIds=documentRelation.GetFathers(oid, kinds)
             for fthID in docRelIds.keys():
                 for father in documentRelation.browse(docRelIds[fthID]):
                     if recursion:
-                        listed_documents.append(oid)
-                        result.extend(self._relateddocs(father.parent_id.id, kinds, listed_documents, recursion))
+                        already_listed.append(oid)
+                        result.extend(self._relateddocs(father.parent_id.id, kinds, already_listed, recursion))
                     if father.parent_id:
                         result.append(father.parent_id.id)
         return getCleanList(result)
@@ -1012,8 +1015,8 @@ class plm_document(models.Model):
             Move workflow on documents related to given ones.
         """
         ret=False
-        fthkindList = ['RfTree', 'LyTree']          # Get relation names due to fathers
-        chnkindList = ['HiTree','RfTree', 'LyTree'] # Get relation names due to children
+        fthkindList = ['RfTree', 'LyTree']                      # Get relation names due to fathers
+        chnkindList = ['HiTree','RfTree', 'LyTree','CvTree']    # Get relation names due to children
         
         allIDs=getCleanList(ids)
         relIDs = self.getRelatedDocs(ids, fthkindList, chnkindList)
@@ -1358,6 +1361,7 @@ class plm_document(models.Model):
                         status=vals.get('state','draft')
                         vals.update({'state': status})
     
+                        name=vals['name']
                         minor=vals.get('minorrevision', None)
                         minor="A" if(isVoid(minor)) else minor
                         vals['minorrevision']=minor
@@ -1369,7 +1373,7 @@ class plm_document(models.Model):
                         if objectItem:
                             ret=objectItem                      # Returns the objectItem instead the id to be coherent
                             value={
-                                    'name': vals['name'],
+                                    'name': name,
                                     'revision': "{major}-{minor}".format(major=major,minor=minor),
                                     'file': vals['datas_fname'],
                                     'type': self._name,
@@ -1379,6 +1383,9 @@ class plm_document(models.Model):
                                     'userid': self._uid,
                                     }
                             self.env['plm.logging'].create([value])
+                            undermod_id= self._getlatestbyrevision(name, major, minor)
+                            if (undermod_id.state == "released"):
+                                undermod_id.write({'state': 'undermodify'})
                     except Exception as ex:
                         logging.error("Exception {msg}. It has tried to create with values : {vals}.".format(msg=ex, vals=vals))
         return ret
@@ -1630,6 +1637,8 @@ class plm_document(models.Model):
         for oid in ids:
             kind = 'LyTree'  # Get relations due to layout connected
             docArray = self._relateddocs(oid, [kind], listed_documents)
+            kind = 'CvTree'  # Get relations due to converted connected
+            cnvArray = self._explodedocs(oid, [kind], [])
             kind = 'SdTree'  # Get relations due to service files connected
             othArray = self._explodedocs(oid, [kind], listed_documents)
     
@@ -1640,10 +1649,18 @@ class plm_document(models.Model):
                 kind = 'LyTree'  # Get relations due to layout connected
                 docArray.extend(self._relateddocs(item, [kind], listed_documents))
                 docArray.extend(self._explodedocs(item, [kind], listed_documents))
+                kind = 'CvTree'  # Get relations due to converted connected
+                cnvArray.extend(self._explodedocs(item, [kind], []))
                 kind = 'SdTree'  # Get relations due to service files connected
                 othArray.extend(self._explodedocs(item, [kind], listed_documents))
-                
+ 
+            for item in docArray:
+                kind = 'CvTree' 
+                cnvArray.extend(self._explodedocs(item, [kind], []))
+
+            # print("CnvArray: {}".format(cnvArray))
             modArray.extend(docArray)
+            modArray.extend(cnvArray)
  
             docArray=getCleanList(modArray)
             
@@ -1703,7 +1720,7 @@ class plm_document(models.Model):
             docArray.append(oid)  # Add requested document to package
 
         for item in docArray:
-            kinds = ['LyTree', 'RfTree']  # Get relations due to layout connected
+            kinds = ['LyTree', 'RfTree', 'CvTree']  # Get relations due to layout connected
             modArray.extend(self._relateddocs(item, kinds, listed_documents))
             modArray.extend(self._explodedocs(item, kinds, listed_documents))
         #             kind='RfTree'               # Get relations due to referred connected
@@ -1759,12 +1776,22 @@ class plm_document(models.Model):
         uiUser = self.env['res.users'].browse(oid)
         return uiUser.name
 
-    def _getlatestbyrevision(self, name, revision):
-        criteria = [
-                ('name', '=', name),
-                ('revisionid', '<', revision)
-            ]
-        order='revisionid desc'
+    def _getlatestbyrevision(self, name, revision, minorrev=""):
+        minorrevision = minorrev if minorrev else "A"
+        if not minorrevision or getprevminor(minorrevision) == minorrevision:
+            criteria = [
+                    ('name', '=', name),
+                    ('revisionid', '<', revision)
+                ]
+            order='revisionid desc'
+        else:
+            criteria = [
+                    ('name', '=', name),
+                    ('revisionid', '=', revision),
+                    ('minorrevision', '=', getprevminor(minorrevision))
+                ]
+            order='minorrevision desc'
+            
         return self.search(criteria, order=order, limit=1)
 
     def _getNewIndex(self, oldObject, revision=0):
@@ -1958,7 +1985,7 @@ class plm_document_relation(models.Model):
             for relation in relations:
                 res['parent_id'], res['child_id'], res['configuration'], res['link_kind'] = relation
                 if isWritable(self.env['plm.document'], res['parent_id']):
-                    if (res['link_kind'] == 'LyTree') or (res['link_kind'] == 'RfTree'):
+                    if (res['link_kind'] in ['LyTree', 'RfTree', 'CvTree']):
                         criteria = [('child_id', '=', res['child_id'])]
                     else:
                         criteria = [('parent_id', '=', res['parent_id'])]
