@@ -271,10 +271,8 @@ class plm_compare_bom(models.TransientModel):
         """
             Compare Boms examining changes on them.
         """
-        defaults={}
         if not oid1 or not oid2 or not fields:
             return False
-        bomType=self.env['mrp.bom']
 
         idList1,listData1,objList1,objProd1,dictData1=self._unpackData( oid1, fields)
         idList2,listData2,objList2,objProd2,dictData2=self._unpackData( oid2, fields)
