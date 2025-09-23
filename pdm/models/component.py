@@ -28,7 +28,7 @@
 import logging
 from datetime import datetime
 
-from odoo  import models, fields, api, _, osv
+from odoo  import models, fields, api, _
 from odoo.exceptions import UserError
 
 from .common import getListIDs, getCleanList, packDictionary, unpackDictionary, getCleanBytesDictionary, \
@@ -72,7 +72,7 @@ class plm_component(models.Model):
                         'op_type': op_type,
                         'op_note': op_note,
                         'op_date': datetime.now(),
-                        'userid': self._uid,
+                        'userid': self.env.uid
                         }
                 objectItem=self.env['plm.logging'].create([value])
                 if objectItem:
@@ -154,7 +154,7 @@ class plm_component(models.Model):
         """
         userType = self.env['res.users']
         
-        uiUser = userType.browse(self._uid)
+        uiUser = userType.browse(self.env.uid)
         return uiUser.name
 
     def getFromTemplateID(self, oid):
@@ -757,7 +757,7 @@ class plm_component(models.Model):
         docIDs = []
 #         documents=[]
         documentType = self.env['plm.document']
-        check=self._context.get('no_move_documents', False)
+        check=self.env.context.get('no_move_documents', False)
         if not check:
             for oldObject in self.browse(ids):
                 for document in oldObject.linkeddocuments:
@@ -1118,7 +1118,7 @@ class plm_component(models.Model):
                                 'op_type': 'creation',
                                 'op_note': 'Create new entity on database',
                                 'op_date': datetime.now(),
-                                'userid': self._uid,
+                                'userid': self.env.uid
                                 }
                         self.env['plm.logging'].create([value])
                 except Exception as ex:
@@ -1134,7 +1134,7 @@ class plm_component(models.Model):
                             'op_type': 'creation',
                             'op_note': 'Create new entity on database',
                             'op_date': datetime.now(),
-                            'userid': self._uid,
+                            'userid': self.env.uid,
                             }
                     self.env['plm.logging'].create([value])
             else:
@@ -1145,8 +1145,8 @@ class plm_component(models.Model):
         ret=True
         if vals:
             if not isAdministrator(self):
-                check=self._context.get('internal_writing', False)
-                thisprocess=self._context.get('internal_process', False)    # Avoids messages during internal processes.
+                check=self.env.context.get('internal_writing', False)
+                thisprocess=self.env.context.get('internal_process', False)    # Avoids messages during internal processes.
                 if not check:
                     for prodItem in self.browse(self._ids):
                         if not isDraft(self,prodItem.id):
@@ -1170,7 +1170,7 @@ class plm_component(models.Model):
         previous_name=False
         oid=self.id
         
-        if not self._context.get('new_revision', False):
+        if not self.env.context.get('new_revision', False):
             previous_name = self.browse(oid).name
             new_name=default.get('name', 'Copy of %s'%previous_name)
             if 'name' in default:

@@ -33,7 +33,7 @@ import csv, json
 import itertools
 from xml.etree.ElementTree import fromstring
 
-from odoo  import models, fields, api, _, osv
+from odoo  import models, fields, api, _
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import odoo.tools.config as tools_config
 
@@ -319,7 +319,7 @@ class plm_config_settings(models.Model):
         """
         ret=["","",""]
         
-        uiUser = getUser(self, self._uid)
+        uiUser = getUser(self, self.env.uid)
         if uiUser:
             ret=[uiUser.login, uiUser.name, uiUser.signature]
         return ret
@@ -693,7 +693,7 @@ class plm_config_settings(models.Model):
         """
             Get Client method names and translated labels.
         """
-        user_id = self.env['res.users'].browse(self._uid)
+        user_id = self.env['res.users'].browse(self.env.uid)
         self = self.with_context(lang=user_id.lang)
         
         results={
@@ -728,7 +728,7 @@ class plm_config_settings(models.Model):
         """
             Get Client translated messages.
         """
-        user_id = self.env['res.users'].browse(self._uid)
+        user_id = self.env['res.users'].browse(self.env.uid)
         self = self.with_context(lang=user_id.lang)
         
         results={
@@ -1176,7 +1176,7 @@ class plm_config_settings(models.Model):
         """
             Gets criteria names and their translated labels.
         """
-        user_id = self.env['res.users'].browse(self._uid)
+        user_id = self.env['res.users'].browse(self.env.uid)
         self = self.with_context(lang=user_id.lang)
         
         return  {
@@ -1198,7 +1198,7 @@ class plm_config_settings(models.Model):
         """
             Gets tables and columns (label and visibility) for materialized views.
         """
-        user_id = self.env['res.users'].browse(self._uid)
+        user_id = self.env['res.users'].browse(self.env.uid)
         self = self.with_context(lang=user_id.lang)
         
         tables=[['ext_document','document'],['ext_component','component'],['ext_docbom','docbom'],
@@ -1340,7 +1340,7 @@ class plm_config_settings(models.Model):
         d1 = datetime.datetime.now()
         midmod = (d1-d0).total_seconds()
         base_dir = tools_config.get('data_dir', os.path.join(tools_config['root_path'], 'filestore'))
-        return "{base}/{table}-{uid}-{midmod}.csv".format(base=base_dir, table=tablename, uid=self._uid, midmod=midmod)
+        return "{base}/{table}-{uid}-{midmod}.csv".format(base=base_dir, table=tablename, uid=self.env.uid, midmod=midmod)
 
     @api.model
     def GetTableData(self, request="", default=None):

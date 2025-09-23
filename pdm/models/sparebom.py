@@ -25,7 +25,7 @@
 #
 ##############################################################################
 
-from odoo import models, fields, api, _, osv
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 RETDMESSAGE=''
@@ -40,15 +40,15 @@ class plm_temporary(models.TransientModel):
         """
             Create a new Spare BoM if doesn't exist (action callable from views)
         """
-        if not 'active_id' in self._context:
+        if not 'active_id' in self.env.context:
             return False
-        if not 'active_ids' in self._context:
+        if not 'active_ids' in self.env.context:
             return False
         
         
         productType=self.env['product.product']
         bomType=self.env['mrp.bom']
-        for idd in self._context['active_ids']:
+        for idd in self.env.context['active_ids']:
             checkObj=productType.browse(idd)
             if not checkObj:
                 continue
@@ -59,7 +59,7 @@ class plm_temporary(models.TransientModel):
 
         productType.with_context(
                 {"update_latest_revision": self.revflag}
-                ).create_spareBom_WF(self._context['active_ids'])
+                ).create_spareBom_WF(self.env.context['active_ids'])
 
         return {
             'name': 'Bill of Materials',
@@ -67,7 +67,7 @@ class plm_temporary(models.TransientModel):
             "view_mode": 'list,form',
             'res_model': 'mrp.bom',
             'type': 'ir.actions.act_window',
-            'domain': "[('product_id','in', [" + ','.join(map(str, self._context['active_ids'])) + "])]",
+            'domain': "[('product_id','in', [" + ','.join(map(str, self.env.context['active_ids'])) + "])]",
         }
 
 
@@ -100,7 +100,7 @@ class plm_component(models.Model):
             return False
         if '-Spare' in checkObj.name:
             return False
-        sourceBomType = self._context.get('sourceBomType', 'ebom')
+        sourceBomType = self.env.context.get('sourceBomType', 'ebom')
         bomType=self.env['mrp.bom']
         objBoms=bomType.search([('product_id', '=', idd), ('type', '=', 'spbom'), ('active', '=', True)])
         idBoms=bomType.search([('product_id', '=', idd), ('type', '=', 'normal'), ('active', '=', True)])

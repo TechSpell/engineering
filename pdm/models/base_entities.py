@@ -28,7 +28,7 @@
 import logging
 from datetime import datetime
 
-from odoo import models, fields, api, _, osv
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 
 from .common import BOMTYPES, BOMMODES, getListIDs, getCleanList, getListedDatas, \
@@ -197,15 +197,15 @@ class plm_relation_line(models.Model):
         values = {}
         father_id=False
         product_id=False
-        if self._context and 'product_id' in self._context and 'father_id' in self._context and 'father_tmpl_id' in self._context:
+        if self.env.context and 'product_id' in self.env.context and 'father_id' in self.env.context and 'father_tmpl_id' in self.env.context:
             options=self.env['plm.config.settings'].GetOptions()
             prodTypeObj=self.env['product.product']
-            father_id=self._context['father_id']
+            father_id=self.env.context['father_id']
             fatherObj=prodTypeObj
             if not father_id:
-                fatherObj=prodTypeObj.getFromTemplateID(self._context['father_tmpl_id'])
+                fatherObj=prodTypeObj.getFromTemplateID(self.env.context['father_tmpl_id'])
                 father_id=fatherObj.id if fatherObj else False 
-            product_id=self._context['product_id']
+            product_id=self.env.context['product_id']
             if father_id and product_id:
                 alreadyListed=[]
                 productObj=prodTypeObj.browse(product_id)
@@ -215,10 +215,10 @@ class plm_relation_line(models.Model):
                     values.update({'product_id': False})
                 if not options.get('opt_duplicatedrowsinbom', True):
                     listed_products=[]
-                    if 'parent' in self._context:
-                        if isinstance(self._context['parent'], dict):
-                            if 'bom_line_ids' in self._context['parent']:
-                                mrp_bom_lines=self._context['parent']['bom_line_ids']
+                    if 'parent' in self.env.context:
+                        if isinstance(self.env.context['parent'], dict):
+                            if 'bom_line_ids' in self.env.context['parent']:
+                                mrp_bom_lines=self.env.context['parent']['bom_line_ids']
                                 for mrp_bom_line in mrp_bom_lines:
                                     prod_id=False
                                     req, bom_line, vals=mrp_bom_line
@@ -275,7 +275,7 @@ class plm_relation(models.Model):
                         'op_type': op_type,
                         'op_note': op_note,
                         'op_date': datetime.now(),
-                        'userid': self._uid,
+                        'userid': self.env.uid,
                         }
                 
                 objectItem=self.env['plm.logging'].create([value])
@@ -791,7 +791,7 @@ class plm_relation(models.Model):
                     'op_type': 'creation',
                     'op_note': 'Create new entity on database',
                     'op_date': datetime.now(),
-                    'userid': self._uid,
+                    'userid': self.env.uid,
                     }
             self.env['plm.logging'].create([value])
   
@@ -808,8 +808,8 @@ class plm_relation(models.Model):
                     if prodItem:
                         productID=prodItem.id
                         vals['product_id']=prodItem.id
-                check1 = self._context.get('internal_writing', False)
-                check2 = self._context.get('internal_process', False)
+                check1 = self.env.context.get('internal_writing', False)
+                check2 = self.env.context.get('internal_process', False)
                 if check1 and check2:
                     try:
                         self.logcreate(productID, vals)
@@ -834,7 +834,7 @@ class plm_relation(models.Model):
         ret=False
         ids=self._ids
         if vals:
-            check=self._context.get('internal_writing', False)
+            check=self.env.context.get('internal_writing', False)
             bomIDs=getListIDs(ids)
             if not check and self.checkwrite( bomIDs):
                 raise UserError("Current Bill of Material of product isn't modifiable.")
@@ -851,7 +851,7 @@ class plm_relation(models.Model):
         """
         oid=self.id
         compType = self.env['product.product']
-        update_flag=self._context.get('update_latest_revision', False)        
+        update_flag=self.env.context.get('update_latest_revision', False)        
         note={
                 'type': 'copy object',
                 'reason': "Copied a new BoM for the product.",
@@ -869,7 +869,7 @@ class plm_relation(models.Model):
         ret=False
         ids=self._ids
         processIds=[]
-        check=self._context.get('internal_writing', False)
+        check=self.env.context.get('internal_writing', False)
         options=self.env['plm.config.settings'].GetOptions()
         if not check:
             isAdmin = isAdministrator(self)
@@ -961,17 +961,17 @@ class plm_temporary(models.TransientModel):
         """
         ret=False
         
-        if 'active_ids' in self._context:
+        if 'active_ids' in self.env.context:
             self.env['product.product'].with_context(
                 {"update_latest_revision": self.revflag}
-                ).create_normalBom_WF(self._context['active_ids'])
+                ).create_normalBom_WF(self.env.context['active_ids'])
             ret={
                 'name': 'Bill of Materials',
                 'view_type': 'form',
                 "view_mode": 'list,form',
                 'res_model': 'mrp.bom',
                 'type': 'ir.actions.act_window',
-                'domain': "[('product_id','in', [" + ','.join(map(str, self._context['active_ids'])) + "])]",
+                'domain': "[('product_id','in', [" + ','.join(map(str, self.env.context['active_ids'])) + "])]",
                 }
         return ret
 
@@ -982,8 +982,8 @@ class plm_temporary(models.TransientModel):
         ret=False
         revised=[]
         
-        active_ids=self._context.get('active_ids', [])
-        active_model=self._context.get('active_model', None)
+        active_ids=self.env.context.get('active_ids', [])
+        active_model=self.env.context.get('active_model', None)
         if active_ids and active_model:
             objectType=self.env[active_model]
             for thisId in active_ids:
@@ -1012,8 +1012,8 @@ class plm_temporary(models.TransientModel):
         ret=False
         revised=[]
         
-        active_ids=self._context.get('active_ids', [])
-        active_model=self._context.get('active_model', None)
+        active_ids=self.env.context.get('active_ids', [])
+        active_model=self.env.context.get('active_model', None)
         if active_ids and active_model:
             objectType=self.env[active_model]
             for thisId in active_ids:
@@ -1040,8 +1040,8 @@ class plm_temporary(models.TransientModel):
             Call for CheckIn method
         """
         ret=False
-        active_ids=self._context.get('active_ids', [])
-        active_model=self._context.get('active_model', None)
+        active_ids=self.env.context.get('active_ids', [])
+        active_model=self.env.context.get('active_model', None)
         if active_ids and active_model:
             objectType=self.env[active_model]
             doc_ids=[]
@@ -1067,8 +1067,8 @@ class plm_temporary(models.TransientModel):
             Call for CheckOut method
         """
         ret=False
-        active_ids=self._context.get('active_ids', [])
-        active_model=self._context.get('active_model', None)
+        active_ids=self.env.context.get('active_ids', [])
+        active_model=self.env.context.get('active_model', None)
         if active_ids and active_model:
             objectType=self.env[active_model]
             doc_ids=[]

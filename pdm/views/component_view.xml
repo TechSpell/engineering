@@ -233,8 +233,10 @@
 		                      		</group>
 		 	                        <group colspan="2" col="2" name="uom">
 			                          	<separator string="Unit of Measure" colspan="2"/>
-			                            <field name="uom_id" 	readonly="state == 'released'" on_change="onchange_uom(uom_id,uom_po_id)"/>
+			                            <field name="uom_id" 	readonly="state == 'released'" />
+<!--
 			                            <field name="uom_po_id" readonly="state == 'released'" />
+-->
 		  	                        </group>
 	  	                        </group>
 	                 	    </group>
@@ -362,7 +364,7 @@
             <field name="view_id" ref="plm_component_newrevision"/>
             <field name="context">{"search_default_latest":1}</field>      
             <field name="target">new</field>
-            <field name="groups_id" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
+            <field name="group_ids" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
         </record>
 
 <!-- New Revision configuration -->
@@ -397,7 +399,7 @@
             <field name="view_id" ref="plm_component_create_normalbom_wizard"/>
             <field name="context">{"search_default_latest":1}</field>      
             <field name="target">new</field>
-            <field name="groups_id" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
+            <field name="group_ids" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
         </record>
 
 <!-- Redefines standard Products tree view -->

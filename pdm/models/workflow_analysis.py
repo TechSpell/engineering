@@ -24,7 +24,7 @@
 ##############################################################################
 
 import logging
-from odoo import models, fields, api, _, osv
+from odoo import models, fields, api, _
 from .common import moduleName
 
 openerpModule=moduleName()

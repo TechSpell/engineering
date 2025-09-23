@@ -153,6 +153,7 @@
  				<filter name="confirmed" string="Confirmed" domain="[('state', 'in', ['confirmed'])]"/>
 				<filter name="released"  string="Released"  domain="[('state', 'in', ['released','undermodify'])]"/>
 				<filter name="latest"    string="Latest"    domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
+<!--
             	<group expand="0" string="Group By...">
                     <filter name="bycreator"    string="Created by"      domain="[]" context="{'group_by':'create_uid'}"/>
                     <filter name="bychanger"    string="Changed by"      domain="[]" context="{'group_by':'write_uid'}"/>
@@ -160,6 +161,7 @@
                     <filter name="bycreation"   string="Created by Date" domain="[]" context="{'group_by':'create_date'}"/>
                     <filter name="bychangedate" string="Changed by Date" domain="[]" context="{'group_by':'write_date'}"/>
                 </group>
+-->
 			</search>
 		</field>
     </record> 
@@ -312,7 +314,7 @@
         <field name="view_mode">form</field>
         <field name="view_id" ref="plm_document_newrevision"/>
         <field name="target">new</field>
-        <field name="groups_id" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
+        <field name="group_ids" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
     </record>
 
 <!-- New Revision configuration -->
@@ -343,7 +345,7 @@
         <field name="view_id" ref="plm_document_checkin"/>
         <field name="context">{"search_default_latest":1}</field>      
         <field name="target">new</field>
-        <field name="groups_id" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
+        <field name="group_ids" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
     </record>
 
     <record id="plm_document_checkout" model="ir.ui.view">
@@ -369,7 +371,7 @@
        	<field name="view_mode">form</field> 
         <field name="view_id" ref="plm_document_checkout"/>
         <field name="target">new</field>
-         <field name="groups_id" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
+         <field name="group_ids" eval="[(4,ref('group_plm_admin')),(4,ref('group_plm_integrationuser'))]"/>
     </record>
 
 <!-- Check-In / Out configuration -->

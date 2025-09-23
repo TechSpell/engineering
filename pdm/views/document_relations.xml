@@ -95,11 +95,13 @@
                   <field name="link_kind" string="Document Relation Kind"/>
                   <filter name="latest" string="Latest" icon="terp-stock_symbol-selection" domain="[('parent_state', 'not in', ['obsoleted','undermodify']),('child_state', 'not in', ['obsoleted','undermodify'])]"/>
                   <newline/>
+<!--
                   <group expand="0" string="Group By...">
                       <filter name="parent" string="Parent" domain="[]" context="{'group_by':'parent_id'}"/>
                       <filter name="child"  string="Child"  domain="[]" context="{'group_by':'child_id' }"/>
                       <filter name="kind"   string="Kind"   domain="[]" context="{'group_by':'link_kind'}"/>
                   </group>
+-->
               </search>
           </field>
       </record>

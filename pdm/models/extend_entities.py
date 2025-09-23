@@ -25,7 +25,7 @@
 #
 ##############################################################################
 
-from odoo import models, fields, api, _, osv
+from odoo import models, fields, api, _
 
 class plm_document(models.Model):
     _inherit = 'plm.document'

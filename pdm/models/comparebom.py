@@ -26,7 +26,7 @@
 ##############################################################################
 
 import os
-from odoo import models, fields, api, _, osv
+from odoo import models, fields, api, _
 
 from .common import moduleName
 
@@ -68,7 +68,7 @@ class plm_compare_bom(models.TransientModel):
         @param fields: List of fields for which we want default values
         @return: A dictionary which of fields with values.
         """
-        record_ids = self._context.get('active_ids')
+        record_ids = self.env.context.get('active_ids')
         res={}
         if len(record_ids)>0:
             res['bom_id1'] = record_ids[0]

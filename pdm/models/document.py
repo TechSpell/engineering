@@ -33,7 +33,7 @@ import os, stat
 import time
 from datetime import datetime
 
-from odoo import models, fields, api, _, osv
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 from odoo.tools import config as tools_config
 
@@ -132,7 +132,7 @@ class plm_document(models.Model):
                         'op_type': op_type,
                         'op_note': op_note,
                         'op_date': datetime.now(),
-                        'userid': self._uid,
+                        'userid': self.env.uid
                         }
                 objectItem=self.env['plm.logging'].create([value])
                 if objectItem:
@@ -148,7 +148,7 @@ class plm_document(models.Model):
         checkType = self.env['plm.checkout']
         for lastDoc in self._getlastrev([oid]):
             for objectCheck in checkType.search([('documentid', '=', lastDoc)]):
-                if objectCheck.userid.id== self._uid:
+                if objectCheck.userid.id== self.env.uid:
                     act = True
                     break
         return act
@@ -256,7 +256,7 @@ class plm_document(models.Model):
                     'db_datas':False
                     })
                 self.env['plm.backupdoc'].with_context({'internal_writing':True}).create({
-                    'userid': self._uid,
+                    'userid': self.env.uid,
                     'existingfile': fname,
                     'documentid': oid,
                     'printout': printout,
@@ -458,7 +458,7 @@ class plm_document(models.Model):
         objCheckOut=self.env['plm.checkout']
         for tmpObject in self:
             if objCheckOut.with_context({'internal_writing':True}).create({
-                            'documentid':tmpObject.id, 'userid':self._uid, 'hostname':hostName, 'hostpws':pwsPath
+                            'documentid':tmpObject.id, 'userid':self.env.uid, 'hostname':hostName, 'hostpws':pwsPath
                             }):
                 ret=True
         return ret
@@ -906,7 +906,7 @@ class plm_document(models.Model):
                     else:
                         logging.error("[SaveOrUpdate] Document {name}/{revi} doesn't exist anymore.".format(name=document['name'],revi=document['revisionid']))
                 else:
-                    userName=self.getUserSign(self._uid)
+                    userName=self.getUserSign(self.env.uid)
                     logging.error("[SaveOrUpdate] Document {name}/{revi} was not checked-out for {user}.".format(name=document['name'],revi=document['revisionid'],user=userName))
    
             retValues[getFileName(document[fullNamePath])]={
@@ -1311,7 +1311,7 @@ class plm_document(models.Model):
         
         # get All document relation
         documentRelation = self.env['plm.document.relation']
-        if not self._context.get('new_revision', False):
+        if not self.env.context.get('new_revision', False):
             previous_name = self.browse(oid).name
             if not 'name' in default:
                 new_name = 'Copy of %s' % previous_name
@@ -1380,7 +1380,7 @@ class plm_document(models.Model):
                                     'op_type': 'creation',
                                     'op_note': 'Create new entity on database',
                                     'op_date': datetime.now(),
-                                    'userid': self._uid,
+                                    'userid': self.env.uid,
                                     }
                             self.env['plm.logging'].create([value])
                             undermod_id= self._getlatestbyrevision(name, major, minor)
@@ -1394,7 +1394,7 @@ class plm_document(models.Model):
         ret=True
         if vals:
             ids=self._ids
-            check=self._context.get('internal_writing', False)
+            check=self.env.context.get('internal_writing', False)
             if not check:
                 for docItem in self.browse(ids):
                     if not isDraft(self, docItem.id):
@@ -1854,7 +1854,7 @@ class plm_checkout(models.Model):
                         'op_type': op_type,
                         'op_note': op_note,
                         'op_date': datetime.now(),
-                        'userid': self._uid,
+                        'userid': self.env.uid,
                         }
                 objectItem=self.env['plm.logging'].create([value])
                 if objectItem:
@@ -1885,7 +1885,7 @@ class plm_checkout(models.Model):
         ret=False
         docIDs=[]
         
-        check=self._context.get('internal_writing', False)
+        check=self.env.context.get('internal_writing', False)
         if check:
             if not self.search([('documentid', '=', vals['documentid'])]):
                 documentType = self.env['plm.document']
@@ -1896,7 +1896,7 @@ class plm_checkout(models.Model):
                         logging.error("create : Unable to check-out the required document (" + str(docObj.name) + "-" + str(
                             docObj.revisionid) + ").")
                         return ret
-                    self._adjustRelations(getListIDs(docObj.id), self._uid)
+                    self._adjustRelations(getListIDs(docObj.id), self.env.uid)
                     docIDs.append(docObj.id)
                     objectItem=super(plm_checkout, self).create(vals)
                     if objectItem:
@@ -1913,7 +1913,7 @@ class plm_checkout(models.Model):
         chkIDs = []
         docIDs = []
         
-        check=self._context.get('internal_writing', False)
+        check=self.env.context.get('internal_writing', False)
         if not check:
             if not isAdmin and not isIntegratorUser(self):
                 logging.error(
@@ -1921,7 +1921,7 @@ class plm_checkout(models.Model):
                 raise UserError("Unable to Check-In the required document.\n\nYou aren't authorized in this context.")
         values = {'writable': False, }
         for checkObj in self.browse(getListIDs(ids)):
-            if isAdmin or checkObj.userid.id==self._uid:
+            if isAdmin or checkObj.userid.id==self.env.uid:
                 chkIDs.append(checkObj.id)
                 docIDs.append(checkObj.documentid.id)
                 if not checkObj.documentid.with_context({'internal_writing':True}).write(values):
@@ -2102,7 +2102,7 @@ class plm_backupdoc(models.Model):
                         'op_type': op_type,
                         'op_note': op_note,
                         'op_date': datetime.now(),
-                        'userid': self._uid,
+                        'userid': self.env.uid,
                         }
                 objectItem=self.env['plm.logging'].create([value])
                 if objectItem:
@@ -2119,7 +2119,7 @@ class plm_backupdoc(models.Model):
     def create(self, vals):
         ret=False
         
-        check=self._context.get('internal_writing', False)
+        check=self.env.context.get('internal_writing', False)
         if check:
             objectItem=super(plm_backupdoc, self).create(vals)
             if objectItem:
@@ -2134,7 +2134,7 @@ class plm_backupdoc(models.Model):
         documentType = self.env['plm.document']
         ids=self._ids
         
-        check=self._context.get('internal_writing', False)
+        check=self.env.context.get('internal_writing', False)
         if not check:
             if not isAdministrator(self):
                 logging.warning(
@@ -2175,13 +2175,13 @@ class plm_temporary(models.TransientModel):
         backupdocType = self.env['plm.backupdoc']
         
         
-        check=self._context.get('internal_writing', False)
+        check=self.env.context.get('internal_writing', False)
         if not check:
             if not isAdministrator(self):
                 logging.warning(
                     "unlink : Unable to remove the required documents.\n You aren't authorized in this context.")
                 raise UserError("Unable to remove the required document.\n You aren't authorized in this context.")
-        backObj=backupdocType.browse(self._context['active_id'])
+        backObj=backupdocType.browse(self.env.context['active_id'])
         if backObj and backObj.documentid:
             objDoc=backObj.documentid
             if objDoc.state == 'draft' and documentType.ischecked_in(objDoc.id):

@@ -30,7 +30,7 @@ import logging
 import pickle
 from datetime import datetime
 
-from odoo  import models, fields, api, _, osv
+from odoo  import models, fields, api, _
 from odoo.exceptions import UserError
 
 from .common import normalize
@@ -60,7 +60,7 @@ class plm_temporary(models.TransientModel):
             Call for Transfer Data method
         """
         
-        if not 'active_id' in self._context:
+        if not 'active_id' in self.env.context:
             return False
         self.env['product.product'].TransferData()
         return False

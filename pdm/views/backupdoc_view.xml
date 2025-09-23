@@ -62,11 +62,13 @@
                 <field name="userid" nolabel="1">
 					<filter name="userid"  string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]"/>
                 </field>
+<!--
                 <group expand="0" string="Group By...">
                     <filter name="bydocu" string="Document Name" domain="[]" context="{'group_by':'documentid'}"/>
                     <filter name="bydate" string="Date"          domain="[]" context="{'group_by':'create_date'}"/>
                     <filter name="byuser" string="Creator"       domain="[]" context="{'group_by':'userid'}"/>
                 </group>
+-->
             </search>
      	</field>
     </record>
@@ -121,7 +123,7 @@
         <field name="view_mode">form</field>
         <field name="view_id" ref="restore_document_button_view"/>
         <field name="target">new</field>
-     	<field name="groups_id" eval="[(4,ref('group_plm_admin'))]"/>
+     	<field name="group_ids" eval="[(4,ref('group_plm_admin'))]"/>
     </record>
         
 </data>

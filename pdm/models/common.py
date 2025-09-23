@@ -178,7 +178,7 @@ def getUserDelta(entity=None):
     """
     ret=timedelta(minutes=0)
     if not(entity==None):
-        user_id=getUser(entity, entity._uid)
+        user_id=getUser(entity, entity.env.uid)
         if user_id:
             tzone = user_id.tz_offset
             factor = -1.0 if (tzone[0] == "-") else 1.0
@@ -275,8 +275,8 @@ def isAdministrator(entity):
     ret = False
     groupType=entity.env['res.groups']
     for gId in groupType.search([('name', '=', 'PLM / Administrators')]):
-        for user in gId.users:
-            if entity._uid == user.id or entity._uid==SUPERUSER_ID:
+        for user in gId.user_ids:
+            if entity.env.uid == user.id or entity.env.uid==SUPERUSER_ID:
                 ret = True
                 break
     return ret
@@ -288,8 +288,8 @@ def isIntegratorUser(entity):
     ret = False
     groupType=entity.env['res.groups']
     for gId in groupType.search([('name', '=', 'PLM / Integration Users')]):
-        for user in gId.users:
-            if entity._uid == user.id:
+        for user in gId.user_ids:
+            if entity.env.uid == user.id:
                 ret = True
                 break
     return ret
