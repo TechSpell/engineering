@@ -58,12 +58,17 @@ class plm_component(models.Model):
 #   engineering_treatment   =   fields.Char         (             string='Treatment',        size=64,  required=False,                       help="Thermal treatment for current product"))
     engineering_surface     =   fields.Char         (             string='Surface Finishing',size=128, required=False,                       help="Surface finishing for current product, only description for titleblock.")
 
-    _sql_constraints = [
-        ('partnumber_uniq', 'unique (engineering_code,engineering_revision)', 'Part Number has to be unique!')
-    ]
-
     def init(self):
         cr = self.env.cr
+        
+        cr.execute("""
+            ALTER TABLE product_template
+                DROP CONSTRAINT IF EXISTS partnumber_uniq;
+            ALTER TABLE product_template
+                ADD CONSTRAINT partnumber_uniq
+                UNIQUE(engineering_code,engineering_revision);
+            """)
+
         cr.execute("""
             -- Index: product_template_engcode_index
              
@@ -115,13 +120,18 @@ class plm_component_document_rel(models.Model):
     
     component_id    =   fields.Many2one('product.product', string='Linked Component', index=True, ondelete='cascade')
     document_id     =   fields.Many2one('plm.document',    string='Linked Document',  index=True, ondelete='cascade')
-
-    _sql_constraints = [
-        (
-            'relation_unique', 'unique(component_id,document_id)',
-            'Component and Document relation has to be unique !'),
-    ]
     
+    def init(self):
+        cr = self.env.cr
+        
+        cr.execute("""
+            ALTER TABLE plm_component_document_rel
+                DROP CONSTRAINT IF EXISTS component_document_relation_unique;
+            ALTER TABLE plm_component_document_rel
+                ADD CONSTRAINT component_document_relation_unique
+                UNIQUE(component_id,document_id);
+            """)
+
     @api.model
     def CleanStructure(self, relations=[], default=None):
         res = []
@@ -912,9 +922,16 @@ class plm_material(models.Model):
     description  = fields.Char     (string='Description',    size=128)
     sequence     = fields.Integer  (string='Sequence',       help="Gives the sequence order when displaying a list of product categories.")
 
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Raw Material has to be unique !'),
-    ]
+    def init(self):
+        cr = self.env.cr
+        
+        cr.execute("""
+            ALTER TABLE plm_material
+                DROP CONSTRAINT IF EXISTS material_name_unique;
+            ALTER TABLE plm_material
+                ADD CONSTRAINT material_name_unique
+                UNIQUE(name);
+            """)
 
 
 class plm_finishing(models.Model):
@@ -925,10 +942,16 @@ class plm_finishing(models.Model):
     description  = fields.Char     (string='Description',    size=128)
     sequence     = fields.Integer  (string='Sequence',       help="Gives the sequence order when displaying a list of product categories.")
 
-    _sql_constraints = [
-        ('name_uniq', 'unique(name)', 'Raw Material has to be unique !'),
-    ]
-
+    def init(self):
+        cr = self.env.cr
+        
+        cr.execute("""
+            ALTER TABLE plm_finishing
+                DROP CONSTRAINT IF EXISTS finish_name_unique;
+            ALTER TABLE plm_finishing
+                ADD CONSTRAINT finish_name_unique
+                UNIQUE(name);
+            """)
 
 class plm_codelist(models.Model):
     _name = "plm.codelist"

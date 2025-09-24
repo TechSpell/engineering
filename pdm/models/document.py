@@ -1499,10 +1499,16 @@ class plm_document(models.Model):
     is_integration  =   fields.Boolean(string="Is from integration", default=False)
     datas_fname     =   fields.Char('Filename', help="Stored filename.")
 
-    _sql_constraints = [
-        ('name_unique', 'unique (name,revisionid,minorrevision)', 'File name has to be unique!')
-        # qui abbiamo la sicurezza dell'univocita del nome file
-    ]
+    def init(self):
+        cr = self.env.cr
+        
+        cr.execute("""
+            ALTER TABLE plm_document
+                DROP CONSTRAINT IF EXISTS document_name_unique;
+            ALTER TABLE plm_document
+                ADD CONSTRAINT document_name_unique
+                UNIQUE(name,revisionid,minorrevision);
+            """)
 
     @api.model
     def CheckedIn(self, files=[], default=None):
@@ -1834,9 +1840,16 @@ class plm_checkout(models.Model):
     documentid  = fields.Many2one ('plm.document', string='Related Document', index=True, ondelete='cascade')
     preview     = fields.Binary   (related="documentid.preview",string='Preview Content',store=False)
 
-    _sql_constraints = [
-        ('documentid', 'unique (documentid)', 'The documentid must be unique !')
-    ]
+    def init(self):
+        cr = self.env.cr
+        
+        cr.execute("""
+            ALTER TABLE plm_checkout
+                DROP CONSTRAINT IF EXISTS checkout_documentid_unique;
+            ALTER TABLE plm_checkout
+                ADD CONSTRAINT checkout_documentid_unique
+                UNIQUE(documentid);
+            """)
 
     def _insertlog(self, ids, changes={}, note={}):
         ret=False
@@ -1954,9 +1967,17 @@ class plm_document_relation(models.Model):
         'link_kind': lambda *a: 'HiTree',
         'userid': lambda *a: False,
     }
-    _sql_constraints = [
-        ('relation_uniq', 'unique (parent_id,child_id,link_kind)', 'The Document Relation must be unique !')
-    ]
+
+    def init(self):
+        cr = self.env.cr
+        
+        cr.execute("""
+            ALTER TABLE plm_document_relation
+                DROP CONSTRAINT IF EXISTS document_relation_unique;
+            ALTER TABLE plm_document_relation
+                ADD CONSTRAINT document_relation_unique
+                UNIQUE(parent_id,child_id,link_kind);
+            """)
 
     @api.model
     def CleanStructure(self, parent_ids=[], default=None):
