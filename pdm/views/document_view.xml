@@ -153,15 +153,13 @@
  				<filter name="confirmed" string="Confirmed" domain="[('state', 'in', ['confirmed'])]"/>
 				<filter name="released"  string="Released"  domain="[('state', 'in', ['released','undermodify'])]"/>
 				<filter name="latest"    string="Latest"    domain="[('state', 'not in', ['obsoleted','undermodify'])]"/>
-<!--
-            	<group expand="0" string="Group By...">
-                    <filter name="bycreator"    string="Created by"      domain="[]" context="{'group_by':'create_uid'}"/>
-                    <filter name="bychanger"    string="Changed by"      domain="[]" context="{'group_by':'write_uid'}"/>
-                    <filter name="bystate"      string="Status"          domain="[]" context="{'group_by':'state'}"/>
-                    <filter name="bycreation"   string="Created by Date" domain="[]" context="{'group_by':'create_date'}"/>
-                    <filter name="bychangedate" string="Changed by Date" domain="[]" context="{'group_by':'write_date'}"/>
-                </group>
--->
+
+                <filter name="bycreator"    string="Created by"      domain="[]" context="{'group_by':'create_uid'}"/>
+                <filter name="bychanger"    string="Changed by"      domain="[]" context="{'group_by':'write_uid'}"/>
+                <filter name="bystate"      string="Status"          domain="[]" context="{'group_by':'state'}"/>
+                <filter name="bycreation"   string="Created by Date" domain="[]" context="{'group_by':'create_date'}"/>
+                <filter name="bychangedate" string="Changed by Date" domain="[]" context="{'group_by':'write_date'}"/>
+
 			</search>
 		</field>
     </record> 

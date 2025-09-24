@@ -60,13 +60,9 @@
                 <field name="userid" nolabel="1">
  					<filter name="userid" string="Created by me" icon="terp-personal" domain="[('userid', '=', uid)]"/>
                 </field>
- <!--
-                <group expand="0" string="Group By...">
-                    <filter name="byhost"  string="Hostname" domain="[]" context="{'group_by':'hostname'}"/>
-                    <filter name="bymonth" string="Date" 	 domain="[]" context="{'group_by':'create_date'}"/>
-                    <filter name="byuser"  string="Creator"  domain="[]" context="{'group_by':'userid'}"/>
-                </group>
- -->
+                <filter name="byhost"  string="Hostname" domain="[]" context="{'group_by':'hostname'}"/>
+                <filter name="bymonth" string="Date" 	 domain="[]" context="{'group_by':'create_date'}"/>
+                <filter name="byuser"  string="Creator"  domain="[]" context="{'group_by':'userid'}"/>
             </search>
      	</field>
     </record>
