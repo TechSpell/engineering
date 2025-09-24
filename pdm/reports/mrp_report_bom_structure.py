@@ -248,7 +248,7 @@ class ReportBomStructure(models.AbstractModel):
                 'prod_stat': bom_line['state'],
                 'prod_desc': description,
                 'uom': bom_line['uom_name'],
-                'prod_cost': bom_line['prod_cost'],
+                # 'prod_cost': bom_line['prod_cost'],
                 'bom_cost': bom_line['bom_cost'],
                 'route_name': bom_line['route_name'],
                 'route_detail': bom_line['route_detail'],
