@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-08 10:33+0000\n"
-"PO-Revision-Date: 2025-09-08 10:33+0000\n"
+"POT-Creation-Date: 2025-09-28 10:17+0000\n"
+"PO-Revision-Date: 2025-09-28 10:17+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -165,7 +165,7 @@ msgid ""
 "Align up local data using maximum performance. Option not usable on servers "
 "in which PostgreSQL is not configurable. Default is False."
 msgstr ""
-"Allinea i dati locali usando le massime prestazioni. Opzione non usabile sui server"
+"Allinea i dati locali usando le massime prestazioni. Opzione non usabile sui server "
 "in cui PostgreSQL non è configurabile. Predefinito è Falso."
 
 #. module: pdm
@@ -299,9 +299,8 @@ msgstr ""
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_duplicatedrowsinbom
 msgid "Allows to duplicate product rows editing a BoM. Default = True."
-msgstr "Consente di duplicare le righe di Prodotto modificando una Distinta."
+msgstr "Consente di duplicare le righe di Prodotto modificando una Distinta. "
 "Predefinito = Vero."
-
 
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__opt_editreleasedbom
@@ -1119,11 +1118,6 @@ msgid "Component Revision"
 msgstr "Revisione Prodotto"
 
 #. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_plm_component_document_rel_relation_unique
-msgid "Component and Document relation has to be unique !"
-msgstr "La relazione Prodotto e Documento deve essere unica!"
-
-#. module: pdm
 #: model:ir.model,name:pdm.model_res_config_settings
 msgid "Config Settings"
 msgstr "Impostazioni di configurazione"
@@ -1585,7 +1579,7 @@ msgid ""
 "Default is True."
 msgstr ""
 "Caricamento differito. Questa opzione permette di eseguire il Caricamento di un documento "
-"usando un automatismo nascosto (Vero), piuttosto che un processo palese in primo piano (Falso)."
+"usando un automatismo nascosto (Vero), piuttosto che un processo palese in primo piano (Falso). "
 "Predefinito è Vero"
 
 #. module: pdm
@@ -1709,6 +1703,9 @@ msgid "Discharge"
 msgstr "Annulla"
 
 #. module: pdm
+#: model:ir.model.fields,field_description:pdm.field_mrp_bom__display_name
+#: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__display_name
+#: model:ir.model.fields,field_description:pdm.field_pdm_product_product_pdf__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__display_name
@@ -1728,6 +1725,25 @@ msgstr "Annulla"
 #: model:ir.model.fields,field_description:pdm.field_plm_material__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__display_name
+#: model:ir.model.fields,field_description:pdm.field_product_product__display_name
+#: model:ir.model.fields,field_description:pdm.field_product_template__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_mrp_report_bom_structure__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_all_product_product_pdf__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all_sum__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_flat__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_leaves__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one_sum__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_checkout_pdf__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_pdf__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_structure__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_where_used__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_one_product_product_pdf__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_product_product_pdf__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_bom_header__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_all__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_one__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component_year__display_name
@@ -1735,8 +1751,9 @@ msgstr "Annulla"
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_wall__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_files_partner__display_name
+#: model:ir.model.fields,field_description:pdm.field_res_config_settings__display_name
 msgid "Display Name"
-msgstr "Nome mostrato"
+msgstr "Nome visualizzato"
 
 #. module: pdm
 #: model_terms:ir.ui.view,arch_db:pdm.plm_component_kanban
@@ -2009,7 +2026,7 @@ msgstr ""
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_document__usedforspare
 msgid "Drawings marked here will be used printing Spare Part Manual report."
-msgstr "I disegni cosi ì marcati saranno usati per la stampa del Report Manuale Ricambi "
+msgstr "I disegni così marcati saranno usati per la stampa del Report Manuale Ricambi "
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_config_settings__opt_editreleasedbom
@@ -2326,11 +2343,6 @@ msgid "File name (in case of documents)."
 msgstr "Nome File (in caso di documenti)."
 
 #. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_plm_document_name_unique
-msgid "File name has to be unique!"
-msgstr "Il Nome File devere essere unico!"
-
-#. module: pdm
 #. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 msgid "File package number"
@@ -2494,20 +2506,6 @@ msgid "Greater Equal"
 msgstr "Maggiore Uguale"
 
 #. module: pdm
-#: model_terms:ir.ui.view,arch_db:pdm.plm_backupdoc_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_docbom_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
-msgid "Group By..."
-msgstr "Raggruppa per..."
-
-#. module: pdm
-#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
-msgid "Group Operations By..."
-msgstr "Raggruppa Operazioni per..."
-
-#. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__has_message
 msgid "Has Message"
 msgstr "Ha un messaggio"
@@ -2524,6 +2522,9 @@ msgstr "Nome Host"
 #. module: pdm
 #. odoo-python
 #: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_mrp_bom__id
+#: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__id
+#: model:ir.model.fields,field_description:pdm.field_pdm_product_product_pdf__id
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__id
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__id
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__id
@@ -2543,6 +2544,25 @@ msgstr "Nome Host"
 #: model:ir.model.fields,field_description:pdm.field_plm_material__id
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__id
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__id
+#: model:ir.model.fields,field_description:pdm.field_product_product__id
+#: model:ir.model.fields,field_description:pdm.field_product_template__id
+#: model:ir.model.fields,field_description:pdm.field_report_mrp_report_bom_structure__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_all_product_product_pdf__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all_sum__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_flat__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_leaves__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one_sum__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_checkout_pdf__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_pdf__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_structure__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_where_used__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_one_product_product_pdf__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_product_product_pdf__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_bom_header__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_all__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_one__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component_year__id
@@ -2550,6 +2570,7 @@ msgstr "Nome Host"
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_wall__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_files_partner__id
+#: model:ir.model.fields,field_description:pdm.field_res_config_settings__id
 msgid "ID"
 msgstr ""
 
@@ -3334,7 +3355,7 @@ msgstr ""
 
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_document__message_needaction_counter
-msgid "Number of messages which requires an action"
+msgid "Number of messages requiring action"
 msgstr "Numero di messaggi che richiedono un' azione"
 
 #. module: pdm
@@ -3537,6 +3558,11 @@ msgid "PLM / View Users"
 msgstr "PLM / Utenti Visualizzazione"
 
 #. module: pdm
+#: model:ir.module.category,name:pdm.module_category_plm
+msgid "PLM Engineering"
+msgstr ""
+
+#. module: pdm
 #: model:ir.model,name:pdm.model_plm_logging
 msgid "PLM Log Activities"
 msgstr "Registrazione Attività PLM"
@@ -3627,11 +3653,6 @@ msgstr "Regola Codice Prodotto"
 #: model:ir.actions.act_window,name:pdm.plm_action_codelist_form
 msgid "Part Number Rules"
 msgstr "Regole Codifica Prodotto"
-
-#. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_product_template_partnumber_uniq
-msgid "Part Number has to be unique!"
-msgstr "Il Codice Prodotto deve essere unico!"
 
 #. module: pdm
 #: model:ir.ui.menu,name:pdm.menu_codelist
@@ -3955,12 +3976,6 @@ msgid "Raw Material"
 msgstr "Materia Prima"
 
 #. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_plm_finishing_name_uniq
-#: model:ir.model.constraint,message:pdm.constraint_plm_material_name_uniq
-msgid "Raw Material has to be unique !"
-msgstr "La Materia Prima deve essere unica!"
-
-#. module: pdm
 #: model:ir.model.fields,help:pdm.field_product_product__engineering_material
 #: model:ir.model.fields,help:pdm.field_product_template__engineering_material
 msgid "Raw material for current product, only description for titleblock."
@@ -4248,6 +4263,11 @@ msgstr "Indice Revisione"
 #: model:ir.model.fields,help:pdm.field_plm_logging__revision
 msgid "Revision involved."
 msgstr "Revisione coinvolta."
+
+#. module: pdm
+#: model:res.groups.privilege,name:pdm.res_groups_privilege_plm
+msgid "Role Privileges"
+msgstr ""
 
 #. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__message_has_sms_error
@@ -4654,11 +4674,6 @@ msgid "The BoM net weight in Kg."
 msgstr "Il peso netto della Distinta in kg."
 
 #. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_plm_document_relation_relation_uniq
-msgid "The Document Relation must be unique !"
-msgstr "La Relazione Documento deve essere unica!"
-
-#. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_document__res_model
 msgid "The database object this attachment will be attached to."
 msgstr "L' oggetto del database a cui questo allegato sarà collegato."
@@ -4678,11 +4693,6 @@ msgstr ""
 #: code:addons/pdm/models/base_client.py:0
 msgid "The document is not checked-in."
 msgstr "Il Documento non è in Check-In"
-
-#. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_plm_checkout_documentid
-msgid "The documentid must be unique !"
-msgstr "L' ID Documento deve esser unico!"
 
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_document__res_id
@@ -4823,7 +4833,7 @@ msgid ""
 "product. Default is False."
 msgstr ""
 "Questa opzione permette di evitare di modificare i dati di documento "
-"assegnadoli automaticamente a partire dal prodotto."
+"assegnadoli automaticamente a partire dal prodotto. "
 "Predefinito è Falso."
 
 #. module: pdm
@@ -4833,7 +4843,7 @@ msgid ""
 "This option avoids to reuse document file name (if any) as document P/N. "
 "Default is True."
 msgstr ""
-"Questa opzione evita di riutilizzare nomi file documento come codice documento."
+"Questa opzione evita di riutilizzare nomi file documento come codice documento. "
 "Predefinito è Vero."
 
 #. module: pdm
@@ -5021,7 +5031,7 @@ msgid ""
 "Upload stopped. Some error occurred during execution.\n"
 "Please, try regenerating current document and save it locally before to perform Upload again."
 msgstr ""
-"Caricamento Arrestato. Qualche errore è occorso durante l' esecuzione."
+"Caricamento Arrestato. Qualche errore è occorso durante l' esecuzione. "
 "Prego, rigenera/ricostruisci e salva localmente il documento "
 "prima di riprovare il Caricamento di nuovo."
 
@@ -5053,10 +5063,10 @@ msgid ""
 "normal BoM will generate one production order per BoM level."
 msgstr ""
 "Usa una distinta 'fantasma' nelle ricghe di materi prime che devono essere "
-"automaticamnete calcolate da un ordine di produzione e non una per livello."
+"automaticamnete calcolate da un ordine di produzione e non una per livello. "
 "Se imposti 'phantom/Set' a livello padre della distinta sarà considerata come "
 "un kit: i prodotti saranno rimpiazzati dai componenti tra l' ordine di vendita "
-"ed il prelievo senza passare per un ordine di produzione."
+"ed il prelievo senza passare per un ordine di produzione. "
 "La distinta di 'Produzione' genererà un ordine di produzione per livello."
 
 #. module: pdm

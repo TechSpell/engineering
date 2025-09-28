@@ -4,10 +4,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 18.0\n"
+"Project-Id-Version: Odoo Server 19.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-08 10:33+0000\n"
-"PO-Revision-Date: 2025-09-08 10:33+0000\n"
+"POT-Creation-Date: 2025-09-28 10:16+0000\n"
+"PO-Revision-Date: 2025-09-28 10:16+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1086,11 +1086,6 @@ msgid "Component Revision"
 msgstr ""
 
 #. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_plm_component_document_rel_relation_unique
-msgid "Component and Document relation has to be unique !"
-msgstr ""
-
-#. module: pdm
 #: model:ir.model,name:pdm.model_res_config_settings
 msgid "Config Settings"
 msgstr ""
@@ -1659,6 +1654,9 @@ msgid "Discharge"
 msgstr ""
 
 #. module: pdm
+#: model:ir.model.fields,field_description:pdm.field_mrp_bom__display_name
+#: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__display_name
+#: model:ir.model.fields,field_description:pdm.field_pdm_product_product_pdf__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__display_name
@@ -1678,6 +1676,25 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_plm_material__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__display_name
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__display_name
+#: model:ir.model.fields,field_description:pdm.field_product_product__display_name
+#: model:ir.model.fields,field_description:pdm.field_product_template__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_mrp_report_bom_structure__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_all_product_product_pdf__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all_sum__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_flat__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_leaves__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one_sum__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_checkout_pdf__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_pdf__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_structure__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_where_used__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_one_product_product_pdf__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_product_product_pdf__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_bom_header__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_all__display_name
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_one__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component_year__display_name
@@ -1685,6 +1702,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_wall__display_name
 #: model:ir.model.fields,field_description:pdm.field_report_plm_files_partner__display_name
+#: model:ir.model.fields,field_description:pdm.field_res_config_settings__display_name
 msgid "Display Name"
 msgstr ""
 
@@ -2272,11 +2290,6 @@ msgid "File name (in case of documents)."
 msgstr ""
 
 #. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_plm_document_name_unique
-msgid "File name has to be unique!"
-msgstr ""
-
-#. module: pdm
 #. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 msgid "File package number"
@@ -2440,20 +2453,6 @@ msgid "Greater Equal"
 msgstr ""
 
 #. module: pdm
-#: model_terms:ir.ui.view,arch_db:pdm.plm_backupdoc_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_bom_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_checkout_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_docbom_search
-#: model_terms:ir.ui.view,arch_db:pdm.plm_document_search
-msgid "Group By..."
-msgstr ""
-
-#. module: pdm
-#: model_terms:ir.ui.view,arch_db:pdm.plm_logging_search
-msgid "Group Operations By..."
-msgstr ""
-
-#. module: pdm
 #: model:ir.model.fields,field_description:pdm.field_plm_document__has_message
 msgid "Has Message"
 msgstr ""
@@ -2470,6 +2469,9 @@ msgstr ""
 #. module: pdm
 #. odoo-python
 #: code:addons/pdm/models/base_client.py:0
+#: model:ir.model.fields,field_description:pdm.field_mrp_bom__id
+#: model:ir.model.fields,field_description:pdm.field_mrp_bom_line__id
+#: model:ir.model.fields,field_description:pdm.field_pdm_product_product_pdf__id
 #: model:ir.model.fields,field_description:pdm.field_plm_adding_bom__id
 #: model:ir.model.fields,field_description:pdm.field_plm_backupdoc__id
 #: model:ir.model.fields,field_description:pdm.field_plm_check_document__id
@@ -2489,6 +2491,25 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_plm_material__id
 #: model:ir.model.fields,field_description:pdm.field_plm_missing_bom__id
 #: model:ir.model.fields,field_description:pdm.field_plm_temporary__id
+#: model:ir.model.fields,field_description:pdm.field_product_product__id
+#: model:ir.model.fields,field_description:pdm.field_product_template__id
+#: model:ir.model.fields,field_description:pdm.field_report_mrp_report_bom_structure__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_all_product_product_pdf__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_all_sum__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_flat__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_leaves__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_bom_template_one_sum__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_checkout_pdf__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_pdf__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_structure__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_document_where_used__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_one_product_product_pdf__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_product_product_pdf__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_bom_header__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_all__id
+#: model:ir.model.fields,field_description:pdm.field_report_pdm_spare_pdf_one__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_checkout_board__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_component_year__id
@@ -2496,6 +2517,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_user__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_document_wall__id
 #: model:ir.model.fields,field_description:pdm.field_report_plm_files_partner__id
+#: model:ir.model.fields,field_description:pdm.field_res_config_settings__id
 msgid "ID"
 msgstr ""
 
@@ -2561,7 +2583,7 @@ msgstr ""
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_config_settings__plm_service_id
 msgid ""
-"Insert the Service ID and register your PLM module. Ask it to Didotech."
+"Insert the Service ID and register your PLM module. Ask it to Codebeex."
 msgstr ""
 
 #. module: pdm
@@ -2597,7 +2619,7 @@ msgstr ""
 #. module: pdm
 #. odoo-python
 #: code:addons/pdm/models/base_client.py:0
-msgid "Insert your Activation Code as provided by Didotech."
+msgid "Insert your Activation Code as provided by Codebeex."
 msgstr ""
 
 #. module: pdm
@@ -3470,6 +3492,11 @@ msgid "PLM / View Users"
 msgstr ""
 
 #. module: pdm
+#: model:ir.module.category,name:pdm.module_category_plm
+msgid "PLM Engineering"
+msgstr ""
+
+#. module: pdm
 #: model:ir.model,name:pdm.model_plm_logging
 msgid "PLM Log Activities"
 msgstr ""
@@ -3559,11 +3586,6 @@ msgstr ""
 #. module: pdm
 #: model:ir.actions.act_window,name:pdm.plm_action_codelist_form
 msgid "Part Number Rules"
-msgstr ""
-
-#. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_product_template_partnumber_uniq
-msgid "Part Number has to be unique!"
 msgstr ""
 
 #. module: pdm
@@ -3888,12 +3910,6 @@ msgid "Raw Material"
 msgstr ""
 
 #. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_plm_finishing_name_uniq
-#: model:ir.model.constraint,message:pdm.constraint_plm_material_name_uniq
-msgid "Raw Material has to be unique !"
-msgstr ""
-
-#. module: pdm
 #: model:ir.model.fields,help:pdm.field_product_product__engineering_material
 #: model:ir.model.fields,help:pdm.field_product_template__engineering_material
 msgid "Raw material for current product, only description for titleblock."
@@ -4180,6 +4196,11 @@ msgstr ""
 #. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_logging__revision
 msgid "Revision involved."
+msgstr ""
+
+#. module: pdm
+#: model:res.groups.privilege,name:pdm.res_groups_privilege_plm
+msgid "Role Privileges"
 msgstr ""
 
 #. module: pdm
@@ -4583,11 +4604,6 @@ msgid "The BoM net weight in Kg."
 msgstr ""
 
 #. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_plm_document_relation_relation_uniq
-msgid "The Document Relation must be unique !"
-msgstr ""
-
-#. module: pdm
 #: model:ir.model.fields,help:pdm.field_plm_document__res_model
 msgid "The database object this attachment will be attached to."
 msgstr ""
@@ -4604,11 +4620,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/pdm/models/base_client.py:0
 msgid "The document is not checked-in."
-msgstr ""
-
-#. module: pdm
-#: model:ir.model.constraint,message:pdm.constraint_plm_checkout_documentid
-msgid "The documentid must be unique !"
 msgstr ""
 
 #. module: pdm

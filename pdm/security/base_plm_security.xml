@@ -7,7 +7,7 @@
         </record>
 
     	<record model="res.groups.privilege" id="res_groups_privilege_plm">
-        	<field name="name">PLM Privilege</field>
+        	<field name="name">Role Privileges</field>
         	<field name="category_id" ref="module_category_plm"/>
         	<field name="sequence">10</field>
     	</record>    	
