@@ -110,6 +110,7 @@
                                     <field name="opt_mgeCopyBoMProd" />
                                     <field name="opt_mgeCopyBoMRoute" attrs="{'invisible':[('opt_mgeCopyBoMProd','=',False)]}" />
                                     <field name="opt_mgeResetTmRoute" attrs="{'invisible':['|',('opt_mgeCopyBoMRoute','=',False),('opt_mgeCopyBoMProd','=',False)]}" />
+                                    <button name="set_showReplacementBom" icon="fa-arrow-right" type="object" string="Activate Product replacement in Bom" class="btn-link"/> 
                               </group>
                           </group>
                        </page>

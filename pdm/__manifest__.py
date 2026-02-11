@@ -25,7 +25,7 @@
 ##############################################################################
 {
     'name': 'Engineering & Lifecycle Management',
-    'version': '1.0.0',
+    'version': '1.1.0',
     'author': 'Didotech srl',
     'website': 'http://www.didotech.com',
     'support': 'support@didotech.com',

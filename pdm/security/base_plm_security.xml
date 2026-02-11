@@ -17,5 +17,9 @@
 			<field name="name">PLM / Administrators</field>
 			<field name="users" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
 		</record>
+		<record id="group_plm_replacebom" model="res.groups">
+			<field name="name">PLM / Replace in Bom</field>
+			<field name="users" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
+		</record>
 	</data>
 </odoo>

@@ -106,7 +106,7 @@ class plm_component(models.Model):
     @api.model
     def action_check_workflow(self, operationParams):
         """
-            Create a new Spare BoM if doesn't exist (action callable from views)
+            Create a new temporary id collecting products and documents involved.
         """
         excludeStatuses=operationParams['excludeStatuses']
         includeStatuses=operationParams['includeStatuses']
