@@ -32,8 +32,8 @@ from odoo import models, fields, api, _, osv
 from odoo.exceptions import UserError
 
 from .common import BOMTYPES, BOMMODES, getListIDs, getCleanList, getListedDatas, \
-                    isOldReleased, isAdministrator, isDraft, isAnyReleased, isReleased, isWritable
-                    
+                    isOldReleased, isAdministrator, isDraft, isAnyReleased, isReleased, isWritable, \
+                    isObsoleted, isUnderModify, move_workflow
 
 # To be adequate to plm.document class states
 USED_STATES = [('draft', 'Draft'), ('confirmed', 'Confirmed'), ('released', 'Released'), ('undermodify', 'UnderModify'),
@@ -107,6 +107,82 @@ class plm_component(models.Model):
                 if not vals.get('engineering_code', '') and vals.get('name', ''):
                     vals['engineering_code'] = vals['name']
                 ret=super(plm_component, self.with_context(create_from_tmpl=False)).create([vals])
+        return ret
+
+    #   Internal methods
+    def _insertlog(self, ids, changes={}, note={}):
+        ret=False
+        op_type, op_note=["unknown",""]
+        for objID in self.browse(getListIDs(ids)):
+            if note:
+                op_type="{type}".format(type=note['type'])
+                op_note="{reason}".format(reason=note['reason'])
+            elif changes:
+                op_type='change value'
+                op_note=self.env['plm.logging'].getchanges(objID, changes)
+            if op_note:
+                values={
+                        'name': objID.name,
+                        'revision': "{major}".format(major=objID.engineering_revision),
+                        'type': self._name,
+                        'op_type': op_type,
+                        'op_note': op_note,
+                        'op_date': datetime.now(),
+                        'userid': self._uid,
+                        }
+                objectItem=self.env['plm.logging'].create(values)
+                if objectItem:
+                    ret=True
+        return ret
+
+    def _getlatestbyrevision(self, name, revision):
+        criteria = [
+                ('active', '=', True),
+                ('engineering_code', '=', name),
+                ('engineering_revision', '<', revision)
+            ]
+        order='engineering_revision desc'
+        return self.search(criteria, order=order, limit=1)
+
+    def logging_workflow(self, ids, action, status):
+        note={
+                'type': 'workflow movement',
+                'reason': "Applying workflow action '{action}', moving to status '{status}.".format(action=action, status=status),
+             }
+        self._insertlog(ids, note=note)
+
+    def unlink(self):
+        ret=False
+        ids=self._ids
+        
+        isAdmin = isAdministrator(self)
+
+        if not self.env['mrp.bom'].IsChild(ids):
+            for checkObj in self.browse(ids):
+                checkApply=False
+                if isReleased(self, checkObj.id):
+                    if isAdmin:
+                        checkApply=True
+                elif isDraft(self, checkObj.id):
+                    checkApply=True
+
+                if not checkApply:
+                    continue            # Apply unlink only if have respected rules.
+    
+                existingID=self._getlatestbyrevision(checkObj.engineering_code, checkObj.engineering_revision)
+                if isObsoleted(self, existingID.id):
+                    move_workflow (self, [existingID.id], 'reactivate', 'released')
+                elif isUnderModify(self, existingID.id):
+                    move_workflow (self, [existingID.id], 'reactivate', 'released')
+
+                note={
+                        'type': 'unlink object',
+                        'reason': "Removed entity from database.",
+                     }
+                self._insertlog(checkObj.id, note=note)
+                item = super(plm_component, checkObj.with_context({'no_move_documents':False})).unlink()
+                if item:
+                    ret=ret | item
         return ret
 
 class plm_component_document_rel(models.Model):
@@ -747,6 +823,9 @@ class plm_relation(models.Model):
         return ret
 
     def validatecreation(self, fatherID, vals):
+        """
+            Checks if a Bom is creable (no void Boms, no circular recursions.
+        """
         ret={}
         fatherIDs=[fatherID]
         bomLines=vals.get('bom_line_ids',[])
