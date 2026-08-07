@@ -440,7 +440,6 @@ class plm_component(models.Model):
                 break
         return ret
 
-    
     @api.model
     def NewRevision(self, ids=[], default=None):
         """
@@ -541,7 +540,6 @@ class plm_component(models.Model):
             listedParts.append(part['engineering_code'])
         return packDictionary(retValues)
 
-    
     @api.model
     def SaveOrUpdate(self, request=[], default=None):
         """
