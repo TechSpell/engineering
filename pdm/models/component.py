@@ -79,13 +79,14 @@ class plm_component(models.Model):
         return ret
 
     def _getlatestbyrevision(self, name, revision):
-        criteria = [
-                ('active', '=', True),
-                ('engineering_code', '=', name),
-                ('engineering_revision', '<', revision)
-            ]
-        order='engineering_revision desc'
-        return self.search(criteria, order=order, limit=1)
+        return self.product_tmpl_id._getlatestbyrevision(name, revision)
+        # criteria = [
+        #         ('active', '=', True),
+        #         ('engineering_code', '=', name),
+        #         ('engineering_revision', '<', revision)
+        #     ]
+        # order='engineering_revision desc'
+        # return self.search(criteria, order=order, limit=1)
 
     def _getNewIndex(self, oldObject, revision=0):
         revision = getInteger(revision) + 1
@@ -1238,7 +1239,6 @@ class plm_component(models.Model):
         ret=False
         ids=self._ids
         
-        values = {'state': 'released', }
         isAdmin = isAdministrator(self)
 
         if not self.env['mrp.bom'].IsChild(ids):
