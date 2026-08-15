@@ -114,7 +114,8 @@ class plm_component(models.Model):
         return bom_ids
 
     def _getlatestbyrevision(self, name, revision):
-        return self.product_tmpl_id._getlatestbyrevision(name, revision)
+        tmplModel = self.env["product.template"]
+        return tmplModel._getlatestbyrevision(name, revision)
         # criteria = [
         #         ('active', '=', True),
         #         ('engineering_code', '=', name),
@@ -1270,7 +1271,7 @@ class plm_component(models.Model):
     def unlink(self):
         ret=False
         ids=self._ids
-        
+        tmplModel = self.env["product.template"]
         isAdmin = isAdministrator(self)
 
         if not self.env['mrp.bom'].IsChild(ids):
@@ -1285,7 +1286,7 @@ class plm_component(models.Model):
                 if not checkApply:
                     continue            # Apply unlink only if have respected rules.
     
-                existingID=self._getlatestbyrevision(checkObj.engineering_code, checkObj.engineering_revision)
+                existingID=tmplModel._getlatestbyrevision(checkObj.engineering_code, checkObj.engineering_revision)
                 if isObsoleted(self, existingID.id):
                     move_workflow (self, [existingID.id], 'reactivate', 'released')
                 elif isUnderModify(self, existingID.id):
