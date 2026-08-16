@@ -54,7 +54,7 @@ class plm_config_settings(models.Model):
     def cancel(self):
         pass
 
-    plm_service_id  =   fields.Char('Service ID',            size=128,   help="Insert the Service ID and register your PLM module. Ask it to Codebeex.")
+    plm_service_id  =   fields.Char('Service ID',            size=128,   help="Insert the Service ID and register your PLM module. Ask it to Didotech.")
     activated_id    =   fields.Char('Activated PLM client',  size=128,   help="Listed activated Client.")
     active_editor   =   fields.Char('Client Editor Name',    size=128,   help="Used Editor Name")
     active_node     =   fields.Char('OS machine name',       size=128,   help="Editor Machine name")
@@ -684,7 +684,7 @@ class plm_config_settings(models.Model):
             Get all Service Ids registered.
         """
         
-        message=_("Insert your Activation Code as provided by Codebeex.")
+        message=_("Insert your Activation Code as provided by Didotech.")
         ids=self.GetServiceIds(oids, default=default)
         return ids, message
 
@@ -791,7 +791,6 @@ class plm_config_settings(models.Model):
             'CheckOutR12':          _("Information"),
             'Upload00':             _("Upload stopped. Current document has been modifying and has to be saved locally, before uploading it to server."),
             'Upload01':             _("Warning"),
-            'Upload02':             _("Preparing Upload..."),
 #             'EditParts00':          _(""),
             'EditDocuments00':      _("This is not Default configuration.\nEdit document data is not allowed."),
             'EditDocuments01':      _("Warning"),
@@ -996,7 +995,6 @@ class plm_config_settings(models.Model):
                 'PERMANENTLIST':             {'label': _("Maintains opening list"), 'tooltip': _("This option allows to store latest opened document name. Default is False.")},
                 'FORCESAVE':                 {'label': _("Force to execute upload Document"), 'tooltip': _("This option allows to force uploading a file also if seems changed. Default is False.")},
                 'PERFORMANCE_CONNECTION':    {'label': _("Performance connection"),  "tooltip": _("Align up local data using maximum performance. Option not usable on servers in which PostgreSQL is not configurable. Default is False.")},
-                'EXPORT_EXTENSIONS':         {"label": _("Extensions to convert files"), "tooltip": _("Sets the extensions in which to convert files, separated by commas. E.G. dxf,igs,stp.")},
                 },
  
             'componentDialog':      {
