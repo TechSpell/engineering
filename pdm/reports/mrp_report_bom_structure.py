@@ -153,8 +153,6 @@ class ReportBomStructure(models.AbstractModel):
             'has_attachments': has_attachments,
             'phantom_bom': bom.type == 'phantom',
             'parent_id': parent_bom and parent_bom.id or False,
-            'has_ecos': False,
-            'foldable': False,
         }
 
         components = []
@@ -221,7 +219,6 @@ class ReportBomStructure(models.AbstractModel):
             bom_report_line['byproducts_total'] = sum(byproduct['quantity'] for byproduct in byproducts)
             bom_report_line['bom_cost'] *= bom_report_line['cost_share']
 
-        bom_report_line['foldable'] = len(bom.operation_ids) > 0 or (len(bom_report_line['components']) > 0 and level > 0) or any(component.get('foldable', False) for component in bom_report_line['components'])
         if level == 0:
             # Gives a unique key for the first line that indicates if product is ready for production right now.
             bom_report_line['components_available'] = all([c['stock_avail_state'] == 'available' for c in components])
@@ -261,7 +258,6 @@ class ReportBomStructure(models.AbstractModel):
                 'availability_state': bom_line['availability_state'],
                 'availability_display': bom_line['availability_display'],
                 'visible': line_visible,
-                'has_ecos':False,
             })                         
             if bom_line.get('components'):
                 lines += self._get_bom_array_lines(bom_line, level + 1, unfolded_ids, unfolded, line_visible and line_unfolded)
