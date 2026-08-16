@@ -79,7 +79,8 @@ class plm_component(models.Model):
         return ret
 
     def _getlatestbyrevision(self, name, revision):
-        return self.product_tmpl_id._getlatestbyrevision(name, revision)
+        tmplModel = self.env["product.template"]
+        return tmplModel._getlatestbyrevision(name, revision)
         # criteria = [
         #         ('active', '=', True),
         #         ('engineering_code', '=', name),
