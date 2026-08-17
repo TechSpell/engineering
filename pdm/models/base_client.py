@@ -791,6 +791,7 @@ class plm_config_settings(models.Model):
             'CheckOutR12':          _("Information"),
             'Upload00':             _("Upload stopped. Current document has been modifying and has to be saved locally, before uploading it to server."),
             'Upload01':             _("Warning"),
+            'Upload02':             _("Preparing Upload..."),
 #             'EditParts00':          _(""),
             'EditDocuments00':      _("This is not Default configuration.\nEdit document data is not allowed."),
             'EditDocuments01':      _("Warning"),
