@@ -32,7 +32,7 @@ import csv, json
 import itertools
 from xml.etree.ElementTree import fromstring
 
-from odoo  import models, fields, api, _, osv, Command
+from odoo  import models, fields, api, _, osv
 from odoo.tools import DEFAULT_SERVER_DATETIME_FORMAT
 import odoo.tools.config as tools_config
 
@@ -794,6 +794,7 @@ class plm_config_settings(models.Model):
             'CheckOutR12':          _("Information"),
             'Upload00':             _("Upload stopped. Current document has been modifying and has to be saved locally, before uploading it to server."),
             'Upload01':             _("Warning"),
+            'Upload02':             _("Preparing Upload..."),
 #             'EditParts00':          _(""),
             'EditDocuments00':      _("This is not Default configuration.\nEdit document data is not allowed."),
             'EditDocuments01':      _("Warning"),
@@ -1411,23 +1412,6 @@ class plm_config_settings(models.Model):
         retId = list(itertools.chain(*ids))    
 
         return (retCre, retChg, retId)
-
-    def set_showReplacementBom(self):
-        """
-            Action to set / unset Replacement Bom group.
-        """
-        groupType=self.env['res.groups']
-        replace_bom_id = groupType.search([('name', '=', 'PLM / Replace in Bom')])
-
-        if not replace_bom_id.users:
-            admin_id = groupType.search([('name', '=', 'PLM / Administrators')])
-            integ_id = groupType.search([('name', '=', 'PLM / Integration Users')])
-            admin_ids = admin_id.users
-            integ_ids = integ_id.users
-
-            replace_bom_id.users = [Command.set((admin_ids+integ_ids).ids)]
-        else:
-            replace_bom_id.users = [Command.clear()]
 
     def init(self):
         """
