@@ -80,15 +80,14 @@ class plm_component(models.Model):
         return ret
 
     def _getlatestbyrevision(self, name, revision):
-        tmplModel = self.env["product.template"]
-        return tmplModel._getlatestbyrevision(name, revision)
-        # criteria = [
-        #         ('active', '=', True),
-        #         ('engineering_code', '=', name),
-        #         ('engineering_revision', '<', revision)
-        #     ]
-        # order='engineering_revision desc'
-        # return self.search(criteria, order=order, limit=1)
+        prodModel = self.env["product.product"]
+        criteria = [
+                ('active', '=', True),
+                ('engineering_code', '=', name),
+                ('engineering_revision', '<', revision)
+            ]
+        order='engineering_revision desc'
+        return prodModel.search(criteria, order=order, limit=1)
 
     def _getNewIndex(self, oldObject, revision=0):
         revision = getInteger(revision) + 1
