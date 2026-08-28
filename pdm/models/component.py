@@ -78,16 +78,50 @@ class plm_component(models.Model):
                     ret=True
         return ret
 
+    def _getpreviousrevisions(self):
+        ret = self.env['product.product']
+        if self:
+            name = self.engineering_code
+            revision =self.engineering_revision
+            criteria = [
+                    ('active', '=', True),
+                    ('engineering_code', '=', name),
+                    ('engineering_revision', '<', revision)
+                ]
+            order='engineering_revision desc'
+            ret = self.search(criteria, order=order)
+        return ret
+
+    def _getinboms(self, bomtypes=['normal']):
+        """
+            Returns BoMs containing these products
+        """
+        bom_ids = self.env['mrp.bom']
+        if self._ids:
+            bomLType = self.env['mrp.bom.line']
+            criteria = [
+                ('product_id', 'in', self._ids),
+                ('bom_id', '!=', False),
+                ('type', 'in', bomtypes)
+            ]
+            bom_line_ids = bomLType.search(criteria)
+            if bom_line_ids:
+                bom_ids = bom_line_ids.mapped('bom_id')
+                if bom_ids:
+                    tmp_ids = bom_ids._ids
+                    these_ids = list(set(tmp_ids))
+                    bom_ids = self.env['mrp.bom'].browse(these_ids)
+        return bom_ids
+
     def _getlatestbyrevision(self, name, revision):
-        tmplModel = self.env["product.template"]
-        return tmplModel._getlatestbyrevision(name, revision)
-        # criteria = [
-        #         ('active', '=', True),
-        #         ('engineering_code', '=', name),
-        #         ('engineering_revision', '<', revision)
-        #     ]
-        # order='engineering_revision desc'
-        # return self.search(criteria, order=order, limit=1)
+        prodModel = self.env["product.product"]
+        criteria = [
+                ('active', '=', True),
+                ('engineering_code', '=', name),
+                ('engineering_revision', '<', revision)
+            ]
+        order='engineering_revision desc'
+        return prodModel.search(criteria, order=order, limit=1)
 
     def _getNewIndex(self, oldObject, revision=0):
         revision = getInteger(revision) + 1
@@ -407,7 +441,6 @@ class plm_component(models.Model):
                 break
         return ret
 
-    
     @api.model
     def NewRevision(self, ids=[], default=None):
         """
@@ -508,7 +541,6 @@ class plm_component(models.Model):
             listedParts.append(part['engineering_code'])
         return packDictionary(retValues)
 
-    
     @api.model
     def SaveOrUpdate(self, request=[], default=None):
         """

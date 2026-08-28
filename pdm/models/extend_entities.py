@@ -24,7 +24,7 @@
 #
 ##############################################################################
 
-from odoo import models, fields, api, _, osv
+from odoo import models, fields, api, _
 
 class plm_document(models.Model):
     _inherit = 'plm.document'
@@ -51,11 +51,21 @@ class plm_component(models.Model):
                 prod_ids.extend([bom_line_obj.bom_id.product_id.id])
             prod_obj.father_part_ids=list(set(prod_ids))
 
+    def _replace_in_bom(self):
+        """ 
+            Gets father BoM.
+        """
+        options=self.env['plm.config.settings'].GetOptions()
+        value = options.get('opt_showReplacementBom', False)
+        for product_id in self:
+            product_id.replace_in_bom = value
+
     linkeddocuments = fields.Many2many  ('plm.document', 'plm_component_document_rel','component_id','document_id', 'Linked Docs', index=True)  
     tmp_material    = fields.Many2one   ('plm.material','Raw Material', index=True, required=False, change_default=True, help="Select raw material for current product")
 #     tmp_treatment   = fields.Many2one   ('plm.treatment','Thermal Treatment', index=True, required=False, change_default=True, help="Select thermal treatment for current product")
     tmp_surface     = fields.Many2one   ('plm.finishing','Surface Finishing', index=True, required=False, change_default=True, help="Select surface finishing for current product")
-    father_part_ids = fields.Many2many  ('product.product', compute = _father_part_compute, string="BoM Hierarchy", store =False)
+    father_part_ids = fields.Many2many  ('product.product', compute = _father_part_compute, string="BoM Hierarchy", store=False)
+    replace_in_bom  = fields.Boolean    (compute = _replace_in_bom, string="Replace in BoM", store=False, default=False)
 
     @api.onchange('tmp_material')
     def on_change_tmpmater(self, tmp_material=False):
@@ -347,6 +357,10 @@ class plm_temporary(models.TransientModel):
                     break
             for docu_id in temp_id.docu_ids:
                 if docu_id.discharge:
+                    ret = False
+                    break
+            for ch_bom_id in temp_id.ch_bom_ids:
+                if ch_bom_id.discharge:
                     ret = False
                     break
             temp_id.executable = ret
