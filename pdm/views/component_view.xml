@@ -492,7 +492,7 @@
                 <header>
                     <field name="executable" invisible="True" />
                     <field name="executed" invisible="True" />
-                    <button name="action_replacement_apply" string="Apply workflow changes" 
+                    <button name="action_replacement_apply" string="Replace product in marked BoMs" 
                             type="object" class="btn-primary" 
                             invisible="executed == True or executable == False"/>
                 </header>
