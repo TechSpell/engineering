@@ -23,6 +23,7 @@ group_plm_admin,access_mrp_bom_line,mrp_bom_line,mrp.bom.line,1,1,1,1
 group_plm_admin,access_plm_descriptions,plm_description,plm.description,1,1,1,1
 group_plm_admin,access_plm_finishings,plm_finishing,plm.finishing,1,1,1,1
 group_plm_admin,access_plm_materials,plm_material,plm.material,1,1,1,1
+group_plm_admin,access_ir_property,ir_property,ir.property,1,1,1,1
 group_plm_admin,access_plm_backupdoc,plm_backupdoc,plm.backupdoc,1,1,1,1
 group_plm_admin,access_plm_config_settings,plm_config_settings,plm.config.settings,1,1,1,1
 group_plm_admin,access_plm_codelist,plm_codelist,plm.codelist,1,1,1,1
@@ -31,6 +32,7 @@ group_plm_admin,access_plm_email_thread,mail_thread,mail.thread,1,1,1,1
 group_plm_admin,access_plm_email_advice,plm_mail,plm.mail,1,1,1,1
 group_plm_admin,access_plm_check_product,plm_check_product,plm.check.product,1,1,1,1
 group_plm_admin,access_plm_check_document,plm_check_document,plm.check.document,1,1,1,1
+group_plm_admin,access_plm_check_bom,plm_check_bom,plm.check.bom,1,1,1,1
 group_plm_integrationuser,access_iu_plm_logging,plm_logging,plm.logging,1,1,1,0
 group_plm_integrationuser,access_iu_plm_checkout,plm_checkout,plm.checkout,1,1,1,1
 group_plm_integrationuser,access_iu_plm_component_document_rel,plm_component_document_rel,plm.component.document.rel,1,1,1,1
@@ -55,6 +57,7 @@ group_plm_integrationuser,access_iu_mrp_bom_line,mrp_bom_line,mrp.bom.line,1,1,1
 group_plm_integrationuser,access_iu_plm_descriptions,plm_description,plm.description,1,0,0,0
 group_plm_integrationuser,access_iu_plm_finishings,plm_finishing,plm.finishing,1,0,0,0
 group_plm_integrationuser,access_iu_plm_materials,plm_material,plm.material,1,0,0,0
+group_plm_integrationuser,access_iu_ir_property,ir_property,ir.property,1,1,1,1
 group_plm_integrationuser,access_iu_plm_backupdoc,plm_backupdoc,plm.backupdoc,0,1,1,0
 group_plm_integrationuser,access_iu_plm_config_settings,plm_config_settings,plm.config.settings,1,1,1,0
 group_plm_integrationuser,access_iu_plm_codelist,plm_codelist,plm.codelist,1,1,0,0
@@ -62,6 +65,7 @@ group_plm_integrationuser,access_iu_plm_doculist,plm_doculist,plm.doculist,1,1,0
 group_plm_integrationuser,access_iu_plm_email_thread,mail_thread,mail.thread,1,1,1,0
 group_plm_integrationuser,access_iu_plm_check_product,plm_check_product,plm.check.product,1,1,1,1
 group_plm_integrationuser,access_iu_plm_check_document,plm_check_document,plm.check.document,1,1,1,1
+group_plm_integrationuser,access_iu_plm_check_bom,plm_check_bom,plm.check.bom,1,1,1,1
 group_plm_validationuser,access_vl_plm_logging,plm_logging,plm.logging,1,1,1,0
 group_plm_validationuser,access_vl_plm_checkout,plm_checkout,plm.checkout,1,1,1,0
 group_plm_validationuser,access_vl_plm_component_document_rel,plm_component_document_rel,plm.component.document.rel,1,1,1,0
@@ -86,6 +90,7 @@ group_plm_validationuser,access_vl_mrp_bom_line,mrp_bom_line,mrp.bom.line,1,1,1,
 group_plm_validationuser,access_vl_plm_descriptions,plm_description,plm.description,1,0,0,0
 group_plm_validationuser,access_vl_plm_finishings,plm_finishing,plm.finishing,1,0,0,0
 group_plm_validationuser,access_vl_plm_materials,plm_material,plm.material,1,0,0,0
+group_plm_validationuser,access_vl_ir_property,ir_property,ir.property,1,1,1,0
 group_plm_validationuser,access_vl_plm_backupdoc,plm_backupdoc,plm.backupdoc,0,1,1,0
 group_plm_validationuser,access_vl_plm_config_settings,plm_config_settings,plm.config.settings,1,1,1,0
 group_plm_validationuser,access_vl_plm_codelist,plm_codelist,plm.codelist,1,1,0,0
@@ -93,6 +98,7 @@ group_plm_validationuser,access_vl_plm_doculist,plm_doculist,plm.doculist,1,1,0,
 group_plm_validationuser,access_vl_plm_email_thread,mail_thread,mail.thread,1,1,1,0
 group_plm_validationuser,access_vl_plm_check_product,plm_check_product,plm.check.product,1,1,1,1
 group_plm_validationuser,access_vl_plm_check_document,plm_check_document,plm.check.document,1,1,1,1
+group_plm_validationuser,access_vl_plm_check_bom,plm_check_bom,plm.check.bom,0,0,0,0
 group_plm_viewuser,access_vw_plm_logging,plm_logging,plm.logging,1,1,1,0
 group_plm_viewuser,access_vw_plm_checkout,plm_checkout,plm.checkout,1,0,0,0
 group_plm_viewuser,access_vw_plm_component_document_rel,plm_component_document_rel,Component Document Relations,1,0,0,0
@@ -116,8 +122,12 @@ group_plm_viewuser,access_vw_mrp_bom_line,mrp_bom_line,mrp.bom.line,1,0,0,0
 group_plm_viewuser,access_vw_plm_descriptions,plm_description,plm.description,1,0,0,0
 group_plm_viewuser,access_vw_plm_finishings,plm_finishing,Surface Finishing,1,0,0,0
 group_plm_viewuser,access_vw_plm_materials,plm_material,plm.material,1,0,0,0
+group_plm_viewuser,access_vw_ir_property,ir_property,ir.property,1,0,0,0
 group_plm_viewuser,access_vw_plm_backupdoc,plm_backupdoc,plm.backupdoc,0,0,0,0
 group_plm_viewuser,access_vw_plm_config_settings,plm_config_settings,plm.config.settings,1,0,0,0
 group_plm_viewuser,access_vw_plm_codelist,plm_codelist,plm.codelist,1,1,0,0
 group_plm_viewuser,access_vw_plm_doculist,plm_doculist,plm.doculist,1,1,0,0
 group_plm_viewuser,access_vw_plm_email_thread,mail_thread,mail.thread,1,1,1,0
+group_plm_viewuser,access_vw_plm_check_product,plm_check_product,plm.check.product,0,0,0,0
+group_plm_viewuser,access_vw_plm_check_document,plm_check_document,plm.check.document,0,0,0,0
+group_plm_viewuser,access_vw_plm_check_bom,plm_check_bom,plm.check.bom,0,0,0,0
